@@ -1,0 +1,17 @@
+name: test
+on:
+  - workflow_call
+jobs:
+  run:
+    strategy:
+      matrix:
+        os: ['ubuntu-latest', 'macos-latest', 'windows-latest']
+        node-version: [16.x, 18.x]
+    runs-on: ${{matrix.os}}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup
+        with:
+          node-version: ${{matrix.node-version}}
+      - run: pnpm build
+      - run: pnpm test
