@@ -1,6 +1,6 @@
 {
   "search.exclude": {
-    "**/dist": true,
+    "**/build": true,
     "**/__snapshots__": true,
     "**/pnpm-lock.yaml": true,
     "**/*.tsbuildinfo": true

@@ -1,70 +1,88 @@
-import { Errors, ParseFlagNameExpression } from '../src'
+import { FlagName } from '../src'
+import { IsExact } from 'conditional-type-checks'
 
 // prettier-ignore
-namespace _ {
-	const Superset = <T, U extends T>(): [T, U] => 0 as any
+type _TestMixed =
+	| IsExact<FlagName.Parse<'-v -x'>, 					{ long: undefined; short: 'v';  aliases: { short: ['x'], long: [] } }>
+	| IsExact<FlagName.Parse<'-v -x -y'>, 				{ long: undefined; short: 'v';  aliases: { short: ['x','y'], long: [] } }>
+	| IsExact<FlagName.Parse<'--vv --xx'>, 			{ long: 'vv'; short: undefined; aliases: { short: [], long:  ['xx'] } }>
+	| IsExact<FlagName.Parse<'--vv --xx --yy'>, 	{ long: 'vv'; short: undefined; aliases: { short: [], long:  ['xx','yy'] } }>
+	| IsExact<FlagName.Parse<'-v --vv -x --xx'>, { long: 'vv'; short: 'v'; 			aliases: { short: ['x'], long:  ['xx'] } }>
+	| IsExact<FlagName.Parse<'v vv x xx'>, 			{ long: 'vv'; short: 'v'; 			aliases: { short: ['x'], long:  ['xx'] } }>
+	| IsExact<FlagName.Parse<'v --vv x xx'>, 		{ long: 'vv'; short: 'v'; 			aliases: { short: ['x'], long:  ['xx'] } }>
 
-	Superset<ParseFlagNameExpression<'-v -x'>, { long: undefined; short: 'v'; aliases: { short: ['x'], long: [] } }>()
-	Superset<ParseFlagNameExpression<'-v -x -y'>, { long: undefined; short: 'v'; aliases: { short: ['x','y'], long: [] } }>()
-	Superset<ParseFlagNameExpression<'--vv --xx'>, { long: 'vv'; short: undefined; aliases: { short: [], long:  ['xx'] } }>()
-	Superset<ParseFlagNameExpression<'--vv --xx --yy'>, { long: 'vv'; short: undefined; aliases: { short: [], long:  ['xx','yy'] } }>()
-	Superset<ParseFlagNameExpression<'-v --vv -x --xx'>, { long: 'vv'; short: 'v'; aliases: { short: ['x'], long:  ['xx'] } }>()
-	Superset<ParseFlagNameExpression<'v vv x xx'>, { long: 'vv'; short: 'v'; aliases: { short: ['x'], long:  ['xx'] } }>()
-	Superset<ParseFlagNameExpression<'v --vv x xx'>, { long: 'vv'; short: 'v'; aliases: { short: ['x'], long:  ['xx'] } }>()
+// prettier-ignore
+type _TestErrors =
+	| IsExact<FlagName.Parse<''>, FlagName.Errors.Empty>
+	| IsExact<FlagName.Parse<' '>, FlagName.Errors.Empty>
+	| IsExact<FlagName.Parse<'--abc', { reservedNames: 'abc'; usedNames: undefined }>, FlagName.Errors.NameReserved<'abc'>>
+	| IsExact<FlagName.Parse<'--abc', { usedNames: 'abc'; reservedNames: undefined }>, FlagName.Errors.NameAlreadyTaken<'abc'>>
+	| IsExact<FlagName.Parse<'-a', { reservedNames: 'a'; usedNames: undefined }>, FlagName.Errors.NameReserved<'a'>>
+	| IsExact<FlagName.Parse<'-a', { usedNames: 'a'; reservedNames: undefined }>, FlagName.Errors.NameAlreadyTaken<'a'>>
+	| IsExact<FlagName.Parse<'--v'>, FlagName.Errors.LongFlagTooShort<'v'>>
+	| IsExact<FlagName.Parse<'--ver --v'>, FlagName.Errors.LongFlagTooShort<'v'>>
+	| IsExact<FlagName.Parse<'-vv'>, FlagName.Errors.ShortFlagTooLong<'vv'>>
+	| IsExact<FlagName.Parse<'--vv --vv'>, FlagName.Errors.AliasDuplicate<'vv'>>
+	| IsExact<FlagName.Parse<'-v -v'>, FlagName.Errors.AliasDuplicate<'v'>>
 
-	Superset<ParseFlagNameExpression<''>, Errors.Empty>()
-	Superset<ParseFlagNameExpression<' '>, Errors.Empty>()
-	Superset<ParseFlagNameExpression<'--abc', { reservedNames: 'abc'; usedNames: undefined }>, Errors.NameReserved<'abc'>>()
-	Superset<ParseFlagNameExpression<'--abc', { usedNames: 'abc'; reservedNames: undefined }>, Errors.NameAlreadyTaken<'abc'>>()
-	Superset<ParseFlagNameExpression<'-a', { reservedNames: 'a'; usedNames: undefined }>, Errors.NameReserved<'a'>>()
-	Superset<ParseFlagNameExpression<'-a', { usedNames: 'a'; reservedNames: undefined }>, Errors.NameAlreadyTaken<'a'>>()
-	Superset<ParseFlagNameExpression<'--v'>, Errors.LongFlagTooShort<'v'>>()
-	Superset<ParseFlagNameExpression<'--ver --v'>, Errors.LongFlagTooShort<'v'>>()
-	Superset<ParseFlagNameExpression<'-vv'>, Errors.ShortFlagTooLong<'vv'>>()
-	Superset<ParseFlagNameExpression<'--vv --vv'>, Errors.AliasDuplicate<'vv'>>()
-	Superset<ParseFlagNameExpression<'-v -v'>, Errors.AliasDuplicate<'v'>>()
-
-	type SomeLong = { long: 'version'; short: undefined; aliases: {short:[],long:[]} }
-
-	Superset<ParseFlagNameExpression<'--version'>, SomeLong>()
-	Superset<ParseFlagNameExpression<' --version'>, SomeLong>()
-	Superset<ParseFlagNameExpression<' --version '>, SomeLong>()
-	Superset<ParseFlagNameExpression<'  --version '>, SomeLong>()
-	Superset<ParseFlagNameExpression<'  --version  '>, SomeLong>()
-	Superset<ParseFlagNameExpression<' --version  '>, SomeLong>()
-	Superset<ParseFlagNameExpression<'--version  '>, SomeLong>()
-	Superset<ParseFlagNameExpression<'version  '>, SomeLong>()
-
-	type SomeShort = { long: undefined; short: 'v'; aliases: {short:[],long:[]} }
-
-	Superset<ParseFlagNameExpression<'-v'>, SomeShort>()
-	Superset<ParseFlagNameExpression<' -v'>, SomeShort>()
-	Superset<ParseFlagNameExpression<' -v '>, SomeShort>()
-	Superset<ParseFlagNameExpression<'  -v '>, SomeShort>()
-	Superset<ParseFlagNameExpression<'  -v  '>, SomeShort>()
-	Superset<ParseFlagNameExpression<' -v  '>, SomeShort>()
-	Superset<ParseFlagNameExpression<'-v  '>, SomeShort>()
-	Superset<ParseFlagNameExpression<'v  '>, SomeShort>()
-
-	type SomeLongShort = { long: 'version'; short: 'v'; aliases: {short:[],long:[]} }
-
-	Superset<ParseFlagNameExpression<'--version -v'>, SomeLongShort>()
-	Superset<ParseFlagNameExpression<' --version -v'>, SomeLongShort>()
-	Superset<ParseFlagNameExpression<'--version -v'>, SomeLongShort>()
-	Superset<ParseFlagNameExpression<'  --version -v'>, SomeLongShort>()
-	Superset<ParseFlagNameExpression<'--version  -v'>, SomeLongShort>()
-	Superset<ParseFlagNameExpression<'  --version -v'>, SomeLongShort>()
-	Superset<ParseFlagNameExpression<'  --version -v '>, SomeLongShort>()
-	Superset<ParseFlagNameExpression<'  --version -v  '>, SomeLongShort>()
-	Superset<ParseFlagNameExpression<'  --version  -v  '>, SomeLongShort>()
-	Superset<ParseFlagNameExpression<'-v --version'>, SomeLongShort>()
-	Superset<ParseFlagNameExpression<' -v --version'>, SomeLongShort>()
-	Superset<ParseFlagNameExpression<'-v --version'>, SomeLongShort>()
-	Superset<ParseFlagNameExpression<'  -v --version'>, SomeLongShort>()
-	Superset<ParseFlagNameExpression<'-v  --version'>, SomeLongShort>()
-	Superset<ParseFlagNameExpression<'  -v --version'>, SomeLongShort>()
-	Superset<ParseFlagNameExpression<'  -v --version '>, SomeLongShort>()
-	Superset<ParseFlagNameExpression<'  -v --version  '>, SomeLongShort>()
-	Superset<ParseFlagNameExpression<'  -v  --version  '>, SomeLongShort>()
-	Superset<ParseFlagNameExpression<'  v  version  '>, SomeLongShort>()
+type SomeLong = {
+  long: 'version'
+  short: undefined
+  aliases: { short: []; long: [] }
 }
+
+// prettier-ignore
+type _TestLongs =
+	| IsExact<FlagName.Parse<'--version'>, SomeLong>
+	| IsExact<FlagName.Parse<' --version'>, SomeLong>
+	| IsExact<FlagName.Parse<' --version '>, SomeLong>
+	| IsExact<FlagName.Parse<'  --version '>, SomeLong>
+	| IsExact<FlagName.Parse<'  --version  '>, SomeLong>
+	| IsExact<FlagName.Parse<' --version  '>, SomeLong>
+	| IsExact<FlagName.Parse<'--version  '>, SomeLong>
+	| IsExact<FlagName.Parse<'version  '>, SomeLong>
+
+type SomeShort = {
+  long: undefined
+  short: 'v'
+  aliases: { short: []; long: [] }
+}
+
+// prettier-ignore
+type _TestShorts =
+	| IsExact<FlagName.Parse<'-v'>, SomeShort>
+	| IsExact<FlagName.Parse<' -v'>, SomeShort>
+	| IsExact<FlagName.Parse<' -v '>, SomeShort>
+	| IsExact<FlagName.Parse<'  -v '>, SomeShort>
+	| IsExact<FlagName.Parse<'  -v  '>, SomeShort>
+	| IsExact<FlagName.Parse<' -v  '>, SomeShort>
+	| IsExact<FlagName.Parse<'-v  '>, SomeShort>
+	| IsExact<FlagName.Parse<'v  '>, SomeShort>
+
+type SomeLongShort = {
+  long: 'version'
+  short: 'v'
+  aliases: { short: []; long: [] }
+}
+
+// prettier-ignore
+type _TestLongShorts =
+	| IsExact<FlagName.Parse<'--version -v'>, SomeLongShort>
+	| IsExact<FlagName.Parse<' --version -v'>, SomeLongShort>
+	| IsExact<FlagName.Parse<'--version -v'>, SomeLongShort>
+	| IsExact<FlagName.Parse<'  --version -v'>, SomeLongShort>
+	| IsExact<FlagName.Parse<'--version  -v'>, SomeLongShort>
+	| IsExact<FlagName.Parse<'  --version -v'>, SomeLongShort>
+	| IsExact<FlagName.Parse<'  --version -v '>, SomeLongShort>
+	| IsExact<FlagName.Parse<'  --version -v  '>, SomeLongShort>
+	| IsExact<FlagName.Parse<'  --version  -v  '>, SomeLongShort>
+	| IsExact<FlagName.Parse<'-v --version'>, SomeLongShort>
+	| IsExact<FlagName.Parse<' -v --version'>, SomeLongShort>
+	| IsExact<FlagName.Parse<'-v --version'>, SomeLongShort>
+	| IsExact<FlagName.Parse<'  -v --version'>, SomeLongShort>
+	| IsExact<FlagName.Parse<'-v  --version'>, SomeLongShort>
+	| IsExact<FlagName.Parse<'  -v --version'>, SomeLongShort>
+	| IsExact<FlagName.Parse<'  -v --version '>, SomeLongShort>
+	| IsExact<FlagName.Parse<'  -v --version  '>, SomeLongShort>
+	| IsExact<FlagName.Parse<'  -v  --version  '>, SomeLongShort>
+	| IsExact<FlagName.Parse<'  v  version  '>, SomeLongShort>

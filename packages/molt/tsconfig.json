@@ -4,6 +4,7 @@
     "composite": true
   },
   "include": ["./src"],
+  "tsBuildInfoFile": "node_modules/.cache/.tsbuildinfo",
   // Prevent auto-import from build
   "exclude": ["./build"],
   "references": [

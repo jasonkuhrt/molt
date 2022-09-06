@@ -4,10 +4,7 @@
     "outDir": "build/cjs",
     "module": "commonjs",
     "moduleResolution": "node",
-    "rootDir": "src",
-    "sourceMap": true,
-    "declaration": true,
-    "declarationMap": true
+    "rootDir": "src"
   },
   "include": ["src"],
   "exclude": ["**/*.spec.*"]

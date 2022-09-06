@@ -62,9 +62,12 @@ importers:
 
   packages/types:
     specifiers:
+      conditional-type-checks: ^1.0.6
       ts-toolbelt: ^9.6.0
     dependencies:
       ts-toolbelt: 9.6.0
+    devDependencies:
+      conditional-type-checks: 1.0.6
 
 packages:
 
@@ -1007,6 +1010,10 @@ packages:
     resolution: {integrity: sha512-4gEjHJFT9e+2W/77h/DS5SGUgwDaOwprX8L/gl5+3ixnzkVJJsZWDSelmN3Oilw3LNDZjZV0yqH1hLG3k6nghg==}
     dependencies:
       source-map: 0.6.1
+    dev: true
+
+  /conditional-type-checks/1.0.6:
+    resolution: {integrity: sha512-3vyi+yNcmKq+xl1sTX7Ta+4pUvjusMYbC6FSbrS6YJV8TI51wiRn24u4bfdFVhDKKH5GtpKQzxW7bqXbPWllgQ==}
     dev: true
 
   /core-util-is/1.0.2:

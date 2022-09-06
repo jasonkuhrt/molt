@@ -1,5 +1,7 @@
 export type SomeParseError = string
+
 export type SomeParseResult = SomeParseError | FlagNames
+
 export type FlagName = {
   long: string | undefined
   short: string | undefined

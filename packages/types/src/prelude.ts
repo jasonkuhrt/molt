@@ -27,18 +27,17 @@ export namespace Num {
 
 // prettier-ignore
 export namespace Str {
-	export type StartsWith<Prefix extends string, String extends string> = 
+	export type StartsWith<Prefix extends string, S extends string> = 
 		Prefix extends `${infer head1}${infer tail1}` ?
-			String extends `${infer head2}${infer tail2}` ?
+			S extends `${infer head2}${infer tail2}` ?
 				head1 extends head2 ?
 					StartsWith<tail1,tail2>
 				: false
 			: false
 		: true
 
-	// prettier-ignore
-	export type Length<String extends string > = Length_<0,String>
+	export type Length<S extends string > = Length_<0, S>
 
-	type Length_<Count extends number, String extends string > =
-		String extends `${infer head}${infer tail}` ? Length_<Num.Increment<Count>, tail> : Count
+	type Length_<Count extends number, S extends string > =
+		S extends `${infer _}${infer tail}` ? Length_<Num.Increment<Count>, tail> : Count
 }

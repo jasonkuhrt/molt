@@ -15,11 +15,7 @@
     "lint:check": "eslint . --ext .ts,.tsx --max-warnings 0",
     "types:check": "pnpm tsc --noEmit",
     "dev": "pnpm clean && tsc --build --watch tsconfig.cjs.json tsconfig.esm.json",
-    "build": "pnpm clean && pnpm build:cjs && pnpm build:esm",
-    "build:cjs": "ts-node scripts/build-cjs.ts",
-    "build:esm": "pnpm tsc --project tsconfig.esm.json",
     "test": "vitest",
-    "clean": "rm -rf dist node_modules/.cache",
     "prepack": "pnpm build"
   },
   "devDependencies": {
