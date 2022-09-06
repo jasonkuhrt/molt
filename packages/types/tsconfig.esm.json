@@ -1,9 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "dist/cjs",
-    "module": "commonjs",
-    "moduleResolution": "node",
+    "outDir": "build/esm",
     "rootDir": "src",
     "sourceMap": true,
     "declaration": true,

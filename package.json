@@ -6,22 +6,6 @@
   "packageManager": "pnpm@7.11.0",
   "license": "MIT",
   "type": "module",
-  "files": [
-    "src",
-    "dist"
-  ],
-  "exports": {
-    ".": {
-      "require": {
-        "types": "./dist/cjs/index.d.cts",
-        "default": "./dist/cjs/index.cjs"
-      },
-      "import": {
-        "types": "./dist/esm/index.d.ts",
-        "default": "./dist/esm/index.js"
-      }
-    }
-  },
   "scripts": {
     "ts-node": "ts-node-esm",
     "build:toc": "markdown-toc README.md -i --maxdepth 4 && prettier --write README.md",

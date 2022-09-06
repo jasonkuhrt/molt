@@ -15,6 +15,7 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
     // We handle these with ESLint:
     // "noUnusedLocals": false,
     // "noUnusedParameters": false,
@@ -22,9 +23,11 @@
     // DX
     "incremental": true,
     "tsBuildInfoFile": "node_modules/.cache/.tsbuildinfo",
-    "noErrorTruncation": true
-  },
-  "include": ["src", "tests", "scripts"],
-  // Prevent unwanted things like auto-import from built modules
-  "exclude": ["dist"]
+    "noErrorTruncation": true,
+    "baseUrl": ".",
+    "paths": {
+      "@molt/types": ["packages/types/src/index.ts"],
+      "molt": ["packages/molt/src/index.ts"]
+    }
+  }
 }

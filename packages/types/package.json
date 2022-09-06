@@ -1,0 +1,27 @@
+{
+  "name": "@molt/types",
+  "version": "0.0.1",
+  "description": "Advanced Types for parsing CLI flags and more.",
+  "scripts": {
+    "test": "vitest"
+  },
+  "files": [
+    "src",
+    "build"
+  ],
+  "exports": {
+    ".": {
+      "require": {
+        "types": "./dist/cjs/index.d.cts",
+        "default": "./dist/cjs/index.cjs"
+      },
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      }
+    }
+  },
+  "keywords": [],
+  "author": "Jason Kuhrt",
+  "license": "MIT"
+}
