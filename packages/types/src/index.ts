@@ -1,6 +1,7 @@
 export * as Helpers from './helpers'
 import { FlagNames, FlagNamesEmpty } from './helpers'
 import { Str } from './prelude'
+import { Any } from 'ts-toolbelt'
 
 // prettier-ignore
 namespace Checks {
@@ -43,14 +44,20 @@ type SomeLimitsNone = {
   usedNames: undefined
 }
 
+export type ParseFlagNameExpression<
+  E extends string,
+  limits extends SomeLimits = SomeLimitsNone,
+  names extends FlagNames = FlagNamesEmpty
+> = Any.Compute<ParseFlagNameExpressionDo<E, limits, names>>
+
 //prettier-ignore
-export type ParseFlagNameExpression<E extends string, limits extends SomeLimits = SomeLimitsNone, names extends FlagNames = FlagNamesEmpty> =
+type ParseFlagNameExpressionDo<E extends string, limits extends SomeLimits, names extends FlagNames> =
 	// Done!
 	E extends ``                                         ?  FlagNamesEmpty extends names ? Errors.Empty : names :
 
 	// Trim leading and trailing whitespace
-	E extends ` ${infer tail}`                           ? ParseFlagNameExpression<tail, limits, names> :
-	E extends `${infer initial} `                        ? ParseFlagNameExpression<initial, limits, names> :
+	E extends ` ${infer tail}`                           ? ParseFlagNameExpressionDo<tail, limits, names> :
+	E extends `${infer initial} `                        ? ParseFlagNameExpressionDo<initial, limits, names> :
 
 	// Capture a long flag & continue
 	E extends `--${infer name} ${infer tail}`            ? Checks.LongFlagTooShort<name> extends true ? Errors.LongFlagTooShort<name> :
@@ -58,8 +65,8 @@ export type ParseFlagNameExpression<E extends string, limits extends SomeLimits 
 																												 Checks.NameAlreadyTaken<limits, name> extends true ? Errors.NameAlreadyTaken<name> :
 																												 Checks.NameReserved<limits, name> extends true ? Errors.NameReserved<name> :
 																												 names['long'] extends undefined ?
-																												 	 ParseFlagNameExpression<tail, limits, Omit<names,'long'> & { long: name  }> :
-																												 	 ParseFlagNameExpression<tail, limits, AddAliasLong<names, name>> :
+																												 	 ParseFlagNameExpressionDo<tail, limits, Omit<names,'long'> & { long: name  }> :
+																												 	 ParseFlagNameExpressionDo<tail, limits, AddAliasLong<names, name>> :
 	// Capture a long name & Done!
 	E extends `--${infer name}` 							           ? Checks.LongFlagTooShort<name> extends true ? Errors.LongFlagTooShort<name> :
 																												 Checks.AliasDuplicate<names, name> extends true ? Errors.AliasDuplicate<name> :
@@ -75,8 +82,8 @@ export type ParseFlagNameExpression<E extends string, limits extends SomeLimits 
 																												Checks.NameAlreadyTaken<limits, name> extends true ? Errors.NameAlreadyTaken<name> :
 																												Checks.NameReserved<limits, name> extends true ? Errors.NameReserved<name> :
 																												names['short'] extends undefined ?
-																												 	ParseFlagNameExpression<tail, limits, AddShort<names, name>> :
-																												 	ParseFlagNameExpression<tail, limits, AddAliasShort<names, name>> :
+																												 	ParseFlagNameExpressionDo<tail, limits, AddShort<names, name>> :
+																												 	ParseFlagNameExpressionDo<tail, limits, AddAliasShort<names, name>> :
 	// Capture a short name & Done!
 	E extends `-${infer name}` 							            ? Checks.ShortFlagTooLong<name> extends true ? Errors.ShortFlagTooLong<name> :
 																												Checks.AliasDuplicate<names, name> extends true ? Errors.AliasDuplicate<name> :
@@ -92,11 +99,11 @@ export type ParseFlagNameExpression<E extends string, limits extends SomeLimits 
 																												Checks.NameReserved<limits, name> extends true ? Errors.NameReserved<name> :
 																												Str.Length<name> extends 1 ?
 																													names['short'] extends undefined ?
-																														ParseFlagNameExpression<tail, limits, AddShort<names, name>> :
-																														ParseFlagNameExpression<tail, limits, AddAliasShort<names, name>> :
+																														ParseFlagNameExpressionDo<tail, limits, AddShort<names, name>> :
+																														ParseFlagNameExpressionDo<tail, limits, AddAliasShort<names, name>> :
 																													names['long'] extends undefined ?
-																														ParseFlagNameExpression<tail, limits, AddLong<names, name>> :
-																														ParseFlagNameExpression<tail, limits, AddAliasLong<names, name>> :
+																														ParseFlagNameExpressionDo<tail, limits, AddLong<names, name>> :
+																														ParseFlagNameExpressionDo<tail, limits, AddAliasLong<names, name>> :
 
   E extends `${infer name}`                           ? Checks.AliasDuplicate<names, name> extends true ? Errors.AliasDuplicate<name> :
 																												Checks.NameAlreadyTaken<limits, name> extends true ? Errors.NameAlreadyTaken<name> :

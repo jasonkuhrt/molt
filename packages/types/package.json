@@ -23,5 +23,8 @@
   },
   "keywords": [],
   "author": "Jason Kuhrt",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "ts-toolbelt": "^9.6.0"
+  }
 }

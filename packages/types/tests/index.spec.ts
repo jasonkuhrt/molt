@@ -1,7 +1,7 @@
 import { Errors, ParseFlagNameExpression } from '../src'
 
 // prettier-ignore
-namespace tests {
+namespace _ {
 	const Superset = <T, U extends T>(): [T, U] => 0 as any
 
 	Superset<ParseFlagNameExpression<'-v -x'>, { long: undefined; short: 'v'; aliases: { short: ['x'], long: [] } }>()
