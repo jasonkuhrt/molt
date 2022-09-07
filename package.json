@@ -7,7 +7,6 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "ts-node": "ts-node-esm",
     "build:toc": "markdown-toc README.md -i --maxdepth 4 && prettier --write README.md",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
