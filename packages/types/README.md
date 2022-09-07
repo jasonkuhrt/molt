@@ -6,11 +6,13 @@
 npm add @molt/types
 ```
 
-## `FlagName`
+## API
+
+### `FlagName`
 
 The `FlagName` namespace provides a `Parse` type and some other utility types. `Parse` turns an expression of CLI flags into structured object type data _at the type level_. It also ships with a rich set of human-friendly error messages when the input is invalid.
 
-### Example Usage
+#### Example
 
 ```ts
 import { FlagName } from '@molt/types'
