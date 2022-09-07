@@ -1,0 +1,37 @@
+{
+  "name": "@molt/types",
+  "version": "0.0.1",
+  "description": "Advanced Types for parsing CLI flags and more.",
+  "scripts": {
+    "test": "vitest",
+    "clean": "tsc --build --clean",
+    "build": "pnpm clean && pnpm build:cjs && pnpm build:esm",
+    "build:cjs": "ts-node scripts/build-cjs.ts",
+    "build:esm": "pnpm tsc --project tsconfig.esm.json"
+  },
+  "files": [
+    "src",
+    "build"
+  ],
+  "exports": {
+    ".": {
+      "require": {
+        "types": "./build/cjs/index.d.cts",
+        "default": "./build/cjs/index.cjs"
+      },
+      "import": {
+        "types": "./build/esm/index.d.ts",
+        "default": "./build/esm/index.js"
+      }
+    }
+  },
+  "keywords": [],
+  "author": "Jason Kuhrt",
+  "license": "MIT",
+  "dependencies": {
+    "ts-toolbelt": "^9.6.0"
+  },
+  "devDependencies": {
+    "conditional-type-checks": "^1.0.6"
+  }
+}

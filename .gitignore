@@ -102,5 +102,4 @@ dist
 .DS_Store
 
 # This library
-dist-esm
-dist-cjs
+build

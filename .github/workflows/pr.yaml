@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/setup
-      - run: pnpm format:check:prettier
+      - run: pnpm format:check
   lint:
     needs: setup
     runs-on: ubuntu-latest
@@ -28,6 +28,3 @@ jobs:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/setup
       - run: pnpm types:check
-  test:
-    needs: setup
-    uses: ./.github/workflows/test.yaml
