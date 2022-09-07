@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { FlagName } from '@molt/types'
 import { z } from 'zod'
 
