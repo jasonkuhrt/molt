@@ -1,7 +1,8 @@
 {
-  "name": "types",
-  "version": "1.0.0",
-  "description": "Advanced Types for parsing CLI flags and more.",
+  "name": "molt",
+  "private": true,
+  "version": "0.0.0",
+  "description": "CLI framework for the TypeScript era.",
   "scripts": {
     "test": "vitest",
     "clean": "tsc --clean --build",
