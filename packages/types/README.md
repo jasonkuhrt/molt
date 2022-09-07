@@ -1,8 +1,6 @@
-# @molt/types
+# ⛑ @molt/types
 
-[![trunk](https://github.com/jasonkuhrt/molt/actions/workflows/trunk.yaml/badge.svg)](https://github.com/jasonkuhrt/molt/actions/workflows/trunk.yaml)
-
-⛑ Advanced Types for parsing CLI flags and more.
+Advanced Types for parsing CLI flags and more.
 
 ## Installation
 
