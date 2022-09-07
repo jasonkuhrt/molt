@@ -1,5 +1,5 @@
 # molt
 
-CLI framework for the TypeScript era.
+⚡ CLI framework for the TypeScript era.
 
 ⚠️ WIP
