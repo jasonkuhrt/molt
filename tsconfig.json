@@ -26,10 +26,13 @@
     "declarationMap": true,
     "incremental": true,
     "noErrorTruncation": true,
+    // Other
+    "tsBuildInfoFile": "node_modules/.cache/.tsbuildinfo",
     "baseUrl": ".",
     "paths": {
       "@molt/types": ["packages/types/src/index.ts"],
       "molt": ["packages/molt/src/index.ts"]
     }
-  }
+  },
+  "include": ["."]
 }
