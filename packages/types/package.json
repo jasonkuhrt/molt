@@ -5,8 +5,7 @@
   "scripts": {
     "test": "vitest",
     "clean": "tsc --build --clean",
-    "build": "pnpm clean && pnpm build:cjs && pnpm build:esm",
-    "build:cjs": "ts-node scripts/build-cjs.ts",
+    "build": "pnpm clean && pnpm build:esm",
     "build:esm": "pnpm tsc --project tsconfig.esm.json"
   },
   "files": [
@@ -15,10 +14,6 @@
   ],
   "exports": {
     ".": {
-      "require": {
-        "types": "./build/cjs/index.d.cts",
-        "default": "./build/cjs/index.cjs"
-      },
       "import": {
         "types": "./build/esm/index.d.ts",
         "default": "./build/esm/index.js"
