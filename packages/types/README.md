@@ -1,4 +1,4 @@
-# ⛑ @molt/types
+# @molt/types ⛑
 
 Advanced Types for parsing CLI flags and more.
 
