@@ -22,32 +22,3 @@ export type FlagNamesEmpty = {
   long: undefined
   short: undefined
 }
-
-export type ParsedFlagNames =
-  | {
-      _tag: 'Long'
-      long: string
-      short: undefined
-      aliases: {
-        short: [...string[]]
-        long: [...string[]]
-      }
-    }
-  | {
-      _tag: 'Short'
-      long: undefined
-      short: string
-      aliases: {
-        short: [...string[]]
-        long: [...string[]]
-      }
-    }
-  | {
-      _tag: 'LongShort'
-      long: string
-      short: string
-      aliases: {
-        short: [...string[]]
-        long: [...string[]]
-      }
-    }

@@ -2,71 +2,51 @@ import { FlagName } from '@molt/types'
 import { Any } from 'ts-toolbelt'
 import { z } from 'zod'
 
-// prettier-ignore
-type FlagSpecExpressionParseResultToPropertyName<result extends FlagName.Types.SomeParseResult> = 
-	FlagName.Errors.$Is<result> extends true 		? result :
-	result extends { long: string } 						? result['long'] :
-	result extends { short: string} 						? result['short'] :
-																							  never
-
-// prettier-ignore
-type ParametersToArguments<ParametersSchema extends z.ZodRawShape> = Any.Compute<{
-  [FlagSpecExpression in keyof ParametersSchema as FlagSpecExpressionParseResultToPropertyName<FlagName.Parse<FlagSpecExpression & string>>]:
-    z.infer<ParametersSchema[FlagSpecExpression]>
-}>
-
-type Definition<ParametersSchema extends z.ZodRawShape> = {
-  parse: (processArguments?: string[]) => ParametersToArguments<ParametersSchema>
-  schema: ParametersSchema
+const casesHandled = (value: never) => {
+  throw new Error(`Unhandled case: ${value}`)
 }
 
-export const create = <Schema extends z.ZodRawShape>(schema: Schema): Definition<Schema> => {
-  return {
-    parse: (processArguments) => {
-      // eslint-disable-next-line
-      return parseProcessArguments(schema, processArguments ?? process.argv.slice(2)) as any
-    },
-    schema,
-  }
-}
-
-const parseProcessArguments = (schema: z.ZodRawShape, processArguments: string[]): object => {
-  const args: Record<string, unknown> = {}
-  const flagSpecs = parseFlagSpecExpressions(schema)
-  let propertyName: string | null = null
-
-  for (const chunk of processArguments) {
-    if (propertyName) {
-      args[propertyName] = chunk
-      propertyName = null
-      continue
+export type FlagSpec =
+  | {
+      _tag: 'Long'
+      canonical: string
+      schema: z.ZodType
+      long: string
+      short: undefined
+      aliases: {
+        short: [...string[]]
+        long: [...string[]]
+      }
     }
-
-    const chunkNormalized = stripeDashPrefix(chunk)
-
-    const flagNameSpec = flagSpecs.find((spec) => {
-      return (
-        spec.long === chunkNormalized ||
-        spec.short === chunkNormalized ||
-        spec.aliases.long.includes(chunkNormalized) ||
-        spec.aliases.short.includes(chunkNormalized)
-      )
-    })
-
-    if (!flagNameSpec) throw new Error(`Could not find flag spec for flag name: ${chunk}`)
-    propertyName = flagNameSpec._tag === `Short` ? flagNameSpec.short : flagNameSpec.long
-    continue
-  }
-
-  return args
-}
+  | {
+      _tag: 'Short'
+      schema: z.ZodType
+      canonical: string
+      long: undefined
+      short: string
+      aliases: {
+        short: [...string[]]
+        long: [...string[]]
+      }
+    }
+  | {
+      _tag: 'LongShort'
+      schema: z.ZodType
+      canonical: string
+      long: string
+      short: string
+      aliases: {
+        short: [...string[]]
+        long: [...string[]]
+      }
+    }
 
 const stripeDashPrefix = (flagNameInput: string): string => {
   return flagNameInput.replace(/^-+/, ``)
 }
 
-const parseFlagSpecExpressions = (schema: z.ZodRawShape): FlagName.Types.ParsedFlagNames[] =>
-  Object.keys(schema).map((expression) => {
+const parseFlagSpecs = (schema: z.ZodRawShape): FlagSpec[] =>
+  Object.entries(schema).map(([expression, schema]) => {
     const names = expression
       .trim()
       .split(` `)
@@ -74,9 +54,10 @@ const parseFlagSpecExpressions = (schema: z.ZodRawShape): FlagName.Types.ParsedF
       .map(stripeDashPrefix)
 
     // eslint-disable-next-line
-    const spec: FlagName.Types.ParsedFlagNames = {
+    const spec: FlagSpec = {
       long: undefined,
       short: undefined,
+      schema,
       aliases: {
         long: [],
         short: [],
@@ -94,10 +75,197 @@ const parseFlagSpecExpressions = (schema: z.ZodRawShape): FlagName.Types.ParsedF
       else throw new Error(`Invalid flag name: ${name}`)
     }
 
-    if (spec.short && spec.long) spec._tag = `LongShort`
-    else if (spec.short) spec._tag = `Short`
-    else if (spec.long) spec._tag = `Long`
-    else throw new Error(`Invalid flag name: ${names.join(` `)}`)
+    if (spec.short && spec.long) {
+      spec._tag = `LongShort`
+      spec.canonical = spec.long
+    } else if (spec.short) {
+      spec._tag = `Short`
+      spec.canonical = spec.short
+    } else if (spec.long) {
+      spec._tag = `Long`
+      spec.canonical = spec.long
+    } else throw new Error(`Invalid flag name: ${names.join(` `)}`)
 
     return spec
   })
+
+// prettier-ignore
+type FlagSpecExpressionParseResultToPropertyName<result extends FlagName.Types.SomeParseResult> = 
+	FlagName.Errors.$Is<result> extends true 		? result :
+	result extends { long: string } 						? result['long'] :
+	result extends { short: string} 						? result['short'] :
+																							  never
+
+// prettier-ignore
+type ParametersToArguments<ParametersSchema extends z.ZodRawShape> = Any.Compute<{
+  [FlagSpecExpression in keyof ParametersSchema as FlagSpecExpressionParseResultToPropertyName<FlagName.Parse<FlagSpecExpression & string>>]:
+    z.infer<ParametersSchema[FlagSpecExpression]>
+}>
+
+type Definition<ParametersSchema extends z.ZodRawShape> = {
+  parseOrThrow: (processArguments?: string[]) => ParametersToArguments<ParametersSchema>
+  schema: ParametersSchema
+}
+
+export const create = <Schema extends z.ZodRawShape>(schema: Schema): Definition<Schema> => {
+  return {
+    parseOrThrow: (processArguments) => {
+      // eslint-disable-next-line
+      return parseProcessArguments(schema, processArguments ?? process.argv.slice(2)) as any
+    },
+    schema,
+  }
+}
+
+type ArgumentsInput = string[]
+
+type ArgumentsInputStructuredArgFlag = {
+  _tag: 'Arguments'
+  arguments: string[]
+}
+
+type ArgumentsInputStructuredBooleanFlag = {
+  _tag: 'Boolean'
+  negated: boolean
+}
+
+type ArgumentsInputStructured = Record<
+  string,
+  ArgumentsInputStructuredArgFlag | ArgumentsInputStructuredBooleanFlag
+>
+
+const structureProcessArguments = (argumentsInput: ArgumentsInput): ArgumentsInputStructured => {
+  const structured: ArgumentsInputStructured = {}
+  let index = 0
+  let currentFlag: null | ArgumentsInputStructuredArgFlag | ArgumentsInputStructuredBooleanFlag = null
+
+  for (const argument of argumentsInput) {
+    const trimmed = argument.trim()
+
+    if (isFlagInput(trimmed)) {
+      const noDashPrefix = stripeDashPrefix(trimmed)
+      if (
+        !argumentsInput[index + 1] ||
+        (argumentsInput[index + 1] && isFlagInput(argumentsInput[index + 1]!))
+      ) {
+        currentFlag = {
+          _tag: `Boolean`,
+          negated: noDashPrefix.startsWith(`no-`),
+        }
+        const noNegatePrefix = noDashPrefix.replace(`no-`, ``)
+        structured[noNegatePrefix] = currentFlag
+      } else {
+        currentFlag = {
+          _tag: `Arguments`,
+          arguments: [],
+        }
+        structured[noDashPrefix] = currentFlag
+      }
+    } else if (currentFlag && currentFlag._tag === `Arguments`) {
+      currentFlag.arguments.push(trimmed)
+    }
+
+    index++
+  }
+
+  return structured
+}
+
+const findStructuredArgument = (
+  structuredArguments: ArgumentsInputStructured,
+  flagSpec: FlagSpec
+): null | {
+  via: 'short' | 'long'
+  givenName: string
+  arg: ArgumentsInputStructuredArgFlag | ArgumentsInputStructuredBooleanFlag
+} => {
+  // TODO handle aliases
+  switch (flagSpec._tag) {
+    case `Long`:
+      if (structuredArguments[flagSpec.long])
+        return {
+          via: `long`,
+          givenName: flagSpec.long,
+          arg: structuredArguments[flagSpec.long]!,
+        }
+      return null
+    case `Short`:
+      if (structuredArguments[flagSpec.short])
+        return {
+          via: `short`,
+          givenName: flagSpec.short,
+          arg: structuredArguments[flagSpec.short]!,
+        }
+      return null
+    case `LongShort`:
+      if (structuredArguments[flagSpec.long])
+        return {
+          via: `long`,
+          givenName: flagSpec.long,
+          arg: structuredArguments[flagSpec.short]!,
+        }
+      if (structuredArguments[flagSpec.short])
+        return {
+          via: `short`,
+          givenName: flagSpec.short,
+          arg: structuredArguments[flagSpec.short]!,
+        }
+      return null
+    default:
+      casesHandled(flagSpec)
+  }
+  return null
+}
+
+const parseProcessArguments = (schema: z.ZodRawShape, processArguments: ArgumentsInput): object => {
+  const args: Record<string, unknown> = {}
+  const flagSpecs = parseFlagSpecs(schema)
+  const propertyName: string | null = null
+  const structuredArguments = structureProcessArguments(processArguments)
+  // console.log(structuredArguments)
+
+  for (const flagSpec of flagSpecs) {
+    // console.log(flagSpec.schema._def)
+
+    const input = findStructuredArgument(structuredArguments, flagSpec)
+    // console.log(input)
+
+    if (!input) {
+      // @ts-expect-error todo
+      if (typeof flagSpec.schema._def.defaultValue === `function`) {
+        // @ts-expect-error todo
+        args[flagSpec.canonical] = flagSpec.schema._def.defaultValue()
+      }
+      continue
+    }
+
+    switch (input.arg._tag) {
+      case `Boolean`:
+        // @ts-expect-error todo
+        if (flagSpec.schema._def.typeName !== `ZodBoolean`) {
+          throw new Error(`Missing argument for flag "${input.givenName}".`)
+        }
+        args[flagSpec.canonical] = input.arg.negated ? false : true
+        continue
+      case `Arguments`:
+        if (input.arg.arguments.length === 0) {
+          throw new Error(`Missing argument for flag "${input.givenName}".`)
+        }
+        try {
+          args[flagSpec.canonical] = flagSpec.schema.parse(input.arg.arguments[0])
+        } catch (error: any) {
+          throw new Error(`Invalid argument for flag: "${input.givenName}". The error was:\n${error.message}`)
+        }
+    }
+  }
+
+  if (propertyName) {
+    throw new Error(`Missing argument for flag: "${propertyName}"`)
+  }
+
+  return args
+}
+
+const isFlagInput = (input: string) => {
+  return input.trim().startsWith(`--`) || input.trim().startsWith(`-`)
+}
