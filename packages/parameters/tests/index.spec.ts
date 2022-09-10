@@ -95,9 +95,8 @@ describe(`#`, () => {
           ).toThrowErrorMatchingInlineSnapshot(`"Missing argument for flag \\"age\\"."`)
         })
         it(`is validated`, () => {
-          expect(() =>
-            Parameters.create({ '--age': z.number().int() }).parseOrThrow([`--age`, `1.1`])
-          ).toThrowErrorMatchingInlineSnapshot(`
+          expect(() => Parameters.create({ '--age': z.number().int() }).parseOrThrow([`--age`, `1.1`]))
+            .toThrowErrorMatchingInlineSnapshot(`
             "Invalid argument for flag: \\"age\\". The error was:
             [
               {
