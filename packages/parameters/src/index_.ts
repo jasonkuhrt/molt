@@ -168,6 +168,7 @@ const structureProcessArguments = (argumentsInput: ArgumentsInput): ArgumentsInp
     index++
   }
 
+  // console.log({ structured })
   return structured
 }
 
@@ -252,7 +253,12 @@ const parseProcessArguments = (schema: z.ZodRawShape, processArguments: Argument
           throw new Error(`Missing argument for flag "${input.givenName}".`)
         }
         try {
-          args[flagSpec.canonical] = flagSpec.schema.parse(input.arg.arguments[0])
+          const argument =
+            // @ts-expect-error todo
+            flagSpec.schema._def.typeName === `ZodNumber`
+              ? Number(input.arg.arguments[0])
+              : input.arg.arguments[0]
+          args[flagSpec.canonical] = flagSpec.schema.parse(argument)
         } catch (error: any) {
           throw new Error(`Invalid argument for flag: "${input.givenName}". The error was:\n${error.message}`)
         }

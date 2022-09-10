@@ -74,6 +74,43 @@ describe(`#`, () => {
           `)
         })
       })
+      describe(`number`, () => {
+        it(`input is cast as a number`, () => {
+          const args = Parameters.create({ '--age': z.number() }).parseOrThrow([`--age`, `1`])
+          assert<IsExact<{ age: number }, typeof args>>(true)
+          expect(args).toEqual({ age: 1 })
+        })
+        it(`throws error when argument missing (last position)`, () => {
+          expect(() =>
+            Parameters.create({ '--age': z.number() }).parseOrThrow([`--age`])
+          ).toThrowErrorMatchingInlineSnapshot(`"Missing argument for flag \\"age\\"."`)
+        })
+        it(`throws error when argument missing (non-last position)`, () => {
+          expect(() =>
+            Parameters.create({ '--name': z.string(), '--age': z.number() }).parseOrThrow([
+              ` --age`,
+              `--name`,
+              `joe`,
+            ])
+          ).toThrowErrorMatchingInlineSnapshot(`"Missing argument for flag \\"age\\"."`)
+        })
+        it(`is validated`, () => {
+          expect(() =>
+            Parameters.create({ '--age': z.number().int() }).parseOrThrow([`--age`, `1.1`])
+          ).toThrowErrorMatchingInlineSnapshot(`
+            "Invalid argument for flag: \\"age\\". The error was:
+            [
+              {
+                \\"code\\": \\"invalid_type\\",
+                \\"expected\\": \\"integer\\",
+                \\"received\\": \\"float\\",
+                \\"message\\": \\"Expected integer, received float\\",
+                \\"path\\": []
+              }
+            ]"
+          `)
+        })
+      })
       describe(`boolean`, () => {
         it(`when given, implies true`, () => {
           const args = Parameters.create({ '--verbose': z.boolean() }).parseOrThrow([`--verbose`])
