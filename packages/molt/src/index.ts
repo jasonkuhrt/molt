@@ -57,7 +57,8 @@ const input = Molt.parse({
   // @ts-expect-error
   '--a': z.string().min(1),
   '-b ': z.number().min(1),
-  '-d': z.boolean(),
+  '-d -x': z.boolean().describe('x'),
+  '-x': z.boolean(),
 })
 
 // @ts-expect-error

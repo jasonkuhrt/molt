@@ -7,5 +7,9 @@
   // Prevent auto-import from build
   "exclude": ["./build"],
   "include": ["./src", "./tests"],
-  "references": []
+  "references": [
+    {
+      "path": "../types"
+    }
+  ]
 }

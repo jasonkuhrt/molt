@@ -4,10 +4,10 @@ import { IsExact } from 'conditional-type-checks'
 // prettier-ignore
 type _TestMixed =
 	| IsExact<FlagName.Parse<'-v -x'>, 					{ long: undefined; short: 'v';  aliases: { short: ['x'], long: [] } }>
-	| IsExact<FlagName.Parse<'-v -x -y'>, 				{ long: undefined; short: 'v';  aliases: { short: ['x','y'], long: [] } }>
+	| IsExact<FlagName.Parse<'-v -x -y'>, 			{ long: undefined; short: 'v';  aliases: { short: ['x','y'], long: [] } }>
 	| IsExact<FlagName.Parse<'--vv --xx'>, 			{ long: 'vv'; short: undefined; aliases: { short: [], long:  ['xx'] } }>
-	| IsExact<FlagName.Parse<'--vv --xx --yy'>, 	{ long: 'vv'; short: undefined; aliases: { short: [], long:  ['xx','yy'] } }>
-	| IsExact<FlagName.Parse<'-v --vv -x --xx'>, { long: 'vv'; short: 'v'; 			aliases: { short: ['x'], long:  ['xx'] } }>
+	| IsExact<FlagName.Parse<'--vv --xx --yy'>, { long: 'vv'; short: undefined; aliases: { short: [], long:  ['xx','yy'] } }>
+	| IsExact<FlagName.Parse<'-v --vv -x --xx'>,{ long: 'vv'; short: 'v'; 			aliases: { short: ['x'], long:  ['xx'] } }>
 	| IsExact<FlagName.Parse<'v vv x xx'>, 			{ long: 'vv'; short: 'v'; 			aliases: { short: ['x'], long:  ['xx'] } }>
 	| IsExact<FlagName.Parse<'v --vv x xx'>, 		{ long: 'vv'; short: 'v'; 			aliases: { short: ['x'], long:  ['xx'] } }>
 
