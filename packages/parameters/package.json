@@ -2,6 +2,7 @@
   "name": "@molt/parameters",
   "version": "0.0.0",
   "description": "Simple type-safe CLI flag parsing.",
+  "type": "module",
   "scripts": {
     "types:check": "tsc --noEmit",
     "test": "vitest",
