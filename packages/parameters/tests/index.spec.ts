@@ -1,4 +1,4 @@
-import { Parameters } from '../src'
+import { Parameters } from '../src/index.js'
 import { assert, IsExact } from 'conditional-type-checks'
 import { describe, expect, it } from 'vitest'
 import { z } from 'zod'
