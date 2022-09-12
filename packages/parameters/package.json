@@ -32,9 +32,9 @@
     "zod": "^3.18.0"
   },
   "devDependencies": {
-    "conditional-type-checks": "^1.0.6",
-    "execa": "^6.1.0",
-    "fast-glob": "^3.2.12",
-    "fs-jetpack": "^4.3.1"
+    "conditional-type-checks": "1.0.6",
+    "execa": "6.1.0",
+    "fast-glob": "3.2.12",
+    "fs-jetpack": "4.3.1"
   }
 }
