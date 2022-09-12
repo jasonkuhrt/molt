@@ -1,6 +1,6 @@
 # @molt/parameters
 
-⛑ Simple type-safe CLI flag parsing.
+🎛 Simple type-safe CLI flag parsing.
 
 ## Installation
 
