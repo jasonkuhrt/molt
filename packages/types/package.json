@@ -5,6 +5,7 @@
   "scripts": {
     "test": "vitest",
     "clean": "tsc --build --clean",
+    "types:check": "tsc --noEmit",
     "build": "pnpm clean && pnpm build:esm",
     "build:esm": "pnpm tsc --project tsconfig.esm.json"
   },
@@ -27,6 +28,7 @@
     "ts-toolbelt": "^9.6.0"
   },
   "devDependencies": {
-    "conditional-type-checks": "^1.0.6"
+    "conditional-type-checks": "^1.0.6",
+    "tsd": "^0.23.0"
   }
 }
