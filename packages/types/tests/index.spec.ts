@@ -1,4 +1,4 @@
-import { FlagName } from '../src'
+import { FlagName } from '../src/index.js'
 import { expectType } from 'tsd'
 
 // eslint-disable-next-line

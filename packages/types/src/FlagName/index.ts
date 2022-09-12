@@ -1,2 +1,2 @@
-export * as Types from './data'
-export { Checks, Errors, Parse } from './parser'
+export * as Types from './data.js'
+export { Checks, Errors, Parse } from './parser.js'

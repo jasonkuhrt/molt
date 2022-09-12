@@ -1,5 +1,5 @@
-import { Str } from '../prelude'
-import { FlagNames, FlagNamesEmpty } from './data'
+import { Str } from '../prelude.js'
+import { FlagNames, FlagNamesEmpty } from './data.js'
 import { String } from 'ts-toolbelt'
 
 // prettier-ignore

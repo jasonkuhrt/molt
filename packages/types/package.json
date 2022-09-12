@@ -1,6 +1,6 @@
 {
   "name": "@molt/types",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Advanced Types for parsing CLI flags and more.",
   "scripts": {
     "clean": "tsc --build --clean",
@@ -9,6 +9,7 @@
     "build:esm": "pnpm tsc --project tsconfig.esm.json",
     "prepublishOnly": "pnpm build"
   },
+  "type": "module",
   "files": [
     "src",
     "build"
