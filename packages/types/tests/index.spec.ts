@@ -4,8 +4,6 @@ import { expectType } from 'tsd'
 // eslint-disable-next-line
 const as = <T>(): T => 0 as any
 
-expectType<{ long: 'filePath' }>(as<FlagName.Parse<'--file-path'>>())
-
 // prettier-ignore
 namespace _testErrors {
 	expectType<FlagName.Errors.Empty>(as<											FlagName.Parse<''>>())
@@ -19,6 +17,11 @@ namespace _testErrors {
 	expectType<FlagName.Errors.ShortFlagTooLong<'vv'>>(as<		FlagName.Parse<'-vv'>>())
 	expectType<FlagName.Errors.AliasDuplicate<'vv'>>(as<			FlagName.Parse<'--vv --vv'>>())
 	expectType<FlagName.Errors.AliasDuplicate<'v'>>(as<				FlagName.Parse<'-v -v'>>())
+}
+
+//prettier-ignore
+namespace _case {
+	expectType<{ long: 'filePath'; short: undefined; aliases: { short: []; long: [] } }>(as<FlagName.Parse<'--file-path'>>())
 }
 
 //prettier-ignore

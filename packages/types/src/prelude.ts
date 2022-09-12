@@ -45,7 +45,3 @@ export type KebabToCamelCase<S extends string> = S extends `${infer P1}-${infer 
     ? `${Lowercase<P1>}${Uppercase<P2>}${SnakeToCamelCase<P3>}`
     : Lowercase<S>
 }
-
-// type KeysToCamelCase<T> = {
-//   [K in keyof T as CamelCase<string & K>]: T[K] extends {} ? KeysToCamelCase<T[K]> : T[K]
-// }
