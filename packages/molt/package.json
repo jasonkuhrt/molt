@@ -5,7 +5,6 @@
   "description": "CLI framework for the TypeScript era.",
   "type": "module",
   "scripts": {
-    "test": "vitest",
     "clean": "tsc --build --clean",
     "build": "pnpm clean && pnpm build:cjs && pnpm build:esm",
     "build:cjs": "ts-node scripts/build-cjs.ts",
