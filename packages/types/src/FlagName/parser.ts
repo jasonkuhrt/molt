@@ -1,11 +1,11 @@
 import { Str } from '../prelude'
 import { FlagNames, FlagNamesEmpty } from './data'
-import { Any } from 'ts-toolbelt'
+import { String } from 'ts-toolbelt'
 
 // prettier-ignore
 export namespace Checks {
-	export type LongFlagTooShort<Name extends string> = Str.Length<Name> extends 1 ? true : false
-	export type ShortFlagTooLong<Name extends string> = Str.Length<Name> extends 1 ? false : true
+	export type LongFlagTooShort<Name extends string> = String.Length<Name> extends 1 ? true : false
+	export type ShortFlagTooLong<Name extends string> = String.Length<Name> extends 1 ? false : true
 	export type AliasDuplicate<Names extends FlagNames, Name extends string> =  Name extends Names['long'] | Names['short'] ? true : false
 	export type NameAlreadyTaken<Limits extends SomeLimits, Name extends string> = Name extends Limits['usedNames'] ? true : false
 	export type NameReserved<Limits extends SomeLimits, Name extends string> = Name extends Limits['reservedNames'] ? true : false
@@ -25,11 +25,11 @@ export namespace Errors {
 }
 
 // prettier-ignore
-type AddAliasLong<Names extends FlagNames, Name extends string> = Omit<Names, 'aliases'> & { aliases: { long: [...Names['aliases']['long'], Name], short: Names['aliases']['short'] }}
+type AddAliasLong<Names extends FlagNames, Name extends string> = Omit<Names, 'aliases'> & { aliases: { long: [...Names['aliases']['long'], Str.KebabToCamelCase<Name>], short: Names['aliases']['short'] }}
 // prettier-ignore
 type AddAliasShort<Names extends FlagNames, Name extends string> = Omit<Names, 'aliases'> & { aliases: { long: Names['aliases']['long'], short: [...Names['aliases']['short'], Name] }}
 // prettier-ignore
-type AddLong<Names extends FlagNames, Name extends string> = Omit<Names,'long'> & { long: Name  }
+type AddLong<Names extends FlagNames, Name extends string> = Omit<Names,'long'> & { long: Str.KebabToCamelCase<Name>  }
 // prettier-ignore
 type AddShort<Names extends FlagNames, Name extends string> = Omit<Names,'short'> & { short: Name  }
 
@@ -47,7 +47,7 @@ export type Parse<
   E extends string,
   limits extends SomeLimits = SomeLimitsNone,
   names extends FlagNames = FlagNamesEmpty
-> = Any.Compute<ParseFlagNameDo<E, limits, names>>
+> = ParseFlagNameDo<E, limits, names>
 
 //prettier-ignore
 type ParseFlagNameDo<E extends string, limits extends SomeLimits, names extends FlagNames> =
@@ -96,7 +96,7 @@ type ParseFlagNameDo<E extends string, limits extends SomeLimits, names extends 
 	E extends `${infer name} ${infer tail}`             ? Checks.AliasDuplicate<names, name> extends true ? Errors.AliasDuplicate<name> :
 																												Checks.NameAlreadyTaken<limits, name> extends true ? Errors.NameAlreadyTaken<name> :
 																												Checks.NameReserved<limits, name> extends true ? Errors.NameReserved<name> :
-																												Str.Length<name> extends 1 ?
+																												String.Length<name> extends 1 ?
 																													names['short'] extends undefined ?
 																														ParseFlagNameDo<tail, limits, AddShort<names, name>> :
 																														ParseFlagNameDo<tail, limits, AddAliasShort<names, name>> :
@@ -107,7 +107,7 @@ type ParseFlagNameDo<E extends string, limits extends SomeLimits, names extends 
   E extends `${infer name}`                           ? Checks.AliasDuplicate<names, name> extends true ? Errors.AliasDuplicate<name> :
 																												Checks.NameAlreadyTaken<limits, name> extends true ? Errors.NameAlreadyTaken<name> :
 																												Checks.NameReserved<limits, name> extends true ? Errors.NameReserved<name> :
-																												Str.Length<name> extends 1 ?
+																												String.Length<name> extends 1 ?
 																													names['short'] extends undefined ?
 																														AddShort<names, name> :
 																														AddAliasShort<names, name> :

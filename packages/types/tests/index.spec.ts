@@ -1,63 +1,66 @@
 import { FlagName } from '../src'
-import { IsExact } from 'conditional-type-checks'
+import { expectType } from 'tsd'
+
+// eslint-disable-next-line
+const as = <T>(): T => 0 as any
+
+// TestMixed
+//prettier-ignore
+namespace _ {
+	expectType<{ long: undefined; short: 'v'; aliases: { short: []; long: [] } }>(as<							FlagName.Parse<'-v'>>())
+	expectType<{ long: undefined; short: 'v'; aliases: { short: ['x']; long: [] } }>(as<					FlagName.Parse<'-v -x'>>())
+	expectType<{ long: undefined; short: 'v'; aliases: { short: ['x', 'y']; long: [] } }>(as<			FlagName.Parse<'-v -x -y'>>())
+	expectType<{ long: 'vv'; short: undefined; aliases: { short: []; long: ['xx'] } }>(as<				FlagName.Parse<'--vv --xx'>>())
+	expectType<{ long: 'vv'; short: undefined; aliases: { short: []; long: ['xx', 'yy'] } }>(as<	FlagName.Parse<'--vv --xx --yy'>>())
+	expectType<{ long: 'vv'; short: 'v'; aliases: { short: ['x']; long: ['xx'] } }>(as<						FlagName.Parse<'-v --vv -x --xx'>>())
+	expectType<{ long: 'vv'; short: 'v'; aliases: { short: ['x']; long: ['xx'] } }>(as<						FlagName.Parse<'v vv x xx'>>())
+	expectType<{ long: 'vv'; short: 'v'; aliases: { short: ['x']; long: ['xx'] } }>(as<						FlagName.Parse<'v --vv x xx'>>())
+}
 
 // prettier-ignore
-type _TestMixed =
-	| IsExact<FlagName.Parse<'-v -x'>, 					{ long: undefined; short: 'v';  aliases: { short: ['x'], long: [] } }>
-	| IsExact<FlagName.Parse<'-v -x -y'>, 				{ long: undefined; short: 'v';  aliases: { short: ['x','y'], long: [] } }>
-	| IsExact<FlagName.Parse<'--vv --xx'>, 			{ long: 'vv'; short: undefined; aliases: { short: [], long:  ['xx'] } }>
-	| IsExact<FlagName.Parse<'--vv --xx --yy'>, 	{ long: 'vv'; short: undefined; aliases: { short: [], long:  ['xx','yy'] } }>
-	| IsExact<FlagName.Parse<'-v --vv -x --xx'>, { long: 'vv'; short: 'v'; 			aliases: { short: ['x'], long:  ['xx'] } }>
-	| IsExact<FlagName.Parse<'v vv x xx'>, 			{ long: 'vv'; short: 'v'; 			aliases: { short: ['x'], long:  ['xx'] } }>
-	| IsExact<FlagName.Parse<'v --vv x xx'>, 		{ long: 'vv'; short: 'v'; 			aliases: { short: ['x'], long:  ['xx'] } }>
+namespace _TestErrors {
+	expectType<FlagName.Errors.Empty>(as<											FlagName.Parse<''>>())
+	expectType<FlagName.Errors.Empty>(as<											FlagName.Parse<' '>>())
+	expectType<FlagName.Errors.NameReserved<'abc'>>(as<				FlagName.Parse<'--abc', { reservedNames: 'abc'; usedNames: undefined }>>())
+	expectType<FlagName.Errors.NameAlreadyTaken<'abc'>>(as<		FlagName.Parse<'--abc', { usedNames: 'abc'; reservedNames: undefined }>>())
+	expectType<FlagName.Errors.NameReserved<'a'>>(as<					FlagName.Parse<'-a', { reservedNames: 'a'; usedNames: undefined }>>())
+	expectType<FlagName.Errors.NameAlreadyTaken<'a'>>(as<			FlagName.Parse<'-a', { usedNames: 'a'; reservedNames: undefined }>>())
+	expectType<FlagName.Errors.LongFlagTooShort<'v'>>(as<			FlagName.Parse<'--v'>>())
+	expectType<FlagName.Errors.LongFlagTooShort<'v'>>(as<			FlagName.Parse<'--ver --v'>>())
+	expectType<FlagName.Errors.ShortFlagTooLong<'vv'>>(as<		FlagName.Parse<'-vv'>>())
+	expectType<FlagName.Errors.AliasDuplicate<'vv'>>(as<			FlagName.Parse<'--vv --vv'>>())
+	expectType<FlagName.Errors.AliasDuplicate<'v'>>(as<				FlagName.Parse<'-v -v'>>())
+}
 
-// prettier-ignore
-type _TestErrors =
-	| IsExact<FlagName.Parse<''>, FlagName.Errors.Empty>
-	| IsExact<FlagName.Parse<' '>, FlagName.Errors.Empty>
-	| IsExact<FlagName.Parse<'--abc', { reservedNames: 'abc'; usedNames: undefined }>, FlagName.Errors.NameReserved<'abc'>>
-	| IsExact<FlagName.Parse<'--abc', { usedNames: 'abc'; reservedNames: undefined }>, FlagName.Errors.NameAlreadyTaken<'abc'>>
-	| IsExact<FlagName.Parse<'-a', { reservedNames: 'a'; usedNames: undefined }>, FlagName.Errors.NameReserved<'a'>>
-	| IsExact<FlagName.Parse<'-a', { usedNames: 'a'; reservedNames: undefined }>, FlagName.Errors.NameAlreadyTaken<'a'>>
-	| IsExact<FlagName.Parse<'--v'>, FlagName.Errors.LongFlagTooShort<'v'>>
-	| IsExact<FlagName.Parse<'--ver --v'>, FlagName.Errors.LongFlagTooShort<'v'>>
-	| IsExact<FlagName.Parse<'-vv'>, FlagName.Errors.ShortFlagTooLong<'vv'>>
-	| IsExact<FlagName.Parse<'--vv --vv'>, FlagName.Errors.AliasDuplicate<'vv'>>
-	| IsExact<FlagName.Parse<'-v -v'>, FlagName.Errors.AliasDuplicate<'v'>>
-
-type SomeLong = {
+interface SomeLong {
   long: 'version'
   short: undefined
   aliases: { short: []; long: [] }
 }
 
-// prettier-ignore
-type _TestLongs =
-	| IsExact<FlagName.Parse<'--version'>, SomeLong>
-	| IsExact<FlagName.Parse<' --version'>, SomeLong>
-	| IsExact<FlagName.Parse<' --version '>, SomeLong>
-	| IsExact<FlagName.Parse<'  --version '>, SomeLong>
-	| IsExact<FlagName.Parse<'  --version  '>, SomeLong>
-	| IsExact<FlagName.Parse<' --version  '>, SomeLong>
-	| IsExact<FlagName.Parse<'--version  '>, SomeLong>
-	| IsExact<FlagName.Parse<'version  '>, SomeLong>
+expectType<SomeLong>(as<FlagName.Parse<'--version'>>())
+expectType<SomeLong>(as<FlagName.Parse<' --version'>>())
+expectType<SomeLong>(as<FlagName.Parse<'  --version '>>())
+expectType<SomeLong>(as<FlagName.Parse<'  --version  '>>())
+expectType<SomeLong>(as<FlagName.Parse<' --version  '>>())
+expectType<SomeLong>(as<FlagName.Parse<'version  '>>())
 
-type SomeShort = {
+interface SomeShort {
   long: undefined
   short: 'v'
   aliases: { short: []; long: [] }
 }
 
-// prettier-ignore
-type _TestShorts =
-	| IsExact<FlagName.Parse<'-v'>, SomeShort>
-	| IsExact<FlagName.Parse<' -v'>, SomeShort>
-	| IsExact<FlagName.Parse<' -v '>, SomeShort>
-	| IsExact<FlagName.Parse<'  -v '>, SomeShort>
-	| IsExact<FlagName.Parse<'  -v  '>, SomeShort>
-	| IsExact<FlagName.Parse<' -v  '>, SomeShort>
-	| IsExact<FlagName.Parse<'-v  '>, SomeShort>
-	| IsExact<FlagName.Parse<'v  '>, SomeShort>
+expectType<SomeShort>(as<FlagName.Parse<'-v'>>())
+expectType<SomeShort>(as<FlagName.Parse<' -v'>>())
+expectType<SomeShort>(as<FlagName.Parse<' -v '>>())
+expectType<SomeShort>(as<FlagName.Parse<' -v  '>>())
+expectType<SomeShort>(as<FlagName.Parse<'  -v '>>())
+expectType<SomeShort>(as<FlagName.Parse<'  -v  '>>())
+expectType<SomeShort>(as<FlagName.Parse<'-v  '>>())
+expectType<SomeShort>(as<FlagName.Parse<'-v '>>())
+expectType<SomeShort>(as<FlagName.Parse<'v '>>())
+expectType<SomeShort>(as<FlagName.Parse<'v'>>())
 
 type SomeLongShort = {
   long: 'version'
@@ -65,24 +68,19 @@ type SomeLongShort = {
   aliases: { short: []; long: [] }
 }
 
-// prettier-ignore
-type _TestLongShorts =
-	| IsExact<FlagName.Parse<'--version -v'>, SomeLongShort>
-	| IsExact<FlagName.Parse<' --version -v'>, SomeLongShort>
-	| IsExact<FlagName.Parse<'--version -v'>, SomeLongShort>
-	| IsExact<FlagName.Parse<'  --version -v'>, SomeLongShort>
-	| IsExact<FlagName.Parse<'--version  -v'>, SomeLongShort>
-	| IsExact<FlagName.Parse<'  --version -v'>, SomeLongShort>
-	| IsExact<FlagName.Parse<'  --version -v '>, SomeLongShort>
-	| IsExact<FlagName.Parse<'  --version -v  '>, SomeLongShort>
-	| IsExact<FlagName.Parse<'  --version  -v  '>, SomeLongShort>
-	| IsExact<FlagName.Parse<'-v --version'>, SomeLongShort>
-	| IsExact<FlagName.Parse<' -v --version'>, SomeLongShort>
-	| IsExact<FlagName.Parse<'-v --version'>, SomeLongShort>
-	| IsExact<FlagName.Parse<'  -v --version'>, SomeLongShort>
-	| IsExact<FlagName.Parse<'-v  --version'>, SomeLongShort>
-	| IsExact<FlagName.Parse<'  -v --version'>, SomeLongShort>
-	| IsExact<FlagName.Parse<'  -v --version '>, SomeLongShort>
-	| IsExact<FlagName.Parse<'  -v --version  '>, SomeLongShort>
-	| IsExact<FlagName.Parse<'  -v  --version  '>, SomeLongShort>
-	| IsExact<FlagName.Parse<'  v  version  '>, SomeLongShort>
+expectType<SomeLongShort>(as<FlagName.Parse<'--version -v'>>())
+expectType<SomeLongShort>(as<FlagName.Parse<' --version -v'>>())
+expectType<SomeLongShort>(as<FlagName.Parse<' --version -v '>>())
+expectType<SomeLongShort>(as<FlagName.Parse<'  --version -v  '>>())
+expectType<SomeLongShort>(as<FlagName.Parse<'  --version -v '>>())
+expectType<SomeLongShort>(as<FlagName.Parse<'-v --version'>>())
+expectType<SomeLongShort>(as<FlagName.Parse<' -v --version'>>())
+expectType<SomeLongShort>(as<FlagName.Parse<'  -v --version'>>())
+expectType<SomeLongShort>(as<FlagName.Parse<'  -v --version '>>())
+expectType<SomeLongShort>(as<FlagName.Parse<'  -v --version  '>>())
+expectType<SomeLongShort>(as<FlagName.Parse<'  -v  --version  '>>())
+expectType<SomeLongShort>(as<FlagName.Parse<'  -v   --version '>>())
+expectType<SomeLongShort>(as<FlagName.Parse<'  v   version '>>())
+expectType<SomeLongShort>(as<FlagName.Parse<'v version'>>())
+
+expectType<{ long: 'filePath' }>(as<FlagName.Parse<'--file-path'>>())
