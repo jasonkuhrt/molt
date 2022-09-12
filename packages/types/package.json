@@ -3,7 +3,6 @@
   "version": "0.0.1",
   "description": "Advanced Types for parsing CLI flags and more.",
   "scripts": {
-    "test": "vitest",
     "clean": "tsc --build --clean",
     "types:check": "tsc --noEmit",
     "build": "pnpm clean && pnpm build:esm",
