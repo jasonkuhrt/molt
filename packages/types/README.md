@@ -12,7 +12,20 @@ npm add @molt/types
 
 ### `FlagName`
 
-The `FlagName` namespace provides a `Parse` type and some other utility types. `Parse` turns an expression of CLI flags into structured object type data _at the type level_. It also ships with a rich set of human-friendly error messages when the input is invalid.
+The `FlagName` namespace provides a `Parse` type and some other utility types. `Parse` turns an expression of CLI flags into structured object type data _at the type level_.
+
+#### Features
+
+- Capture long flag
+- Capture short flag
+- Capture alias short flags
+- Capture alias long flags
+- Flexible syntax
+  - Optional leading dashes `--`/`-`
+- Clear human-friendly error messages when parsing fails.
+  - Catch name duplicate
+  - Enforce reserved names
+- Statically Normalize kebob case to camel case
 
 #### Example
 

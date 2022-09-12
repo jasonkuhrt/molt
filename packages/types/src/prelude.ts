@@ -36,8 +36,12 @@ export namespace Str {
 			: false
 		: true
 
-	export type Length<S extends string > = Length_<0, S>
+export type KebabToCamelCase<S extends string> = S extends `${infer P1}-${infer P2}${infer P3}`
+  ? `${Lowercase<P1>}${Uppercase<P2>}${KebabToCamelCase<P3>}`
+  : Lowercase<S>
 
-	type Length_<Count extends number, S extends string > =
-		S extends `${infer _}${infer tail}` ? Length_<Num.Increment<Count>, tail> : Count
+
+	export type SnakeToCamelCase<S extends string> = S extends `${infer P1}_${infer P2}${infer P3}`
+    ? `${Lowercase<P1>}${Uppercase<P2>}${SnakeToCamelCase<P3>}`
+    : Lowercase<S>
 }
