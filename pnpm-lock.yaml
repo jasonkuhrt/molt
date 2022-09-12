@@ -65,7 +65,7 @@ importers:
 
   packages/parameters:
     specifiers:
-      '@molt/types': ../types
+      '@molt/types': workspace:../types
       conditional-type-checks: 1.0.6
       execa: 6.1.0
       fast-glob: 3.2.12

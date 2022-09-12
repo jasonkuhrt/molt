@@ -33,7 +33,7 @@
   "author": "Jason Kuhrt",
   "license": "MIT",
   "dependencies": {
-    "@molt/types": "../types",
+    "@molt/types": "workspace:../types",
     "ts-toolbelt": "^9.6.0",
     "zod": "^3.18.0"
   },
