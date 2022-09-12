@@ -16,7 +16,7 @@
     "@prisma-labs/prettier-config": "0.1.0",
     "@swc/core": "1.2.247",
     "@tsconfig/node14": "1.0.3",
-    "@tsconfig/node16": "^1.0.3",
+    "@tsconfig/node16": "1.0.3",
     "@tsconfig/recommended": "1.0.1",
     "@types/inquirer": "9.0.1",
     "@types/node": "18.7.15",
