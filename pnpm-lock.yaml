@@ -7,7 +7,7 @@ importers:
       '@prisma-labs/prettier-config': 0.1.0
       '@swc/core': 1.2.247
       '@tsconfig/node14': 1.0.3
-      '@tsconfig/node16': ^1.0.3
+      '@tsconfig/node16': 1.0.3
       '@tsconfig/recommended': 1.0.1
       '@types/inquirer': 9.0.1
       '@types/node': 18.7.15
@@ -58,9 +58,9 @@ importers:
 
   packages/types:
     specifiers:
-      conditional-type-checks: ^1.0.6
+      conditional-type-checks: 1.0.6
       ts-toolbelt: ^9.6.0
-      tsd: ^0.23.0
+      tsd: 0.23.0
     dependencies:
       ts-toolbelt: 9.6.0
     devDependencies:
