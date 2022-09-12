@@ -104,17 +104,22 @@ type ParametersToArguments<ParametersSchema extends z.ZodRawShape> = Any.Compute
 
 type Definition<ParametersSchema extends z.ZodRawShape> = {
   parseOrThrow: (processArguments?: string[]) => ParametersToArguments<ParametersSchema>
+  settings: (newSettings: { description?: string }) => Definition<ParametersSchema>
   schema: ParametersSchema
 }
 
 export const create = <Schema extends z.ZodRawShape>(schema: Schema): Definition<Schema> => {
-  return {
+  const api = {
+    settings: (_newSettings) => {
+      return api
+    },
     parseOrThrow: (processArguments) => {
       // eslint-disable-next-line
       return parseProcessArguments(schema, processArguments ?? process.argv.slice(2)) as any
     },
     schema,
-  }
+  } as Definition<Schema>
+  return api
 }
 
 type ArgumentsInput = string[]

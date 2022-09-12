@@ -20,6 +20,12 @@ describe(`.create`, () => {
   })
 })
 
+describe(`settings`, () => {
+  it(`permits setting a description`, () => {
+    Parameters.create({ x: z.string() }).settings({ description: `foobar` }).parseOrThrow([`-x`, `foobar`])
+  })
+})
+
 describe(`#`, () => {
   describe(`.schema`, () => {
     it(`is the schema used to define the parameters`, () => {
