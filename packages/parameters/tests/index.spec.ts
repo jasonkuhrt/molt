@@ -69,14 +69,7 @@ describe(`#`, () => {
             Parameters.create({ '--name': z.string().regex(/[a-z]+/) }).parseOrThrow([`--name`, `BAD`])
           ).toThrowErrorMatchingInlineSnapshot(`
             "Invalid argument for flag: \\"name\\". The error was:
-            [
-              {
-                \\"validation\\": \\"regex\\",
-                \\"code\\": \\"invalid_string\\",
-                \\"message\\": \\"Invalid\\",
-                \\"path\\": []
-              }
-            ]"
+            Invalid"
           `)
         })
       })
@@ -103,17 +96,9 @@ describe(`#`, () => {
         it(`is validated`, () => {
           expect(() => Parameters.create({ '--age': z.number().int() }).parseOrThrow([`--age`, `1.1`]))
             .toThrowErrorMatchingInlineSnapshot(`
-            "Invalid argument for flag: \\"age\\". The error was:
-            [
-              {
-                \\"code\\": \\"invalid_type\\",
-                \\"expected\\": \\"integer\\",
-                \\"received\\": \\"float\\",
-                \\"message\\": \\"Expected integer, received float\\",
-                \\"path\\": []
-              }
-            ]"
-          `)
+              "Invalid argument for flag: \\"age\\". The error was:
+              Expected integer, received float"
+            `)
         })
       })
       describe(`enum`, () => {
@@ -136,19 +121,7 @@ describe(`#`, () => {
             Parameters.create({ '--mode': z.enum([`a`, `b`, `c`]) }).parseOrThrow([`--mode`, `bad`])
           ).toThrowErrorMatchingInlineSnapshot(`
             "Invalid argument for flag: \\"mode\\". The error was:
-            [
-              {
-                \\"received\\": \\"bad\\",
-                \\"code\\": \\"invalid_enum_value\\",
-                \\"options\\": [
-                  \\"a\\",
-                  \\"b\\",
-                  \\"c\\"
-                ],
-                \\"path\\": [],
-                \\"message\\": \\"Invalid enum value. Expected 'a' | 'b' | 'c', received 'bad'\\"
-              }
-            ]"
+            Invalid enum value. Expected 'a' | 'b' | 'c', received 'bad'"
           `)
         })
       })

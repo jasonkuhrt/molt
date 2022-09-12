@@ -3,7 +3,7 @@ import { Any } from 'ts-toolbelt'
 import { z } from 'zod'
 
 const casesHandled = (value: never) => {
-  throw new Error(`Unhandled case: ${value}`)
+  throw new Error(`Unhandled case: ${String(value)}`)
 }
 
 export type FlagSpec =
@@ -151,6 +151,7 @@ const structureProcessArguments = (argumentsInput: ArgumentsInput): ArgumentsInp
       const noDashPrefix = stripeDashPrefix(trimmed)
       if (
         !argumentsInput[index + 1] ||
+        //eslint-disable-next-line
         (argumentsInput[index + 1] && isFlagInput(argumentsInput[index + 1]!))
       ) {
         currentFlag = {
@@ -192,6 +193,7 @@ const findStructuredArgument = (
         return {
           via: `long`,
           givenName: flagSpec.long,
+          //eslint-disable-next-line
           arg: structuredArguments[flagSpec.long]!,
         }
       return null
@@ -200,6 +202,7 @@ const findStructuredArgument = (
         return {
           via: `short`,
           givenName: flagSpec.short,
+          //eslint-disable-next-line
           arg: structuredArguments[flagSpec.short]!,
         }
       return null
@@ -208,12 +211,14 @@ const findStructuredArgument = (
         return {
           via: `long`,
           givenName: flagSpec.long,
+          //eslint-disable-next-line
           arg: structuredArguments[flagSpec.short]!,
         }
       if (structuredArguments[flagSpec.short])
         return {
           via: `short`,
           givenName: flagSpec.short,
+          //eslint-disable-next-line
           arg: structuredArguments[flagSpec.short]!,
         }
       return null
@@ -240,6 +245,7 @@ const parseProcessArguments = (schema: z.ZodRawShape, processArguments: Argument
       // @ts-expect-error todo
       if (typeof flagSpec.schema._def.defaultValue === `function`) {
         // @ts-expect-error todo
+        //eslint-disable-next-line
         args[flagSpec.canonical] = flagSpec.schema._def.defaultValue()
       }
       continue
@@ -264,14 +270,22 @@ const parseProcessArguments = (schema: z.ZodRawShape, processArguments: Argument
               ? Number(input.arg.arguments[0])
               : input.arg.arguments[0]
           args[flagSpec.canonical] = flagSpec.schema.parse(argument)
-        } catch (error: any) {
-          throw new Error(`Invalid argument for flag: "${input.givenName}". The error was:\n${error.message}`)
+          //eslint-disable-next-line
+        } catch (error) {
+          if (error instanceof z.ZodError) {
+            throw new Error(
+              `Invalid argument for flag: "${input.givenName}". The error was:\n${error
+                .format()
+                ._errors.join(`\n`)}`
+            )
+          }
+          throw error
         }
     }
   }
 
   if (propertyName) {
-    throw new Error(`Missing argument for flag: "${propertyName}"`)
+    throw new Error(`Missing argument for flag: "${String(propertyName)}"`)
   }
 
   return args
