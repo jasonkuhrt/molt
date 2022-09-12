@@ -1,6 +1,6 @@
 {
   "name": "@molt/parameters",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Simple type-safe CLI flag parsing.",
   "type": "module",
   "scripts": {
