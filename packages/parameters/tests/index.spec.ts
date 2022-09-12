@@ -110,6 +110,42 @@ describe(`#`, () => {
           `)
         })
       })
+      describe(`enum`, () => {
+        it(`throws error when argument missing (last position)`, () => {
+          expect(() =>
+            Parameters.create({ '--mode': z.enum([`a`, `b`]) }).parseOrThrow([`--mode`])
+          ).toThrowErrorMatchingInlineSnapshot(`"Missing argument for flag \\"mode\\"."`)
+        })
+        it(`throws error when argument missing (non-last position)`, () => {
+          expect(() =>
+            // prettier-ignore
+            Parameters.create({ '--name': z.string(), '--mode': z.enum([`a`,`b`]) }).parseOrThrow([` --mode`, `--name`, `joe`])
+          ).toThrowErrorMatchingInlineSnapshot(`"Missing argument for flag \\"mode\\"."`)
+        })
+        it(`is validated`, () => {
+          // const args = Parameters.create({ '--mode': z.enum([`a`, `b`, `c`]) }).parseOrThrow([`--mode`, `bad`])
+          // assert<IsExact<{ mode: 'a'|'b'|'c' }, typeof args>>(true)
+          // expect(args).toEqual({ mode: true })
+          expect(() =>
+            Parameters.create({ '--mode': z.enum([`a`, `b`, `c`]) }).parseOrThrow([`--mode`, `bad`])
+          ).toThrowErrorMatchingInlineSnapshot(`
+            "Invalid argument for flag: \\"mode\\". The error was:
+            [
+              {
+                \\"received\\": \\"bad\\",
+                \\"code\\": \\"invalid_enum_value\\",
+                \\"options\\": [
+                  \\"a\\",
+                  \\"b\\",
+                  \\"c\\"
+                ],
+                \\"path\\": [],
+                \\"message\\": \\"Invalid enum value. Expected 'a' | 'b' | 'c', received 'bad'\\"
+              }
+            ]"
+          `)
+        })
+      })
       describe(`boolean`, () => {
         it(`when given, implies true`, () => {
           const args = Parameters.create({ '--verbose': z.boolean() }).parseOrThrow([`--verbose`])
