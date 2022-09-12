@@ -1,10 +1,11 @@
 {
-  "name": "molt",
-  "private": true,
+  "name": "@molt/parameters",
   "version": "0.0.0",
-  "description": "CLI framework for the TypeScript era.",
+  "description": "Simple type-safe CLI flag parsing.",
   "type": "module",
   "scripts": {
+    "types:check": "tsc --noEmit",
+    "test": "vitest",
     "clean": "tsc --build --clean",
     "build": "pnpm clean && pnpm build:cjs && pnpm build:esm",
     "build:cjs": "ts-node scripts/build-cjs.ts",
@@ -16,10 +17,6 @@
   ],
   "exports": {
     ".": {
-      "require": {
-        "types": "./build/cjs/index.d.cts",
-        "default": "./build/cjs/index.cjs"
-      },
       "import": {
         "types": "./build/esm/index.d.ts",
         "default": "./build/esm/index.js"
@@ -31,9 +28,11 @@
   "license": "MIT",
   "dependencies": {
     "@molt/types": "../types",
+    "ts-toolbelt": "^9.6.0",
     "zod": "^3.18.0"
   },
   "devDependencies": {
+    "conditional-type-checks": "^1.0.6",
     "execa": "^6.1.0",
     "fast-glob": "^3.2.12",
     "fs-jetpack": "^4.3.1"

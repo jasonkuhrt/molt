@@ -5,6 +5,7 @@ import { expectType } from 'tsd'
 const as = <T>(): T => 0 as any
 
 // prettier-ignore
+
 namespace _testErrors {
 	expectType<FlagName.Errors.Empty>(as<											FlagName.Parse<''>>())
 	expectType<FlagName.Errors.Empty>(as<											FlagName.Parse<' '>>())
