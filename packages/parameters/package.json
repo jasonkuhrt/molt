@@ -9,12 +9,14 @@
     "clean": "tsc --build --clean",
     "build": "pnpm clean && pnpm build:cjs && pnpm build:esm",
     "build:cjs": "ts-node scripts/build-cjs.ts",
-    "build:esm": "pnpm tsc --project tsconfig.esm.json"
+    "build:esm": "pnpm tsc --project tsconfig.esm.json",
+    "prepublishOnly": "pnpm build"
   },
   "files": [
     "src",
     "build"
   ],
+  "types": "./build/esm/index.d.ts",
   "exports": {
     ".": {
       "import": {

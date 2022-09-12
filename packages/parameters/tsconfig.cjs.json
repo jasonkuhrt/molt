@@ -4,7 +4,8 @@
     "outDir": "build/cjs",
     "module": "commonjs",
     "moduleResolution": "node",
-    "rootDir": "src"
+    "rootDir": "src",
+    "tsBuildInfoFile": "node_modules/.cache/cjs.tsbuildinfo"
   },
   "include": ["src"],
   "exclude": ["**/*.spec.*"]
