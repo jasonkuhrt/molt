@@ -33,6 +33,5 @@
       "@molt/types": ["packages/types/src/index.ts"],
       "molt": ["packages/molt/src/index.ts"]
     }
-  },
-  "include": ["."]
+  }
 }
