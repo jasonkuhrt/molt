@@ -51,9 +51,9 @@ importers:
   packages/molt:
     specifiers:
       '@molt/types': ../types
-      execa: ^6.1.0
-      fast-glob: ^3.2.12
-      fs-jetpack: ^4.3.1
+      execa: 6.1.0
+      fast-glob: 3.2.12
+      fs-jetpack: 4.3.1
       zod: ^3.18.0
     dependencies:
       '@molt/types': link:../types
@@ -66,10 +66,10 @@ importers:
   packages/parameters:
     specifiers:
       '@molt/types': ../types
-      conditional-type-checks: ^1.0.6
-      execa: ^6.1.0
-      fast-glob: ^3.2.12
-      fs-jetpack: ^4.3.1
+      conditional-type-checks: 1.0.6
+      execa: 6.1.0
+      fast-glob: 3.2.12
+      fs-jetpack: 4.3.1
       ts-toolbelt: ^9.6.0
       zod: ^3.18.0
     dependencies:
