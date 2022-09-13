@@ -35,7 +35,7 @@
   "dependencies": {
     "@molt/types": "workspace:*",
     "ts-toolbelt": "^9.6.0",
-    "zod": "^3.18.0"
+    "zod": "^3.19.1"
   },
   "devDependencies": {
     "conditional-type-checks": "1.0.6",

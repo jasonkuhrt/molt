@@ -6,7 +6,7 @@
     "clean": "tsc --build --clean",
     "types:check": "tsc --noEmit",
     "build": "pnpm clean && pnpm build:esm",
-    "build:esm": "pnpm tsc --project tsconfig.esm.json",
+    "build:esm": "pnpm tsc --build --project tsconfig.esm.json",
     "prepublishOnly": "pnpm build"
   },
   "type": "module",

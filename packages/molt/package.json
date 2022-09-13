@@ -31,7 +31,7 @@
   "license": "MIT",
   "dependencies": {
     "@molt/types": "../types",
-    "zod": "^3.18.0"
+    "zod": "^3.19.1"
   },
   "devDependencies": {
     "execa": "6.1.0",
