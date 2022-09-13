@@ -8,6 +8,33 @@
 npm add @molt/parameters
 ```
 
+## Features
+
+- Automatic flag parsing based on specified Zod types.
+- Accept camel or kebab case.
+- Short and/or long flag names plus as many short/long aliases as you wish.
+- Leverage Zod `.default(...)` method for setting default values.
+- Leverage Zod `.describe(...)` for automatic docs.
+- In the future: automatic help generation.
+
+## Zod Types
+
+Zod types affect flag parsing in the following ways.
+
+### Boolean
+
+- Flag does not accept any arguments.
+- Flag of name e.g. `foo` can be passed as `--no-foo` or `--foo`. `--foo` leads to `true` while `--no-foo` leads to `false`.
+
+### Number
+
+- Flag expects an argument.
+- Argument is cast via the `Number()` function.
+
+### Number
+
+- Flag expects an argument.
+
 ## Example
 
 ```ts
