@@ -20,8 +20,8 @@
   "exports": {
     ".": {
       "require": {
-        "types": "./build/cjs/index.d.ts",
-        "default": "./build/cjs/index.js"
+        "types": "./build/cjs/index.d.cts",
+        "default": "./build/cjs/index.cjs"
       },
       "import": {
         "types": "./build/esm/index.d.ts",
