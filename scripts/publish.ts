@@ -21,4 +21,5 @@ await execa(`git`, [`commit`, `--message`, `'chore(${args.package}): bump versio
 await execa(`pnpm`, [`publish`], { cwd, stdio: `inherit` })
 // prettier-ignore
 await execa(`git`, [`tag`, `${args.package}@${args.version}`, `--annotate`, `--message`, `Version ${args.version} for package ${args.package}`], { stdio: `inherit` })
+await execa(`git`, [`push`], { stdio: `inherit` })
 await execa(`git`, [`push`, `--tags`], { stdio: `inherit` })
