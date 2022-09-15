@@ -1,4 +1,5 @@
 import { FlagName } from '@molt/types'
+import camelCase from 'lodash.camelcase'
 import { Any } from 'ts-toolbelt'
 import { z } from 'zod'
 
@@ -69,21 +70,21 @@ const parseFlagSpecs = (schema: z.ZodRawShape): FlagSpec[] =>
       if (name.length === 1)
         if (spec.short) spec.aliases.short.push(name)
         else spec.short = name
-      else if (name.length > 0)
-        if (spec.long) spec.aliases.long.push(name)
-        else spec.long = name
+      else if (name.length > 1)
+        if (spec.long) spec.aliases.long.push(camelCase(name))
+        else spec.long = camelCase(name)
       else throw new Error(`Invalid flag name: ${name}`)
     }
 
     if (spec.short && spec.long) {
       spec._tag = `LongShort`
-      spec.canonical = spec.long
+      spec.canonical = camelCase(spec.long)
     } else if (spec.short) {
       spec._tag = `Short`
       spec.canonical = spec.short
     } else if (spec.long) {
       spec._tag = `Long`
-      spec.canonical = spec.long
+      spec.canonical = camelCase(spec.long)
     } else throw new Error(`Invalid flag name: ${names.join(` `)}`)
 
     return spec
@@ -236,7 +237,7 @@ const parseProcessArguments = (schema: z.ZodRawShape, processArguments: Argument
   // console.log(structuredArguments)
 
   for (const flagSpec of flagSpecs) {
-    // console.log(flagSpec.schema._def)
+    // console.log(flagSpec)
 
     const input = findStructuredArgument(structuredArguments, flagSpec)
     // console.log(input)

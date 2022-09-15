@@ -59,17 +59,21 @@ importers:
   packages/@molt/command:
     specifiers:
       '@molt/types': workspace:*
+      '@types/lodash.camelcase': ^4.3.7
       conditional-type-checks: 1.0.6
       execa: 6.1.0
       fast-glob: 3.2.12
       fs-jetpack: 4.3.1
+      lodash.camelcase: ^4.3.0
       ts-toolbelt: ^9.6.0
       zod: ^3.19.1
     dependencies:
       '@molt/types': link:../types
+      lodash.camelcase: 4.3.0
       ts-toolbelt: 9.6.0
       zod: 3.19.1
     devDependencies:
+      '@types/lodash.camelcase': 4.3.7
       conditional-type-checks: 1.0.6
       execa: 6.1.0
       fast-glob: 3.2.12
@@ -451,6 +455,16 @@ packages:
 
   /@types/json-schema/7.0.11:
     resolution: {integrity: sha512-wOuvG1SN4Us4rez+tylwwwCV1psiNVOkJeM3AUWUNWg/jDQY2+HE/444y5gc+jBmRqASOm2Oeh5c1axHobwRKQ==}
+    dev: true
+
+  /@types/lodash.camelcase/4.3.7:
+    resolution: {integrity: sha512-Nfi6jpo9vuEOSIJP+mpbTezKyEt75DQlbwjiDvs/JctWkbnHDoyQo5lWqdvgNiJmVUjcmkfvlrvSEgJYvurOKg==}
+    dependencies:
+      '@types/lodash': 4.14.185
+    dev: true
+
+  /@types/lodash/4.14.185:
+    resolution: {integrity: sha512-evMDG1bC4rgQg4ku9tKpuMh5iBNEwNa3tf9zRHdP1qlv+1WUg44xat4IxCE14gIpZRGUUWAx2VhItCZc25NfMA==}
     dev: true
 
   /@types/minimist/1.2.2:
@@ -1640,6 +1654,10 @@ packages:
     dependencies:
       p-locate: 5.0.0
     dev: true
+
+  /lodash.camelcase/4.3.0:
+    resolution: {integrity: sha512-TwuEnCnxbc3rAvhf/LbG7tJUDzhqXyFnv3dtzLOPgCG/hODL7WFnsbwktkD7yUV0RrreP/l1PALq/YSg6VvjlA==}
+    dev: false
 
   /lodash.merge/4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}

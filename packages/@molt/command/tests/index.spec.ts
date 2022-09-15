@@ -53,6 +53,28 @@ describe(`#`, () => {
       const args = Command.create({ '--ver': z.string() }).parseOrThrow([`--ver`, `foo`])
       expect(args).toEqual({ ver: `foo` })
     })
+    describe(`case`, () => {
+      it(`kebab case param spec can be passed camel case parameter`, () => {
+        const args = Command.create({ '--foo-bar': z.string() }).parseOrThrow([`--fooBar`, `foo`])
+        assert<IsExact<{ fooBar: string }, typeof args>>(true)
+        expect(args).toEqual({ fooBar: `foo` })
+      })
+      it(`kebab case param spec can be passed kebab case parameter`, () => {
+        const args = Command.create({ '--foo-bar': z.string() }).parseOrThrow([`--foo-bar`, `foo`])
+        assert<IsExact<{ fooBar: string }, typeof args>>(true)
+        expect(args).toEqual({ fooBar: `foo` })
+      })
+      it(`camel case param spec can be passed kebab case parameter`, () => {
+        const args = Command.create({ '--fooBar': z.string() }).parseOrThrow([`--foo-bar`, `foo`])
+        assert<IsExact<{ fooBar: string }, typeof args>>(true)
+        expect(args).toEqual({ fooBar: `foo` })
+      })
+      it(`camel case param spec can be passed camel case parameter`, () => {
+        const args = Command.create({ '--fooBar': z.string() }).parseOrThrow([`--fooBar`, `foo`])
+        assert<IsExact<{ fooBar: string }, typeof args>>(true)
+        expect(args).toEqual({ fooBar: `foo` })
+      })
+    })
   })
 
   describe(`.parseOrThrow`, () => {
