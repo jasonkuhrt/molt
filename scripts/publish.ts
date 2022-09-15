@@ -19,5 +19,6 @@ await $Fs.writeAsync(`package.json`, { ...pkg, version: args.version }, { jsonIn
 await execa(`git`, [`add`, `package.json`], { cwd })
 await execa(`git`, [`commit`, `--message`, `'chore(${args.package}): bump version'`], { stdio: `inherit` })
 await execa(`pnpm`, [`publish`], { cwd, stdio: `inherit` })
-await execa(`git`, [`tag`, `${args.package}@${args.version}`], { stdio: `inherit` })
+// prettier-ignore
+await execa(`git`, [`tag`, `${args.package}@${args.version}`, `--annotate`, `--message`, `Version ${args.version} for package ${args.package}`], { stdio: `inherit` })
 await execa(`git`, [`push`, `--tags`], { stdio: `inherit` })
