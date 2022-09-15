@@ -6,8 +6,6 @@ import url from 'node:url'
 import semverRegex from 'semver-regex'
 import { z } from 'zod'
 
-console.log(process.argv)
-
 const args = Command.create({
   'p package': z.enum([`@molt/command`, `@molt/types`, `molt`]),
   'v version': z.string().regex(semverRegex()),
