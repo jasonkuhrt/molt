@@ -10,7 +10,10 @@
     "format:check": "prettier --check .",
     "lint": "eslint . --ext .ts,.tsx --fix",
     "lint:check": "eslint . --ext .ts,.tsx --max-warnings 0",
-    "types:check": "tsc --noEmit"
+    "types:check": "tsc --noEmit",
+    "publish:@molt/command": "ts-node scripts/publish.ts --package @molt/command",
+    "publish:@molt/types": "ts-node scripts/publish.ts --package @molt/types",
+    "publish:molt": "ts-node scripts/publish.ts --package molt"
   },
   "devDependencies": {
     "@prisma-labs/prettier-config": "0.1.0",
@@ -29,10 +32,14 @@
     "eslint-plugin-prefer-arrow": "1.2.3",
     "eslint-plugin-simple-import-sort": "8.0.0",
     "eslint-plugin-tsdoc": "0.2.17",
+    "execa": "6.1.0",
     "fast-glob": "3.2.12",
+    "fs-jetpack": "4.3.1",
     "prettier": "2.7.1",
+    "semver-regex": "^4.0.5",
     "ts-node": "10.9.1",
     "typescript": "4.8.3",
-    "vitest": "0.23.2"
+    "vitest": "0.23.2",
+    "zod": "^3.19.1"
   }
 }

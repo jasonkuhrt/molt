@@ -20,11 +20,15 @@ importers:
       eslint-plugin-prefer-arrow: 1.2.3
       eslint-plugin-simple-import-sort: 8.0.0
       eslint-plugin-tsdoc: 0.2.17
+      execa: 6.1.0
       fast-glob: 3.2.12
+      fs-jetpack: 4.3.1
       prettier: 2.7.1
+      semver-regex: ^4.0.5
       ts-node: 10.9.1
       typescript: 4.8.3
       vitest: 0.23.2
+      zod: ^3.19.1
     devDependencies:
       '@prisma-labs/prettier-config': 0.1.0
       '@swc/core': 1.3.1
@@ -42,28 +46,17 @@ importers:
       eslint-plugin-prefer-arrow: 1.2.3_eslint@8.23.1
       eslint-plugin-simple-import-sort: 8.0.0_eslint@8.23.1
       eslint-plugin-tsdoc: 0.2.17
+      execa: 6.1.0
       fast-glob: 3.2.12
+      fs-jetpack: 4.3.1
       prettier: 2.7.1
+      semver-regex: 4.0.5
       ts-node: 10.9.1_jbfgev3mspjpujj3ueaega5j5u
       typescript: 4.8.3
       vitest: 0.23.2
-
-  packages/molt:
-    specifiers:
-      '@molt/types': ../types
-      execa: 6.1.0
-      fast-glob: 3.2.12
-      fs-jetpack: 4.3.1
-      zod: ^3.19.1
-    dependencies:
-      '@molt/types': link:../types
       zod: 3.19.1
-    devDependencies:
-      execa: 6.1.0
-      fast-glob: 3.2.12
-      fs-jetpack: 4.3.1
 
-  packages/parameters:
+  packages/@molt/command:
     specifiers:
       '@molt/types': workspace:*
       conditional-type-checks: 1.0.6
@@ -82,7 +75,7 @@ importers:
       fast-glob: 3.2.12
       fs-jetpack: 4.3.1
 
-  packages/types:
+  packages/@molt/types:
     specifiers:
       conditional-type-checks: 1.0.6
       ts-toolbelt: ^9.6.0
@@ -92,6 +85,21 @@ importers:
     devDependencies:
       conditional-type-checks: 1.0.6
       tsd: 0.23.0
+
+  packages/molt:
+    specifiers:
+      '@molt/types': ../types
+      execa: 6.1.0
+      fast-glob: 3.2.12
+      fs-jetpack: 4.3.1
+      zod: ^3.19.1
+    dependencies:
+      '@molt/types': link:../types
+      zod: 3.19.1
+    devDependencies:
+      execa: 6.1.0
+      fast-glob: 3.2.12
+      fs-jetpack: 4.3.1
 
 packages:
 
@@ -2022,6 +2030,11 @@ packages:
       tslib: 2.4.0
     dev: true
 
+  /semver-regex/4.0.5:
+    resolution: {integrity: sha512-hunMQrEy1T6Jr2uEVjrAIqjwWcQTgOAcIM52C8MY1EZSD3DDNft04XzvYKPqjED65bNVVko0YI38nYeEHCX3yw==}
+    engines: {node: '>=12'}
+    dev: true
+
   /semver/5.7.1:
     resolution: {integrity: sha512-sauaDf/PZdVgrLTNYHRtpXa1iRiKcaebiKQ1BJdpQlWH2lCvexQdX55snPFyK7QzpudqbCI0qXFfOasHdyNDGQ==}
     hasBin: true
@@ -2412,4 +2425,3 @@ packages:
 
   /zod/3.19.1:
     resolution: {integrity: sha512-LYjZsEDhCdYET9ikFu6dVPGp2YH9DegXjdJToSzD9rO6fy4qiRYFoyEYwps88OseJlPyl2NOe2iJuhEhL7IpEA==}
-    dev: false
