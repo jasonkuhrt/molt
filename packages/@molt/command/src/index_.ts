@@ -157,16 +157,18 @@ const structureProcessArguments = (argumentsInput: ArgumentsInput): ArgumentsInp
       ) {
         currentFlag = {
           _tag: `Boolean`,
+          // TODO handle camel case negation like --noWay
           negated: noDashPrefix.startsWith(`no-`),
         }
         const noNegatePrefix = noDashPrefix.replace(`no-`, ``)
-        structured[noNegatePrefix] = currentFlag
+        const camelized = camelCase(noNegatePrefix)
+        structured[camelized] = currentFlag
       } else {
         currentFlag = {
           _tag: `Arguments`,
           arguments: [],
         }
-        structured[noDashPrefix] = currentFlag
+        structured[camelCase(noDashPrefix)] = currentFlag
       }
     } else if (currentFlag && currentFlag._tag === `Arguments`) {
       currentFlag.arguments.push(trimmed)
