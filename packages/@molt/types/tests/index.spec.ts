@@ -87,3 +87,12 @@ expectType<SomeLongShort>(as<FlagName.Parse<'  -v  --version  '>>())
 expectType<SomeLongShort>(as<FlagName.Parse<'  -v   --version '>>())
 expectType<SomeLongShort>(as<FlagName.Parse<'  v   version '>>())
 expectType<SomeLongShort>(as<FlagName.Parse<'v version'>>())
+
+interface SomeLongCamelCase {
+  long: 'fooBar'
+  short: undefined
+  aliases: { short: []; long: [] }
+}
+
+expectType<SomeLongCamelCase>(as<FlagName.Parse<'--fooBar'>>())
+expectType<SomeLongCamelCase>(as<FlagName.Parse<'--foo-bar'>>())
