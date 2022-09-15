@@ -18,6 +18,6 @@ const pkg = (await $Fs.readAsync(`package.json`, `json`)) as { name: string; ver
 await $Fs.writeAsync(`package.json`, { ...pkg, version: args.version }, { jsonIndent: 2 })
 await execa(`git`, [`add`, `package.json`], { cwd })
 await execa(`git`, [`commit`, `--message`, `'chore(${args.package}): bump version'`], { stdio: `inherit` })
-await execa(`pnpm`, [`publish`, `--access public`], { cwd, stdio: `inherit` })
+await execa(`pnpm`, [`publish`, `--access`, `public`], { cwd, stdio: `inherit` })
 await execa(`git`, [`tag`, args.version], { stdio: `inherit` })
 await execa(`git`, [`push`, `--tags`], { stdio: `inherit` })
