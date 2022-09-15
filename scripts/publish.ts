@@ -18,7 +18,7 @@ console.log(cwd)
 const pkg = (await Fs.readAsync(Path.join(cwd, `package.json`), `json`)) as { name: string; version: string }
 pkg.version = args.version
 await Fs.writeAsync(Path.join(cwd, `package.json`), pkg)
-await execaCommand(`pnpm publish`, { cwd })
-await execaCommand(`git commit --message 'chore(${args.package}): bump version'`)
-await execaCommand(`git tag ${args.version}`)
-await execaCommand(`git push --tags`)
+await execaCommand(`pnpm publish --access public`, { cwd, stdio: `inherit` })
+await execaCommand(`git commit --message 'chore(${args.package}): bump version'`, { stdio: `inherit` })
+await execaCommand(`git tag ${args.version}`, { stdio: `inherit` })
+await execaCommand(`git push --tags`, { stdio: `inherit` })
