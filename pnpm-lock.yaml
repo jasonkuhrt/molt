@@ -83,12 +83,12 @@ importers:
     specifiers:
       conditional-type-checks: 1.0.6
       ts-toolbelt: ^9.6.0
-      tsd: 0.24.0
+      tsd: 0.24.1
     dependencies:
       ts-toolbelt: 9.6.0
     devDependencies:
       conditional-type-checks: 1.0.6
-      tsd: 0.24.0
+      tsd: 0.24.1
 
   packages/molt:
     specifiers:
@@ -2251,8 +2251,8 @@ packages:
     resolution: {integrity: sha512-nsZd8ZeNUzukXPlJmTBwUAuABDe/9qtVDelJeT/qW0ow3ZS3BsQJtNkan1802aM9Uf68/Y8ljw86Hu0h5IUW3w==}
     dev: false
 
-  /tsd/0.24.0:
-    resolution: {integrity: sha512-ae0qE9E0qGTjYP1fGz4TMWKlqK+bpw/MHqPZFAdsrCOmS1er1jDWsBgiKzOF7MqE4I601Gp2c9aKBoYPrM5Uxw==}
+  /tsd/0.24.1:
+    resolution: {integrity: sha512-sD+s81/2aM4RRhimCDttd4xpBNbUFWnoMSHk/o8kC8Ek23jljeRNWjsxFJmOmYLuLTN9swRt1b6iXfUXTcTiIA==}
     engines: {node: '>=14.16'}
     hasBin: true
     dependencies:
