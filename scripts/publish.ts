@@ -1,5 +1,5 @@
 import { Command } from '../packages/@molt/command/src/index.js'
-import { execaCommand } from 'execa'
+import { execa, execaCommand } from 'execa'
 import Fs from 'fs-jetpack'
 import * as Path from 'node:path'
 import url from 'node:url'
@@ -15,7 +15,7 @@ const cwd = Path.join(Path.dirname(url.fileURLToPath(import.meta.url)), `../pack
 
 const pkg = (await Fs.readAsync(Path.join(cwd, `package.json`), `json`)) as { name: string; version: string }
 await Fs.writeAsync(Path.join(cwd, `package.json`), { ...pkg, version: args.version }, { jsonIndent: 2 })
-await execaCommand(`git commit --message 'chore(${args.package}): bump version'`, { stdio: `inherit` })
-await execaCommand(`pnpm publish --access public`, { cwd, stdio: `inherit` })
-await execaCommand(`git tag ${args.version}`, { stdio: `inherit` })
-await execaCommand(`git push --tags`, { stdio: `inherit` })
+await execa(`git`, [`commit`, `--message`, `'chore(${args.package}): bump version'`], { stdio: `inherit` })
+await execa(`pnpm`, [`publish`, `--access public`], { cwd, stdio: `inherit` })
+await execa(`git`, [`tag`, args.version], { stdio: `inherit` })
+await execa(`git`, [`push`, `--tags`], { stdio: `inherit` })
