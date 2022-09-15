@@ -22,7 +22,7 @@ importers:
       eslint-plugin-tsdoc: 0.2.17
       execa: 6.1.0
       fast-glob: 3.2.12
-      fs-jetpack: 4.3.1
+      fs-jetpack: 5.0.0
       prettier: 2.7.1
       semver-regex: 4.0.5
       ts-node: 10.9.1
@@ -48,7 +48,7 @@ importers:
       eslint-plugin-tsdoc: 0.2.17
       execa: 6.1.0
       fast-glob: 3.2.12
-      fs-jetpack: 4.3.1
+      fs-jetpack: 5.0.0
       prettier: 2.7.1
       semver-regex: 4.0.5
       ts-node: 10.9.1_jbfgev3mspjpujj3ueaega5j5u
@@ -63,7 +63,7 @@ importers:
       conditional-type-checks: 1.0.6
       execa: 6.1.0
       fast-glob: 3.2.12
-      fs-jetpack: 4.3.1
+      fs-jetpack: 5.0.0
       lodash.camelcase: ^4.3.0
       ts-toolbelt: ^9.6.0
       zod: ^3.19.1
@@ -77,7 +77,7 @@ importers:
       conditional-type-checks: 1.0.6
       execa: 6.1.0
       fast-glob: 3.2.12
-      fs-jetpack: 4.3.1
+      fs-jetpack: 5.0.0
 
   packages/@molt/types:
     specifiers:
@@ -95,7 +95,7 @@ importers:
       '@molt/types': ../types
       execa: 6.1.0
       fast-glob: 3.2.12
-      fs-jetpack: 4.3.1
+      fs-jetpack: 5.0.0
       zod: ^3.19.1
     dependencies:
       '@molt/types': link:../types
@@ -103,7 +103,7 @@ importers:
     devDependencies:
       execa: 6.1.0
       fast-glob: 3.2.12
-      fs-jetpack: 4.3.1
+      fs-jetpack: 5.0.0
 
 packages:
 
@@ -710,6 +710,12 @@ packages:
     dependencies:
       balanced-match: 1.0.2
       concat-map: 0.0.1
+    dev: true
+
+  /brace-expansion/2.0.1:
+    resolution: {integrity: sha512-XnAIvQ8eM+kC6aULx6wuQiwVsnzsi9d3WxzV3FpWTGA19F621kwdbsAcFKXgKUHZWsy+mY6iL1sHTxWEFCytDA==}
+    dependencies:
+      balanced-match: 1.0.2
     dev: true
 
   /braces/3.0.2:
@@ -1376,11 +1382,10 @@ packages:
     resolution: {integrity: sha512-5nqDSxl8nn5BSNxyR3n4I6eDmbolI6WT+QqR547RwxQapgjQBmtktdP+HTBb/a/zLsbzERTONyUB5pefh5TtjQ==}
     dev: true
 
-  /fs-jetpack/4.3.1:
-    resolution: {integrity: sha512-dbeOK84F6BiQzk2yqqCVwCPWTxAvVGJ3fMQc6E2wuEohS28mR6yHngbrKuVCK1KHRx/ccByDylqu4H5PCP2urQ==}
+  /fs-jetpack/5.0.0:
+    resolution: {integrity: sha512-0f9QoIbfAq/DuafAQisvsHJmLnJB2D53d9FXIu0UZPUg4Kzocez1+AinToPON6JD/C60kDlye121puiR5ivfdg==}
     dependencies:
-      minimatch: 3.1.2
-      rimraf: 2.7.1
+      minimatch: 5.1.0
     dev: true
 
   /fs.realpath/1.0.0:
@@ -1749,6 +1754,13 @@ packages:
       brace-expansion: 1.1.11
     dev: true
 
+  /minimatch/5.1.0:
+    resolution: {integrity: sha512-9TPBGGak4nHfGZsPBohm9AWg6NoT7QTCehS3BIJABslyZbzxfV78QM2Y6+i741OPZIafFAaiiEMh5OyIrJPgtg==}
+    engines: {node: '>=10'}
+    dependencies:
+      brace-expansion: 2.0.1
+    dev: true
+
   /minimist-options/4.1.0:
     resolution: {integrity: sha512-Q4r8ghd80yhO/0j1O3B2BjweX3fiHg9cdOwjJd2J76Q135c+NDxGCqdYKQ1SKBuFfgWbAUzBfvYjPUEeNgqN1A==}
     engines: {node: '>= 6'}
@@ -2012,13 +2024,6 @@ packages:
   /reusify/1.0.4:
     resolution: {integrity: sha512-U9nH88a3fc/ekCF1l0/UP1IosiuIjyTh7hBvXVMHYgVcfGvt897Xguj2UOLDeI5BG2m7/uwyaLVT6fbtCwTyzw==}
     engines: {iojs: '>=1.0.0', node: '>=0.10.0'}
-    dev: true
-
-  /rimraf/2.7.1:
-    resolution: {integrity: sha512-uWjbaKIK3T1OSVptzX7Nl6PvQ3qAGtKEtVRjRuazjfL3Bx5eI409VZSqgND+4UNnmzLVdPj9FqFJNPqBZFve4w==}
-    hasBin: true
-    dependencies:
-      glob: 7.2.3
     dev: true
 
   /rimraf/3.0.2:
