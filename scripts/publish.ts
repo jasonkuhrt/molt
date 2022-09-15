@@ -15,7 +15,7 @@ const cwd = Path.join(Path.dirname(url.fileURLToPath(import.meta.url)), `../pack
 const $Fs = Fs.cwd(cwd)
 
 const pkg = (await $Fs.readAsync(`package.json`, `json`)) as { name: string; version: string }
-await $Fs.writeAsync(`package.json`, { ...pkg, version: args.version }, { jsonIndent: 2 })
+await $Fs.writeAsync(`package.json`, JSON.stringify({ ...pkg, version: args.version }, null, 2) + `\n`)
 await execa(`git`, [`add`, `package.json`], { cwd })
 await execa(`git`, [`commit`, `--message`, `'chore(${args.package}): bump version'`], { stdio: `inherit` })
 await execa(`pnpm`, [`publish`], { cwd, stdio: `inherit` })
