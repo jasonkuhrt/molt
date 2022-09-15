@@ -59,7 +59,7 @@ importers:
   packages/@molt/command:
     specifiers:
       '@molt/types': workspace:*
-      '@types/lodash.camelcase': ^4.3.7
+      '@types/lodash.camelcase': 4.3.7
       conditional-type-checks: 1.0.6
       execa: 6.1.0
       fast-glob: 3.2.12
