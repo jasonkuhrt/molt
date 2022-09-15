@@ -10,10 +10,38 @@ npm add @molt/command
 
 ## Features
 
-- Automatic flag parsing based on specified Zod types.
-- Accept camel or kebab case.
+- Automatic parameter parsing based on specified Zod types.
+- Normalization between camel/kebab case:
+
+  - Kebab case parameter spec normalized to camel
+    ```ts
+    // foobar.ts
+    const args1 = Command.create({ '--do-it': z.boolean() }).parseOrThrow()
+    const args2 = Command.create({ '--doIt': z.boolean() }).parseOrThrow()
+    args1.doIt
+    args2.doIt
+    ```
+  - Kebab case parameter input normalized to camel.
+    ```
+    $ ts-node foobar.ts --do-it
+    $ ts-node foobar.ts --doIt
+    ```
+
 - Short and/or long flag names plus as many short/long aliases as you wish.
+  ```ts
+  Command.create({ '-f --force --forcefully': z.boolean() }).parseOrThrow()
+  ```
 - Leverage Zod `.default(...)` method for setting default values.
+
+  ```ts
+  // foobar.ts
+  const args = Command.create({ '--path': z.string().default('./a/b/c') }).parseOrThrow()
+  // Given: $ ts-node foobar.ts
+  args.path === './a/b/c/'
+  // Given: $ ts-node foobar.ts --path /over/ride
+  args.path === '/over/ride'
+  ```
+
 - Leverage Zod `.describe(...)` for automatic docs.
 - In the future: automatic help generation.
 
@@ -26,12 +54,30 @@ Zod types affect flag parsing in the following ways.
 - Flag does not accept any arguments.
 - Flag of name e.g. `foo` can be passed as `--no-foo` or `--foo`. `--foo` leads to `true` while `--no-foo` leads to `false`.
 
+Examples:
+
+```ts
+// foobar.ts
+const args = Command.create({ '-f --force --forcefully': z.boolean() }).parseOrThrow()
+// Given: $ ts-node foobar.ts --no-f
+// Given: $ ts-node foobar.ts --noF
+// Given: $ ts-node foobar.ts --no-force
+// Given: $ ts-node foobar.ts --noForce
+// Given: $ ts-node foobar.ts --no-forcefully
+// Given: $ ts-node foobar.ts --noForcefully
+args.force === false
+// Given: $ ts-node foobar.ts -f
+// Given: $ ts-node foobar.ts --force
+// Given: $ ts-node foobar.ts --forcefully
+args.force === true
+```
+
 ### Number
 
 - Flag expects an argument.
 - Argument is cast via the `Number()` function.
 
-### Number
+### Enum
 
 - Flag expects an argument.
 
