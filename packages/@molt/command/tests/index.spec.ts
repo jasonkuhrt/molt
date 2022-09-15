@@ -36,6 +36,25 @@ describe(`#`, () => {
     })
   })
 
+  describe(`canonical flag`, () => {
+    it(`flag can accept long & short and be given long`, () => {
+      const args = Command.create({ '--ver -v': z.string() }).parseOrThrow([`--ver`, `foo`])
+      expect(args).toEqual({ ver: `foo` })
+    })
+    it(`flag can accept long & short and be given short`, () => {
+      const args = Command.create({ '--ver -v': z.string() }).parseOrThrow([`-v`, `foo`])
+      expect(args).toEqual({ ver: `foo` })
+    })
+    it(`flag can accept short and be given short`, () => {
+      const args = Command.create({ '-v': z.string() }).parseOrThrow([`-v`, `foo`])
+      expect(args).toEqual({ v: `foo` })
+    })
+    it(`flag can accept long and be given long`, () => {
+      const args = Command.create({ '--ver': z.string() }).parseOrThrow([`--ver`, `foo`])
+      expect(args).toEqual({ ver: `foo` })
+    })
+  })
+
   describe(`.parseOrThrow`, () => {
     it(`parses the process input according to the parameters schema`, () => {
       const args = Command.create({ '-x': z.string() }).parseOrThrow([`-x`, `foo`])

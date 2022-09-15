@@ -212,7 +212,7 @@ const findStructuredArgument = (
           via: `long`,
           givenName: flagSpec.long,
           //eslint-disable-next-line
-          arg: structuredArguments[flagSpec.short]!,
+          arg: structuredArguments[flagSpec.long]!,
         }
       if (structuredArguments[flagSpec.short])
         return {
