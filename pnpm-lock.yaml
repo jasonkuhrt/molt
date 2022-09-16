@@ -12,6 +12,7 @@ importers:
       '@tsconfig/recommended': 1.0.1
       '@types/inquirer': 9.0.1
       '@types/node': 18.7.17
+      '@types/semver': ^7.3.12
       '@typescript-eslint/eslint-plugin': 5.37.0
       '@typescript-eslint/parser': 5.37.0
       eslint: 8.23.1
@@ -25,6 +26,7 @@ importers:
       fast-glob: 3.2.12
       fs-jetpack: 5.0.0
       prettier: 2.7.1
+      semver: ^7.3.7
       semver-regex: 4.0.5
       ts-node: 10.9.1
       typescript: 4.8.3
@@ -39,6 +41,7 @@ importers:
       '@tsconfig/recommended': 1.0.1
       '@types/inquirer': 9.0.1
       '@types/node': 18.7.17
+      '@types/semver': 7.3.12
       '@typescript-eslint/eslint-plugin': 5.37.0_22c5fnooleyfkzrkkgdmel5kmi
       '@typescript-eslint/parser': 5.37.0_irgkl5vooow2ydyo6aokmferha
       eslint: 8.23.1
@@ -52,6 +55,7 @@ importers:
       fast-glob: 3.2.12
       fs-jetpack: 5.0.0
       prettier: 2.7.1
+      semver: 7.3.7
       semver-regex: 4.0.5
       ts-node: 10.9.1_jbfgev3mspjpujj3ueaega5j5u
       typescript: 4.8.3
@@ -554,6 +558,10 @@ packages:
 
   /@types/normalize-package-data/2.4.1:
     resolution: {integrity: sha512-Gj7cI7z+98M282Tqmp2K5EIsoouUEzbBJhQQzDE3jSIRk6r9gsz0oUokqIUR4u1R3dMHo0pDHM7sNOHyhulypw==}
+    dev: true
+
+  /@types/semver/7.3.12:
+    resolution: {integrity: sha512-WwA1MW0++RfXmCr12xeYOOC5baSC9mSb0ZqCquFzKhcoF4TvHu5MKOuXsncgZcpVFhB1pXd5hZmM0ryAoCp12A==}
     dev: true
 
   /@types/through/0.0.30:
