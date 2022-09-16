@@ -20,7 +20,8 @@ const githubToken = process.env[`GITHUB_TOKEN`]
 
 if (!githubToken) throw new Error(`GITHUB_TOKEN is required`)
 
-if (!args.bump && args.version) throw new Error(`--bump or --version is required`)
+if (!args.bump && !args.version) throw new Error(`--bump or --version is required`)
+if (args.bump && args.version) throw new Error(`--bump and --version cannot both be specified`)
 
 const cwd = Path.join(Path.dirname(url.fileURLToPath(import.meta.url)), `../packages`, args.package)
 const $Fs = Fs.cwd(cwd)
