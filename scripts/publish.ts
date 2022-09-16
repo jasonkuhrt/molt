@@ -4,7 +4,7 @@ import { execa } from 'execa'
 import Fs from 'fs-jetpack'
 import * as Path from 'node:path'
 import url from 'node:url'
-import * as Semver from 'semver'
+import Semver from 'semver'
 import semverRegex from 'semver-regex'
 import { z } from 'zod'
 
