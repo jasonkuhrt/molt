@@ -10,36 +10,52 @@ namespace _testErrors {
 	expectType<FlagName.Errors.Empty>(as<											FlagName.Parse<''>>())
 	expectType<FlagName.Errors.Empty>(as<											FlagName.Parse<' '>>())
 
-	expectType<FlagName.Errors.NameReserved<'abc'>>(as<				FlagName.Parse<'--abc', { reservedNames: 'abc'; usedNames: undefined }>>())
-	// Mixing dash prefix style and kebab/camel case does not matter
-	expectType<FlagName.Errors.NameReserved<'foo-bar'>>(as<		FlagName.Parse<'--foo-bar', { reservedNames: 'fooBar';  usedNames: undefined }>>())
-	expectType<FlagName.Errors.NameReserved<'fooBar'>>(as<		FlagName.Parse<'--fooBar',  { reservedNames: 'foo-bar'; usedNames: undefined }>>())
-	expectType<FlagName.Errors.NameReserved<'foo-bar'>>(as<		FlagName.Parse<'foo-bar',   { reservedNames: 'fooBar';  usedNames: undefined }>>())
-	expectType<FlagName.Errors.NameReserved<'fooBar'>>(as<		FlagName.Parse<'fooBar',    { reservedNames: 'foo-bar'; usedNames: undefined }>>())
-	// Aliases
-	expectType<FlagName.Errors.NameReserved<'foo-bar'>>(as<		FlagName.Parse<'--foo --foo-bar', { reservedNames: 'fooBar';  usedNames: undefined }>>())
-	expectType<FlagName.Errors.NameReserved<'fooBar'>>(as<		FlagName.Parse<'--foo --fooBar',  { reservedNames: 'foo-bar'; usedNames: undefined }>>())
-	expectType<FlagName.Errors.NameReserved<'foo-bar'>>(as<		FlagName.Parse<'foo foo-bar',   { reservedNames: 'fooBar';  usedNames: undefined }>>())
-	expectType<FlagName.Errors.NameReserved<'fooBar'>>(as<		FlagName.Parse<'foo fooBar',    { reservedNames: 'foo-bar'; usedNames: undefined }>>())
-
-	expectType<FlagName.Errors.NameAlreadyTaken<'abc'>>(as<		FlagName.Parse<'--abc', { usedNames: 'abc'; reservedNames: undefined }>>())
+	// Short Flag
 	expectType<FlagName.Errors.NameReserved<'a'>>(as<					FlagName.Parse<'-a', { reservedNames: 'a'; usedNames: undefined }>>())
+	// Long Flag
+	expectType<FlagName.Errors.NameReserved<'abc'>>(as<				FlagName.Parse<'--abc', { reservedNames: 'abc'; usedNames: undefined }>>())
+		// Mixing dash prefix style and kebab/camel case does not matter
+		expectType<FlagName.Errors.NameReserved<'foo-bar'>>(as<		FlagName.Parse<'--foo-bar', { reservedNames: 'fooBar';  usedNames: undefined }>>())
+		expectType<FlagName.Errors.NameReserved<'fooBar'>>(as<		FlagName.Parse<'--fooBar',  { reservedNames: 'foo-bar'; usedNames: undefined }>>())
+		expectType<FlagName.Errors.NameReserved<'foo-bar'>>(as<		FlagName.Parse<'foo-bar',   { reservedNames: 'fooBar';  usedNames: undefined }>>())
+		expectType<FlagName.Errors.NameReserved<'fooBar'>>(as<		FlagName.Parse<'fooBar',    { reservedNames: 'foo-bar'; usedNames: undefined }>>())
+			// Aliases
+			expectType<FlagName.Errors.NameReserved<'foo-bar'>>(as<		FlagName.Parse<'--foo --foo-bar', { reservedNames: 'fooBar';  usedNames: undefined }>>())
+			expectType<FlagName.Errors.NameReserved<'fooBar'>>(as<		FlagName.Parse<'--foo --fooBar',  { reservedNames: 'foo-bar'; usedNames: undefined }>>())
+			expectType<FlagName.Errors.NameReserved<'foo-bar'>>(as<		FlagName.Parse<'foo foo-bar',   { reservedNames: 'fooBar';  usedNames: undefined }>>())
+			expectType<FlagName.Errors.NameReserved<'fooBar'>>(as<		FlagName.Parse<'foo fooBar',    { reservedNames: 'foo-bar'; usedNames: undefined }>>())
+
+	// Short Flag
 	expectType<FlagName.Errors.NameAlreadyTaken<'a'>>(as<			FlagName.Parse<'-a', { usedNames: 'a'; reservedNames: undefined }>>())
+	// Long Flag
+		expectType<FlagName.Errors.NameAlreadyTaken<'abc'>>(as<		FlagName.Parse<'--abc', { usedNames: 'abc'; reservedNames: undefined }>>())
+		// Mixing dash prefix style and kebab/camel case does not matter
+		expectType<FlagName.Errors.NameAlreadyTaken<'fooBar'>>(as<FlagName.Parse<'--fooBar', { usedNames: 'foo-bar'; reservedNames: undefined }>>())
+		expectType<FlagName.Errors.NameAlreadyTaken<'foo-bar'>>(as<FlagName.Parse<'--foo-bar', { usedNames: 'fooBar'; reservedNames: undefined }>>())
+		expectType<FlagName.Errors.NameAlreadyTaken<'fooBar'>>(as<FlagName.Parse<'fooBar', { usedNames: 'foo-bar'; reservedNames: undefined }>>())
+		expectType<FlagName.Errors.NameAlreadyTaken<'foo-bar'>>(as<FlagName.Parse<'foo-bar', { usedNames: 'fooBar'; reservedNames: undefined }>>())
+			// Aliases
+			expectType<FlagName.Errors.NameAlreadyTaken<'fooBar'>>(as<FlagName.Parse<'--foo --fooBar', { usedNames: 'foo-bar'; reservedNames: undefined }>>())
+			expectType<FlagName.Errors.NameAlreadyTaken<'foo-bar'>>(as<FlagName.Parse<'--foo --foo-bar', { usedNames: 'fooBar'; reservedNames: undefined }>>())
+			expectType<FlagName.Errors.NameAlreadyTaken<'fooBar'>>(as<FlagName.Parse<'foo fooBar', { usedNames: 'foo-bar'; reservedNames: undefined }>>())
+			expectType<FlagName.Errors.NameAlreadyTaken<'foo-bar'>>(as<FlagName.Parse<'foo foo-bar', { usedNames: 'fooBar'; reservedNames: undefined }>>())
+
 	expectType<FlagName.Errors.LongFlagTooShort<'v'>>(as<			FlagName.Parse<'--v'>>())
 	expectType<FlagName.Errors.LongFlagTooShort<'v'>>(as<			FlagName.Parse<'--ver --v'>>())
 	expectType<FlagName.Errors.ShortFlagTooLong<'vv'>>(as<		FlagName.Parse<'-vv'>>())
+
 	expectType<FlagName.Errors.AliasDuplicate<'vv'>>(as<			FlagName.Parse<'--vv --vv'>>())
 	expectType<FlagName.Errors.AliasDuplicate<'v-v'>>(as<			FlagName.Parse<'--v-v --v-v'>>())
 	expectType<FlagName.Errors.AliasDuplicate<'v'>>(as<				FlagName.Parse<'-v -v'>>())
-	// Mixing dash prefix style and kebab/camel case does not matter
-	expectType<FlagName.Errors.AliasDuplicate<'foo-bar'>>(as<	FlagName.Parse<'--fooBar --foo-bar'>>())
-	expectType<FlagName.Errors.AliasDuplicate<'fooBar'>>(as<	FlagName.Parse<'--foo-bar --fooBar'>>())
-	expectType<FlagName.Errors.AliasDuplicate<'foo-bar'>>(as<	FlagName.Parse<'fooBar foo-bar'>>())
-	expectType<FlagName.Errors.AliasDuplicate<'fooBar'>>(as<	FlagName.Parse<'foo-bar fooBar'>>())
-	expectType<FlagName.Errors.AliasDuplicate<'fooBar'>>(as<	FlagName.Parse<'foo-bar --fooBar'>>())
-	expectType<FlagName.Errors.AliasDuplicate<'fooBar'>>(as<	FlagName.Parse<'--foo-bar fooBar'>>())
-	expectType<FlagName.Errors.AliasDuplicate<'foo-bar'>>(as<	FlagName.Parse<'fooBar --foo-bar'>>())
-	expectType<FlagName.Errors.AliasDuplicate<'foo-bar'>>(as<	FlagName.Parse<'--fooBar foo-bar'>>())
+		// Mixing dash prefix style and kebab/camel case does not matter
+		expectType<FlagName.Errors.AliasDuplicate<'foo-bar'>>(as<	FlagName.Parse<'--fooBar --foo-bar'>>())
+		expectType<FlagName.Errors.AliasDuplicate<'fooBar'>>(as<	FlagName.Parse<'--foo-bar --fooBar'>>())
+		expectType<FlagName.Errors.AliasDuplicate<'foo-bar'>>(as<	FlagName.Parse<'fooBar foo-bar'>>())
+		expectType<FlagName.Errors.AliasDuplicate<'fooBar'>>(as<	FlagName.Parse<'foo-bar fooBar'>>())
+		expectType<FlagName.Errors.AliasDuplicate<'fooBar'>>(as<	FlagName.Parse<'foo-bar --fooBar'>>())
+		expectType<FlagName.Errors.AliasDuplicate<'fooBar'>>(as<	FlagName.Parse<'--foo-bar fooBar'>>())
+		expectType<FlagName.Errors.AliasDuplicate<'foo-bar'>>(as<	FlagName.Parse<'fooBar --foo-bar'>>())
+		expectType<FlagName.Errors.AliasDuplicate<'foo-bar'>>(as<	FlagName.Parse<'--fooBar foo-bar'>>())
 }
 
 //prettier-ignore
