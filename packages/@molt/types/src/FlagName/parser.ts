@@ -6,9 +6,10 @@ import { String } from 'ts-toolbelt'
 export namespace Checks {
 	export type LongFlagTooShort<Name extends string> = String.Length<Name> extends 1 ? true : false
 	export type ShortFlagTooLong<Name extends string> = String.Length<Name> extends 1 ? false : true
-	export type AliasDuplicate<Names extends FlagNames, Name extends string> =  Name extends Names['long'] | Names['short'] ? true : false
+	export type AliasDuplicate<Names extends FlagNames, Name extends string> =  Str.KebabToCamelCase<Name> extends Names['long'] | Names['short'] ? true : false
 	export type NameAlreadyTaken<Limits extends SomeLimits, Name extends string> = Name extends Limits['usedNames'] ? true : false
 	export type NameReserved<Limits extends SomeLimits, Name extends string> = Name extends Limits['reservedNames'] ? true : false
+	type x = AliasDuplicate<{aliases:{short:[],long:[]},long:'fooBar',short:undefined}, 'fooBar'>
 }
 
 // prettier-ignore
@@ -25,13 +26,32 @@ export namespace Errors {
 }
 
 // prettier-ignore
+export type BaseFlagNameChecks<name extends string, limits extends SomeLimits, names extends FlagNames> = 
+	Checks.AliasDuplicate<names, name> 		extends true ? Errors.AliasDuplicate<name> :
+	Checks.NameAlreadyTaken<limits, name> extends true ? Errors.NameAlreadyTaken<name> :
+	Checks.NameReserved<limits, name> 		extends true ? Errors.NameReserved<name> :
+	null
+
+// prettier-ignore
+export type DashPrefixedLongFlagNameChecks<name extends string, limits extends SomeLimits, names extends FlagNames> = 
+	Errors.$Is<BaseFlagNameChecks<name, limits, names>> extends true ? BaseFlagNameChecks<name, limits, names> :
+	Checks.LongFlagTooShort<name>                       extends true ? Errors.LongFlagTooShort<name> :
+	null
+
+// prettier-ignore
+export type DashPrefixedShortFlagNameChecks<name extends string, limits extends SomeLimits, names extends FlagNames> = 
+	Errors.$Is<BaseFlagNameChecks<name, limits, names>> extends true ? BaseFlagNameChecks<name, limits, names> :
+	Checks.ShortFlagTooLong<name>                       extends true ? Errors.ShortFlagTooLong<name> :
+	null
+
+// prettier-ignore
 type AddAliasLong<Names extends FlagNames, Name extends string> = Omit<Names, 'aliases'> & { aliases: { long: [...Names['aliases']['long'], Str.KebabToCamelCase<Name>], short: Names['aliases']['short'] }}
 // prettier-ignore
 type AddAliasShort<Names extends FlagNames, Name extends string> = Omit<Names, 'aliases'> & { aliases: { long: Names['aliases']['long'], short: [...Names['aliases']['short'], Name] }}
 // prettier-ignore
-type AddLong<Names extends FlagNames, Name extends string> = Omit<Names,'long'> & { long: Str.KebabToCamelCase<Name>  }
+type AddLong<Names extends FlagNames, Name extends string> = Omit<Names, 'long'> & { long: Str.KebabToCamelCase<Name>  }
 // prettier-ignore
-type AddShort<Names extends FlagNames, Name extends string> = Omit<Names,'short'> & { short: Name  }
+type AddShort<Names extends FlagNames, Name extends string> = Omit<Names, 'short'> & { short: Name  }
 
 type SomeLimits = {
   reservedNames: string | undefined
@@ -52,67 +72,58 @@ export type Parse<
 //prettier-ignore
 type ParseFlagNameDo<E extends string, limits extends SomeLimits, names extends FlagNames> =
 	// Done!
-	E extends ``                                         ?  FlagNamesEmpty extends names ? Errors.Empty : names :
+	E extends ``                                         	? FlagNamesEmpty extends names ? Errors.Empty : names :
 
 	// Trim leading and trailing whitespace
-	E extends ` ${infer tail}`                           ? ParseFlagNameDo<tail, limits, names> :
-	E extends `${infer initial} `                        ? ParseFlagNameDo<initial, limits, names> :
+	E extends ` ${infer tail}`                           	? ParseFlagNameDo<tail, limits, names> :
+	E extends `${infer initial} `                        	? ParseFlagNameDo<initial, limits, names> :
 
 	// Capture a long flag & continue
-	E extends `--${infer name} ${infer tail}`            ? Checks.LongFlagTooShort<name> extends true ? Errors.LongFlagTooShort<name> :
-																												 Checks.AliasDuplicate<names, name> extends true ? Errors.AliasDuplicate<name> :
-																												 Checks.NameAlreadyTaken<limits, name> extends true ? Errors.NameAlreadyTaken<name> :
-																												 Checks.NameReserved<limits, name> extends true ? Errors.NameReserved<name> :
-																												 names['long'] extends undefined ?
-																												 	 ParseFlagNameDo<tail, limits, Omit<names,'long'> & { long: name  }> :
-																												 	 ParseFlagNameDo<tail, limits, AddAliasLong<names, name>> :
+	E extends `--${infer name} ${infer tail}`            	? Errors.$Is<DashPrefixedLongFlagNameChecks<name, limits, names>> extends true ?
+																												 	DashPrefixedLongFlagNameChecks<name, limits, names> :
+																												 	names['long'] extends undefined ?
+																												 		ParseFlagNameDo<tail, limits, AddLong<names, name>> :
+																												 	 	ParseFlagNameDo<tail, limits, AddAliasLong<names, name>> :
 	// Capture a long name & Done!
-	E extends `--${infer name}` 							           ? Checks.LongFlagTooShort<name> extends true ? Errors.LongFlagTooShort<name> :
-																												 Checks.AliasDuplicate<names, name> extends true ? Errors.AliasDuplicate<name> :
-																												 Checks.NameAlreadyTaken<limits, name> extends true ? Errors.NameAlreadyTaken<name> :
-																												 Checks.NameReserved<limits, name> extends true ? Errors.NameReserved<name> :
-																												 names['long'] extends undefined ?
-																													 AddLong<names, name> :
-																												 	 AddAliasLong<names, name> :
+	E extends `--${infer name}` 							          	? Errors.$Is<DashPrefixedLongFlagNameChecks<name, limits, names>> extends true ?
+																														DashPrefixedLongFlagNameChecks<name, limits, names> :
+																														names['long'] extends undefined ?
+																															AddLong<names, name> :
+																															AddAliasLong<names, name> :
 
 	// Capture a short flag & continue
-	E extends `-${infer name} ${infer tail}`            ? Checks.ShortFlagTooLong<name> extends true ? Errors.ShortFlagTooLong<name> :
-																												Checks.AliasDuplicate<names, name> extends true ? Errors.AliasDuplicate<name> :
-																												Checks.NameAlreadyTaken<limits, name> extends true ? Errors.NameAlreadyTaken<name> :
-																												Checks.NameReserved<limits, name> extends true ? Errors.NameReserved<name> :
-																												names['short'] extends undefined ?
-																												 	ParseFlagNameDo<tail, limits, AddShort<names, name>> :
-																												 	ParseFlagNameDo<tail, limits, AddAliasShort<names, name>> :
+	E extends `-${infer name} ${infer tail}`            	? Errors.$Is<DashPrefixedShortFlagNameChecks<name, limits, names>> extends true ?
+																														DashPrefixedShortFlagNameChecks<name, limits, names> :
+																														names['short'] extends undefined ?
+																															ParseFlagNameDo<tail, limits, AddShort<names, name>> :
+																															ParseFlagNameDo<tail, limits, AddAliasShort<names, name>> :
 	// Capture a short name & Done!
-	E extends `-${infer name}` 							            ? Checks.ShortFlagTooLong<name> extends true ? Errors.ShortFlagTooLong<name> :
-																												Checks.AliasDuplicate<names, name> extends true ? Errors.AliasDuplicate<name> :
-																												Checks.NameAlreadyTaken<limits, name> extends true ? Errors.NameAlreadyTaken<name> :
-																												Checks.NameReserved<limits, name> extends true ? Errors.NameReserved<name> :
-																												names['short'] extends undefined ?
-																												 	AddShort<names, name> :
-																												 	AddAliasShort<names, name> :
+	E extends `-${infer name}` 							            	? Errors.$Is<DashPrefixedShortFlagNameChecks<name, limits, names>> extends true ?
+																														DashPrefixedShortFlagNameChecks<name, limits, names> :
+																														names['short'] extends undefined ?
+																															AddShort<names, name> :
+																															AddAliasShort<names, name> :
 
 	// Capture a long flag & continue
-	E extends `${infer name} ${infer tail}`             ? Checks.AliasDuplicate<names, name> extends true ? Errors.AliasDuplicate<name> :
-																												Checks.NameAlreadyTaken<limits, name> extends true ? Errors.NameAlreadyTaken<name> :
-																												Checks.NameReserved<limits, name> extends true ? Errors.NameReserved<name> :
-																												String.Length<name> extends 1 ?
-																													names['short'] extends undefined ?
-																														ParseFlagNameDo<tail, limits, AddShort<names, name>> :
-																														ParseFlagNameDo<tail, limits, AddAliasShort<names, name>> :
-																													names['long'] extends undefined ?
-																														ParseFlagNameDo<tail, limits, AddLong<names, name>> :
-																														ParseFlagNameDo<tail, limits, AddAliasLong<names, name>> :
+	E extends `${infer name} ${infer tail}`             	? Errors.$Is<BaseFlagNameChecks<name, limits, names>> extends true ?
+																														DashPrefixedLongFlagNameChecks<name, limits, names> :
+																														String.Length<name> extends 1 ?
+																															names['short'] extends undefined ?
+																																ParseFlagNameDo<tail, limits, AddShort<names, name>> :
+																																ParseFlagNameDo<tail, limits, AddAliasShort<names, name>> :
+																															names['long'] extends undefined ?
+																																ParseFlagNameDo<tail, limits, AddLong<names, name>> :
+																																ParseFlagNameDo<tail, limits, AddAliasLong<names, name>> :
 
-  E extends `${infer name}`                           ? Checks.AliasDuplicate<names, name> extends true ? Errors.AliasDuplicate<name> :
-																												Checks.NameAlreadyTaken<limits, name> extends true ? Errors.NameAlreadyTaken<name> :
-																												Checks.NameReserved<limits, name> extends true ? Errors.NameReserved<name> :
-																												String.Length<name> extends 1 ?
-																													names['short'] extends undefined ?
-																														AddShort<names, name> :
-																														AddAliasShort<names, name> :
-																													names['long'] extends undefined ?
-																														AddLong<names, name> :
-																														AddAliasLong<names, name> :
+	// Capture a short name & Done!
+  E extends `${infer name}`                           	? Errors.$Is<BaseFlagNameChecks<name, limits, names>> extends true ?
+																														DashPrefixedShortFlagNameChecks<name, limits, names> :
+																														String.Length<name> extends 1 ?
+																															names['short'] extends undefined ?
+																																AddShort<names, name> :
+																																AddAliasShort<names, name> :
+																															names['long'] extends undefined ?
+																																AddLong<names, name> :
+																																AddAliasLong<names, name> :
 
 	Errors.Unknown

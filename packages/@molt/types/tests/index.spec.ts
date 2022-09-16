@@ -17,7 +17,17 @@ namespace _testErrors {
 	expectType<FlagName.Errors.LongFlagTooShort<'v'>>(as<			FlagName.Parse<'--ver --v'>>())
 	expectType<FlagName.Errors.ShortFlagTooLong<'vv'>>(as<		FlagName.Parse<'-vv'>>())
 	expectType<FlagName.Errors.AliasDuplicate<'vv'>>(as<			FlagName.Parse<'--vv --vv'>>())
+	expectType<FlagName.Errors.AliasDuplicate<'v-v'>>(as<			FlagName.Parse<'--v-v --v-v'>>())
 	expectType<FlagName.Errors.AliasDuplicate<'v'>>(as<				FlagName.Parse<'-v -v'>>())
+	// Mixing dash prefix style and kebab/camel case does not matter
+	expectType<FlagName.Errors.AliasDuplicate<'foo-bar'>>(as<	FlagName.Parse<'--fooBar --foo-bar'>>())
+	expectType<FlagName.Errors.AliasDuplicate<'fooBar'>>(as<	FlagName.Parse<'--foo-bar --fooBar'>>())
+	expectType<FlagName.Errors.AliasDuplicate<'foo-bar'>>(as<	FlagName.Parse<'fooBar foo-bar'>>())
+	expectType<FlagName.Errors.AliasDuplicate<'fooBar'>>(as<	FlagName.Parse<'foo-bar fooBar'>>())
+	expectType<FlagName.Errors.AliasDuplicate<'fooBar'>>(as<	FlagName.Parse<'foo-bar --fooBar'>>())
+	expectType<FlagName.Errors.AliasDuplicate<'fooBar'>>(as<	FlagName.Parse<'--foo-bar fooBar'>>())
+	expectType<FlagName.Errors.AliasDuplicate<'foo-bar'>>(as<	FlagName.Parse<'fooBar --foo-bar'>>())
+	expectType<FlagName.Errors.AliasDuplicate<'foo-bar'>>(as<	FlagName.Parse<'--fooBar foo-bar'>>())
 }
 
 //prettier-ignore
@@ -87,6 +97,7 @@ expectType<SomeLongShort>(as<FlagName.Parse<'  -v  --version  '>>())
 expectType<SomeLongShort>(as<FlagName.Parse<'  -v   --version '>>())
 expectType<SomeLongShort>(as<FlagName.Parse<'  v   version '>>())
 expectType<SomeLongShort>(as<FlagName.Parse<'v version'>>())
+type x = FlagName.Parse<'  v   version '>
 
 interface SomeLongCamelCase {
   long: 'fooBar'
