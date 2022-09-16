@@ -256,8 +256,8 @@ const parseProcessArguments = (schema: z.ZodRawShape, processArguments: Argument
 
     switch (input.arg._tag) {
       case `Boolean`:
-        // @ts-expect-error todo
-        if (flagSpec.schema._def.typeName !== `ZodBoolean`) {
+        const typeName = getZodBaseTypeName(flagSpec.schema)
+        if (typeName !== `ZodBoolean`) {
           throw new Error(`Missing argument for flag "${input.givenName}".`)
         }
         args[flagSpec.canonical] = input.arg.negated ? false : true
@@ -267,6 +267,7 @@ const parseProcessArguments = (schema: z.ZodRawShape, processArguments: Argument
           throw new Error(`Missing argument for flag "${input.givenName}".`)
         }
         try {
+          // TODO getZodBaseTypeName
           const argument =
             // @ts-expect-error todo
             flagSpec.schema._def.typeName === `ZodNumber`
@@ -296,4 +297,24 @@ const parseProcessArguments = (schema: z.ZodRawShape, processArguments: Argument
 
 const isFlagInput = (input: string) => {
   return input.trim().startsWith(`--`) || input.trim().startsWith(`-`)
+}
+
+const getZodBaseTypeName = (schema: z.ZodSchema): 'ZodBoolean' | 'ZodNumber' | 'ZodString' => {
+  // @ts-expect-error ignore-me
+  if (schema._def.typeName === `ZodDefault`) {
+    // @ts-expect-error ignore-me
+    // eslint-disable-next-line
+    return getZodBaseTypeName(schema._def.innerType)
+  }
+
+  // @ts-expect-error ignore-me
+  if (schema._def.typeName === `ZodOptional`) {
+    // @ts-expect-error ignore-me
+    // eslint-disable-next-line
+    return getZodBaseTypeName(schema._def.innerType)
+  }
+
+  // @ts-expect-error ignore-me
+  // eslint-disable-next-line
+  return schema._def.typeName
 }
