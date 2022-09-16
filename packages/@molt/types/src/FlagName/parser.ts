@@ -8,8 +8,10 @@ export namespace Checks {
 	export type ShortFlagTooLong<Name extends string> = String.Length<Name> extends 1 ? false : true
 	export type AliasDuplicate<Names extends FlagNames, Name extends string> =  Str.KebabToCamelCase<Name> extends Names['long'] | Names['short'] ? true : false
 	export type NameAlreadyTaken<Limits extends SomeLimits, Name extends string> = Name extends Limits['usedNames'] ? true : false
-	export type NameReserved<Limits extends SomeLimits, Name extends string> = Name extends Limits['reservedNames'] ? true : false
-	type x = AliasDuplicate<{aliases:{short:[],long:[]},long:'fooBar',short:undefined}, 'fooBar'>
+	export type NameReserved<Limits extends SomeLimits, Name extends string> =
+		Limits['reservedNames'] extends undefined 																														? false :
+		Str.KebabToCamelCase<Name> extends Str.KebabToCamelCase<Exclude<Limits['reservedNames'], undefined>> 	? true :
+																																																						false
 }
 
 // prettier-ignore

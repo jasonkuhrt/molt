@@ -9,7 +9,19 @@ const as = <T>(): T => 0 as any
 namespace _testErrors {
 	expectType<FlagName.Errors.Empty>(as<											FlagName.Parse<''>>())
 	expectType<FlagName.Errors.Empty>(as<											FlagName.Parse<' '>>())
+
 	expectType<FlagName.Errors.NameReserved<'abc'>>(as<				FlagName.Parse<'--abc', { reservedNames: 'abc'; usedNames: undefined }>>())
+	// Mixing dash prefix style and kebab/camel case does not matter
+	expectType<FlagName.Errors.NameReserved<'foo-bar'>>(as<		FlagName.Parse<'--foo-bar', { reservedNames: 'fooBar';  usedNames: undefined }>>())
+	expectType<FlagName.Errors.NameReserved<'fooBar'>>(as<		FlagName.Parse<'--fooBar',  { reservedNames: 'foo-bar'; usedNames: undefined }>>())
+	expectType<FlagName.Errors.NameReserved<'foo-bar'>>(as<		FlagName.Parse<'foo-bar',   { reservedNames: 'fooBar';  usedNames: undefined }>>())
+	expectType<FlagName.Errors.NameReserved<'fooBar'>>(as<		FlagName.Parse<'fooBar',    { reservedNames: 'foo-bar'; usedNames: undefined }>>())
+	// Aliases
+	expectType<FlagName.Errors.NameReserved<'foo-bar'>>(as<		FlagName.Parse<'--foo --foo-bar', { reservedNames: 'fooBar';  usedNames: undefined }>>())
+	expectType<FlagName.Errors.NameReserved<'fooBar'>>(as<		FlagName.Parse<'--foo --fooBar',  { reservedNames: 'foo-bar'; usedNames: undefined }>>())
+	expectType<FlagName.Errors.NameReserved<'foo-bar'>>(as<		FlagName.Parse<'foo foo-bar',   { reservedNames: 'fooBar';  usedNames: undefined }>>())
+	expectType<FlagName.Errors.NameReserved<'fooBar'>>(as<		FlagName.Parse<'foo fooBar',    { reservedNames: 'foo-bar'; usedNames: undefined }>>())
+
 	expectType<FlagName.Errors.NameAlreadyTaken<'abc'>>(as<		FlagName.Parse<'--abc', { usedNames: 'abc'; reservedNames: undefined }>>())
 	expectType<FlagName.Errors.NameReserved<'a'>>(as<					FlagName.Parse<'-a', { reservedNames: 'a'; usedNames: undefined }>>())
 	expectType<FlagName.Errors.NameAlreadyTaken<'a'>>(as<			FlagName.Parse<'-a', { usedNames: 'a'; reservedNames: undefined }>>())
