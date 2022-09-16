@@ -1,4 +1,5 @@
 import { Command } from '../packages/@molt/command/src/index.js'
+import { Octokit } from '@octokit/core'
 import { execa } from 'execa'
 import Fs from 'fs-jetpack'
 import * as Path from 'node:path'
@@ -9,17 +10,74 @@ import { z } from 'zod'
 const args = Command.create({
   'p package': z.enum([`@molt/command`, `@molt/types`, `molt`]),
   'v version': z.string().regex(semverRegex()),
+  publish: z.boolean().default(true),
+  githubRelease: z.boolean().default(true),
 }).parseOrThrow()
+
+const githubToken = process.env[`GITHUB_TOKEN`]
+
+if (!githubToken) throw new Error(`GITHUB_TOKEN is required`)
 
 const cwd = Path.join(Path.dirname(url.fileURLToPath(import.meta.url)), `../packages`, args.package)
 const $Fs = Fs.cwd(cwd)
 
-const pkg = (await $Fs.readAsync(`package.json`, `json`)) as { name: string; version: string }
-await $Fs.writeAsync(`package.json`, JSON.stringify({ ...pkg, version: args.version }, null, 2) + `\n`)
-await execa(`git`, [`add`, `package.json`], { cwd })
-await execa(`git`, [`commit`, `--message`, `'chore(${args.package}): bump version'`], { stdio: `inherit` })
-await execa(`pnpm`, [`publish`], { cwd, stdio: `inherit` })
-// prettier-ignore
-await execa(`git`, [`tag`, `${args.package}@${args.version}`, `--annotate`, `--message`, `Version ${args.version} for package ${args.package}`], { stdio: `inherit` })
-await execa(`git`, [`push`], { stdio: `inherit` })
-await execa(`git`, [`push`, `--tags`], { stdio: `inherit` })
+const workspacePkg = (await Fs.readAsync(`package.json`, `json`)) as {
+  name: string
+  version: string
+  repository: string
+}
+
+const pkg = (await $Fs.readAsync(`package.json`, `json`)) as {
+  name: string
+  version: string
+  repository: string
+}
+
+const gitTagName = `${args.package}@${args.version}`
+
+const match = workspacePkg.repository.match(/git@github.com:(.+)\/(.+)\.git/)
+
+if (!match) throw new Error(`Invalid repository URL: ${workspacePkg.repository}`)
+
+const repo = {
+  // eslint-disable-next-line
+  owner: match[1]!,
+  // eslint-disable-next-line
+  name: match[2]!,
+}
+
+if (args.publish) {
+  await $Fs.writeAsync(
+    `package.json`,
+    JSON.stringify({ ...pkg, version: args.version }, null, 2) + `\n, repository: string`
+  )
+  await execa(`git`, [`add`, `package.json`], { cwd })
+  await execa(`git`, [`commit`, `--message`, `'chore(${args.package}): bump version'`], { stdio: `inherit` })
+  await execa(`pnpm`, [`publish`], { cwd, stdio: `inherit` })
+  // prettier-ignore
+  await execa(
+  `git`,
+  [`tag`, gitTagName, `--annotate`, `--message`, `Version ${args.version} for package ${args.package}`],
+  { stdio: `inherit` }
+)
+  await execa(`git`, [`push`], { stdio: `inherit` })
+  await execa(`git`, [`push`, `--tags`], { stdio: `inherit` })
+}
+
+if (args.githubRelease) {
+  const octokit = new Octokit({
+    auth: githubToken,
+  })
+
+  await octokit.request(`POST /repos/{owner}/{repo}/releases`, {
+    owner: repo.owner,
+    repo: repo.name,
+    tag_name: gitTagName,
+    target_commitish: `main`,
+    name: gitTagName,
+    body: `todo`,
+    draft: false,
+    prerelease: false,
+    generate_release_notes: false,
+  })
+}
