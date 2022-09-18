@@ -30,7 +30,7 @@ importers:
       semver-regex: 4.0.5
       ts-node: 10.9.1
       typescript: 4.8.3
-      vitest: 0.23.2
+      vitest: 0.23.4
       zod: 3.19.1
     devDependencies:
       '@octokit/core': 4.0.5
@@ -59,7 +59,7 @@ importers:
       semver-regex: 4.0.5
       ts-node: 10.9.1_jbfgev3mspjpujj3ueaega5j5u
       typescript: 4.8.3
-      vitest: 0.23.2
+      vitest: 0.23.4
       zod: 3.19.1
 
   packages/@molt/command:
@@ -2487,8 +2487,8 @@ packages:
       fsevents: 2.3.2
     dev: true
 
-  /vitest/0.23.2:
-    resolution: {integrity: sha512-kTBKp3ROPDkYC+x2zWt4znkDtnT08W1FQ6ngRFuqxpBGNuNVS+eWZKfffr8y2JGvEzZ9EzMAOcNaiqMj/FZqMw==}
+  /vitest/0.23.4:
+    resolution: {integrity: sha512-iukBNWqQAv8EKDBUNntspLp9SfpaVFbmzmM0sNcnTxASQZMzRw3PsM6DMlsHiI+I6GeO5/sYDg3ecpC+SNFLrQ==}
     engines: {node: '>=v14.16.0'}
     hasBin: true
     peerDependencies:
