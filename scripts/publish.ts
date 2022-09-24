@@ -14,11 +14,12 @@ const args = Command.create({
   'b bump': z.enum([`major`, `minor`, `patch`]).optional(),
   publish: z.boolean().default(true),
   githubRelease: z.boolean().default(true),
+  githubToken: z.string(),
 }).parseOrThrow()
 
-const githubToken = process.env[`GITHUB_TOKEN`]
+// const githubToken = process.env[`GITHUB_TOKEN`]
 
-if (!githubToken) throw new Error(`GITHUB_TOKEN is required`)
+// if (!githubToken) throw new Error(`GITHUB_TOKEN is required`)
 
 if (!args.bump && !args.version) throw new Error(`--bump or --version is required`)
 if (args.bump && args.version) throw new Error(`--bump and --version cannot both be specified`)
@@ -66,7 +67,7 @@ if (args.publish) {
 
 if (args.githubRelease) {
   const octokit = new Octokit({
-    auth: githubToken,
+    auth: args.githubToken,
   })
 
   await octokit.request(`POST /repos/{owner}/{repo}/releases`, {

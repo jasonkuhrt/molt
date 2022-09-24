@@ -1,6 +1,6 @@
-import { Str } from '../prelude.js'
-import { FlagNames, FlagNamesEmpty } from './data.js'
-import { String } from 'ts-toolbelt'
+import type { Str } from '../prelude.js'
+import type { FlagNames, FlagNamesEmpty } from './data.js'
+import type { String } from 'ts-toolbelt'
 
 // prettier-ignore
 export namespace Checks {

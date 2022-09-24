@@ -1,5 +1,6 @@
 import { Command } from '../src/index.js'
-import { assert, IsExact } from 'conditional-type-checks'
+import type { IsExact } from 'conditional-type-checks'
+import { assert } from 'conditional-type-checks'
 import { describe, expect, it } from 'vitest'
 import { z } from 'zod'
 
@@ -109,7 +110,7 @@ describe(`#`, () => {
           expect(() =>
             Command.create({ '--name': z.string().regex(/[a-z]+/) }).parseOrThrow([`--name`, `BAD`])
           ).toThrowErrorMatchingInlineSnapshot(`
-            "Invalid argument for flag: \\"name\\". The error was:
+            "Invalid argument for parameter: \\"name\\". The error was:
             Invalid"
           `)
         })
@@ -137,7 +138,7 @@ describe(`#`, () => {
         it(`is validated`, () => {
           expect(() => Command.create({ '--age': z.number().int() }).parseOrThrow([`--age`, `1.1`]))
             .toThrowErrorMatchingInlineSnapshot(`
-              "Invalid argument for flag: \\"age\\". The error was:
+              "Invalid argument for parameter: \\"age\\". The error was:
               Expected integer, received float"
             `)
         })
@@ -160,9 +161,9 @@ describe(`#`, () => {
           // expect(args).toEqual({ mode: true })
           expect(() => Command.create({ '--mode': z.enum([`a`, `b`, `c`]) }).parseOrThrow([`--mode`, `bad`]))
             .toThrowErrorMatchingInlineSnapshot(`
-            "Invalid argument for flag: \\"mode\\". The error was:
-            Invalid enum value. Expected 'a' | 'b' | 'c', received 'bad'"
-          `)
+              "Invalid argument for parameter: \\"mode\\". The error was:
+              Invalid enum value. Expected 'a' | 'b' | 'c', received 'bad'"
+            `)
         })
       })
       describe(`boolean`, () => {
