@@ -71,7 +71,7 @@ type Definition<ParametersSchema extends z.ZodRawShape> = {
 
 export const create = <Schema extends z.ZodRawShape>(schema: Schema): Definition<Schema> => {
   const settingsDefaults: SettingsNormalized = {
-    environmentArguments: false,
+    environmentArguments: true,
   }
   const settings = { ...settingsDefaults }
 

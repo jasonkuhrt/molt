@@ -24,9 +24,10 @@ const environmentManager = createEnvironmentManager()
 beforeEach(environmentManager.reset)
 
 describe(`toggling`, () => {
-  it(`is disabled by default`, () => {
-    environmentManager.set(`cli_foo`, `bar`)
-    expect(() => Command.create({ '--foo': z.string() }).parseOrThrow([])).toThrow()
+  it(`is enabled by default`, () => {
+    environmentManager.set(`cli_parameter_foo`, `bar`)
+    const args = Command.create({ '--foo': z.string() }).parseOrThrow([])
+    expect(args).toEqual({ foo: `bar` })
   })
   it(`can be enabled by settings`, () => {
     environmentManager.set(`cli_param_foo`, `bar`)
@@ -36,13 +37,19 @@ describe(`toggling`, () => {
     expect(args).toEqual({ foo: `bar` })
   })
   it(`can be enabled by environment`, () => {
-    environmentManager.set(`CLI_SETTINGS_READ_ARGUMENTS_FROM_ENVIRONMENT`, `true`)
+    environmentManager.set(`ClI_settings_READ_arguments_FROM_ENVIRONMENT`, `true`)
     environmentManager.set(`cli_param_foo`, `bar`)
     const args = Command.create({ '--foo': z.string() }).parseOrThrow([])
     expect(args).toEqual({ foo: `bar` })
   })
+  it(`can be disabled by environment`, () => {
+    environmentManager.set(`ClI_settings_READ_arguments_FROM_ENVIRONMENT`, `false`)
+    environmentManager.set(`cli_param_foo`, `bar`)
+    const args = Command.create({ '--foo': z.string().default(`x`) }).parseOrThrow([])
+    expect(args).toEqual({ foo: `x` })
+  })
   it(`environment supersedes settings`, () => {
-    environmentManager.set(`CLI_SETTINGS_READ_ARGUMENTS_FROM_ENVIRONMENT`, `false`)
+    environmentManager.set(`ClI_settings_READ_arguments_FROM_ENVIRONMENT`, `false`)
     environmentManager.set(`cli_foo`, `bar`)
     expect(() =>
       Command.create({ '--foo': z.string() })
