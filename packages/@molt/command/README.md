@@ -58,7 +58,7 @@ npm add @molt/command
 
 Parameter arguments can be passed by environment variables instead of traditional flags.
 
-Flags take precedence over environment variables because flags generally come later than environment variables (e.g. shell has some exported environment variables).
+Environment arguments have lower precedence than Flags, so if an argument is available from both the flag and the environment, only the flag argument is used.
 
 Environment variables follow this pattern by default:
 

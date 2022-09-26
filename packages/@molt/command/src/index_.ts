@@ -1,14 +1,31 @@
 import { Errors } from './Errors/index.js'
+import type { FlagSpec } from './flagSpec.js'
+import { parseFlagSpecs } from './flagSpec.js'
+import {
+  getProcessEnvironmentLowerCase,
+  lookupEnvironmentVariableArgument,
+  parseEnvironmentVariableBoolean,
+  parsePrimitive,
+  stripeDashPrefix,
+} from './helpers.js'
+import type {
+  ArgumentsInput,
+  ArgumentsInputStructured,
+  ArgumentsInputStructuredArgFlag,
+  ArgumentsInputStructuredBooleanFlag,
+} from './structureProcessArguments.js'
+import { structureProcessArguments } from './structureProcessArguments.js'
 import type { FlagName } from '@molt/types'
 import { Alge } from 'alge'
-import camelCase from 'lodash.camelcase'
 import type { Any } from 'ts-toolbelt'
 import { z } from 'zod'
 
-const toCanonicalParameterName = (parameterName: string) => parameterName.replace(/^cli_/i, ``)
+const defaultParameterNamePrefixes = [`CLI_PARAMETER`, `CLI_PARAM`] as const
 
-const getProcessEnvironmentLowerCase = () =>
-  Object.fromEntries(Object.entries(process.env).map(([k, v]) => [k.toLowerCase(), v?.trim()]))
+export const environmentArgumentName = (name: string) => `${defaultParameterNamePrefixes[0]}_${name}`
+
+const toCanonicalParameterName = (parameterName: string) =>
+  parameterName.replace(/^cli_(?:param|parameter)_/i, ``)
 
 const ZodTypeToPrimitive = {
   ZodBoolean: `boolean`,
@@ -16,142 +33,12 @@ const ZodTypeToPrimitive = {
   ZodNumber: `number`,
 } as const
 
-const lookupEnvironmentVariableArgument = (
-  environment: Record<string, string | undefined>,
-  parameterName: string
-): null | { argument: string; environmentVariableName: string } => {
-  const environmentVariableName = `cli_${parameterName}`
-  const argument = environment[environmentVariableName]
-  if (argument === undefined) return null
-  return {
-    argument,
-    environmentVariableName,
-  }
-}
-
-const parseEnvironmentVariableBoolean = (value: string) =>
-  value === `true` ? true : value === `false` ? false : null
-
-const OrThrow = <T>(messageConstructor: string | (() => string), value: T): Exclude<T, null> => {
-  if (value === null) {
-    throw new Error(typeof messageConstructor === `string` ? messageConstructor : messageConstructor())
-  }
-  return value as Exclude<T, null>
-}
-
-const casesHandled = (value: never) => {
-  throw new Error(`Unhandled case: ${String(value)}`)
-}
-
-type SchemaBase = 'ZodBoolean' | 'ZodNumber' | 'ZodString'
-
-export type FlagSpec =
-  | {
-      _tag: 'Long'
-      canonical: string
-      schema: z.ZodType
-      schemaBase: SchemaBase
-      long: string
-      short: undefined
-      aliases: {
-        short: [...string[]]
-        long: [...string[]]
-      }
-    }
-  | {
-      _tag: 'Short'
-      schema: z.ZodType
-      schemaBase: SchemaBase
-      canonical: string
-      long: undefined
-      short: string
-      aliases: {
-        short: [...string[]]
-        long: [...string[]]
-      }
-    }
-  | {
-      _tag: 'LongShort'
-      schema: z.ZodType
-      schemaBase: SchemaBase
-      canonical: string
-      long: string
-      short: string
-      aliases: {
-        short: [...string[]]
-        long: [...string[]]
-      }
-    }
-
-const stripeDashPrefix = (flagNameInput: string): string => {
-  return flagNameInput.replace(/^-+/, ``)
-}
-
-const parseFlagSpecs = (schema: z.ZodRawShape): FlagSpec[] =>
-  Object.entries(schema).map(([expression, schema]) => {
-    const names = expression
-      .trim()
-      .split(` `)
-      .map((exp) => exp.trim())
-      .map(stripeDashPrefix)
-
-    // eslint-disable-next-line
-    const spec: FlagSpec = {
-      long: undefined,
-      short: undefined,
-      schema,
-      aliases: {
-        long: [],
-        short: [],
-      },
-      // eslint-disable-next-line
-    } as any
-
-    for (const name of names) {
-      if (name.length === 1)
-        if (spec.short) spec.aliases.short.push(name)
-        else spec.short = name
-      else if (name.length > 1)
-        if (spec.long) spec.aliases.long.push(camelCase(name))
-        else spec.long = camelCase(name)
-      else throw new Error(`Invalid flag name: ${name}`)
-    }
-
-    if (spec.short && spec.long) {
-      spec._tag = `LongShort`
-      spec.canonical = camelCase(spec.long)
-    } else if (spec.short) {
-      spec._tag = `Short`
-      spec.canonical = spec.short
-    } else if (spec.long) {
-      spec._tag = `Long`
-      spec.canonical = camelCase(spec.long)
-    } else throw new Error(`Invalid flag name: ${names.join(` `)}`)
-
-    spec.schemaBase = getSchemaBase(spec.schema)
-
-    return spec
-  })
-
-const getSchemaBase = (schema: z.ZodSchema): SchemaBase => {
-  // @ts-expect-error ignore-me
-  if (schema._def.typeName === `ZodDefault`) {
-    // @ts-expect-error ignore-me
-    // eslint-disable-next-line
-    return getSchemaBase(schema._def.innerType)
-  }
-
-  // @ts-expect-error ignore-me
-  if (schema._def.typeName === `ZodOptional`) {
-    // @ts-expect-error ignore-me
-    // eslint-disable-next-line
-    return getSchemaBase(schema._def.innerType)
-  }
-
-  // @ts-expect-error ignore-me
-  // eslint-disable-next-line
-  return schema._def.typeName
-}
+// const OrThrow = <T>(messageConstructor: string | (() => string), value: T): Exclude<T, null> => {
+//   if (value === null) {
+//     throw new Error(typeof messageConstructor === `string` ? messageConstructor : messageConstructor())
+//   }
+//   return value as Exclude<T, null>
+// }
 
 // prettier-ignore
 type FlagSpecExpressionParseResultToPropertyName<result extends FlagName.Types.SomeParseResult> = 
@@ -168,7 +55,7 @@ type ParametersToArguments<ParametersSchema extends z.ZodRawShape> = Any.Compute
 
 interface SettingsNormalized {
   description?: string
-  readArgumentsFromEnvironment: boolean
+  environmentArguments: boolean
 }
 
 interface SettingsInput {
@@ -184,15 +71,15 @@ type Definition<ParametersSchema extends z.ZodRawShape> = {
 
 export const create = <Schema extends z.ZodRawShape>(schema: Schema): Definition<Schema> => {
   const settingsDefaults: SettingsNormalized = {
-    readArgumentsFromEnvironment: false,
+    environmentArguments: false,
   }
   const settings = { ...settingsDefaults }
 
   const api = {
     settings: (newSettings) => {
       settings.description = newSettings.description ?? settings.description
-      settings.readArgumentsFromEnvironment =
-        newSettings.readArgumentsFromEnvironment ?? settings.readArgumentsFromEnvironment
+      settings.environmentArguments =
+        newSettings.readArgumentsFromEnvironment ?? settings.environmentArguments
       return api
     },
     parseOrThrow: (processArguments) => {
@@ -205,112 +92,54 @@ export const create = <Schema extends z.ZodRawShape>(schema: Schema): Definition
   return api
 }
 
-type ArgumentsInput = string[]
-
-type ArgumentsInputStructuredArgFlag = {
-  _tag: 'Arguments'
-  arguments: string[]
-}
-
-type ArgumentsInputStructuredBooleanFlag = {
-  _tag: 'Boolean'
-  negated: boolean
-}
-
-type ArgumentsInputStructured = Record<
-  string,
-  ArgumentsInputStructuredArgFlag | ArgumentsInputStructuredBooleanFlag
->
-
-const structureProcessArguments = (argumentsInput: ArgumentsInput): ArgumentsInputStructured => {
-  const structured: ArgumentsInputStructured = {}
-  let index = 0
-  let currentFlag: null | ArgumentsInputStructuredArgFlag | ArgumentsInputStructuredBooleanFlag = null
-
-  for (const argument of argumentsInput) {
-    const trimmed = argument.trim()
-
-    if (isFlagInput(trimmed)) {
-      const noDashPrefix = stripeDashPrefix(trimmed)
-      if (
-        !argumentsInput[index + 1] ||
-        //eslint-disable-next-line
-        (argumentsInput[index + 1] && isFlagInput(argumentsInput[index + 1]!))
-      ) {
-        currentFlag = {
-          _tag: `Boolean`,
-          // TODO handle camel case negation like --noWay
-          negated: noDashPrefix.startsWith(`no-`),
-        }
-        const noNegatePrefix = noDashPrefix.replace(`no-`, ``)
-        const camelized = camelCase(noNegatePrefix)
-        structured[camelized] = currentFlag
-      } else {
-        currentFlag = {
-          _tag: `Arguments`,
-          arguments: [],
-        }
-        structured[camelCase(noDashPrefix)] = currentFlag
-      }
-    } else if (currentFlag && currentFlag._tag === `Arguments`) {
-      currentFlag.arguments.push(trimmed)
-    }
-
-    index++
-  }
-
-  // console.log({ structured })
-  return structured
-}
-
 const findStructuredArgument = (
   structuredArguments: ArgumentsInputStructured,
   flagSpec: FlagSpec
 ): null | {
-  via: 'short' | 'long'
+  via: 'Short' | 'Long'
   givenName: string
   arg: ArgumentsInputStructuredArgFlag | ArgumentsInputStructuredBooleanFlag
 } => {
   // TODO handle aliases
-  switch (flagSpec._tag) {
-    case `Long`:
+  return Alge.match(flagSpec)
+    .Long((flagSpec) => {
       if (structuredArguments[flagSpec.long])
         return {
-          via: `long`,
+          via: flagSpec._tag,
           givenName: flagSpec.long,
           //eslint-disable-next-line
           arg: structuredArguments[flagSpec.long]!,
         }
       return null
-    case `Short`:
+    })
+    .Short((flagSpec) => {
       if (structuredArguments[flagSpec.short])
         return {
-          via: `short`,
+          via: flagSpec._tag,
           givenName: flagSpec.short,
           //eslint-disable-next-line
           arg: structuredArguments[flagSpec.short]!,
         }
       return null
-    case `LongShort`:
+    })
+    .LongShort((flagSpec) => {
       if (structuredArguments[flagSpec.long])
         return {
-          via: `long`,
+          via: `Long` as const,
           givenName: flagSpec.long,
           //eslint-disable-next-line
           arg: structuredArguments[flagSpec.long]!,
         }
       if (structuredArguments[flagSpec.short])
         return {
-          via: `short`,
+          via: `Short` as const,
           givenName: flagSpec.short,
           //eslint-disable-next-line
           arg: structuredArguments[flagSpec.short]!,
         }
       return null
-    default:
-      casesHandled(flagSpec)
-  }
-  return null
+    })
+    .done()
 }
 
 const parseProcessArguments = (
@@ -318,61 +147,55 @@ const parseProcessArguments = (
   processArguments: ArgumentsInput,
   settings: SettingsNormalized
 ): object => {
+  // console.log({ processArguments })
   const args: Record<string, unknown> = {}
   const flagSpecs = parseFlagSpecs(schema)
   const structuredArguments = structureProcessArguments(processArguments)
   // console.log(structuredArguments)
   // TODO only get when enabled and even then only when needed (args missing)
   const processEnvLowerCase = getProcessEnvironmentLowerCase()
-  const isEnvironmentArgumentsEnabled = processEnvLowerCase[`cli_environment_args`]
-    ? //eslint-disable-next-line
-      parseEnvironmentVariableBoolean(processEnvLowerCase[`cli_environment_args`]!)
-    : processEnvLowerCase[`cli_environment_arguments`]
-    ? //eslint-disable-next-line
-      parseEnvironmentVariableBoolean(processEnvLowerCase[`cli_environment_arguments`]!)
-    : processEnvLowerCase[`cli_env_args`]
-    ? //eslint-disable-next-line
-      parseEnvironmentVariableBoolean(processEnvLowerCase[`cli_env_args`]!)
-    : processEnvLowerCase[`cli_env_arguments`]
-    ? //eslint-disable-next-line
-      parseEnvironmentVariableBoolean(processEnvLowerCase[`cli_env_arguments`]!)
-    : settings.readArgumentsFromEnvironment
 
-  const parsePrimitive = (
-    value: string,
-    parseTo: 'number' | 'string' | 'boolean'
-  ): null | number | string | boolean =>
-    Alge.match(parseTo)
-      .boolean(() => parseEnvironmentVariableBoolean(value))
-      .number(() => Number(value))
-      .else(() => value)
+  const isEnvironmentArgumentsEnabled = processEnvLowerCase[`cli_settings_read_arguments_from_environment`]
+    ? //eslint-disable-next-line
+      parseEnvironmentVariableBoolean(processEnvLowerCase[`cli_settings_read_arguments_from_environment`]!)
+    : // : processEnvLowerCase[`cli_environment_arguments`]
+      // ? //eslint-disable-next-line
+      //   parseEnvironmentVariableBoolean(processEnvLowerCase[`cli_environment_arguments`]!)
+      // : processEnvLowerCase[`cli_env_args`]
+      // ? //eslint-disable-next-line
+      //   parseEnvironmentVariableBoolean(processEnvLowerCase[`cli_env_args`]!)
+      // : processEnvLowerCase[`cli_env_arguments`]
+      // ? //eslint-disable-next-line
+      //   parseEnvironmentVariableBoolean(processEnvLowerCase[`cli_env_arguments`]!)
+      settings.environmentArguments
 
   for (const flagSpec of flagSpecs) {
     // console.log(flagSpec)
 
     const flagInput = findStructuredArgument(structuredArguments, flagSpec)
-    // console.log({ input })
+    // console.log({ flagInput })
 
     if (!flagInput) {
       // console.log(flagSpec)
       // console.log(processEnvLowerCase)
+      // console.log({ isEnvironmentArgumentsEnabled })
       if (isEnvironmentArgumentsEnabled) {
         const environmentVariableLookupResult = lookupEnvironmentVariableArgument(
+          defaultParameterNamePrefixes,
           processEnvLowerCase,
           flagSpec.canonical
         )
+        // console.log({ environmentVariableLookupResult })
         if (environmentVariableLookupResult) {
           const argValidatedNot = parsePrimitive(
-            environmentVariableLookupResult.argument,
+            environmentVariableLookupResult.value,
             ZodTypeToPrimitive[flagSpec.schemaBase]
           )
           const argValidated = flagSpec.schema.safeParse(argValidatedNot)
           if (!argValidated.success)
             throw new Errors.ErrorInvalidArgument({
-              environmentVariableName: environmentVariableLookupResult.environmentVariableName.toUpperCase(),
-              parameterName: toCanonicalParameterName(
-                environmentVariableLookupResult.environmentVariableName
-              ),
+              environmentVariableName: environmentVariableLookupResult.name.toUpperCase(),
+              parameterName: toCanonicalParameterName(environmentVariableLookupResult.name),
               validationError: argValidated.error,
             })
           args[flagSpec.canonical] = argValidated.data
@@ -428,8 +251,4 @@ const parseProcessArguments = (
   }
 
   return args
-}
-
-const isFlagInput = (input: string) => {
-  return input.trim().startsWith(`--`) || input.trim().startsWith(`-`)
 }
