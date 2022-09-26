@@ -1,13 +1,12 @@
+import {
+  defaultParameterNamePrefixes,
+  getProcessEnvironmentLowerCase,
+  lookupEnvironmentVariableArgument,
+} from './environment.js'
 import { Errors } from './Errors/index.js'
 import type { FlagSpec } from './flagSpec.js'
 import { parseFlagSpecs } from './flagSpec.js'
-import {
-  getProcessEnvironmentLowerCase,
-  lookupEnvironmentVariableArgument,
-  parseEnvironmentVariableBoolean,
-  parsePrimitive,
-  stripeDashPrefix,
-} from './helpers.js'
+import { parseEnvironmentVariableBoolean, parsePrimitive } from './helpers.js'
 import type {
   ArgumentsInput,
   ArgumentsInputStructured,
@@ -19,10 +18,6 @@ import type { FlagName } from '@molt/types'
 import { Alge } from 'alge'
 import type { Any } from 'ts-toolbelt'
 import { z } from 'zod'
-
-const defaultParameterNamePrefixes = [`CLI_PARAMETER`, `CLI_PARAM`] as const
-
-export const environmentArgumentName = (name: string) => `${defaultParameterNamePrefixes[0]}_${name}`
 
 const toCanonicalParameterName = (parameterName: string) =>
   parameterName.replace(/^cli_(?:param|parameter)_/i, ``)

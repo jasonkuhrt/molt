@@ -1,3 +1,4 @@
+import { environmentArgumentName } from '../src/environment.js'
 import { Command } from '../src/index.js'
 import { beforeEach, expect } from 'vitest'
 import { describe, it } from 'vitest'
@@ -86,34 +87,34 @@ describe(`when enabled and a flag arg is not passed then the env is considered`,
 
   describe(`boolean`, () => {
     it(`true`, () => {
-      environmentManager.set(Command.environmentArgumentName(`VERBOSE`), `true`)
+      environmentManager.set(environmentArgumentName(`VERBOSE`), `true`)
       const args = Command.create({ '--verbose': z.boolean() }).parseOrThrow([])
       expect(args).toEqual({ verbose: true })
     })
     it(`true (with param default false)`, () => {
-      environmentManager.set(Command.environmentArgumentName(`VERBOSE`), `true`)
+      environmentManager.set(environmentArgumentName(`VERBOSE`), `true`)
       const args = Command.create({ '--verbose': z.boolean().default(false) }).parseOrThrow([])
       expect(args).toEqual({ verbose: true })
     })
     it(`false`, () => {
-      environmentManager.set(Command.environmentArgumentName(`verbose`), `false`)
+      environmentManager.set(environmentArgumentName(`verbose`), `false`)
       const args = Command.create({ '--verbose': z.boolean() }).parseOrThrow([])
       expect(args).toEqual({ verbose: false })
     })
   })
 
   it(`string`, () => {
-    environmentManager.set(Command.environmentArgumentName(`foo`), `bar`)
+    environmentManager.set(environmentArgumentName(`foo`), `bar`)
     const args = Command.create({ '--foo': z.string() }).parseOrThrow([])
     expect(args).toEqual({ foo: `bar` })
   })
   it(`number`, () => {
-    environmentManager.set(Command.environmentArgumentName(`foo`), `4.3`)
+    environmentManager.set(environmentArgumentName(`foo`), `4.3`)
     const args = Command.create({ '--foo': z.number() }).parseOrThrow([])
     expect(args).toEqual({ foo: 4.3 })
   })
   it(`env arg is validated`, () => {
-    environmentManager.set(Command.environmentArgumentName(`foo`), `d`)
+    environmentManager.set(environmentArgumentName(`foo`), `d`)
     expect(() => Command.create({ '--foo': z.enum([`a`, `b`, `c`]) }).parseOrThrow([]))
       .toThrowErrorMatchingInlineSnapshot(`
         "Invalid argument (via environment variable \\"CLI_PARAMETER_FOO\\") for parameter: \\"foo\\". The error was:
