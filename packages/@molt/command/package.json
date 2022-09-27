@@ -1,7 +1,7 @@
 {
   "name": "@molt/command",
   "version": "0.0.7",
-  "description": "Simple type-safe CLI command parsing.",
+  "description": "Type-safe CLI command definition and execution.",
   "type": "module",
   "scripts": {
     "types:check": "tsc --noEmit",
