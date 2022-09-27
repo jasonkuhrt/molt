@@ -114,13 +114,13 @@ describe(`prefix`, () => {
       ).toThrowErrorMatchingInlineSnapshot(
         `
         "Parameter(s) \\"foo\\", \\"bar\\" received arguments multiple times via different environment variables: {
-          \\"foo\\": {
+          \\"bar\\": {
             \\"CLI_PARAM\\": \\"qux1\\",
             \\"CLI_PARAMETER\\": \\"qux2\\"
           },
-          \\"bar\\": {
-            \\"CLI_PARAMETER\\": \\"qux2\\",
-            \\"CLI_PARAM\\": \\"qux1\\"
+          \\"foo\\": {
+            \\"CLI_PARAM\\": \\"qux1\\",
+            \\"CLI_PARAMETER\\": \\"qux2\\"
           }
         }"
       `

@@ -222,12 +222,16 @@ const parseProcessArguments = (
       .filter(([_name, environmentVariables]) => {
         return Boolean(environmentVariables.find((envar) => envar[2]))
       })
-      .map((entry) => [entry[0], entry[1].map((envar) => [envar[0], envar[1]])])
+      .map((entry): [string, [string, string | undefined][]] => [
+        entry[0],
+        entry[1].map((envar) => [envar[0], envar[1]]),
+      ])
     if (argsPassedUnknown.length > 0) {
       throw new Error(
         `Environment variables appearing to be CLI parameter arguments were found but do not correspond to any actual parameters. This probably indicates a typo or some other kind of error: ${JSON.stringify(
-          // @ts-expect-error todo
-          Object.fromEntries(argsPassedUnknown.map((entry) => [entry[0], Object.fromEntries(entry[1])])),
+          Object.fromEntries(
+            argsPassedUnknown.sort().map((entry) => [entry[0], Object.fromEntries(entry[1].sort())])
+          ),
           null,
           2
         )}`
@@ -237,13 +241,17 @@ const parseProcessArguments = (
       .filter(([_name, environmentVariables]) => {
         return environmentVariables.length > 1
       })
-      .map((entry) => [entry[0], entry[1].map((envar) => [envar[0], envar[1]])])
+      .map((entry): [string, [string, string | undefined][]] => [
+        entry[0],
+        entry[1].map((envar) => [envar[0], envar[1]]),
+      ])
     if (argsPassedViaMultiple.length > 0) {
       const params = argsPassedViaMultiple.map((args) => `"${String(args[0])}"`).join(`, `)
       throw new Error(
         `Parameter(s) ${params} received arguments multiple times via different environment variables: ${JSON.stringify(
-          // @ts-expect-error todo
-          Object.fromEntries(argsPassedViaMultiple.map((entry) => [entry[0], Object.fromEntries(entry[1])])),
+          Object.fromEntries(
+            argsPassedViaMultiple.sort().map((entry) => [entry[0], Object.fromEntries(entry[1].sort())])
+          ),
           null,
           2
         )}`
