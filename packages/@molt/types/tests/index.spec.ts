@@ -1,4 +1,4 @@
-import { FlagName } from '../src/index.js'
+import type { FlagName } from '../src/index.js'
 import { expectType } from 'tsd'
 
 // eslint-disable-next-line
@@ -125,7 +125,6 @@ expectType<SomeLongShort>(as<FlagName.Parse<'  -v  --version  '>>())
 expectType<SomeLongShort>(as<FlagName.Parse<'  -v   --version '>>())
 expectType<SomeLongShort>(as<FlagName.Parse<'  v   version '>>())
 expectType<SomeLongShort>(as<FlagName.Parse<'v version'>>())
-type x = FlagName.Parse<'  v   version '>
 
 interface SomeLongCamelCase {
   long: 'fooBar'

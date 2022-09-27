@@ -66,6 +66,7 @@ importers:
     specifiers:
       '@molt/types': workspace:*
       '@types/lodash.camelcase': 4.3.7
+      alge: 0.7.0-next.1
       conditional-type-checks: 1.0.6
       execa: 6.1.0
       fast-glob: 3.2.12
@@ -75,6 +76,7 @@ importers:
       zod: ^3.19.1
     dependencies:
       '@molt/types': link:../types
+      alge: 0.7.0-next.1
       lodash.camelcase: 4.3.0
       ts-toolbelt: 9.6.0
       zod: 3.19.1
@@ -796,6 +798,15 @@ packages:
       json-schema-traverse: 0.4.1
       uri-js: 4.4.1
     dev: true
+
+  /alge/0.7.0-next.1:
+    resolution: {integrity: sha512-QGB+1x1LJtVi9VKvzEU4oXXHcOXNmMRvX15Vks12AVltlBmxY0yrthn/+hh1tsU7mlPbXXPNw4aIklVoh628+w==}
+    dependencies:
+      lodash.ismatch: 4.4.0
+      remeda: 1.1.0
+      ts-toolbelt: 9.6.0
+      zod: 3.19.1
+    dev: false
 
   /ansi-escapes/4.3.2:
     resolution: {integrity: sha512-gKXj5ALrKWQLsYG9jlTRmR/xKluxHV+Z9QEwNIgCfM1/uwPMCuzVVnh5mwTd+OuBZcwSIMbqssNWRm1lE51QaQ==}
@@ -1817,6 +1828,10 @@ packages:
     resolution: {integrity: sha512-TwuEnCnxbc3rAvhf/LbG7tJUDzhqXyFnv3dtzLOPgCG/hODL7WFnsbwktkD7yUV0RrreP/l1PALq/YSg6VvjlA==}
     dev: false
 
+  /lodash.ismatch/4.4.0:
+    resolution: {integrity: sha512-fPMfXjGQEV9Xsq/8MTSgUf255gawYRbjwMyDbcvDhXgV7enSZA0hynz6vMPnpAb5iONEzBHBPsT+0zes5Z301g==}
+    dev: false
+
   /lodash.merge/4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
     dev: true
@@ -2164,6 +2179,10 @@ packages:
     resolution: {integrity: sha512-pq2bWo9mVD43nbts2wGv17XLiNLya+GklZ8kaDLV2Z08gDCsGpnKn9BFMepvWuHCbyVvY7J5o5+BVvoQbmlJLg==}
     engines: {node: '>=8'}
     dev: true
+
+  /remeda/1.1.0:
+    resolution: {integrity: sha512-dtPAM1fP1HEorGDYyJiZUYfgzswyey0S1sD1FpCOhfgmpTJmnLz32q2WeEB1EyNLMENJuXSKWY8Hrm1CKM9lpw==}
+    dev: false
 
   /resolve-from/4.0.0:
     resolution: {integrity: sha512-pb/MYmXstAkysRFx8piNI1tGFNQIFA3vkE3Gq4EuA1dF6gHp/+vgZqsCGJapvy8N3Q+4o7FwvquPJcnZ7RYy4g==}
