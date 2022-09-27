@@ -1,4 +1,4 @@
-import type { FlagSpec } from '../index_.js'
+import type { FlagSpec } from '../flagSpec.js'
 import type { z } from 'zod'
 
 export class ErrorMissingFlagArgument extends Error {
