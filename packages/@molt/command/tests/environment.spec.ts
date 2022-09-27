@@ -159,6 +159,8 @@ describe(`default environment argument parameter name prefix`, () => {
   })
 })
 
+it.todo(`takes lower precedence than flags`)
+
 describe(`when enabled and a flag arg is not passed then the env is considered`, () => {
   beforeEach(() => environmentManager.set(`CLI_SETTINGS_READ_ARGUMENTS_FROM_ENVIRONMENT`, `true`))
 
