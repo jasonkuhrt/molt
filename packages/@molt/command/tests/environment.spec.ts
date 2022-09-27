@@ -33,7 +33,7 @@ describe(`toggling`, () => {
   it(`can be enabled by settings`, () => {
     environmentManager.set(`cli_param_foo`, `bar`)
     const args = Command.create({ '--foo': z.string() })
-      .settings({ readArgumentsFromEnvironment: true })
+      .settings({ environmentArguments: true })
       .parseOrThrow([])
     expect(args).toEqual({ foo: `bar` })
   })
@@ -53,10 +53,80 @@ describe(`toggling`, () => {
     environmentManager.set(`ClI_settings_READ_arguments_FROM_ENVIRONMENT`, `false`)
     environmentManager.set(`cli_foo`, `bar`)
     expect(() =>
-      Command.create({ '--foo': z.string() })
-        .settings({ readArgumentsFromEnvironment: true })
-        .parseOrThrow([])
+      Command.create({ '--foo': z.string() }).settings({ environmentArguments: true }).parseOrThrow([])
     ).toThrow()
+  })
+})
+
+describe(`prefix`, () => {
+  it(`can be disabled`, () => {
+    environmentManager.set(`foo`, `bar`)
+    const args = Command.create({ '--foo': z.string() })
+      .settings({ environmentArguments: { prefix: null } })
+      .parseOrThrow([])
+    expect(args).toEqual({ foo: `bar` })
+  })
+  it(`can be customized to a different prefix`, () => {
+    environmentManager.set(`FOO_foo`, `bar`)
+    const args = Command.create({ '--foo': z.string() })
+      .settings({ environmentArguments: { prefix: `FOO` } })
+      .parseOrThrow([])
+    expect(args).toEqual({ foo: `bar` })
+  })
+  it(`can be customized to multiple accepted different prefixes`, () => {
+    environmentManager.set(`FOO_foo`, `qux1`)
+    environmentManager.set(`BAR_bar`, `qux2`)
+    const args = Command.create({ '--foo': z.string(), '--bar': z.string() })
+      .settings({ environmentArguments: { prefix: [`FOO`, `BAR`] } })
+      .parseOrThrow([])
+    expect(args).toEqual({ foo: `qux1`, bar: `qux2` })
+  })
+  it(`defaults to CLI_PARAM or CLI_PARAMETERS`, () => {
+    environmentManager.set(`cli_param_foo`, `qux1`)
+    environmentManager.set(`cli_parameter_bar`, `qux2`)
+    const args = Command.create({ '--foo': z.string(), '--bar': z.string() }).parseOrThrow([])
+    expect(args).toEqual({ foo: `qux1`, bar: `qux2` })
+  })
+  describe(`error`, () => {
+    it(`when using prefix and there is a typo`, () => {
+      environmentManager.set(`cli_param_bar`, `qux1`)
+      // TODO show not just envar prefix in error message json
+      expect(() =>
+        Command.create({ '--foo': z.string() }).parseOrThrow([])
+      ).toThrowErrorMatchingInlineSnapshot(
+        `
+        "Environment variables appearing to be CLI parameter arguments were found but do not correspond to any actual parameters. This probably indicates a typo or some other kind of error: {
+          \\"bar\\": {
+            \\"CLI_PARAM\\": \\"qux1\\"
+          }
+        }"
+      `
+      )
+    })
+    it(`when using multiple prefixes and args passed for all param variations`, () => {
+      environmentManager.set(`cli_param_bar`, `qux1`)
+      environmentManager.set(`cli_parameter_bar`, `qux2`)
+      environmentManager.set(`cli_param_foo`, `qux1`)
+      environmentManager.set(`cli_parameter_foo`, `qux2`)
+      // TODO show not just envar prefix in error message json
+      expect(() =>
+        Command.create({ '--foo': z.string(), '--bar': z.string() }).parseOrThrow([])
+      ).toThrowErrorMatchingInlineSnapshot(
+        `
+        "Parameter(s) \\"foo\\", \\"bar\\" received arguments multiple times via different environment variables: {
+          \\"foo\\": {
+            \\"CLI_PARAM\\": \\"qux1\\",
+            \\"CLI_PARAMETER\\": \\"qux2\\"
+          },
+          \\"bar\\": {
+            \\"CLI_PARAMETER\\": \\"qux2\\",
+            \\"CLI_PARAM\\": \\"qux1\\"
+          }
+        }"
+      `
+      )
+    })
+    it.todo(`when argument collision and typo then both errors are shown`)
   })
 })
 
@@ -77,7 +147,14 @@ describe(`default environment argument parameter name prefix`, () => {
     environmentManager.set(`cli_param_foo`, `bar1`)
     environmentManager.set(`cli_parameter_foo`, `bar2`)
     expect(() => Command.create({ '--foo': z.string() }).parseOrThrow([])).toThrowErrorMatchingInlineSnapshot(
-      `"Multiple environment variables found for same parameter \\"foo\\": [object Object], [object Object]"`
+      `
+      "Parameter(s) \\"foo\\" received arguments multiple times via different environment variables: {
+        \\"foo\\": {
+          \\"CLI_PARAM\\": \\"bar1\\",
+          \\"CLI_PARAMETER\\": \\"bar2\\"
+        }
+      }"
+    `
     )
   })
 })

@@ -50,12 +50,20 @@ type ParametersToArguments<ParametersSchema extends z.ZodRawShape> = Any.Compute
 
 interface SettingsNormalized {
   description?: string
-  environmentArguments: boolean
+  environmentArguments: {
+    enabled: boolean
+    prefix: string[]
+  }
 }
 
 interface SettingsInput {
   description?: string
-  readArgumentsFromEnvironment?: boolean
+  environmentArguments?:
+    | boolean
+    | {
+        enabled?: boolean
+        prefix?: null | string | string[]
+      }
 }
 
 type Definition<ParametersSchema extends z.ZodRawShape> = {
@@ -66,15 +74,35 @@ type Definition<ParametersSchema extends z.ZodRawShape> = {
 
 export const create = <Schema extends z.ZodRawShape>(schema: Schema): Definition<Schema> => {
   const settingsDefaults: SettingsNormalized = {
-    environmentArguments: true,
+    environmentArguments: {
+      prefix: defaultParameterNamePrefixes,
+      enabled: true,
+    },
   }
   const settings = { ...settingsDefaults }
 
   const api = {
     settings: (newSettings) => {
       settings.description = newSettings.description ?? settings.description
-      settings.environmentArguments =
-        newSettings.readArgumentsFromEnvironment ?? settings.environmentArguments
+
+      if (newSettings.environmentArguments !== undefined) {
+        if (typeof newSettings.environmentArguments === `boolean`) {
+          settings.environmentArguments.enabled = newSettings.environmentArguments
+        } else {
+          if (newSettings.environmentArguments.enabled !== undefined) {
+            settings.environmentArguments.enabled = newSettings.environmentArguments.enabled
+          }
+          if (newSettings.environmentArguments.prefix !== undefined) {
+            if (newSettings.environmentArguments.prefix === null) {
+              settings.environmentArguments.prefix = []
+            } else if (typeof newSettings.environmentArguments.prefix === `string`) {
+              settings.environmentArguments.prefix = [newSettings.environmentArguments.prefix]
+            } else {
+              settings.environmentArguments.prefix = newSettings.environmentArguments.prefix
+            }
+          }
+        }
+      }
       return api
     },
     parseOrThrow: (processArguments) => {
@@ -164,6 +192,64 @@ const parseProcessArguments = (
       //   parseEnvironmentVariableBoolean(processEnvLowerCase[`cli_env_arguments`]!)
       settings.environmentArguments
 
+  if (settings.environmentArguments.prefix.length > 0) {
+    const argsPassedVia = Object.entries(getProcessEnvironmentLowerCase())
+      .filter(([prefixedName]) => {
+        return Boolean(
+          settings.environmentArguments.prefix.find((prefix) => prefixedName.startsWith(prefix.toLowerCase()))
+        )
+      })
+      .reduce((acc, [prefixedName, value]) => {
+        const prefix = settings.environmentArguments.prefix.find((prefix) =>
+          prefixedName.startsWith(prefix.toLowerCase())
+        )!
+        const name = prefixedName.replace(prefix.toLowerCase() + `_`, ``)
+        const unknownName =
+          flagSpecs.find(
+            (spec) =>
+              spec.long === name ||
+              spec.short === name ||
+              Boolean(spec.aliases.long.find((_) => _ === name)) ||
+              Boolean(spec.aliases.short.find((_) => _ === name))
+          ) === undefined
+        acc[name] = acc[name] ?? []
+        acc[name]!.push([prefix, value, unknownName])
+        return acc
+      }, {} as Record<string, [string, string | undefined, boolean][]>)
+
+    const argsPassedUnknown = Object.entries(argsPassedVia)
+      .filter(([_name, environmentVariables]) => {
+        return Boolean(environmentVariables.find((envar) => envar[2]))
+      })
+      .map((entry) => [entry[0], entry[1].map((envar) => [envar[0], envar[1]])])
+    if (argsPassedUnknown.length > 0) {
+      throw new Error(
+        `Environment variables appearing to be CLI parameter arguments were found but do not correspond to any actual parameters. This probably indicates a typo or some other kind of error: ${JSON.stringify(
+          // @ts-expect-error todo
+          Object.fromEntries(argsPassedUnknown.map((entry) => [entry[0], Object.fromEntries(entry[1])])),
+          null,
+          2
+        )}`
+      )
+    }
+    const argsPassedViaMultiple = Object.entries(argsPassedVia)
+      .filter(([_name, environmentVariables]) => {
+        return environmentVariables.length > 1
+      })
+      .map((entry) => [entry[0], entry[1].map((envar) => [envar[0], envar[1]])])
+    if (argsPassedViaMultiple.length > 0) {
+      const params = argsPassedViaMultiple.map((args) => `"${args[0]}"`).join(`, `)
+      throw new Error(
+        `Parameter(s) ${params} received arguments multiple times via different environment variables: ${JSON.stringify(
+          // @ts-expect-error todo
+          Object.fromEntries(argsPassedViaMultiple.map((entry) => [entry[0], Object.fromEntries(entry[1])])),
+          null,
+          2
+        )}`
+      )
+    }
+  }
+
   for (const flagSpec of flagSpecs) {
     // console.log(flagSpec)
 
@@ -176,7 +262,7 @@ const parseProcessArguments = (
       // console.log({ isEnvironmentArgumentsEnabled })
       if (isEnvironmentArgumentsEnabled) {
         const environmentVariableLookupResult = lookupEnvironmentVariableArgument(
-          defaultParameterNamePrefixes,
+          settings.environmentArguments.prefix,
           processEnvLowerCase,
           flagSpec.canonical
         )

@@ -1,4 +1,4 @@
-export const defaultParameterNamePrefixes = [`CLI_PARAMETER`, `CLI_PARAM`] as const
+export const defaultParameterNamePrefixes = [`CLI_PARAMETER`, `CLI_PARAM`]
 
 export const environmentArgumentName = (name: string) => `${defaultParameterNamePrefixes[0]}_${name}`
 
@@ -6,12 +6,16 @@ export const getProcessEnvironmentLowerCase = () =>
   Object.fromEntries(Object.entries(process.env).map(([k, v]) => [k.toLowerCase(), v?.trim()]))
 
 export const lookupEnvironmentVariableArgument = (
-  prefixes: readonly string[],
+  prefixes: string[],
   environment: Record<string, string | undefined>,
   parameterName: string
 ): null | { name: string; value: string } => {
-  const args = prefixes
-    .map((prefix) => `${prefix.toLowerCase()}_${parameterName.toLowerCase()}`)
+  const parameterNames =
+    prefixes.length === 0
+      ? [parameterName]
+      : prefixes.map((prefix) => `${prefix.toLowerCase()}_${parameterName.toLowerCase()}`)
+
+  const args = parameterNames
     .map((name) => ({ name, value: environment[name] }))
     .filter((arg): arg is { name: string; value: string } => arg.value !== undefined)
 
