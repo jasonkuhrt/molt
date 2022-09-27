@@ -1,6 +1,6 @@
 export const defaultParameterNamePrefixes = [`CLI_PARAMETER`, `CLI_PARAM`]
 
-export const environmentArgumentName = (name: string) => `${defaultParameterNamePrefixes[0]}_${name}`
+export const environmentArgumentName = (name: string) => `${String(defaultParameterNamePrefixes[0])}_${name}`
 
 export const getProcessEnvironmentLowerCase = () =>
   Object.fromEntries(Object.entries(process.env).map(([k, v]) => [k.toLowerCase(), v?.trim()]))

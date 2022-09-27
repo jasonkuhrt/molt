@@ -1,7 +1,7 @@
+import { stripeDashPrefix } from './helpers.js'
 import type { SchemaBase } from './types.js'
 import camelCase from 'lodash.camelcase'
 import type { z } from 'zod'
-import { stripeDashPrefix } from './helpers.js'
 
 export type FlagSpec =
   | {

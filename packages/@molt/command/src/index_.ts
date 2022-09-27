@@ -107,7 +107,6 @@ export const create = <Schema extends z.ZodRawShape>(schema: Schema): Definition
     },
     parseOrThrow: (processArguments) => {
       // eslint-disable-next-line
-      // console.log({ settings })
       return parseProcessArguments(schema, processArguments ?? process.argv.slice(2), settings) as any
     },
     schema,
@@ -200,6 +199,7 @@ const parseProcessArguments = (
         )
       })
       .reduce((acc, [prefixedName, value]) => {
+        // eslint-disable-next-line
         const prefix = settings.environmentArguments.prefix.find((prefix) =>
           prefixedName.startsWith(prefix.toLowerCase())
         )!
@@ -213,6 +213,7 @@ const parseProcessArguments = (
               Boolean(spec.aliases.short.find((_) => _ === name))
           ) === undefined
         acc[name] = acc[name] ?? []
+        // eslint-disable-next-line
         acc[name]!.push([prefix, value, unknownName])
         return acc
       }, {} as Record<string, [string, string | undefined, boolean][]>)
@@ -238,7 +239,7 @@ const parseProcessArguments = (
       })
       .map((entry) => [entry[0], entry[1].map((envar) => [envar[0], envar[1]])])
     if (argsPassedViaMultiple.length > 0) {
-      const params = argsPassedViaMultiple.map((args) => `"${args[0]}"`).join(`, `)
+      const params = argsPassedViaMultiple.map((args) => `"${String(args[0])}"`).join(`, `)
       throw new Error(
         `Parameter(s) ${params} received arguments multiple times via different environment variables: ${JSON.stringify(
           // @ts-expect-error todo
