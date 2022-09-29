@@ -10,7 +10,7 @@ importers:
       '@tsconfig/node14': 1.0.3
       '@tsconfig/node16': 1.0.3
       '@tsconfig/recommended': 1.0.1
-      '@types/inquirer': 9.0.1
+      '@types/inquirer': 9.0.2
       '@types/node': 18.7.17
       '@types/semver': ^7.3.12
       '@typescript-eslint/eslint-plugin': 5.38.1
@@ -40,7 +40,7 @@ importers:
       '@tsconfig/node14': 1.0.3
       '@tsconfig/node16': 1.0.3
       '@tsconfig/recommended': 1.0.1
-      '@types/inquirer': 9.0.1
+      '@types/inquirer': 9.0.2
       '@types/node': 18.7.17
       '@types/semver': 7.3.12
       '@typescript-eslint/eslint-plugin': 5.38.1_c7qepppml3d4ahu5cnfwqe6ltq
@@ -531,8 +531,8 @@ packages:
     resolution: {integrity: sha512-WulqXMDUTYAXCjZnk6JtIHPigp55cVtDgDrO2gHRwhyJto21+1zbVCtOYB2L1F9w4qCQ0rOGWBnBe0FNTiEJIQ==}
     dev: true
 
-  /@types/inquirer/9.0.1:
-    resolution: {integrity: sha512-I4eZdYXpFHj0pAzMndJFQMu/4hCc6Z340au9lvxHofGJnFmVgckxR/t9jRzsOVviajsOmEL+OABx+e0e28IbNw==}
+  /@types/inquirer/9.0.2:
+    resolution: {integrity: sha512-MQc3adiIh/rDxLkjnvL03rSvuHg+/dKif4dn/MRsnE+oU1bAdyuDbW0w+ewR1M/M/u/Z0YAbw7NZYCpgQ5SW8A==}
     dependencies:
       '@types/through': 0.0.30
       rxjs: 7.5.6
