@@ -15,3 +15,11 @@ export const parsePrimitive = (
 
 export const parseEnvironmentVariableBoolean = (value: string) =>
   value === `true` ? true : value === `false` ? false : null
+
+export const parseEnvironmentVariableBooleanOrThrow = (value: string) => {
+  const result = parseEnvironmentVariableBoolean(value)
+  if (result === null) {
+    throw new Error(`Invalid boolean value: ${value}`)
+  }
+  return result
+}
