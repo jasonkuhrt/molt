@@ -1,5 +1,7 @@
 import { defaultParameterNamePrefixes } from '../environment.js'
 import { parseEnvironmentVariableBooleanOrThrow } from '../helpers.js'
+import type { FlagSpecExpressionParseResultToPropertyName } from '../types.js'
+import type { FlagName } from '@molt/types'
 import type { z } from 'zod'
 
 export interface Normalized {
@@ -29,12 +31,13 @@ interface SettingInputEnvironmentParameter {
 export interface Input<ParametersSchema extends z.ZodRawShape> {
   description?: string
   parameters?: {
+    // prettier-ignore
     environment?:
       | boolean
       | ({
-          [Key in keyof ParametersSchema]?: boolean | SettingInputEnvironmentParameter
+          [FlagSpecExpression in keyof ParametersSchema as FlagSpecExpressionParseResultToPropertyName<FlagName.Parse<FlagSpecExpression & string>>]?: boolean | SettingInputEnvironmentParameter
         } & {
-          $default: boolean | SettingInputEnvironmentParameter
+          $default?: boolean | SettingInputEnvironmentParameter
         })
   }
 }
@@ -48,6 +51,10 @@ export const change = (normalized: Normalized, input: Input<{}>): void => {
         if (typeof input.parameters.environment === `boolean`) {
           normalized.parameters.environment.$default.enabled = input.parameters.environment
         } else {
+          // As soon as the settings begin to specify explicit parameter settings then we disable all the rest by default.
+          normalized.parameters.environment.$default.enabled =
+            Object.keys(input.parameters.environment).filter((k) => k !== `$default`).length === 0
+
           for (const [parameterName, spec] of Object.entries(input.parameters.environment)) {
             let spec_ = normalized.parameters.environment[parameterName]
             if (!spec_) {
@@ -57,8 +64,12 @@ export const change = (normalized: Normalized, input: Input<{}>): void => {
             if (typeof spec === `boolean`) {
               spec_.enabled = spec
             } else {
-              if (spec.enabled !== undefined) {
-                spec_.enabled = spec.enabled
+              if (parameterName === `$default`) {
+                if (spec.enabled !== undefined) {
+                  spec_.enabled = spec.enabled
+                }
+              } else {
+                spec_.enabled = spec.enabled ?? true
               }
               if (spec.prefix !== undefined) {
                 if (spec.prefix === null) {

@@ -12,6 +12,7 @@ import type {
   ArgumentsInputStructuredBooleanFlag,
 } from './structureProcessArguments.js'
 import { structureProcessArguments } from './structureProcessArguments.js'
+import type { FlagSpecExpressionParseResultToPropertyName } from './types.js'
 import type { FlagName } from '@molt/types'
 import { Alge } from 'alge'
 import type { Any } from 'ts-toolbelt'
@@ -32,13 +33,6 @@ const ZodTypeToPrimitive = {
 //   }
 //   return value as Exclude<T, null>
 // }
-
-// prettier-ignore
-type FlagSpecExpressionParseResultToPropertyName<result extends FlagName.Types.SomeParseResult> = 
-	FlagName.Errors.$Is<result> extends true 		? result :
-	result extends { long: string } 						? result['long'] :
-	result extends { short: string} 						? result['short'] :
-																							  never
 
 // prettier-ignore
 type ParametersToArguments<ParametersSchema extends z.ZodRawShape> = Any.Compute<{
@@ -208,6 +202,10 @@ const parseProcessArguments = (
     }
   }
 
+  //
+  // Parsing
+  //
+
   for (const spec of specs) {
     // console.log(flagSpec)
 
@@ -216,8 +214,8 @@ const parseProcessArguments = (
 
     if (!flagInput) {
       const environmentParameterSettings = {
-        ...settings.parameters.environment[spec.canonical],
         ...settings.parameters.environment.$default,
+        ...settings.parameters.environment[spec.canonical],
       }
       // console.log(flagSpec)
       // console.log(processEnvLowerCase)
