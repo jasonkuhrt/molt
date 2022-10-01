@@ -2,17 +2,34 @@ import { beforeEach } from 'vitest'
 
 const createEnvironmentManager = () => {
   let changes: Record<string, string | undefined> = {}
-  return {
-    set: (key: string, value: string) => {
+
+  function set(environment: Record<string, string>): void
+  function set(key: string, value: string): void
+  //eslint-disable-next-line
+  function set(...args: [key: string, value: string] | [Record<string, string>]): void {
+    if (args.length === 1) {
+      const [environment] = args
+      Object.entries(environment).forEach(([key, value]) => {
+        changes[key] = value
+        process.env[key] = value
+      })
+    } else {
+      const [key, value] = args
       changes[key] = value
       process.env[key] = value
-    },
-    reset: () => {
-      Object.keys(changes).forEach((key) => {
-        delete process.env[key]
-      })
-      changes = {}
-    },
+    }
+  }
+
+  const reset = () => {
+    Object.keys(changes).forEach((key) => {
+      delete process.env[key]
+    })
+    changes = {}
+  }
+
+  return {
+    set,
+    reset,
   }
 }
 

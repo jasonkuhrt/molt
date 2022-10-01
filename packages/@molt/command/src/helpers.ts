@@ -1,4 +1,7 @@
 import { Alge } from 'alge'
+import { inspect } from 'util'
+
+export const dump = (...args: unknown[]) => console.log(inspect(args, { depth: Infinity, colors: true }))
 
 export const stripeDashPrefix = (flagNameInput: string): string => {
   return flagNameInput.replace(/^-+/, ``)

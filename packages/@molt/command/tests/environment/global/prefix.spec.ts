@@ -7,7 +7,7 @@ import { z } from 'zod'
 it(`can be disabled`, () => {
   environmentManager.set(`foo`, `bar`)
   const args = Command.create({ '--foo': z.string() })
-    .settings({ parameters: { environment: { $default: { prefix: null } } } })
+    .settings({ parameters: { environment: { $default: { prefix: false } } } })
     .parseOrThrow([])
   expect(args).toEqual({ foo: `bar` })
 })
