@@ -68,22 +68,26 @@ importers:
     specifiers:
       '@molt/types': workspace:*
       '@types/lodash.camelcase': 4.3.7
+      '@types/lodash.snakecase': ^4.1.7
       alge: 0.7.0-next.1
       conditional-type-checks: 1.0.6
       execa: 6.1.0
       fast-glob: 3.2.12
       fs-jetpack: 5.0.0
       lodash.camelcase: ^4.3.0
+      lodash.snakecase: ^4.1.1
       ts-toolbelt: ^9.6.0
       zod: ^3.19.1
     dependencies:
       '@molt/types': link:../types
       alge: 0.7.0-next.1
       lodash.camelcase: 4.3.0
+      lodash.snakecase: 4.1.1
       ts-toolbelt: 9.6.0
       zod: 3.19.1
     devDependencies:
       '@types/lodash.camelcase': 4.3.7
+      '@types/lodash.snakecase': 4.1.7
       conditional-type-checks: 1.0.6
       execa: 6.1.0
       fast-glob: 3.2.12
@@ -544,6 +548,12 @@ packages:
 
   /@types/lodash.camelcase/4.3.7:
     resolution: {integrity: sha512-Nfi6jpo9vuEOSIJP+mpbTezKyEt75DQlbwjiDvs/JctWkbnHDoyQo5lWqdvgNiJmVUjcmkfvlrvSEgJYvurOKg==}
+    dependencies:
+      '@types/lodash': 4.14.185
+    dev: true
+
+  /@types/lodash.snakecase/4.1.7:
+    resolution: {integrity: sha512-nv9M+JJokFyfZ9QmaWVXZu2DfT40K0GictZaA8SwXczp3oCzMkjp7PtvUBQyvdoG9SnlCpoRXZDIVwQRzJbd9A==}
     dependencies:
       '@types/lodash': 4.14.185
     dev: true
@@ -2040,6 +2050,10 @@ packages:
   /lodash.merge/4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
     dev: true
+
+  /lodash.snakecase/4.1.1:
+    resolution: {integrity: sha512-QZ1d4xoBHYUeuouhEq3lk3Uq7ldgyFXGBhg04+oRLnIz8o9T65Eh+8YdroUwn846zchkA9yDsDl5CVVaV2nqYw==}
+    dev: false
 
   /lodash.template/4.5.0:
     resolution: {integrity: sha512-84vYFxIkmidUiFxidA/KjjH9pAycqW+h980j7Fuz5qxRtO9pgB7MDFTdys1N7A5mcucRiDyEq4fusljItR1T/A==}

@@ -15,7 +15,15 @@ const args = Command.create({
   publish: z.boolean().default(true),
   githubRelease: z.boolean().default(true),
   githubToken: z.string(),
-}).parseOrThrow()
+})
+  .settings({
+    parameters: {
+      environment: {
+        githubToken: { prefix: false },
+      },
+    },
+  })
+  .parseOrThrow()
 
 // const githubToken = process.env[`GITHUB_TOKEN`]
 

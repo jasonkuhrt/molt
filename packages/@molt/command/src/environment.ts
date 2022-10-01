@@ -1,3 +1,5 @@
+import snakecase from 'lodash.snakecase'
+
 export const defaultParameterNamePrefixes = [`CLI_PARAMETER`, `CLI_PARAM`]
 
 export const environmentArgumentName = (name: string) => `${String(defaultParameterNamePrefixes[0])}_${name}`
@@ -13,7 +15,8 @@ export const lookupEnvironmentVariableArgument = (
   const parameterNames =
     prefixes.length === 0
       ? [parameterName]
-      : prefixes.map((prefix) => `${prefix.toLowerCase()}_${parameterName.toLowerCase()}`)
+      : // TODO add test coverage for the snake case conversion of a parameter name
+        prefixes.map((prefix) => `${prefix.toLowerCase()}_${snakecase(parameterName).toLowerCase()}`)
 
   const args = parameterNames
     .map((name) => ({ name, value: environment[name] }))

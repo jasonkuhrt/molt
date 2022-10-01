@@ -207,8 +207,6 @@ const parseProcessArguments = (
   //
 
   for (const spec of specs) {
-    // console.log(flagSpec)
-
     const flagInput = findStructuredArgument(structuredArguments, spec)
     // console.log({ flagInput })
 
@@ -251,13 +249,15 @@ const parseProcessArguments = (
         continue
       }
 
-      if (spec.schemaBase !== `ZodBoolean`) {
+      // TODO add test coverage for no-input optional case here
+      if (spec.schemaBase !== `ZodBoolean` && !spec.schema.isOptional()) {
         throw new Errors.ErrorMissingArgument({
           flagSpec: spec,
         })
       }
       continue
     }
+    // dump(flagInput.arg, spec)
 
     Alge.match(flagInput.arg)
       .Boolean((arg) => {
