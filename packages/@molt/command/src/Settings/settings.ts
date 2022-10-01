@@ -42,6 +42,7 @@ export interface Input<ParametersSchema extends z.ZodRawShape> {
   }
 }
 
+// eslint-disable-next-line
 export const change = (normalized: Normalized, input: Input<{}>): void => {
   normalized.description = input.description ?? normalized.description
 

@@ -2,7 +2,7 @@ import { getProcessEnvironmentLowerCase, lookupEnvironmentVariableArgument } fro
 import { Errors } from './Errors/index.js'
 import type { FlagSpec } from './flagSpec.js'
 import { parseFlagSpecs } from './flagSpec.js'
-import { dump, parsePrimitive } from './helpers.js'
+import { parsePrimitive } from './helpers.js'
 import { Settings } from './Settings/index.js'
 import type { Input, Normalized } from './Settings/settings.js'
 import type {
