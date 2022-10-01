@@ -207,9 +207,11 @@ args.bar
 args.qux
 ```
 
-#### Short, Long, & Alias Flags
+#### Short, Long, & Aliasing
 
-Using the flag syntax you can define short and long flags, and aliases. Each set of flags gets normalized into its canonical name internally (again thanks to `@molt/types` this is all represented statically in your code as well). The canonical name choice is as follows:
+You can give your parameters short and long names, as well as aliases.
+
+A set of parameter names gets normalized into its canonical name internally (again thanks to `@molt/types` this is all represented statically as well). The canonical name choice is as follows:
 
 1. The first long flag
 2. Otherwise the first short flag
@@ -231,13 +233,24 @@ args.qux === true
 args.m === true
 ```
 
+If you prefer you can use a dash-prefix free syntax:
+
+```ts
+const args = Command.create({
+  'foobar foo f ': z.string(),
+  'bar b x': z.number(),
+  'q qux': z.boolean(),
+  'm n': z.boolean(),
+}).parseOrThrow()
+```
+
 #### Kebab / Camel Case
 
 You can use kebab or camel case (and likewise your users can pass flags in either style). Canonical form internally uses camel case.
 
 ```ts
 const args = Command.create({
-  '--foo-bar': z.string(),
+  'foo-bar': z.string(),
   quxLot: z.string(),
 }).parseOrThrow()
 
@@ -260,7 +273,7 @@ Parameter types via Zod schemas affect parsing in the following ways.
 Examples:
 
 ```ts
-const args = Command.create({ '-f --force --forcefully': z.boolean() }).parseOrThrow()
+const args = Command.create({ 'f force forcefully': z.boolean() }).parseOrThrow()
 // $ CLI_PARAM_NO_F='true' binary
 // $ CLI_PARAM_NO_FORCE='true' binary
 // $ CLI_PARAM_NO_FORCEFULLY='true' binary
