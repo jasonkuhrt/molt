@@ -25,10 +25,6 @@ const args = Command.create({
   })
   .parseOrThrow()
 
-// const githubToken = process.env[`GITHUB_TOKEN`]
-
-// if (!githubToken) throw new Error(`GITHUB_TOKEN is required`)
-
 if (!args.bump && !args.version) throw new Error(`--bump or --version is required`)
 if (args.bump && args.version) throw new Error(`--bump and --version cannot both be specified`)
 
