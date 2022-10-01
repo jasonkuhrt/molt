@@ -1,0 +1,6 @@
+// Vitest Snapshot v1
+
+exports[`enum can be parsed > throws an error if the value does not pass validation 1`] = `
+"Invalid argument (via environment variable \\"CLI_PARAMETER_FOO\\") for parameter: \\"foo\\". The error was:
+Invalid enum value. Expected 'a' | 'b' | 'c', received 'd'"
+`;

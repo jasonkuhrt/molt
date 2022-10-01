@@ -36,18 +36,7 @@ describe(`error`, () => {
   it(`when using prefix and there is a typo`, () => {
     environmentManager.set(`cli_param_bar`, `qux1`)
     // TODO show not just envar prefix in error message json
-    expect(() => Command.create({ '--foo': z.string() }).parseOrThrow([])).toThrowErrorMatchingInlineSnapshot(
-      `
-      "Environment variables appearing to be CLI parameter arguments were found but do not correspond to any actual parameters. This probably indicates a typo or some other kind of error: {
-        \\"bar\\": [
-          {
-            \\"prefix\\": \\"CLI_PARAM\\",
-            \\"value\\": \\"qux1\\"
-          }
-        ]
-      }"
-    `
-    )
+    expect(() => Command.create({ '--foo': z.string() }).parseOrThrow([])).toThrowErrorMatchingSnapshot()
   })
   it(`when using multiple prefixes and args passed for all param variations`, () => {
     environmentManager.set(`cli_param_bar`, `qux1`)
@@ -57,32 +46,7 @@ describe(`error`, () => {
     // TODO show not just envar prefix in error message json
     expect(() =>
       Command.create({ '--foo': z.string(), '--bar': z.string() }).parseOrThrow([])
-    ).toThrowErrorMatchingInlineSnapshot(
-      `
-      "Parameter(s) \\"foo\\", \\"bar\\" received arguments multiple times via different environment variables: {
-        \\"bar\\": [
-          {
-            \\"prefix\\": \\"CLI_PARAMETER\\",
-            \\"value\\": \\"qux2\\"
-          },
-          {
-            \\"prefix\\": \\"CLI_PARAM\\",
-            \\"value\\": \\"qux1\\"
-          }
-        ],
-        \\"foo\\": [
-          {
-            \\"prefix\\": \\"CLI_PARAM\\",
-            \\"value\\": \\"qux1\\"
-          },
-          {
-            \\"prefix\\": \\"CLI_PARAMETER\\",
-            \\"value\\": \\"qux2\\"
-          }
-        ]
-      }"
-    `
-    )
+    ).toThrowErrorMatchingSnapshot()
   })
   it.todo(`when argument collision and typo then both errors are shown`)
 })
@@ -103,21 +67,6 @@ describe(`default environment argument parameter name prefix`, () => {
   it(`when both argument CLI_PARAM and CLI_PARAMETER are passed then an error is thrown`, () => {
     environmentManager.set(`cli_param_foo`, `bar1`)
     environmentManager.set(`cli_parameter_foo`, `bar2`)
-    expect(() => Command.create({ '--foo': z.string() }).parseOrThrow([])).toThrowErrorMatchingInlineSnapshot(
-      `
-      "Parameter(s) \\"foo\\" received arguments multiple times via different environment variables: {
-        \\"foo\\": [
-          {
-            \\"prefix\\": \\"CLI_PARAM\\",
-            \\"value\\": \\"bar1\\"
-          },
-          {
-            \\"prefix\\": \\"CLI_PARAMETER\\",
-            \\"value\\": \\"bar2\\"
-          }
-        ]
-      }"
-    `
-    )
+    expect(() => Command.create({ '--foo': z.string() }).parseOrThrow([])).toThrowErrorMatchingSnapshot()
   })
 })
