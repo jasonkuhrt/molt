@@ -1,4 +1,7 @@
 import { Alge } from 'alge'
+import { inspect } from 'util'
+
+export const dump = (...args: unknown[]) => console.log(inspect(args, { depth: Infinity, colors: true }))
 
 export const stripeDashPrefix = (flagNameInput: string): string => {
   return flagNameInput.replace(/^-+/, ``)
@@ -15,3 +18,11 @@ export const parsePrimitive = (
 
 export const parseEnvironmentVariableBoolean = (value: string) =>
   value === `true` ? true : value === `false` ? false : null
+
+export const parseEnvironmentVariableBooleanOrThrow = (value: string) => {
+  const result = parseEnvironmentVariableBoolean(value)
+  if (result === null) {
+    throw new Error(`Invalid boolean value: ${value}`)
+  }
+  return result
+}

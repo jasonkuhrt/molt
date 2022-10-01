@@ -118,75 +118,90 @@ NOTES
 ## Features
 
 - Automatic parameter parsing based on specified Zod types.
-- Normalization between camel/kebab case:
+- Normalization between camel and kebab case:
 
-  - Kebab case parameter spec normalized to camel
+  - Parameter specs are normalized:
+
     ```ts
-    // foobar.ts
-    const args1 = Command.create({ '--do-it': z.boolean() }).parseOrThrow()
-    const args2 = Command.create({ '--doIt': z.boolean() }).parseOrThrow()
-    args1.doIt
-    args2.doIt
-    ```
-  - Kebab case parameter input normalized to camel.
-    ```
-    $ ts-node foobar.ts --do-it
-    $ ts-node foobar.ts --doIt
+    const args = Command.create({
+      '--do-it-a': z.boolean()
+      '--doItB': z.boolean()
+      doItC: z.boolean()
+      }).parseOrThrow()
+
+    args1.doItA
+    args2.doItB
+    args3.doItC
     ```
 
-- Short and/or long flag names plus as many short/long aliases as you wish.
+  - User flags are normalized:
+    ```
+    $ binary --do-it
+    $ binary --doIt
+    ```
+
+- Specify one or multiple (aka. aliases) short and long flags:
+
   ```ts
   Command.create({ '-f --force --forcefully': z.boolean() }).parseOrThrow()
   ```
-- Leverage Zod `.default(...)` method for setting default values.
+
+- Use Zod `.default(...)` method for setting default values.
 
   ```ts
-  // foobar.ts
   const args = Command.create({ '--path': z.string().default('./a/b/c') }).parseOrThrow()
-  // Given: $ ts-node foobar.ts
-  args.path === './a/b/c/'
-  // Given: $ ts-node foobar.ts --path /over/ride
-  args.path === '/over/ride'
+  args.path === './a/b/c/' //   $ binary
+  args.path === '/over/ride' // $ binary --path /over/ride
   ```
 
 - Pass arguments via environment variables (customizable)
 
   ```ts
-  // foobar.ts
   const args = Command.create({ '--path': z.string() }).parseOrThrow()
-  // Given: $ CLI_PARAM_PATH='./a/b/c' ts-node foobar.ts
-  args.path === './a/b/c/'
+  args.path === './a/b/c/' // $ CLI_PARAM_PATH='./a/b/c' binary
   ```
 
-- Leverage Zod `.describe(...)` for automatic docs.
-- In the future: automatic help generation.
+- Use Zod `.describe(...)` for automatic docs.
+- Future feature: automatic help generation.
 
 ## Guide
 
 ### Parameter Types
 
-Parameter types via Zod schemas affect flag parsing in the following ways.
+Parameter types via Zod schemas affect parsing in the following ways.
 
 #### Boolean
 
 - Flag does not accept any arguments.
-- Flag of name e.g. `foo` can be passed as `--no-foo` or `--foo`. `--foo` leads to `true` while `--no-foo` leads to `false`.
+- Environment variable accepts only `true` or `false`.
+- Negated form of parameters automatically accepted.
 
 Examples:
 
 ```ts
-// foobar.ts
 const args = Command.create({ '-f --force --forcefully': z.boolean() }).parseOrThrow()
-// Given: $ ts-node foobar.ts --no-f
-// Given: $ ts-node foobar.ts --noF
-// Given: $ ts-node foobar.ts --no-force
-// Given: $ ts-node foobar.ts --noForce
-// Given: $ ts-node foobar.ts --no-forcefully
-// Given: $ ts-node foobar.ts --noForcefully
+// $ CLI_PARAM_NO_F='true' binary
+// $ CLI_PARAM_NO_FORCE='true' binary
+// $ CLI_PARAM_NO_FORCEFULLY='true' binary
+// $ CLI_PARAM_F='false' binary
+// $ CLI_PARAM_FORCE='false' binary
+// $ CLI_PARAM_FORCEFULLY='false' binary
+// $ binary --no-f
+// $ binary --noF
+// $ binary --no-force
+// $ binary --noForce
+// $ binary --no-forcefully
+// $ binary --noForcefully
 args.force === false
-// Given: $ ts-node foobar.ts -f
-// Given: $ ts-node foobar.ts --force
-// Given: $ ts-node foobar.ts --forcefully
+// $ CLI_PARAM_NO_F='false' binary
+// $ CLI_PARAM_NO_FORCE='false' binary
+// $ CLI_PARAM_NO_FORCEFULLY='false' binary
+// $ CLI_PARAM_F='true' binary
+// $ CLI_PARAM_FORCE='true' binary
+// $ CLI_PARAM_FORCEFULLY='true' binary
+// $ binary -f
+// $ binary --force
+// $ binary --forcefully
 args.force === true
 ```
 
@@ -203,11 +218,11 @@ args.force === true
 
 Parameter arguments can be passed by environment variables instead of flags.
 
-Environment arguments have lower precedence than Flags, so if an argument is available from both the flag and the environment, only the flag argument is used.
+Environment arguments have lower precedence than Flags, so if an argument is available from both places, the environment argument is ignored while the flag argument is used.
 
 #### Default Name Pattern
 
-By default environment arguments can be set using one of the following naming conventions (note: environment variables are read _case-insensitive_):
+By default environment arguments can be set using one of the following naming conventions (note: Molt reads environment variables with _case-insensitivity_):
 
 ```
 CLI_PARAMETER_{parameter_name}
@@ -215,88 +230,174 @@ CLI_PARAM_{parameter_name}
 ```
 
 ```ts
-// foobar.ts
 const args = Command.create({ '--path': z.string() }).parseOrThrow()
-// Given: $ CLI_PARAMETER_PATH='./a/b/c' ts-node foobar.ts
-args.path === './a/b/c/'
+args.path === './a/b/c/' // $ CLI_PARAMETER_PATH='./a/b/c' binary
 ```
 
 #### Toggling
 
-You can toggle this feature on/off. It is on by default.
+You can toggle environment arguments on/off. It is on by default.
 
 ```ts
-// foobar.ts
 const command = Command.create({ '--path': z.string() }).settings({
-  environmentArguments: false,
+  environment: false,
 })
-// Given: $ CLI_PARAMETER_PATH='./a/b/c' ts-node foobar.ts
+// $ CLI_PARAMETER_PATH='./a/b/c' binary
 // Throws error because no argument given for "path"
 command.parseOrThrow()
 ```
 
-You can also toggle on/off via the environment variable `CLI_SETTINGS_READ_ARGUMENTS_FROM_ENVIRONMENT` (case insensitive):
+You can also toggle with the environment variable `CLI_SETTINGS_READ_ARGUMENTS_FROM_ENVIRONMENT` (case insensitive):
 
 ```ts
-// foobar.ts
-const command = Command.create({ '--path': z.string() }).settings({
-  environmentArguments: false,
-})
-// Given: $ CLI_SETTINGS_READ_ARGUMENTS_FROM_ENVIRONMENT='false' CLI_PARAMETER_PATH='./a/b/c' ts-node foobar.ts
+const command = Command.create({ '--path': z.string() })
+// $ CLI_SETTINGS_READ_ARGUMENTS_FROM_ENVIRONMENT='false' CLI_PARAMETER_PATH='./a/b/c' binary
 // Throws error because no argument given for "path"
 command.parseOrThrow()
+```
+
+#### Selective Toggling
+
+You can toggle environment on for just one or some parameters.
+
+```ts
+const args = Command.create({
+  '--foo': z.string(),
+  '--bar': z.string().default('not_from_env'),
+})
+  .settings({ environment: { foo: true } })
+  .parseOrThrow()
+
+// $ CLI_PARAMETER_FOO='foo' CLI_PARAMETER_BAR='bar' binary
+args.foo === 'foo'
+args.bar === 'not_from_env'
+```
+
+You can toggle environment on except for just one or some parameters.
+
+```ts
+const args = Command.create({
+  '--foo': z.string().default('not_from_env'),
+  '--bar': z.string().default('not_from_env'),
+  '--qux': z.string().default('not_from_env'),
+})
+  .settings({ environment: { $default: true, bar: false } })
+  .parseOrThrow()
+
+// $ CLI_PARAMETER_FOO='foo' CLI_PARAMETER_BAR='bar' CLI_PARAMETER_QUX='qux' binary
+args.foo === 'foo'
+args.bar === 'not_from_env'
+args.qux === 'qux'
 ```
 
 #### Custom Prefix
 
-You can customize the prefix:
+You can customize the environment variable name prefix:
 
 ```ts
-// foobar.ts
 const args = Command.create({ '--path': z.string() })
-  .settings({
-    environmentArguments: {
-      prefix: 'foo', // case insensitive
-    },
-  })
+  //                                              o-- case insensitive
+  .settings({ environment: { $default: { prefix: 'foo' } } })
   .parseOrThrow()
 
-// Given: $ FOO_PATH='./a/b/c' ts-node foobar.ts
-args.path === './a/b/c/'
+args.path === './a/b/c/' // $ FOO_PATH='./a/b/c' binary
 ```
 
 You can pass a list of accepted prefixes instead of just one. Earlier ones take precedence over later ones:
 
 ```ts
-// foobar.ts
 const args = Command.create({ '--path': z.string() })
-  .settings({
-    environmentArguments: {
-      prefix: ['foobar', 'foo'], // case insensitive
-    },
-  })
+  //                                               o---------o--- case insensitive
+  .settings({ environment: { $default: { prefix: ['foobar', 'foo'] } } })
   .parseOrThrow()
 
-// Given: $ FOO_PATH='./a/b/c' ts-node foobar.ts
-args.path === './a/b/c/'
+args.path === './a/b/c/' // $ FOOBAR_PATH='./a/b/c' binary
+args.path === './a/b/c/' // $ FOO_PATH='./a/b/c' binary
+args.path === './a/b/c/' // $ FOO_PATH='./x/y/z' FOOBAR_PATH='./a/b/c' binary
 ```
 
-#### Disable Prefix
+#### Selective Custom Prefix
 
-You can remove the prefix altogether (succinct but be careful for collisions with host environment variables that would affect your CLI execution!):
+You can customize the environment variable name prefix for just one or some parameters.
 
 ```ts
-// foobar.ts
-const args = Command.create({ '--path': z.string() })
-  .settings({
-    environmentArguments: {
-      prefix: null,
-    },
-  })
+const args = Command.create({
+  '--foo': z.string().default('not_from_env'),
+  '--bar': z.string().default('not_from_env'),
+  '--qux': z.string().default('not_from_env'),
+})
+  .settings({ environment: { bar: { prefix: 'MOO' } } })
   .parseOrThrow()
 
-// Given: $ PATH='./a/b/c' ts-node foobar.ts
-args.path === './a/b/c/'
+// $ CLI_PARAMETER_FOO='foo' MOO_BAR='bar' CLI_PARAMETER_QUX='qux' binary
+args.foo === 'foo'
+args.bar === 'bar'
+args.qux === 'qux'
+```
+
+You can customize the environment variable name prefix except for just one or some parameters.
+
+```ts
+const args = Command.create({
+  '--foo': z.string().default('not_from_env'),
+  '--bar': z.string().default('not_from_env'),
+  '--qux': z.string().default('not_from_env'),
+})
+  .settings({ environment: { $default: { enabled: true, prefix: 'MOO' }, bar: { prefix: true } } })
+  .parseOrThrow()
+
+// $ MOO_FOO='foo' CLI_PARAM_BAR='bar' MOO_QUX='qux' binary
+args.foo === 'foo'
+args.bar === 'bar'
+args.qux === 'qux'
+```
+
+#### Prefix Disabling
+
+You can remove the prefix altogether. Pretty and convenient, but be careful for unexpected use of variables in host environment that would affect your CLI execution!
+
+```ts
+const args = Command.create({ '--path': z.string() })
+  .settings({ environment: { $default: { prefix: false } } })
+  .parseOrThrow()
+
+args.path === './a/b/c/' // $ PATH='./a/b/c' binary
+```
+
+#### Selective Prefix Disabling
+
+You can disable environment variable name prefixes for just one or some parameters.
+
+```ts
+const args = Command.create({
+  '--foo': z.string().default('not_from_env'),
+  '--bar': z.string().default('not_from_env'),
+  '--qux': z.string().default('not_from_env'),
+})
+  .settings({ environment: { bar: { prefix: false } } })
+  .parseOrThrow()
+
+// $ CLI_PARAMETER_FOO='foo' BAR='bar' CLI_PARAMETER_QUX='qux' binary
+args.foo === 'foo'
+args.bar === 'bar'
+args.qux === 'qux'
+```
+
+You can disable environment variable name prefixes except for just one or some parameters.
+
+```ts
+const args = Command.create({
+  '--foo': z.string().default('not_from_env'),
+  '--bar': z.string().default('not_from_env'),
+  '--qux': z.string().default('not_from_env'),
+})
+  .settings({ environment: { $default: { enabled: true, prefix: false }, bar: { prefix: true } } })
+  .parseOrThrow()
+
+// $ FOO='foo' CLI_PARAM_BAR='bar' QUX='qux' binary
+args.foo === 'foo'
+args.bar === 'bar'
+args.qux === 'qux'
 ```
 
 #### Case Insensitive
@@ -304,11 +405,10 @@ args.path === './a/b/c/'
 Environment variables are considered in a case insensitive way so all of these work:
 
 ```ts
-// foobar.ts
 const args = Command.create({ '--path': z.string() }).parseOrThrow()
-// Given: $ CLI_PARAM_PATH='./a/b/c' ts-node foobar.ts
-// Given: $ cli_param_path='./a/b/c' ts-node foobar.ts
-// Given: $ cLi_pAraM_paTh='./a/b/c' ts-node foobar.ts
+// $ CLI_PARAM_PATH='./a/b/c' binary
+// $ cli_param_path='./a/b/c' binary
+// $ cLi_pAraM_paTh='./a/b/c' binary
 args.path === './a/b/c/'
 ```
 
@@ -317,10 +417,9 @@ args.path === './a/b/c/'
 By default, when a prefix is defined, a typo will raise an error:
 
 ```ts
-// foobar.ts
 const command = Command.create({ '--path': z.string() })
 
-// Given: $ CLI_PARAM_PAH='./a/b/c' ts-node foobar.ts
+// $ CLI_PARAM_PAH='./a/b/c' binary
 // Throws error because there is no parameter named "pah" defined.
 command.parseOrThrow()
 ```
@@ -328,10 +427,9 @@ command.parseOrThrow()
 If you pass arguments for a parameter multiple times under different environment variable name aliases an error will be raised.
 
 ```ts
-// foobar.ts
 const command = Command.create({ '--path': z.string() })
 
-// Given: $ CLI_PARAMETER_PAH='./1/2/3' CLI_PARAM_PAH='./a/b/c' ts-node foobar.ts
+// $ CLI_PARAMETER_PAH='./1/2/3' CLI_PARAM_PAH='./a/b/c' binary
 // Throws error because user intent is ambiguous.
 command.parseOrThrow()
 ```

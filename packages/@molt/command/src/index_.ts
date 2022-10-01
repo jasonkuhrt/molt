@@ -1,12 +1,10 @@
-import {
-  defaultParameterNamePrefixes,
-  getProcessEnvironmentLowerCase,
-  lookupEnvironmentVariableArgument,
-} from './environment.js'
+import { getProcessEnvironmentLowerCase, lookupEnvironmentVariableArgument } from './environment.js'
 import { Errors } from './Errors/index.js'
 import type { FlagSpec } from './flagSpec.js'
 import { parseFlagSpecs } from './flagSpec.js'
-import { parseEnvironmentVariableBoolean, parsePrimitive } from './helpers.js'
+import { parsePrimitive } from './helpers.js'
+import { Settings } from './Settings/index.js'
+import type { Input, Normalized } from './Settings/settings.js'
 import type {
   ArgumentsInput,
   ArgumentsInputStructured,
@@ -14,6 +12,7 @@ import type {
   ArgumentsInputStructuredBooleanFlag,
 } from './structureProcessArguments.js'
 import { structureProcessArguments } from './structureProcessArguments.js'
+import type { FlagSpecExpressionParseResultToPropertyName } from './types.js'
 import type { FlagName } from '@molt/types'
 import { Alge } from 'alge'
 import type { Any } from 'ts-toolbelt'
@@ -36,73 +35,25 @@ const ZodTypeToPrimitive = {
 // }
 
 // prettier-ignore
-type FlagSpecExpressionParseResultToPropertyName<result extends FlagName.Types.SomeParseResult> = 
-	FlagName.Errors.$Is<result> extends true 		? result :
-	result extends { long: string } 						? result['long'] :
-	result extends { short: string} 						? result['short'] :
-																							  never
-
-// prettier-ignore
 type ParametersToArguments<ParametersSchema extends z.ZodRawShape> = Any.Compute<{
   [FlagSpecExpression in keyof ParametersSchema as FlagSpecExpressionParseResultToPropertyName<FlagName.Parse<FlagSpecExpression & string>>]:
     z.infer<ParametersSchema[FlagSpecExpression]>
 }>
 
-interface SettingsNormalized {
-  description?: string
-  environmentArguments: {
-    enabled: boolean
-    prefix: string[]
-  }
-}
-
-interface SettingsInput {
-  description?: string
-  environmentArguments?:
-    | boolean
-    | {
-        enabled?: boolean
-        prefix?: null | string | string[]
-      }
-}
-
 type Definition<ParametersSchema extends z.ZodRawShape> = {
   parseOrThrow: (processArguments?: string[]) => ParametersToArguments<ParametersSchema>
-  settings: (newSettings: SettingsInput) => Definition<ParametersSchema>
+  settings: (newSettings: Input<ParametersSchema>) => Definition<ParametersSchema>
   schema: ParametersSchema
 }
 
 export const create = <Schema extends z.ZodRawShape>(schema: Schema): Definition<Schema> => {
-  const settingsDefaults: SettingsNormalized = {
-    environmentArguments: {
-      prefix: defaultParameterNamePrefixes,
-      enabled: true,
-    },
+  const settings = {
+    ...Settings.getDefaults(getProcessEnvironmentLowerCase()),
   }
-  const settings = { ...settingsDefaults }
 
   const api = {
     settings: (newSettings) => {
-      settings.description = newSettings.description ?? settings.description
-
-      if (newSettings.environmentArguments !== undefined) {
-        if (typeof newSettings.environmentArguments === `boolean`) {
-          settings.environmentArguments.enabled = newSettings.environmentArguments
-        } else {
-          if (newSettings.environmentArguments.enabled !== undefined) {
-            settings.environmentArguments.enabled = newSettings.environmentArguments.enabled
-          }
-          if (newSettings.environmentArguments.prefix !== undefined) {
-            if (newSettings.environmentArguments.prefix === null) {
-              settings.environmentArguments.prefix = []
-            } else if (typeof newSettings.environmentArguments.prefix === `string`) {
-              settings.environmentArguments.prefix = [newSettings.environmentArguments.prefix]
-            } else {
-              settings.environmentArguments.prefix = newSettings.environmentArguments.prefix
-            }
-          }
-        }
-      }
+      Settings.change(settings, newSettings)
       return api
     },
     parseOrThrow: (processArguments) => {
@@ -167,45 +118,37 @@ const findStructuredArgument = (
 const parseProcessArguments = (
   schema: z.ZodRawShape,
   processArguments: ArgumentsInput,
-  settings: SettingsNormalized
+  settings: Normalized
 ): object => {
   // console.log({ processArguments })
   const args: Record<string, unknown> = {}
-  const flagSpecs = parseFlagSpecs(schema)
+  const specs = parseFlagSpecs(schema)
   const structuredArguments = structureProcessArguments(processArguments)
   // console.log(structuredArguments)
   // TODO only get when enabled and even then only when needed (args missing)
   const processEnvLowerCase = getProcessEnvironmentLowerCase()
 
-  const isEnvironmentArgumentsEnabled = processEnvLowerCase[`cli_settings_read_arguments_from_environment`]
-    ? //eslint-disable-next-line
-      parseEnvironmentVariableBoolean(processEnvLowerCase[`cli_settings_read_arguments_from_environment`]!)
-    : // : processEnvLowerCase[`cli_environment_arguments`]
-      // ? //eslint-disable-next-line
-      //   parseEnvironmentVariableBoolean(processEnvLowerCase[`cli_environment_arguments`]!)
-      // : processEnvLowerCase[`cli_env_args`]
-      // ? //eslint-disable-next-line
-      //   parseEnvironmentVariableBoolean(processEnvLowerCase[`cli_env_args`]!)
-      // : processEnvLowerCase[`cli_env_arguments`]
-      // ? //eslint-disable-next-line
-      //   parseEnvironmentVariableBoolean(processEnvLowerCase[`cli_env_arguments`]!)
-      settings.environmentArguments
+  //
+  // Validation
+  //
 
-  if (settings.environmentArguments.prefix.length > 0) {
+  if (settings.parameters.environment.$default.prefix.length > 0) {
     const argsPassedVia = Object.entries(getProcessEnvironmentLowerCase())
       .filter(([prefixedName]) => {
         return Boolean(
-          settings.environmentArguments.prefix.find((prefix) => prefixedName.startsWith(prefix.toLowerCase()))
+          settings.parameters.environment.$default.prefix.find((prefix) =>
+            prefixedName.startsWith(prefix.toLowerCase())
+          )
         )
       })
       .reduce((acc, [prefixedName, value]) => {
         // eslint-disable-next-line
-        const prefix = settings.environmentArguments.prefix.find((prefix) =>
+        const prefix = settings.parameters.environment.$default.prefix.find((prefix) =>
           prefixedName.startsWith(prefix.toLowerCase())
         )!
         const name = prefixedName.replace(prefix.toLowerCase() + `_`, ``)
         const unknownName =
-          flagSpecs.find(
+          specs.find(
             (spec) =>
               spec.long === name ||
               spec.short === name ||
@@ -259,51 +202,58 @@ const parseProcessArguments = (
     }
   }
 
-  for (const flagSpec of flagSpecs) {
+  //
+  // Parsing
+  //
+
+  for (const spec of specs) {
     // console.log(flagSpec)
 
-    const flagInput = findStructuredArgument(structuredArguments, flagSpec)
+    const flagInput = findStructuredArgument(structuredArguments, spec)
     // console.log({ flagInput })
 
     if (!flagInput) {
-      // console.log(flagSpec)
+      const environmentParameterSettings = {
+        ...settings.parameters.environment.$default,
+        ...settings.parameters.environment[spec.canonical],
+      }
       // console.log(processEnvLowerCase)
       // console.log({ isEnvironmentArgumentsEnabled })
-      if (isEnvironmentArgumentsEnabled) {
+      if (environmentParameterSettings.enabled) {
         const environmentVariableLookupResult = lookupEnvironmentVariableArgument(
-          settings.environmentArguments.prefix,
+          environmentParameterSettings.prefix,
           processEnvLowerCase,
-          flagSpec.canonical
+          spec.canonical
         )
         // console.log({ environmentVariableLookupResult })
         if (environmentVariableLookupResult) {
           const argValidatedNot = parsePrimitive(
             environmentVariableLookupResult.value,
-            ZodTypeToPrimitive[flagSpec.schemaBase]
+            ZodTypeToPrimitive[spec.schemaBase]
           )
-          const argValidated = flagSpec.schema.safeParse(argValidatedNot)
+          const argValidated = spec.schema.safeParse(argValidatedNot)
           if (!argValidated.success)
             throw new Errors.ErrorInvalidArgument({
               environmentVariableName: environmentVariableLookupResult.name.toUpperCase(),
               parameterName: toCanonicalParameterName(environmentVariableLookupResult.name),
               validationError: argValidated.error,
             })
-          args[flagSpec.canonical] = argValidated.data
+          args[spec.canonical] = argValidated.data
           continue
         }
       }
 
       // @ts-expect-error todo
-      if (typeof flagSpec.schema._def.defaultValue === `function`) {
+      if (typeof spec.schema._def.defaultValue === `function`) {
         // @ts-expect-error todo
         //eslint-disable-next-line
-        args[flagSpec.canonical] = flagSpec.schema._def.defaultValue()
+        args[spec.canonical] = spec.schema._def.defaultValue()
         continue
       }
 
-      if (flagSpec.schemaBase !== `ZodBoolean`) {
+      if (spec.schemaBase !== `ZodBoolean`) {
         throw new Errors.ErrorMissingArgument({
-          flagSpec: flagSpec,
+          flagSpec: spec,
         })
       }
       continue
@@ -311,10 +261,10 @@ const parseProcessArguments = (
 
     Alge.match(flagInput.arg)
       .Boolean((arg) => {
-        if (flagSpec.schemaBase !== `ZodBoolean`) {
+        if (spec.schemaBase !== `ZodBoolean`) {
           throw new Errors.ErrorMissingFlagArgument({ flagName: flagInput.givenName })
         }
-        args[flagSpec.canonical] = arg.negated ? false : true
+        args[spec.canonical] = arg.negated ? false : true
       })
       .Arguments((arg) => {
         if (arg.arguments.length === 0) {
@@ -324,8 +274,8 @@ const parseProcessArguments = (
           // TODO getZodBaseTypeName
           const argument =
             // @ts-expect-error todo
-            flagSpec.schema._def.typeName === `ZodNumber` ? Number(arg.arguments[0]) : arg.arguments[0]
-          args[flagSpec.canonical] = flagSpec.schema.parse(argument)
+            spec.schema._def.typeName === `ZodNumber` ? Number(arg.arguments[0]) : arg.arguments[0]
+          args[spec.canonical] = spec.schema.parse(argument)
           //eslint-disable-next-line
         } catch (error) {
           if (error instanceof z.ZodError) {
