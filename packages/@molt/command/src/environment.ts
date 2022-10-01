@@ -12,11 +12,12 @@ export const lookupEnvironmentVariableArgument = (
   environment: Record<string, string | undefined>,
   parameterName: string
 ): null | { name: string; value: string } => {
+  const parameterNameSnakeCase = snakecase(parameterName)
   const parameterNames =
     prefixes.length === 0
-      ? [parameterName]
+      ? [parameterNameSnakeCase]
       : // TODO add test coverage for the snake case conversion of a parameter name
-        prefixes.map((prefix) => `${prefix.toLowerCase()}_${snakecase(parameterName).toLowerCase()}`)
+        prefixes.map((prefix) => `${prefix.toLowerCase()}_${parameterNameSnakeCase.toLowerCase()}`)
 
   const args = parameterNames
     .map((name) => ({ name, value: environment[name] }))
