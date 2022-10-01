@@ -38,12 +38,15 @@ describe(`error`, () => {
     // TODO show not just envar prefix in error message json
     expect(() => Command.create({ '--foo': z.string() }).parseOrThrow([])).toThrowErrorMatchingInlineSnapshot(
       `
-        "Environment variables appearing to be CLI parameter arguments were found but do not correspond to any actual parameters. This probably indicates a typo or some other kind of error: {
-          \\"bar\\": {
-            \\"CLI_PARAM\\": \\"qux1\\"
+      "Environment variables appearing to be CLI parameter arguments were found but do not correspond to any actual parameters. This probably indicates a typo or some other kind of error: {
+        \\"bar\\": [
+          {
+            \\"prefix\\": \\"CLI_PARAM\\",
+            \\"value\\": \\"qux1\\"
           }
-        }"
-      `
+        ]
+      }"
+    `
     )
   })
   it(`when using multiple prefixes and args passed for all param variations`, () => {
@@ -56,17 +59,29 @@ describe(`error`, () => {
       Command.create({ '--foo': z.string(), '--bar': z.string() }).parseOrThrow([])
     ).toThrowErrorMatchingInlineSnapshot(
       `
-        "Parameter(s) \\"foo\\", \\"bar\\" received arguments multiple times via different environment variables: {
-          \\"bar\\": {
-            \\"CLI_PARAM\\": \\"qux1\\",
-            \\"CLI_PARAMETER\\": \\"qux2\\"
+      "Parameter(s) \\"foo\\", \\"bar\\" received arguments multiple times via different environment variables: {
+        \\"bar\\": [
+          {
+            \\"prefix\\": \\"CLI_PARAMETER\\",
+            \\"value\\": \\"qux2\\"
           },
-          \\"foo\\": {
-            \\"CLI_PARAM\\": \\"qux1\\",
-            \\"CLI_PARAMETER\\": \\"qux2\\"
+          {
+            \\"prefix\\": \\"CLI_PARAM\\",
+            \\"value\\": \\"qux1\\"
           }
-        }"
-      `
+        ],
+        \\"foo\\": [
+          {
+            \\"prefix\\": \\"CLI_PARAM\\",
+            \\"value\\": \\"qux1\\"
+          },
+          {
+            \\"prefix\\": \\"CLI_PARAMETER\\",
+            \\"value\\": \\"qux2\\"
+          }
+        ]
+      }"
+    `
     )
   })
   it.todo(`when argument collision and typo then both errors are shown`)
@@ -91,10 +106,16 @@ describe(`default environment argument parameter name prefix`, () => {
     expect(() => Command.create({ '--foo': z.string() }).parseOrThrow([])).toThrowErrorMatchingInlineSnapshot(
       `
       "Parameter(s) \\"foo\\" received arguments multiple times via different environment variables: {
-        \\"foo\\": {
-          \\"CLI_PARAM\\": \\"bar1\\",
-          \\"CLI_PARAMETER\\": \\"bar2\\"
-        }
+        \\"foo\\": [
+          {
+            \\"prefix\\": \\"CLI_PARAM\\",
+            \\"value\\": \\"bar1\\"
+          },
+          {
+            \\"prefix\\": \\"CLI_PARAMETER\\",
+            \\"value\\": \\"bar2\\"
+          }
+        ]
       }"
     `
     )

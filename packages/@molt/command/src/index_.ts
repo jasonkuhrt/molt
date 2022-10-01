@@ -15,6 +15,7 @@ import { structureProcessArguments } from './structureProcessArguments.js'
 import type { FlagSpecExpressionParseResultToPropertyName } from './types.js'
 import type { FlagName } from '@molt/types'
 import { Alge } from 'alge'
+import camelCase from 'lodash.camelcase'
 import type { Any } from 'ts-toolbelt'
 import { z } from 'zod'
 
@@ -147,34 +148,33 @@ const parseProcessArguments = (
           prefixedName.startsWith(prefix.toLowerCase())
         )!
         const name = prefixedName.replace(prefix.toLowerCase() + `_`, ``)
-        const unknownName =
+        const nameCamel = camelCase(name)
+        const isUnknownName =
           specs.find(
             (spec) =>
-              spec.long === name ||
-              spec.short === name ||
-              Boolean(spec.aliases.long.find((_) => _ === name)) ||
-              Boolean(spec.aliases.short.find((_) => _ === name))
+              spec.long === nameCamel ||
+              spec.short === nameCamel ||
+              Boolean(spec.aliases.long.find((_) => _ === nameCamel)) ||
+              Boolean(spec.aliases.short.find((_) => _ === nameCamel))
           ) === undefined
         acc[name] = acc[name] ?? []
         // eslint-disable-next-line
-        acc[name]!.push([prefix, value, unknownName])
+        acc[name]!.push({ prefix, value, isUnknownName })
         return acc
-      }, {} as Record<string, [string, string | undefined, boolean][]>)
+      }, {} as Record<string, { prefix: string; value: string | undefined; isUnknownName: boolean }[]>)
 
     const argsPassedUnknown = Object.entries(argsPassedVia)
       .filter(([_name, environmentVariables]) => {
-        return Boolean(environmentVariables.find((envar) => envar[2]))
+        return Boolean(environmentVariables.find((envar) => envar.isUnknownName))
       })
-      .map((entry): [string, [string, string | undefined][]] => [
+      .map((entry): [string, { prefix: string; value: string | undefined }[]] => [
         entry[0],
-        entry[1].map((envar) => [envar[0], envar[1]]),
+        entry[1].map((envar) => ({ prefix: envar.prefix, value: envar.value })),
       ])
     if (argsPassedUnknown.length > 0) {
       throw new Error(
         `Environment variables appearing to be CLI parameter arguments were found but do not correspond to any actual parameters. This probably indicates a typo or some other kind of error: ${JSON.stringify(
-          Object.fromEntries(
-            argsPassedUnknown.sort().map((entry) => [entry[0], Object.fromEntries(entry[1].sort())])
-          ),
+          Object.fromEntries(argsPassedUnknown.sort().map((entry) => [entry[0], entry[1].sort()])),
           null,
           2
         )}`
@@ -184,17 +184,15 @@ const parseProcessArguments = (
       .filter(([_name, environmentVariables]) => {
         return environmentVariables.length > 1
       })
-      .map((entry): [string, [string, string | undefined][]] => [
+      .map((entry): [string, { prefix: string; value: string | undefined }[]] => [
         entry[0],
-        entry[1].map((envar) => [envar[0], envar[1]]),
+        entry[1].map((envar) => ({ prefix: envar.prefix, value: envar.value })),
       ])
     if (argsPassedViaMultiple.length > 0) {
       const params = argsPassedViaMultiple.map((args) => `"${String(args[0])}"`).join(`, `)
       throw new Error(
         `Parameter(s) ${params} received arguments multiple times via different environment variables: ${JSON.stringify(
-          Object.fromEntries(
-            argsPassedViaMultiple.sort().map((entry) => [entry[0], Object.fromEntries(entry[1].sort())])
-          ),
+          Object.fromEntries(argsPassedViaMultiple.sort().map((entry) => [entry[0], entry[1].sort()])),
           null,
           2
         )}`

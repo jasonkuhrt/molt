@@ -30,6 +30,8 @@ export const lookupEnvironmentVariableArgument = (
       `Multiple environment variables found for same parameter "${parameterName}": ${args.join(`, `)}`
     )
 
+  // dump(prefixes, environment, parameterName)
+
   // eslint-disable-next-line
   const environmentVariable = args[0]!
   return environmentVariable
