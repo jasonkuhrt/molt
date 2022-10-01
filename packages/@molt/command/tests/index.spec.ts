@@ -114,6 +114,18 @@ describe(`#`, () => {
             Invalid"
           `)
         })
+        describe(`when optional`, () => {
+          it(`specified input can be omitted, undefined is possible`, () => {
+            const args = Command.create({ '--foo': z.string().optional() }).parseOrThrow([])
+            assert<IsExact<{ foo: string | undefined }, typeof args>>(true)
+            expect(args).toEqual({ foo: undefined })
+          })
+          it(`input can be given`, () => {
+            const args = Command.create({ '--foo': z.string().optional() }).parseOrThrow([`--foo`, `bar`])
+            assert<IsExact<{ foo: string | undefined }, typeof args>>(true)
+            expect(args).toEqual({ foo: `bar` })
+          })
+        })
       })
       describe(`number`, () => {
         it(`input is cast as a number`, () => {
@@ -185,17 +197,17 @@ describe(`#`, () => {
             assert<IsExact<{ verbose: boolean }, typeof args>>(true)
             expect(args).toEqual({ verbose: false })
           })
-        })
-        describe(`when optional`, () => {
-          it(`specified input can be omitted, undefined is possible`, () => {
-            const args = Command.create({ '--verbose': z.boolean().optional() }).parseOrThrow([])
-            assert<IsExact<{ verbose: boolean | undefined }, typeof args>>(true)
-            expect(args).toEqual({ verbose: undefined })
-          })
-          it(`input can be given`, () => {
-            const args = Command.create({ '--verbose': z.boolean().optional() }).parseOrThrow([`--verbose`])
-            assert<IsExact<{ verbose: boolean | undefined }, typeof args>>(true)
-            expect(args).toEqual({ verbose: true })
+          describe(`when optional`, () => {
+            it(`specified input can be omitted, undefined is possible`, () => {
+              const args = Command.create({ '--verbose': z.boolean().optional() }).parseOrThrow([])
+              assert<IsExact<{ verbose: boolean | undefined }, typeof args>>(true)
+              expect(args).toEqual({ verbose: undefined })
+            })
+            it(`input can be given`, () => {
+              const args = Command.create({ '--verbose': z.boolean().optional() }).parseOrThrow([`--verbose`])
+              assert<IsExact<{ verbose: boolean | undefined }, typeof args>>(true)
+              expect(args).toEqual({ verbose: true })
+            })
           })
         })
 

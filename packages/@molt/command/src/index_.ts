@@ -248,7 +248,6 @@ const parseProcessArguments = (
         continue
       }
 
-      // TODO add test coverage for no-input optional case here
       if (spec.schemaBase !== `ZodBoolean` && !spec.schema.isOptional()) {
         throw new Errors.ErrorMissingArgument({
           flagSpec: spec,
