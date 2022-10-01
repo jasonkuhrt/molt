@@ -1,5 +1,5 @@
-import { environmentArgumentName } from '../../src/environment.js'
 import { Command } from '../../src/index.js'
+import { environmentArgumentName } from '../../src/parseEnvironment.js'
 import { environmentManager } from './__helpers__.js'
 import { beforeEach, expect } from 'vitest'
 import { describe, it } from 'vitest'
@@ -19,9 +19,45 @@ describe(`boolean can be parsed`, () => {
     expect(args).toEqual({ verbose: true })
   })
   it(`parses value of false`, () => {
-    environmentManager.set(environmentArgumentName(`verbose`), `false`)
+    environmentManager.set(`cli_param_verbose`, `false`)
     const args = Command.create({ '--verbose': z.boolean() }).parseOrThrow([])
     expect(args).toEqual({ verbose: false })
+  })
+  describe(`alias`, () => {
+    it(`parses value of true`, () => {
+      environmentManager.set(`cli_param_VERB`, `true`)
+      const args = Command.create({ '--verbose --verb': z.boolean() }).parseOrThrow([])
+      expect(args).toEqual({ verbose: true })
+    })
+    it(`parses value of false`, () => {
+      environmentManager.set(`cli_param_VERB`, `false`)
+      const args = Command.create({ '--verbose --verb': z.boolean() }).parseOrThrow([])
+      expect(args).toEqual({ verbose: false })
+    })
+  })
+  describe(`negated`, () => {
+    it(`parses negated name with false value`, () => {
+      environmentManager.set(`cli_param_no_foo`, `false`)
+      const args = Command.create({ '--foo': z.boolean() }).parseOrThrow([])
+      expect(args).toEqual({ foo: true })
+    })
+    it(`parses negated name with true value`, () => {
+      environmentManager.set(`cli_param_no_foo`, `true`)
+      const args = Command.create({ '--foo': z.boolean() }).parseOrThrow([])
+      expect(args).toEqual({ foo: false })
+    })
+    describe(`alias`, () => {
+      it(`parses negated alias name with true value`, () => {
+        environmentManager.set(`cli_param_no_foobar`, `true`)
+        const args = Command.create({ '--foo --foobar': z.boolean() }).parseOrThrow([])
+        expect(args).toEqual({ foo: false })
+      })
+      it(`parses negated alias name with false value`, () => {
+        environmentManager.set(`cli_param_no_foobar`, `false`)
+        const args = Command.create({ '--foo --foobar': z.boolean() }).parseOrThrow([])
+        expect(args).toEqual({ foo: true })
+      })
+    })
   })
 })
 

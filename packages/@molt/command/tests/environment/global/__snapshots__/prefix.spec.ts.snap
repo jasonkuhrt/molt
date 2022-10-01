@@ -1,52 +1,7 @@
 // Vitest Snapshot v1
 
-exports[`default environment argument parameter name prefix > when both argument CLI_PARAM and CLI_PARAMETER are passed then an error is thrown 1`] = `
-"Parameter(s) \\"foo\\" received arguments multiple times via different environment variables: {
-  \\"foo\\": [
-    {
-      \\"prefix\\": \\"CLI_PARAM\\",
-      \\"value\\": \\"bar1\\"
-    },
-    {
-      \\"prefix\\": \\"CLI_PARAMETER\\",
-      \\"value\\": \\"bar2\\"
-    }
-  ]
-}"
-`;
+exports[`default environment argument parameter name prefix > when both argument CLI_PARAM and CLI_PARAMETER are passed then an error is thrown 1`] = `"duplicates"`;
 
-exports[`error > when using multiple prefixes and args passed for all param variations 1`] = `
-"Parameter(s) \\"foo\\", \\"bar\\" received arguments multiple times via different environment variables: {
-  \\"bar\\": [
-    {
-      \\"prefix\\": \\"CLI_PARAMETER\\",
-      \\"value\\": \\"qux2\\"
-    },
-    {
-      \\"prefix\\": \\"CLI_PARAM\\",
-      \\"value\\": \\"qux1\\"
-    }
-  ],
-  \\"foo\\": [
-    {
-      \\"prefix\\": \\"CLI_PARAM\\",
-      \\"value\\": \\"qux1\\"
-    },
-    {
-      \\"prefix\\": \\"CLI_PARAMETER\\",
-      \\"value\\": \\"qux2\\"
-    }
-  ]
-}"
-`;
+exports[`error > when using multiple prefixes and args passed for all param variations 1`] = `"duplicates"`;
 
-exports[`error > when using prefix and there is a typo 1`] = `
-"Environment variables appearing to be CLI parameter arguments were found but do not correspond to any actual parameters. This probably indicates a typo or some other kind of error: {
-  \\"bar\\": [
-    {
-      \\"prefix\\": \\"CLI_PARAM\\",
-      \\"value\\": \\"qux1\\"
-    }
-  ]
-}"
-`;
+exports[`error > when using prefix and there is a typo 1`] = `"Environment variable \\"CLI_PARAM_BAR\\" appears to be a CLI parameter argument (because of its prefix) but does not correspond to any actual parameters. This could indicate a typo or some other kind of error"`;

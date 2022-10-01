@@ -1,19 +1,14 @@
-import { getProcessEnvironmentLowerCase, lookupEnvironmentVariableArgument } from './environment.js'
 import { Errors } from './Errors/index.js'
 import { parsePrimitive } from './helpers.js'
 import { ZodPrimitiveToPrimitive } from './lib/zodHelpers/index_.js'
-import type { FlagInput, FlagInputs, RawLineInputs } from './lineInputs.js'
-import { parseLineInputs } from './lineInputs.js'
 import type { ParameterSpec } from './parametersSpec.js'
 import { parseParametersSpec } from './parametersSpec.js'
+import { getLowerCaseEnvironment, parseEnvironment } from './parseEnvironment.js'
+import type { FlagInput, FlagInputs, RawLineInputs } from './parseLineInputs.js'
+import { parseLineInputs } from './parseLineInputs.js'
 import type { Normalized } from './Settings/settings.js'
 import { Alge } from 'alge'
-import camelCase from 'lodash.camelcase'
 import { z } from 'zod'
-
-// TODO this does not account for custom prefixes
-const toCanonicalParameterName = (parameterName: string) =>
-  parameterName.replace(/^cli_(?:param|parameter)_/i, ``)
 
 export const parseProcessArguments = (
   schema: z.ZodRawShape,
@@ -23,89 +18,21 @@ export const parseProcessArguments = (
   const parameterSpecs = parseParametersSpec(schema)
   const lineInputs = parseLineInputs(rawLineInputs)
   // TODO only get when enabled and even then only when needed (args missing)
-  const processEnvLowerCase = getProcessEnvironmentLowerCase()
+  const environment = getLowerCaseEnvironment()
   const args: Record<string, unknown> = {}
 
-  //
-  // Validation
-  //
+  // environmentValidate({
+  //   environment,
+  //   parameterSpecs,
+  //   settings,
+  // })
 
-  if (settings.parameters.environment.$default.prefix.length > 0) {
-    const argsPassedVia = Object.entries(getProcessEnvironmentLowerCase())
-      .filter(([prefixedName]) => {
-        return Boolean(
-          settings.parameters.environment.$default.prefix.find((prefix) =>
-            prefixedName.startsWith(prefix.toLowerCase())
-          )
-        )
-      })
-      .reduce((acc, [prefixedName, value]) => {
-        // eslint-disable-next-line
-        const prefix = settings.parameters.environment.$default.prefix.find((prefix) =>
-          prefixedName.startsWith(prefix.toLowerCase())
-        )!
-        const envarName = prefixedName.replace(prefix.toLowerCase() + `_`, ``)
-        const envarNameCamel = camelCase(envarName)
-        const isUnknownName =
-          parameterSpecs.find(
-            (spec) =>
-              spec.name.long === envarNameCamel ||
-              spec.name.short === envarNameCamel ||
-              Boolean(spec.name.aliases.long.find((_) => _ === envarNameCamel)) ||
-              Boolean(spec.name.aliases.short.find((_) => _ === envarNameCamel))
-          ) === undefined
-        acc[envarName] = acc[envarName] ?? []
-        // eslint-disable-next-line
-        acc[envarName]!.push({ prefix, value, isUnknownName })
-        return acc
-      }, {} as Record<string, { prefix: string; value: string | undefined; isUnknownName: boolean }[]>)
-
-    const argsPassedUnknown = Object.entries(argsPassedVia)
-      .filter(([_name, environmentVariables]) => {
-        return Boolean(environmentVariables.find((envar) => envar.isUnknownName))
-      })
-      .map((entry): [string, { prefix: string; value: string | undefined }[]] => [
-        entry[0],
-        entry[1].map((envar) => ({ prefix: envar.prefix, value: envar.value })),
-      ])
-    if (argsPassedUnknown.length > 0) {
-      throw new Error(
-        `Environment variables appearing to be CLI parameter arguments were found but do not correspond to any actual parameters. This probably indicates a typo or some other kind of error: ${JSON.stringify(
-          Object.fromEntries(argsPassedUnknown.sort().map((entry) => [entry[0], entry[1].sort()])),
-          null,
-          2
-        )}`
-      )
-    }
-    const argsPassedMultipleTimesViaDifferentEnvironmentVariables = Object.entries(argsPassedVia)
-      .filter(([_name, environmentVariables]) => {
-        return environmentVariables.length > 1
-      })
-      .map((entry): [string, { prefix: string; value: string | undefined }[]] => [
-        entry[0],
-        entry[1].map((envar) => ({ prefix: envar.prefix, value: envar.value })),
-      ])
-    if (argsPassedMultipleTimesViaDifferentEnvironmentVariables.length > 0) {
-      const params = argsPassedMultipleTimesViaDifferentEnvironmentVariables
-        .map((args) => `"${String(args[0])}"`)
-        .join(`, `)
-      throw new Error(
-        `Parameter(s) ${params} received arguments multiple times via different environment variables: ${JSON.stringify(
-          Object.fromEntries(
-            argsPassedMultipleTimesViaDifferentEnvironmentVariables
-              .sort()
-              .map((entry) => [entry[0], entry[1].sort()])
-          ),
-          null,
-          2
-        )}`
-      )
-    }
-  }
-
-  //
-  // Parsing
-  //
+  const env = parseEnvironment({
+    environment,
+    parameterSpecs,
+    settings,
+  })
+  // dump(env)
 
   for (const spec of parameterSpecs) {
     const flagInput = findFlagInput(lineInputs, spec)
@@ -119,25 +46,33 @@ export const parseProcessArguments = (
       }
       // console.log({ isEnvironmentArgumentsEnabled })
       if (environmentParameterSettings.enabled) {
-        const environmentVariableLookupResult = lookupEnvironmentVariableArgument(
-          environmentParameterSettings.prefix,
-          processEnvLowerCase,
-          spec.name.canonical
-        )
+        const environmentInput = env[spec.name.canonical]
+        // const environmentVariableLookupResult = lookupEnvironmentVariableArgument(
+        //   environmentParameterSettings.prefix,
+        //   environment,
+        //   spec.name.canonical
+        // )
         // console.log({ environmentVariableLookupResult })
-        if (environmentVariableLookupResult) {
+        if (environmentInput) {
           const argValidatedNot = parsePrimitive(
-            environmentVariableLookupResult.value,
+            environmentInput.arg,
             ZodPrimitiveToPrimitive[spec.schemaPrimitive]
           )
           const argValidated = spec.schema.safeParse(argValidatedNot)
-          if (!argValidated.success)
+          if (!argValidated.success) {
+            const environmentVariableName =
+              `${environmentInput.given.namePrefix}_${environmentInput.given.name}`.toUpperCase()
             throw new Errors.ErrorInvalidArgument({
-              environmentVariableName: environmentVariableLookupResult.name.toUpperCase(),
-              parameterName: toCanonicalParameterName(environmentVariableLookupResult.name),
+              environmentVariableName,
+              parameterName: environmentInput.spec.name.canonical,
               validationError: argValidated.error,
             })
-          args[spec.name.canonical] = argValidated.data
+          }
+          if (environmentInput.negated) {
+            args[spec.name.canonical] = !argValidated.data
+          } else {
+            args[spec.name.canonical] = argValidated.data
+          }
           continue
         }
       }

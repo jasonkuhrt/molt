@@ -1,5 +1,5 @@
-import { defaultParameterNamePrefixes } from '../environment.js'
 import { parseEnvironmentVariableBooleanOrThrow } from '../helpers.js'
+import { defaultParameterNamePrefixes } from '../parseEnvironment.js'
 import type { FlagSpecExpressionParseResultToPropertyName } from '../types.js'
 import type { FlagName } from '@molt/types'
 import type { z } from 'zod'
@@ -18,7 +18,7 @@ interface SettingNormalizedEnvironmentParameterDefault {
   prefix: string[]
 }
 
-interface SettingNormalizedEnvironmentParameter {
+export interface SettingNormalizedEnvironmentParameter {
   enabled?: boolean
   prefix?: string[]
 }
@@ -87,9 +87,9 @@ export const change = (normalized: Normalized, input: Input<{}>): void => {
               } else if (spec.prefix === true) {
                 spec_.prefix = defaultParameterNamePrefixes
               } else if (typeof spec.prefix === `string`) {
-                spec_.prefix = [spec.prefix]
+                spec_.prefix = [spec.prefix.toLowerCase()]
               } else {
-                spec_.prefix = spec.prefix
+                spec_.prefix = spec.prefix.map((prefix) => prefix.toLowerCase())
               }
             }
           }

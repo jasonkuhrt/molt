@@ -5,7 +5,7 @@ import { z } from 'zod'
 
 export type RawLineInputs = string[]
 
-export const FlagInput = Alge.data(`FlagInput2`, {
+export const FlagInput = Alge.data(`FlagInput`, {
   Arguments: {
     arguments: z.string().array(),
   },

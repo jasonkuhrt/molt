@@ -4,9 +4,9 @@ import { expect } from 'vitest'
 import { it } from 'vitest'
 import { z } from 'zod'
 
-it(`just one can have prefix disabled`, () => {
+it.only(`just one can have prefix disabled`, () => {
   environmentManager.set({
-    foo: `foo1`,
+    foo: `foo`,
     cli_param_foo: `foo-prefix`,
     bar: `bar`,
     cli_param_bar: `bar-prefix`,
@@ -14,7 +14,7 @@ it(`just one can have prefix disabled`, () => {
   const args = Command.create({ '--foo': z.string(), '--bar': z.string() })
     .settings({ parameters: { environment: { $default: true, foo: { prefix: false } } } })
     .parseOrThrow([])
-  expect(args).toEqual({ foo: `foo1`, bar: `bar-prefix` })
+  expect(args).toEqual({ foo: `foo`, bar: `bar-prefix` })
 })
 
 it(`all but one can have prefix disabled`, () => {

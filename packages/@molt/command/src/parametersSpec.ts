@@ -47,6 +47,54 @@ export type ParameterSpec =
       }
     }
 
+type HasNameResult =
+  | null
+  | {
+      kind: 'long' | 'longAlias'
+      /**
+       * Was the given name in negated format? e.g. noFoo instead of foo
+       */
+      negated: boolean
+    }
+  | { kind: 'short' | 'shortAlias' }
+export const parameterSpecHasName = (spec: ParameterSpec, name: string): HasNameResult => {
+  const result = parameterSpecHasNameDo(spec, name, false)
+
+  if (spec.schemaPrimitive === `ZodBoolean`) {
+    const nameWithoutNegatePrefix = stripeNegatePrefix(name)
+    if (nameWithoutNegatePrefix) {
+      return parameterSpecHasNameDo(spec, nameWithoutNegatePrefix, true)
+    }
+  }
+
+  return result
+}
+
+const stripeNegatePrefix = (name: string): null | string => {
+  // eslint-disable-next-line
+  const withoutPrefix = name.match(/^no([A-Z].+)/)?.[1]!
+  if (!withoutPrefix) return null
+  const withCamelCase = camelCase(withoutPrefix)
+  return withCamelCase
+}
+
+const parameterSpecHasNameDo = (
+  spec: ParameterSpec,
+  name: string,
+  negated: boolean
+): null | { kind: 'long' | 'longAlias'; negated: boolean } | { kind: 'short' | 'shortAlias' } => {
+  return spec.name.long === name
+    ? { kind: `long`, negated }
+    : spec.name.aliases.long.includes(name)
+    ? { kind: `longAlias`, negated }
+    : // Short names cannot be negated currently so short circuit with the negated check.
+    spec.name.short === `name`
+    ? { kind: `short` }
+    : spec.name.aliases.short.includes(name)
+    ? { kind: `shortAlias` }
+    : null
+}
+
 export const parseParametersSpec = (schema: z.ZodRawShape): ParameterSpec[] =>
   Object.entries(schema).map(([expression, schema]) => {
     const names = expression
@@ -58,6 +106,7 @@ export const parseParametersSpec = (schema: z.ZodRawShape): ParameterSpec[] =>
     // eslint-disable-next-line
     const spec: ParameterSpec = {
       schema,
+      // eslint-disable-next-line
       schemaPrimitive: ZodHelpers.getZodPrimitive(schema),
       name: {
         long: undefined,

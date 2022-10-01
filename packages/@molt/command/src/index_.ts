@@ -1,5 +1,5 @@
-import { getProcessEnvironmentLowerCase } from './environment.js'
 import { parseProcessArguments } from './parse.js'
+import { getLowerCaseEnvironment } from './parseEnvironment.js'
 import { Settings } from './Settings/index.js'
 import type { Input } from './Settings/settings.js'
 import type { FlagSpecExpressionParseResultToPropertyName } from './types.js'
@@ -28,7 +28,7 @@ type Definition<ParametersSchema extends z.ZodRawShape> = {
 
 export const create = <Schema extends z.ZodRawShape>(schema: Schema): Definition<Schema> => {
   const settings = {
-    ...Settings.getDefaults(getProcessEnvironmentLowerCase()),
+    ...Settings.getDefaults(getLowerCaseEnvironment()),
   }
 
   const api = {
