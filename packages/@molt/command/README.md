@@ -15,8 +15,11 @@
   - [Environment Arguments](#environment-arguments)
     - [Default Name Pattern](#default-name-pattern)
     - [Toggling](#toggling)
+    - [Selective Toggling](#selective-toggling)
     - [Custom Prefix](#custom-prefix)
-    - [Disable Prefix](#disable-prefix)
+    - [Selective Custom Prefix](#selective-custom-prefix)
+    - [Prefix Disabling](#prefix-disabling)
+    - [Selective Prefix Disabling](#selective-prefix-disabling)
     - [Case Insensitive](#case-insensitive)
     - [Validation](#validation)
 
@@ -430,6 +433,6 @@ If you pass arguments for a parameter multiple times under different environment
 const command = Command.create({ '--path': z.string() })
 
 // $ CLI_PARAMETER_PAH='./1/2/3' CLI_PARAM_PAH='./a/b/c' binary
-// Throws error because user intent is ambiguous.
+/ole/ Throws error because user intent is ambiguous.
 command.parseOrThrow()
 ```
