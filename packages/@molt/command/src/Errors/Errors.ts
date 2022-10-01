@@ -1,4 +1,4 @@
-import type { FlagSpec } from '../flagSpec.js'
+import type { ParameterSpec } from '../parametersSpec.js'
 import type { z } from 'zod'
 
 export class ErrorMissingFlagArgument extends Error {
@@ -9,8 +9,8 @@ export class ErrorMissingFlagArgument extends Error {
 }
 
 export class ErrorMissingArgument extends Error {
-  constructor(params: { flagSpec: FlagSpec }) {
-    const message = `Missing argument for flag "${params.flagSpec.canonical}".`
+  constructor(params: { spec: ParameterSpec }) {
+    const message = `Missing argument for flag "${params.spec.name.canonical}".`
     super(message)
   }
 }

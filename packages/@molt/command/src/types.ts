@@ -1,8 +1,6 @@
 import type { FlagName } from '@molt/types'
 import type { z } from 'zod'
 
-export type SchemaBase = 'ZodBoolean' | 'ZodNumber' | 'ZodString'
-
 export type SomeSchema = z.ZodRawShape
 
 // prettier-ignore
