@@ -5,8 +5,8 @@ import { describe, expect, it } from 'vitest'
 import { z } from 'zod'
 
 describe(`errors`, () => {
-  it.todo(`when a flag and an alias of it are given there is an error`, () => {})
-  it.todo(`when a long flag and its short flag are given there is an error`, () => {})
+  it.todo(`when a flag and an alias of it are given there is an error`)
+  it.todo(`when a long flag and its short flag are given there is an error`)
 })
 
 describe(`string`, () => {

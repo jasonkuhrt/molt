@@ -1,18 +1,9 @@
 import { Command } from '../../src/index.js'
-import type { IsExact } from 'conditional-type-checks'
-import { assert } from 'conditional-type-checks'
 import { describe, expect, it } from 'vitest'
 import { z } from 'zod'
 
 // eslint-disable-next-line
 const assertAssignable = <T>(_: T): [T] => 0 as any
-
-// const def = Parameters.create({
-//   filePath: z.string().describe(`Path to the file to convert.`),
-//   to: z.enum([`json`, ` yaml`, `toml`]).describe(`Format to convert to.`),
-//   from: z.enum([`json`, `yaml`, `toml`]).optional().describe(`Format to convert from.`),
-//   verbose: z.boolean().optional().default(false).describe(`Log detailed progress as conversion executes.`),
-// }).parse()
 
 describe(`.create`, () => {
   it(`creates a parameters definition`, () => {

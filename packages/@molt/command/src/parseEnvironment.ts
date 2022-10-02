@@ -121,6 +121,7 @@ export const parseEnvironment = (params: {
       }
       const $default = paramEnvConfigsWithPrefix.find((_) => _.name === `$default`)
       if ($default) {
+        // eslint-disable-next-line
         const prefix = $default.config.prefix!.find((prefix) => rawEnvar.name.startsWith(prefix)) ?? null
         if (prefix) {
           if (rawEnvar.value === undefined)
