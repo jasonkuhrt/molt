@@ -4,6 +4,11 @@ import { assert } from 'conditional-type-checks'
 import { describe, expect, it } from 'vitest'
 import { z } from 'zod'
 
+describe(`errors`, () => {
+  it.todo(`when a flag and an alias of it are given there is an error`, () => {})
+  it.todo(`when a long flag and its short flag are given there is an error`, () => {})
+})
+
 describe(`string`, () => {
   // prettier-ignore
   it.each([
@@ -56,15 +61,15 @@ describe(`case`, () => {
 
   describe(`boolean`, () => {
     // prettier-ignore
-    it.only.each([
-      // [`--foo-bar`, [`--fooBar`],       { fooBar: true }],
+    it.each([
+      [`--foo-bar`, [`--fooBar`],       { fooBar: true }],
       [`--foo-bar`, [`--foo-bar`],      { fooBar: true }],
-      // [`--fooBar`,  [`--fooBar`],       { fooBar: true }],
-      // [`--fooBar`,  [`--foo-bar`],      { fooBar: true }],
-      // [`--foo-bar`, [`--noFooBar`],     { fooBar: false }],
-      // [`--foo-bar`, [`--no-foo-bar`],   { fooBar: false }],
-      // [`--fooBar`,  [`--noFooBar`],     { fooBar: false }],
-      // [`--fooBar`,  [`--no-foo-bar`],   { fooBar: false }],
+      [`--fooBar`,  [`--fooBar`],       { fooBar: true }],
+      [`--fooBar`,  [`--foo-bar`],      { fooBar: true }],
+      [`--foo-bar`, [`--noFooBar`],     { fooBar: false }],
+      [`--foo-bar`, [`--no-foo-bar`],   { fooBar: false }],
+      [`--fooBar`,  [`--noFooBar`],     { fooBar: false }],
+      [`--fooBar`,  [`--no-foo-bar`],   { fooBar: false }],
     ])(`spec %s + input %s = internal %s`, (spec, input, expectedArgs) => {
       const args = Command.create({ [spec]: z.boolean() }).parseOrThrow(input)
       expect(args).toEqual(expectedArgs)
