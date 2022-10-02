@@ -1,4 +1,4 @@
-import { stripeDashPrefix } from './helpers.js'
+import { stripeDashPrefix, stripeNegatePrefix } from './helpers.js'
 import { ZodHelpers } from './lib/zodHelpers/index.js'
 import camelCase from 'lodash.camelcase'
 import type { z } from 'zod'
@@ -68,14 +68,6 @@ export const parameterSpecHasName = (spec: ParameterSpec, name: string): HasName
   }
 
   return result
-}
-
-const stripeNegatePrefix = (name: string): null | string => {
-  // eslint-disable-next-line
-  const withoutPrefix = name.match(/^no([A-Z].+)/)?.[1]!
-  if (!withoutPrefix) return null
-  const withCamelCase = camelCase(withoutPrefix)
-  return withCamelCase
 }
 
 const parameterSpecHasNameDo = (

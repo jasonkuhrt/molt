@@ -1,4 +1,5 @@
 import { Alge } from 'alge'
+import camelCase from 'lodash.camelcase'
 import { inspect } from 'util'
 
 export const dump = (...args: unknown[]) =>
@@ -26,4 +27,19 @@ export const parseEnvironmentVariableBooleanOrThrow = (value: string) => {
     throw new Error(`Invalid boolean value: ${value}`)
   }
   return result
+}
+
+export const negateNamePattern = /^no([A-Z].+)/
+
+export const stripeNegatePrefix = (name: string): null | string => {
+  // eslint-disable-next-line
+  const withoutPrefix = name.match(negateNamePattern)?.[1]!
+  if (!withoutPrefix) return null
+  const withCamelCase = camelCase(withoutPrefix)
+  return withCamelCase
+}
+
+export const stripeNegatePrefixLoose = (name: string): string => {
+  const result = stripeNegatePrefix(name)
+  return result ? result : name
 }

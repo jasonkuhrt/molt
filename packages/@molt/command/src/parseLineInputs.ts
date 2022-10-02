@@ -1,4 +1,4 @@
-import { stripeDashPrefix } from './helpers.js'
+import { negateNamePattern, stripeDashPrefix, stripeNegatePrefixLoose } from './helpers.js'
 import { Alge } from 'alge'
 import camelCase from 'lodash.camelcase'
 import { z } from 'zod'
@@ -39,22 +39,18 @@ export const parseLineInputs = (rawLineInputs: RawLineInputs): FlagInputs => {
       // eslint-disable-next-line
       const isNextLintInputFlag = rawLineInputs[index + 1] && isLineInputAFlagName(rawLineInputs[index + 1]!)
       const flagNameNoDashPrefix = stripeDashPrefix(rawLineInputTrimmed)
+      const flagNameNoDashPrefixCamel = camelCase(flagNameNoDashPrefix)
+      const flagNameNoDashPrefixNoNegate = stripeNegatePrefixLoose(flagNameNoDashPrefixCamel)
       if (isLastLineInput || isNextLintInputFlag) {
-        // TODO handle camel case negation like --noWay
-        const isNegated = flagNameNoDashPrefix.startsWith(`no-`)
         currentFlag = FlagInput.Boolean.create({
-          negated: isNegated,
+          negated: negateNamePattern.test(flagNameNoDashPrefixCamel),
         })
-        const flagNameNoNegatePrefix = flagNameNoDashPrefix.replace(`no-`, ``)
-        const flagNameCamelCase = camelCase(flagNameNoNegatePrefix)
-        flags[flagNameCamelCase] = currentFlag
       } else {
         currentFlag = FlagInput.Arguments.create({
           arguments: [],
         })
-        const flagNameCamelCase = camelCase(flagNameNoDashPrefix)
-        flags[flagNameCamelCase] = currentFlag
       }
+      flags[flagNameNoDashPrefixNoNegate] = currentFlag
     } else if (currentFlag && FlagInput.Arguments.is(currentFlag)) {
       currentFlag.arguments.push(rawLineInputTrimmed)
     }
@@ -62,7 +58,7 @@ export const parseLineInputs = (rawLineInputs: RawLineInputs): FlagInputs => {
     index++
   }
 
-  // console.log({ structured })
+  // dump({ flags })
   return flags
 }
 

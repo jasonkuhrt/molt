@@ -77,6 +77,7 @@ export const parseEnvironment = (params: {
   environment: RawEnvironment
   settings: Settings.Normalized
 }): EnvironmentInputs => {
+  // dump(params.settings)
   const paramEnvConfigs = Object.entries(params.settings.parameters.environment).map((entry) => ({
     name: entry[0],
     config: entry[1],
@@ -84,13 +85,43 @@ export const parseEnvironment = (params: {
   const paramEnvConfigsWithPrefix = paramEnvConfigs.filter(
     (_) => _.config.prefix && _.config.prefix.length > 0
   )
+  // dump({ paramEnvConfigsWithPrefix })
   const environmentSubsetOfInputNamesMatchingSomePrefix = Object.entries(params.environment)
     .map((entry) => ({ name: entry[0], value: entry[1] }))
     .map((rawEnvar): RawEnvironmentInputWherePrefixMatches | null => {
       // dump(paramEnvConfigs)
-      for (const paramEnv of paramEnvConfigsWithPrefix) {
+      const selectives = paramEnvConfigsWithPrefix.filter((_) => _.name !== `$default`)
+      // dump({ selectives })
+      for (const paramEnv of selectives) {
         // eslint-disable-next-line
         const prefix = paramEnv.config.prefix!.find((prefix) => rawEnvar.name.startsWith(prefix)) ?? null
+        if (prefix) {
+          // dump({ prefix })
+          if (rawEnvar.value === undefined)
+            throw new Error(
+              `Environment variable "${rawEnvar.name}" key is present but its value is undefined`
+            )
+          const rawName = rawEnvar.name.slice(prefix.length + 1 /* +1 for the following "_" */)
+          const name = camelCase(rawName)
+          // dump(paramEnv.name, name)
+          if (paramEnv.name === name) {
+            return {
+              name,
+              arg: rawEnvar.value,
+              given: {
+                namePrefix: prefix,
+                name: rawName,
+              },
+              match: {
+                settingParameter: paramEnv.name,
+              },
+            }
+          }
+        }
+      }
+      const $default = paramEnvConfigsWithPrefix.find((_) => _.name === `$default`)
+      if ($default) {
+        const prefix = $default.config.prefix!.find((prefix) => rawEnvar.name.startsWith(prefix)) ?? null
         if (prefix) {
           if (rawEnvar.value === undefined)
             throw new Error(
@@ -105,7 +136,7 @@ export const parseEnvironment = (params: {
               name: rawName,
             },
             match: {
-              settingParameter: paramEnv.name,
+              settingParameter: $default.name,
             },
           }
         }
@@ -116,7 +147,7 @@ export const parseEnvironment = (params: {
     .filter((maybeEnvironmentInput): maybeEnvironmentInput is RawEnvironmentInputWherePrefixMatches => {
       return maybeEnvironmentInput !== null
     })
-  // dump(environmentSubsetOfInputNamesMatchingSomePrefix)
+  // dump({ environmentSubsetOfInputNamesMatchingSomePrefix })
 
   // validation
 
@@ -170,7 +201,17 @@ export const parseEnvironment = (params: {
 
   // dump({ parsedEnvironment })
 
-  // Now iterate through the environment for prefix-less names.
+  //
+  /**
+   * Now iterate through the environment for prefix-less names.
+   * If we have default prefixless then we need to look at the parameter specs
+   * for which names to look for. On the other hand when there are selective
+   * prefixless then we can rely on the names of the selection.
+   *
+   * When iterating over the param specs, we don't want to consider any that have
+   * selective config for prefix. Since those are names that have different prefix
+   * configuration and not subject to the default prefixless configuration.
+   */
   const prefixlessParamEnvConfigs =
     params.settings.parameters.environment.$default.prefix.length === 0
       ? null
@@ -199,7 +240,13 @@ export const parseEnvironment = (params: {
       }
     }
   } else {
-    for (const spec of params.parameterSpecs) {
+    const paramSpecsThatHaveNoEnvPrefixConfig = params.parameterSpecs.filter(
+      (spec) =>
+        params.settings.parameters.environment[spec.name.canonical] === undefined ||
+        //eslint-disable-next-line
+        params.settings.parameters.environment[spec.name.canonical]!.prefix === undefined
+    )
+    for (const spec of paramSpecsThatHaveNoEnvPrefixConfig) {
       // todo look up all names
       const arg = params.environment[snakecase(spec.name.canonical)]
       if (arg !== undefined) {

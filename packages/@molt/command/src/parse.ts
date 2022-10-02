@@ -17,15 +17,10 @@ export const parseProcessArguments = (
 ): object => {
   const parameterSpecs = parseParametersSpec(schema)
   const lineInputs = parseLineInputs(rawLineInputs)
+  // dump(lineInputs)
   // TODO only get when enabled and even then only when needed (args missing)
   const environment = getLowerCaseEnvironment()
   const args: Record<string, unknown> = {}
-
-  // environmentValidate({
-  //   environment,
-  //   parameterSpecs,
-  //   settings,
-  // })
 
   const env = parseEnvironment({
     environment,
@@ -85,6 +80,7 @@ export const parseProcessArguments = (
         continue
       }
 
+      // dump(spec)
       if (spec.schemaPrimitive !== `ZodBoolean` && !spec.schema.isOptional()) {
         throw new Errors.ErrorMissingArgument({
           spec: spec,
@@ -92,7 +88,7 @@ export const parseProcessArguments = (
       }
       continue
     }
-    // dump(flagInput.arg, spec)
+    // dump(flagInput, spec)
 
     Alge.match(flagInput.flagInput)
       .Boolean((arg) => {
@@ -125,6 +121,7 @@ export const parseProcessArguments = (
       .done()
   }
 
+  // dump({ args })
   return args
 }
 
@@ -132,48 +129,51 @@ const findFlagInput = (
   flagInputs: FlagInputs,
   spec: ParameterSpec
 ): null | {
-  via: 'Short' | 'Long'
   viaName: string
   flagInput: FlagInput
 } => {
-  // TODO handle aliases
-  return Alge.match(spec)
-    .Long((spec) => {
-      if (flagInputs[spec.name.long])
-        return {
-          via: spec._tag,
-          viaName: spec.name.long,
-          //eslint-disable-next-line
-          flagInput: flagInputs[spec.name.long]!,
-        }
-      return null
-    })
-    .Short((spec) => {
-      if (flagInputs[spec.name.short])
-        return {
-          via: spec._tag,
-          viaName: spec.name.short,
-          //eslint-disable-next-line
-          flagInput: flagInputs[spec.name.short]!,
-        }
-      return null
-    })
-    .LongShort((spec) => {
-      if (flagInputs[spec.name.long])
-        return {
-          via: `Long` as const,
-          viaName: spec.name.long,
-          //eslint-disable-next-line
-          flagInput: flagInputs[spec.name.long]!,
-        }
-      if (flagInputs[spec.name.short])
-        return {
-          via: `Short` as const,
-          viaName: spec.name.short,
-          //eslint-disable-next-line
-          flagInput: flagInputs[spec.name.short]!,
-        }
-      return null
-    })
-    .done()
+  if (spec.name.long) {
+    const value = flagInputs[spec.name.long]
+    if (value !== undefined) {
+      return {
+        viaName: spec.name.long,
+        flagInput: value,
+      }
+    }
+  }
+  if (spec.name.short) {
+    const value = flagInputs[spec.name.short]
+    if (value !== undefined) {
+      return {
+        viaName: spec.name.short,
+        flagInput: value,
+      }
+    }
+  }
+  if (spec.name.aliases.long.length > 0) {
+    const result = spec.name.aliases.long
+      .map((_) => [_, flagInputs[_]])
+      .filter((entry): entry is [string, FlagInput] => entry[1] !== undefined)[0]
+    if (result !== undefined) {
+      const [name, value] = result
+      return {
+        viaName: name,
+        flagInput: value,
+      }
+    }
+  }
+  if (spec.name.aliases.short.length > 0) {
+    const result = spec.name.aliases.short
+      .map((_) => [_, flagInputs[_]])
+      .filter((entry): entry is [string, FlagInput] => entry[1] !== undefined)[0]
+    if (result !== undefined) {
+      const [name, value] = result
+      return {
+        viaName: name,
+        flagInput: value,
+      }
+    }
+  }
+
+  return null
 }

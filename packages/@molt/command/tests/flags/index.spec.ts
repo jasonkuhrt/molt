@@ -1,4 +1,4 @@
-import { Command } from '../src/index.js'
+import { Command } from '../../src/index.js'
 import type { IsExact } from 'conditional-type-checks'
 import { assert } from 'conditional-type-checks'
 import { describe, expect, it } from 'vitest'
@@ -34,47 +34,6 @@ describe(`#`, () => {
       assertAssignable<z.ZodRawShape>(def.schema)
       assertAssignable<{ x: z.ZodString }>(def.schema)
       expect(def.schema).toBeDefined()
-    })
-  })
-
-  describe(`canonical flag`, () => {
-    it(`flag can accept long & short and be given long`, () => {
-      const args = Command.create({ '--ver -v': z.string() }).parseOrThrow([`--ver`, `foo`])
-      expect(args).toEqual({ ver: `foo` })
-    })
-    it(`flag can accept long & short and be given short`, () => {
-      const args = Command.create({ '--ver -v': z.string() }).parseOrThrow([`-v`, `foo`])
-      expect(args).toEqual({ ver: `foo` })
-    })
-    it(`flag can accept short and be given short`, () => {
-      const args = Command.create({ '-v': z.string() }).parseOrThrow([`-v`, `foo`])
-      expect(args).toEqual({ v: `foo` })
-    })
-    it(`flag can accept long and be given long`, () => {
-      const args = Command.create({ '--ver': z.string() }).parseOrThrow([`--ver`, `foo`])
-      expect(args).toEqual({ ver: `foo` })
-    })
-    describe(`case`, () => {
-      it(`kebab case param spec can be passed camel case parameter`, () => {
-        const args = Command.create({ '--foo-bar': z.string() }).parseOrThrow([`--fooBar`, `foo`])
-        assert<IsExact<{ fooBar: string }, typeof args>>(true)
-        expect(args).toEqual({ fooBar: `foo` })
-      })
-      it(`kebab case param spec can be passed kebab case parameter`, () => {
-        const args = Command.create({ '--foo-bar': z.string() }).parseOrThrow([`--foo-bar`, `foo`])
-        assert<IsExact<{ fooBar: string }, typeof args>>(true)
-        expect(args).toEqual({ fooBar: `foo` })
-      })
-      it(`camel case param spec can be passed kebab case parameter`, () => {
-        const args = Command.create({ '--fooBar': z.string() }).parseOrThrow([`--foo-bar`, `foo`])
-        assert<IsExact<{ fooBar: string }, typeof args>>(true)
-        expect(args).toEqual({ fooBar: `foo` })
-      })
-      it(`camel case param spec can be passed camel case parameter`, () => {
-        const args = Command.create({ '--fooBar': z.string() }).parseOrThrow([`--fooBar`, `foo`])
-        assert<IsExact<{ fooBar: string }, typeof args>>(true)
-        expect(args).toEqual({ fooBar: `foo` })
-      })
     })
   })
 

@@ -34,6 +34,7 @@ export const create = <Schema extends z.ZodRawShape>(schema: Schema): Definition
   const api = {
     settings: (newSettings) => {
       Settings.change(settings, newSettings)
+      // dump(settings)
       return api
     },
     parseOrThrow: (processArguments) => {
