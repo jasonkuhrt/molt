@@ -11,22 +11,20 @@ it(`casts the input as a number`, () => {
 })
 
 it(`validates the  input`, () => {
-  expect(() => Command.create({ '--age': z.number().int() }).parseOrThrow([`--age`, `1.1`]))
-    .toThrowErrorMatchingInlineSnapshot(`
-              "Invalid argument for parameter: \\"age\\". The error was:
-              Expected integer, received float"
-            `)
+  expect(() =>
+    Command.create({ '--age': z.number().int() }).parseOrThrow([`--age`, `1.1`])
+  ).toThrowErrorMatchingInlineSnapshot(`"Invalid value for age: todo"`)
 })
 
 describe(`errors`, () => {
   it(`throws error when argument missing (last position)`, () => {
     expect(() =>
       Command.create({ '--age': z.number() }).parseOrThrow([`--age`])
-    ).toThrowErrorMatchingInlineSnapshot(`"Missing argument for flag \\"age\\"."`)
+    ).toThrowErrorMatchingInlineSnapshot(`"Missing argument"`)
   })
   it(`throws error when argument missing (non-last position)`, () => {
     expect(() =>
       Command.create({ '--name': z.string(), '--age': z.number() }).parseOrThrow([` --age`, `--name`, `joe`])
-    ).toThrowErrorMatchingInlineSnapshot(`"Missing argument for flag \\"age\\"."`)
+    ).toThrowErrorMatchingInlineSnapshot(`"Missing argument"`)
   })
 })

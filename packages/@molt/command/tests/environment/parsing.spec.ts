@@ -1,5 +1,4 @@
 import { Command } from '../../src/index.js'
-import { environmentArgumentName } from '../../src/parseEnvironment.js'
 import { environmentManager } from './__helpers__.js'
 import { beforeEach, expect } from 'vitest'
 import { describe, it } from 'vitest'
@@ -9,12 +8,12 @@ beforeEach(() => environmentManager.set(`CLI_SETTINGS_READ_ARGUMENTS_FROM_ENVIRO
 
 describe(`boolean can be parsed`, () => {
   it(`parses value of true`, () => {
-    environmentManager.set(environmentArgumentName(`VERBOSE`), `true`)
+    environmentManager.set(`CLI_PARAM_VERBOSE`, `true`)
     const args = Command.create({ '--verbose': z.boolean() }).parseOrThrow([])
     expect(args).toEqual({ verbose: true })
   })
   it(`parses value of true which overrides a spec default of false`, () => {
-    environmentManager.set(environmentArgumentName(`VERBOSE`), `true`)
+    environmentManager.set(`CLI_PARAM_VERBOSE`, `true`)
     const args = Command.create({ '--verbose': z.boolean().default(false) }).parseOrThrow([])
     expect(args).toEqual({ verbose: true })
   })
@@ -62,18 +61,18 @@ describe(`boolean can be parsed`, () => {
 })
 
 it(`parses a value specified to be a string`, () => {
-  environmentManager.set(environmentArgumentName(`foo`), `bar`)
+  environmentManager.set(`cli_param_foo`, `bar`)
   const args = Command.create({ '--foo': z.string() }).parseOrThrow([])
   expect(args).toEqual({ foo: `bar` })
 })
 it(`parses a value specified to be a number`, () => {
-  environmentManager.set(environmentArgumentName(`foo`), `4.3`)
+  environmentManager.set(`cli_param_foo`, `4.3`)
   const args = Command.create({ '--foo': z.number() }).parseOrThrow([])
   expect(args).toEqual({ foo: 4.3 })
 })
 describe(`enum can be parsed`, () => {
   it(`throws an error if the value does not pass validation`, () => {
-    environmentManager.set(environmentArgumentName(`foo`), `d`)
+    environmentManager.set(`cli_param_foo`, `d`)
     expect(() =>
       Command.create({ '--foo': z.enum([`a`, `b`, `c`]) }).parseOrThrow([])
     ).toThrowErrorMatchingSnapshot()

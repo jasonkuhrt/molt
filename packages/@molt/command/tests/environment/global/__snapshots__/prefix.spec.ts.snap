@@ -1,7 +1,7 @@
 // Vitest Snapshot v1
 
-exports[`default environment argument parameter name prefix > when both argument CLI_PARAM and CLI_PARAMETER are passed then an error is thrown 1`] = `"duplicates"`;
+exports[`default environment argument parameter name prefix > when both argument CLI_PARAM and CLI_PARAMETER are passed then an error is thrown 1`] = `"Duplicate input for parameter foo"`;
 
-exports[`error > when using multiple prefixes and args passed for all param variations 1`] = `"duplicates"`;
+exports[`error > when using multiple prefixes and args passed for all param variations 1`] = `"Duplicate input for parameter foo"`;
 
-exports[`error > when using prefix and there is a typo 1`] = `"Environment variable \\"CLI_PARAM_BAR\\" appears to be a CLI parameter argument (because of its prefix) but does not correspond to any actual parameters. This could indicate a typo or some other kind of error"`;
+exports[`error > when using prefix and there is a typo 1`] = `"Missing argument for flag \\"foo\\"."`;

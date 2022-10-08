@@ -32,9 +32,9 @@ it(`can be enabled by environment`, () => {
 })
 it(`can be disabled by environment`, () => {
   environmentManager.set(`ClI_settings_READ_arguments_FROM_ENVIRONMENT`, `false`)
-  environmentManager.set(`cli_param_foo`, `bar`)
-  const args = Command.create({ '--foo': z.string().default(`x`) }).parseOrThrow([])
-  expect(args).toEqual({ foo: `x` })
+  environmentManager.set(`cli_param_foo`, `foo_env`)
+  const args = Command.create({ '--foo': z.string().default(`foo_default`) }).parseOrThrow([])
+  expect(args).toEqual({ foo: `foo_default` })
 })
 it(`environment supersedes settings`, () => {
   environmentManager.set(`ClI_settings_READ_arguments_FROM_ENVIRONMENT`, `false`)
