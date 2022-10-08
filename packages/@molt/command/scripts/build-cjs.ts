@@ -5,7 +5,7 @@ import * as Path from 'node:path'
 
 const updatePackageJson = async (data: object) => {
   //eslint-disable-next-line
-  const packageJson = await Fs.readAsync(`package.json`, `json`)
+  const packageJson = (await Fs.readAsync(`package.json`, `json`)) as object
   await writePackageJson(`./`, { ...packageJson, ...data })
 }
 
