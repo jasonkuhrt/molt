@@ -1,8 +1,8 @@
-import { getLowerCaseEnvironment, parseRawInput } from '../helpers.js'
-import type { Index } from '../lib/prelude.js'
-import type { Spec } from '../ParameterSpec/ParametersSpec.js'
-import { getNames } from '../ParameterSpec/ParametersSpec.js'
-import type { ArgumentReport } from '../types/argument.js'
+import { getLowerCaseEnvironment, parseRawInput } from '../../helpers.js'
+import type { Index } from '../../lib/prelude.js'
+import type { Spec } from '../../ParameterSpec/ParametersSpec.js'
+import { getNames } from '../../ParameterSpec/ParametersSpec.js'
+import type { ArgumentReport } from '../types.js'
 import camelCase from 'lodash.camelcase'
 import snakecase from 'lodash.snakecase'
 

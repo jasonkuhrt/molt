@@ -1,6 +1,6 @@
-import { defaultParameterNamePrefixes } from '../Environment/Environment.js'
+import type { FlagSpecExpressionParseResultToPropertyName } from '../helpers.js'
 import { parseEnvironmentVariableBooleanOrThrow } from '../helpers.js'
-import type { FlagSpecExpressionParseResultToPropertyName } from '../types.js'
+import { defaultParameterNamePrefixes } from '../Input/Environment/Environment.js'
 import type { FlagName } from '@molt/types'
 import snakeCase from 'lodash.snakecase'
 import type { z } from 'zod'

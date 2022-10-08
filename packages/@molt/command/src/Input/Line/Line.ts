@@ -1,7 +1,7 @@
-import { isNegated, parseRawInput, stripeDashPrefix, stripeNegatePrefixLoose } from '../helpers.js'
-import type { Index } from '../lib/prelude.js'
-import { ParameterSpec } from '../ParameterSpec/index.js'
-import type { ArgumentReport } from '../types/argument.js'
+import { isNegated, parseRawInput, stripeDashPrefix, stripeNegatePrefixLoose } from '../../helpers.js'
+import type { Index } from '../../lib/prelude.js'
+import { ParameterSpec } from '../../ParameterSpec/index.js'
+import type { ArgumentReport } from '../types.js'
 import camelCase from 'lodash.camelcase'
 
 export type RawLineInputs = string[]

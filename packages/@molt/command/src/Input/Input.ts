@@ -1,11 +1,11 @@
+import { Errors } from '../Errors/index.js'
+import { ParameterSpec } from '../ParameterSpec/index.js'
+import type { Normalized } from '../Settings/settings.js'
 import { Environment } from './Environment/index.js'
-import { Errors } from './Errors/index.js'
 import { Line } from './Line/index.js'
-import { ParameterSpec } from './ParameterSpec/index.js'
-import type { Normalized } from './Settings/settings.js'
 import type { z } from 'zod'
 
-export const parseProcessArguments = (
+export const parseOrThrow = (
   schema: z.ZodRawShape,
   rawLineInputs: Line.RawLineInputs,
   settings: Normalized

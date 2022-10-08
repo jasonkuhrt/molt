@@ -1,5 +1,5 @@
+import type { Value } from './Input/types.js'
 import type { ParameterSpec } from './ParameterSpec/index.js'
-import type { Value } from './types/argument.js'
 import { Alge } from 'alge'
 import camelCase from 'lodash.camelcase'
 
@@ -81,3 +81,15 @@ export const stripeNegatePrefixLoose = (name: string): string => {
   const result = stripeNegatePrefix(name)
   return result ? result : name
 }
+
+import type { FlagName } from '@molt/types'
+import type { z } from 'zod'
+
+export type SomeSchema = z.ZodRawShape
+
+// prettier-ignore
+export type FlagSpecExpressionParseResultToPropertyName<result extends FlagName.Types.SomeParseResult> = 
+	FlagName.Errors.$Is<result> extends true 		? result :
+	result extends { long: string } 						? result['long'] :
+	result extends { short: string} 						? result['short'] :
+																							  never
