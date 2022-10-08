@@ -1,7 +1,8 @@
+import { defaultParameterNamePrefixes } from '../Environment/Environment.js'
 import { parseEnvironmentVariableBooleanOrThrow } from '../helpers.js'
-import { defaultParameterNamePrefixes } from '../parseEnvironment.js'
 import type { FlagSpecExpressionParseResultToPropertyName } from '../types.js'
 import type { FlagName } from '@molt/types'
+import snakeCase from 'lodash.snakecase'
 import type { z } from 'zod'
 
 export interface Normalized {
@@ -87,9 +88,9 @@ export const change = (normalized: Normalized, input: Input<{}>): void => {
               } else if (spec.prefix === true) {
                 spec_.prefix = defaultParameterNamePrefixes
               } else if (typeof spec.prefix === `string`) {
-                spec_.prefix = [spec.prefix.toLowerCase()]
+                spec_.prefix = [snakeCase(spec.prefix).toLowerCase()]
               } else {
-                spec_.prefix = spec.prefix.map((prefix) => prefix.toLowerCase())
+                spec_.prefix = spec.prefix.map((prefix) => snakeCase(prefix).toLowerCase())
               }
             }
           }

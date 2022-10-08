@@ -1,5 +1,5 @@
+import { getLowerCaseEnvironment } from './helpers.js'
 import { parseProcessArguments } from './parse.js'
-import { getLowerCaseEnvironment } from './parseEnvironment.js'
 import { Settings } from './Settings/index.js'
 import type { Input } from './Settings/settings.js'
 import type { FlagSpecExpressionParseResultToPropertyName } from './types.js'
@@ -34,7 +34,6 @@ export const create = <Schema extends z.ZodRawShape>(schema: Schema): Definition
   const api = {
     settings: (newSettings) => {
       Settings.change(settings, newSettings)
-      // dump(settings)
       return api
     },
     parseOrThrow: (processArguments) => {

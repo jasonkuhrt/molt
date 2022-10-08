@@ -16,23 +16,23 @@ it(`can toggle environment on for one parameter`, () => {
 })
 
 it(`can change prefix for one parameter`, () => {
-  environmentManager.set(`foo`, `env1`)
-  environmentManager.set(`cli_param_bar`, `env2`)
+  environmentManager.set(`foo`, `foo_env`)
+  environmentManager.set(`cli_param_bar`, `bar_env`)
   const args = Command.create({
-    '--foo': z.string().default(`foo`),
-    '--bar': z.string().default(`bar`),
+    '--foo': z.string().default(`foo_default`),
+    '--bar': z.string().default(`bar_default`),
   })
     .settings({ parameters: { environment: { foo: { prefix: false }, bar: true } } })
     .parseOrThrow([])
-  expect(args).toEqual({ foo: `env1`, bar: `env2` })
+  expect(args).toEqual({ foo: `foo_env`, bar: `bar_env` })
 })
 
 it(`can change default prefix and prfix for one parameter`, () => {
-  environmentManager.set(`foo`, `env1`)
-  environmentManager.set(`param_bar`, `env2`)
+  environmentManager.set(`foo`, `foo_env`)
+  environmentManager.set(`param_bar`, `bar_env`)
   const args = Command.create({
-    '--foo': z.string().default(`foo`),
-    '--bar': z.string().default(`bar`),
+    '--foo': z.string().default(`default_foo`),
+    '--bar': z.string().default(`default_bar`),
   })
     .settings({
       parameters: {
@@ -44,7 +44,7 @@ it(`can change default prefix and prfix for one parameter`, () => {
       },
     })
     .parseOrThrow([])
-  expect(args).toEqual({ foo: `env1`, bar: `env2` })
+  expect(args).toEqual({ foo: `foo_env`, bar: `bar_env` })
 })
 
 describe(`when configuring parameters environment becomes opt-in`, () => {

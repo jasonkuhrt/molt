@@ -22,7 +22,7 @@
     ".": {
       "require": {
         "types": "./build/cjs/index.d.cts",
-        "default": "./build/cjs/index.cjs"
+        "default": "./build/cjs/index.js"
       },
       "import": {
         "types": "./build/esm/index.d.ts",
