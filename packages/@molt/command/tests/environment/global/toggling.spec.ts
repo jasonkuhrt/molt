@@ -30,7 +30,7 @@ it(`can be enabled by environment`, () => {
   const args = Command.create({ '--foo': z.string() }).parseOrThrow([])
   expect(args).toEqual({ foo: `bar` })
 })
-it.only(`can be disabled by environment`, () => {
+it(`can be disabled by environment`, () => {
   environmentManager.set(`ClI_settings_READ_arguments_FROM_ENVIRONMENT`, `false`)
   environmentManager.set(`cli_param_foo`, `foo_env`)
   const args = Command.create({ '--foo': z.string().default(`foo_default`) }).parseOrThrow([])
