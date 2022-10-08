@@ -56,8 +56,17 @@ export const parseRawValue = (value: string, spec: ParameterSpec.Spec): boolean 
     .done()
 }
 
-export const parseEnvironmentVariableBoolean = (value: string) =>
-  value === `true` ? true : value === `false` ? false : null
+export const environmentVariableBooleanLookup = {
+  '1': true,
+  '0': false,
+  true: true,
+  false: false,
+} as const
+
+export const parseEnvironmentVariableBoolean = (value: string): boolean | null =>
+  // @ts-expect-error ignore
+  // eslint-disable-next-line
+  environmentVariableBooleanLookup[value] ?? null
 
 export const parseEnvironmentVariableBooleanOrThrow = (value: string) => {
   const result = parseEnvironmentVariableBoolean(value)

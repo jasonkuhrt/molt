@@ -267,7 +267,7 @@ Parameter types via Zod schemas affect parsing in the following ways.
 #### Boolean
 
 - Flag does not accept any arguments.
-- Environment variable accepts only `true` or `false`.
+- Environment variable accepts `"true"` or `"1"` for `true` and `"false"` or `"0"` for `false`.
 - Negated form of parameters automatically accepted.
 
 Examples:
