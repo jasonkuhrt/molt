@@ -11,8 +11,9 @@ it(`casts the input as a number`, () => {
 })
 
 it(`validates the  input`, () => {
-  expect(() => Command.create({ '--age': z.number().int() }).parseOrThrow([`--age`, `1.1`]))
-    .toThrowErrorMatchingInlineSnapshot(`"Invalid value for age: todo"`)
+  expect(() =>
+    Command.create({ '--age': z.number().int() }).parseOrThrow([`--age`, `1.1`])
+  ).toThrowErrorMatchingInlineSnapshot(`"Invalid value for age: todo"`)
 })
 
 describe(`errors`, () => {
