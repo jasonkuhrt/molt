@@ -172,6 +172,8 @@ NOTES
 
 - Use Zod `.describe(...)` for automatic docs.
 - Future feature: automatic help generation.
+- Parameter stacking e.g. `binary -abc` instead of `binary -a -b -c`
+- Separator of `=` or space, e.g. `binary -a=foo -b=bar` or `binary -a foo -b bar`
 
 ## Guide
 
@@ -262,32 +264,6 @@ args.fooBar === 'moo'
 args.quxLot === 'zoo'
 ```
 
-### Argument Passing
-
-This section is about users passing arguments to the parameters you've defined for your CLI.
-
-#### Parameter Argument Separator
-
-Arguments can be separated from parameters using the following characters:
-
-- whitespace
-- equals sign
-
-Examples:
-
-```
-binary --foo=moo
-binary --foo= moo
-binary --foo = moo
-binary --foo moo
-```
-
-Note that when `=` is attached to the value side then it is considered part of the value:
-
-```
-binary --foo =moo
-```
-
 ### Parameter Typing
 
 Parameter types via Zod schemas affect parsing in the following ways.
@@ -335,6 +311,46 @@ args.force === true
 #### Enum
 
 - Flag expects an argument.
+
+### Argument Passing
+
+This section is about users passing arguments to the parameters you've defined for your CLI.
+
+#### Parameter Argument Separator
+
+Arguments can be separated from parameters using the following characters:
+
+- whitespace
+- equals sign
+
+Examples:
+
+```
+binary --foo=moo
+binary --foo= moo
+binary --foo = moo
+binary --foo moo
+```
+
+Note that when `=` is attached to the value side then it is considered part of the value:
+
+```
+binary --foo =moo
+```
+
+#### Stacked Short Flags
+
+Boolean short flags can be stacked. Imagine you have defined three parameters `a`, `b`, `c`. They could be passed like so:
+
+```
+binary -abc
+```
+
+The last short flag does not have to be boolean flag. For example if there were a `d` parameter taking a string, this could work:
+
+```
+binary -abcd foobar
+```
 
 ### Environment Arguments
 

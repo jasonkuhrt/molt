@@ -1,17 +1,17 @@
 import { Command } from '../../src/index.js'
 import type { IsExact } from 'conditional-type-checks'
 import { assert } from 'conditional-type-checks'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, test } from 'vitest'
 import { z } from 'zod'
 
 describe(`errors`, () => {
-  it.todo(`when a flag and an alias of it are given there is an error`)
-  it.todo(`when a long flag and its short flag are given there is an error`)
+  test.todo(`when a flag and an alias of it are given there is an error`)
+  test.todo(`when a long flag and its short flag are given there is an error`)
 })
 
 describe(`string`, () => {
   // prettier-ignore
-  it.each([
+  test.each([
 		[`--ver`, 					[`--ver`, `foo`], 					{ ver: `foo` }],
 		[`--ver --version`, [`--ver`, `foo`], 					{ ver: `foo` }],
 		[`--ver --version`, [`--version`, `foo`], 			{ ver: `foo` }],
@@ -27,7 +27,7 @@ describe(`string`, () => {
 
 describe(`boolean`, () => {
   // prettier-ignore
-  it.each([
+  test.each([
 		[`--ver`, 					[`--ver`], 					  { ver: true }],
 		[`--ver --version`, [`--ver`], 					  { ver: true }],
 		[`--ver --version`, [`--version`], 			  { ver: true }],
@@ -45,8 +45,24 @@ describe(`boolean`, () => {
 	})
 })
 
-describe(`=`, () => {
-  it.each([
+describe(`stacked short flags`, () => {
+  test.only.each([
+    [[`-abc`], { a: true, b: true, c: true, d: undefined }],
+    [[`-ac`], { a: true, b: false, c: true, d: undefined }],
+    [[`-abcd`, `foo`], { a: true, b: true, c: true, d: `foo` }],
+  ])(`stacked short flag input of %s becomes %s`, (input, expectedArgs) => {
+    const args = Command.create({
+      a: z.boolean().default(false),
+      b: z.boolean().default(false),
+      c: z.boolean().default(false),
+      d: z.string().optional(),
+    }).parseOrThrow(input)
+    expect(args).toEqual(expectedArgs)
+  })
+})
+
+describe(`separator`, () => {
+  test.each([
     [[`--foo=bar`], { foo: `bar` }],
     [[`--foo`, `=`, `bar`], { foo: `bar` }],
     [[`--foo= `, `bar`], { foo: `bar` }],
@@ -60,7 +76,7 @@ describe(`=`, () => {
 describe(`case`, () => {
   describe(`string`, () => {
     // prettier-ignore
-    it.each([
+    test.each([
       [`--foo-bar`, [`--fooBar`, `foo`], { fooBar: `foo` }],
       [`--foo-bar`, [`--foo-bar`, `foo`], { fooBar: `foo` }],
       [`--fooBar`,  [`--fooBar`, `foo`], { fooBar: `foo` }],
@@ -73,7 +89,7 @@ describe(`case`, () => {
 
   describe(`boolean`, () => {
     // prettier-ignore
-    it.each([
+    test.each([
       [`--foo-bar`, [`--fooBar`],       { fooBar: true }],
       [`--foo-bar`, [`--foo-bar`],      { fooBar: true }],
       [`--fooBar`,  [`--fooBar`],       { fooBar: true }],
@@ -88,19 +104,19 @@ describe(`case`, () => {
     })
   })
 
-  it(`kebab case param spec can be passed camel case parameter`, () => {
+  test(`kebab case param spec can be passed camel case parameter`, () => {
     const args = Command.create({ '--foo-bar': z.string() }).parseOrThrow([`--fooBar`, `foo`])
     assert<IsExact<{ fooBar: string }, typeof args>>(true)
   })
-  it(`kebab case param spec can be passed kebab case parameter`, () => {
+  test(`kebab case param spec can be passed kebab case parameter`, () => {
     const args = Command.create({ '--foo-bar': z.string() }).parseOrThrow([`--foo-bar`, `foo`])
     assert<IsExact<{ fooBar: string }, typeof args>>(true)
   })
-  it(`camel case param spec can be passed kebab case parameter`, () => {
+  test(`camel case param spec can be passed kebab case parameter`, () => {
     const args = Command.create({ '--fooBar': z.string() }).parseOrThrow([`--foo-bar`, `foo`])
     assert<IsExact<{ fooBar: string }, typeof args>>(true)
   })
-  it(`camel case param spec can be passed camel case parameter`, () => {
+  test(`camel case param spec can be passed camel case parameter`, () => {
     const args = Command.create({ '--fooBar': z.string() }).parseOrThrow([`--fooBar`, `foo`])
     assert<IsExact<{ fooBar: string }, typeof args>>(true)
   })

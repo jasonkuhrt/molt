@@ -10,6 +10,10 @@ export const parse = (rawLineInputs: RawLineInputs, specs: ParameterSpec.Spec[])
   const rawLineInputsPrepared = rawLineInputs
     .map((lineInput) => lineInput.trim())
     .flatMap((lineInput) => {
+      if (!isShortFlag(lineInput)) return [lineInput]
+      return stripeShortFlagPrefixUnsafe(lineInput).split(``).map(addShortFlagPrefix)
+    })
+    .flatMap((lineInput) => {
       if (lineInput === `=`) return []
       if (!isFlag(lineInput)) return [lineInput]
       // Nodejs will not get us empty string input so we are guaranteed a flag name here.
@@ -90,9 +94,16 @@ export const parse = (rawLineInputs: RawLineInputs, specs: ParameterSpec.Spec[])
   return reports
 }
 
-const isFlag = (lineInput: string) => {
-  return lineInput.trim().startsWith(`--`) || lineInput.trim().startsWith(`-`)
-}
+const isFlag = (lineInput: string) => isLongFlag(lineInput) || isShortFlag(lineInput)
+
+const isLongFlag = (lineInput: string) => lineInput.trim().startsWith(`--`)
+
+const isShortFlag = (lineInput: string) =>
+  lineInput.trim().startsWith(`-`) && !lineInput.trim().startsWith(`--`)
+
+const stripeShortFlagPrefixUnsafe = (lineInput: string) => lineInput.trim().slice(1)
+
+const addShortFlagPrefix = (lineInput: string) => `-${lineInput}`
 
 // eslint-disable-next-line
 const PENDING_VALUE = `__PENDING__` as any
