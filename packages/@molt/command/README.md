@@ -14,7 +14,7 @@
     - [Short, Long, & Aliasing](#short-long--aliasing)
     - [Kebab / Camel Case](#kebab--camel-case)
   - [Argument Passing](#argument-passing)
-  - [Parameter Argument Separator](#parameter-argument-separator)
+    - [Parameter Argument Separator](#parameter-argument-separator)
   - [Parameter Typing](#parameter-typing)
     - [Boolean](#boolean)
     - [Number](#number)
@@ -266,7 +266,7 @@ args.quxLot === 'zoo'
 
 This section is about users passing arguments to the parameters you've defined for your CLI.
 
-### Parameter Argument Separator
+#### Parameter Argument Separator
 
 Arguments can be separated from parameters using the following characters:
 
