@@ -260,6 +260,32 @@ args.fooBar === 'moo'
 args.quxLot === 'zoo'
 ```
 
+### Argument Passing
+
+This section is about users passing arguments to the parameters you've defined for your CLI.
+
+### Parameter Argument Separator
+
+Arguments can be separated from parameters using the following characters:
+
+- whitespace
+- equals sign
+
+Examples:
+
+```
+binary --foo=moo
+binary --foo= moo
+binary --foo = moo
+binary --foo moo
+```
+
+Note that when `=` is attached to the value side then it is considered part of the value:
+
+```
+binary --foo =moo
+```
+
 ### Parameter Typing
 
 Parameter types via Zod schemas affect parsing in the following ways.

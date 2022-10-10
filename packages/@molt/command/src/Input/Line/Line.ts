@@ -6,28 +6,29 @@ import camelCase from 'lodash.camelcase'
 
 export type RawLineInputs = string[]
 
-const addIndex = <T>(array: T[]): [number, T][] => {
-  return array.map((item, index) => [index, item])
-}
-
 export const parse = (rawLineInputs: RawLineInputs, specs: ParameterSpec.Spec[]): Index<ArgumentReport> => {
-  // console.log({ argumentsInput })
+  const rawLineInputsPrepared = rawLineInputs
+    .map((lineInput) => lineInput.trim())
+    .flatMap((lineInput) => {
+      if (lineInput === `=`) return []
+      if (!isFlag(lineInput)) return [lineInput]
+      // Nodejs will not get us empty string input so we are guaranteed a flag name here.
+      const [flag, ...value] = lineInput.split(`=`) as [string, ...string[]]
+      if (value.length === 0) return [flag]
+      if (value.join(``) === ``) return [flag]
+      return [flag, value.join(`=`)]
+    })
   const reports: Index<ArgumentReport> = {}
   let current: null | ArgumentReport = null
 
-  for (const [_, rawLineInput] of addIndex(rawLineInputs)) {
-    const rawLineInputTrimmed = rawLineInput.trim()
-
-    if (isFlag(rawLineInputTrimmed)) {
+  for (const rawLineInput of rawLineInputsPrepared) {
+    if (isFlag(rawLineInput)) {
       if (current && current.value === PENDING_VALUE) {
         current.errors.push(new Error(`Missing argument`))
         current = null
       }
-      // const isLastInput = rawLineInputs[index + 1] === undefined
-      // const isNextInputFlag = rawLineInputs[index + 1] && isFlag(rawLineInputs[index + 1]!)
-      // const isBooleanSyntax = isLastInput || isNextInputFlag
 
-      const flagNameNoDashPrefix = stripeDashPrefix(rawLineInputTrimmed)
+      const flagNameNoDashPrefix = stripeDashPrefix(rawLineInput)
       const flagNameNoDashPrefixCamel = camelCase(flagNameNoDashPrefix)
       const flagNameNoDashPrefixNoNegate = stripeNegatePrefixLoose(flagNameNoDashPrefixCamel)
       const spec = ParameterSpec.findByName(flagNameNoDashPrefixCamel, specs)

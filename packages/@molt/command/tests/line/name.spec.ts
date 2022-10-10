@@ -45,6 +45,18 @@ describe(`boolean`, () => {
 	})
 })
 
+describe(`=`, () => {
+  it.each([
+    [[`--foo=bar`], { foo: `bar` }],
+    [[`--foo`, `=`, `bar`], { foo: `bar` }],
+    [[`--foo= `, `bar`], { foo: `bar` }],
+    [[`--foo`, `=bar`], { foo: `=bar` }],
+  ])(`spec %s becomes %s`, (input, expectedArgs) => {
+    const args = Command.create({ foo: z.string() }).parseOrThrow(input)
+    expect(args).toEqual(expectedArgs)
+  })
+})
+
 describe(`case`, () => {
   describe(`string`, () => {
     // prettier-ignore
