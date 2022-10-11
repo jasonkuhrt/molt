@@ -1,10 +1,13 @@
+import { Help } from './Help/index.js'
 import type { FlagSpecExpressionParseResultToPropertyName } from './helpers.js'
 import { getLowerCaseEnvironment } from './helpers.js'
 import { Input } from './Input/index.js'
+import { dump } from './lib/prelude.js'
+import { ParameterSpec } from './ParameterSpec/index.js'
 import { Settings } from './Settings/index.js'
 import type { FlagName } from '@molt/types'
 import type { Any } from 'ts-toolbelt'
-import type { z } from 'zod'
+import { z } from 'zod'
 
 // prettier-ignore
 type ParametersToArguments<ParametersSchema extends z.ZodRawShape> = Any.Compute<{
@@ -29,8 +32,16 @@ export const create = <Schema extends z.ZodRawShape>(schema: Schema): Definition
       return api
     },
     parseOrThrow: (processArguments) => {
+      const schema_ = settings.help ? { ...schema, '-h --help': z.boolean().default(false) } : schema
+      // dump(schema_)
+      const specs = ParameterSpec.parse(schema_, settings)
       // eslint-disable-next-line
-      return Input.parseOrThrow(schema, processArguments ?? process.argv.slice(2), settings) as any
+      const args = Input.parseOrThrow(specs, processArguments ?? process.argv.slice(2)) as any
+      if (settings.help && args.help) {
+        process.stdout.write(Help.render(specs) + `\n`)
+        process.exit(0)
+      }
+      return args
     },
     schema,
   } as Definition<Schema>

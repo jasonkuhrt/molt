@@ -7,6 +7,7 @@ import type { z } from 'zod'
 
 export interface Normalized {
   description?: string | undefined
+  help: boolean
   parameters: {
     environment: Record<string, SettingNormalizedEnvironmentParameter> & {
       $default: SettingNormalizedEnvironmentParameterDefault
@@ -31,6 +32,7 @@ interface SettingInputEnvironmentParameter {
 
 export interface Input<ParametersSchema extends z.ZodRawShape> {
   description?: string
+  help?: boolean
   parameters?: {
     // prettier-ignore
     environment?:
@@ -48,6 +50,9 @@ export const change = (normalized: Normalized, input: Input<{}>): void => {
   normalized.description = input.description ?? normalized.description
 
   if (input.parameters !== undefined) {
+    if (input.help) {
+      normalized.help = input.help
+    }
     if (input.parameters.environment !== undefined) {
       // Handle environment
       if (typeof input.parameters.environment === `boolean`) {
@@ -118,6 +123,7 @@ const isEnvironmentEnabled = (lowercaseEnv: NodeJS.ProcessEnv) => {
 
 export const getDefaults = (lowercaseEnv: NodeJS.ProcessEnv): Normalized => {
   return {
+    help: true,
     parameters: {
       environment: {
         $default: {

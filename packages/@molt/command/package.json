@@ -47,6 +47,7 @@
     "conditional-type-checks": "1.0.6",
     "execa": "6.1.0",
     "fast-glob": "3.2.12",
-    "fs-jetpack": "5.0.0"
+    "fs-jetpack": "5.0.0",
+    "vitest-mock-process": "^1.0.4"
   }
 }
