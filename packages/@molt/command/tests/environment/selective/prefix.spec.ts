@@ -14,7 +14,7 @@ it(`just one can have prefix disabled`, () => {
   const args = Command.create({ '--foo': z.string(), '--bar': z.string() })
     .settings({ parameters: { environment: { $default: true, foo: { prefix: false } } } })
     .parseOrThrow([])
-  expect(args).toEqual({ foo: `foo`, bar: `bar-prefix` })
+  expect(args).toMatchObject({ foo: `foo`, bar: `bar-prefix` })
 })
 
 it(`all but one can have prefix disabled`, () => {
@@ -29,5 +29,5 @@ it(`all but one can have prefix disabled`, () => {
       parameters: { environment: { $default: { enabled: true, prefix: false }, foo: { prefix: true } } },
     })
     .parseOrThrow([])
-  expect(args).toEqual({ foo: `cli_param_foo`, bar: `bar` })
+  expect(args).toMatchObject({ foo: `cli_param_foo`, bar: `bar` })
 })

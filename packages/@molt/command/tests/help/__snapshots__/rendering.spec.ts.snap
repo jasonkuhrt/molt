@@ -1,45 +1,91 @@
 // Vitest Snapshot v1
 
-exports[`if parameter has default it is shown 1`] = `
-"PARAMETERS
-----------
+exports[`if parameter has default it is shown > monochrome 1`] = `
+"
+PARAMETERS
 
---------------------------------optional--------------------------------
-a           string                        foobar
-            
-
+  
+  a      string    
+  a                
+  
 "
 `;
 
-exports[`if parameter has description it is shown 1`] = `
-"PARAMETERS
-----------
+exports[`if parameter has default it is shown > polychrome 1`] = `
+"
+PARAMETERS
 
---------------------------------optional--------------------------------
-a           string                        
-            Blah blah blah.
-
+  
+  [32ma[39m      [32mstring[39m    
+  [90ma[39m                
+  
 "
 `;
 
-exports[`if there is optional param it is shown 1`] = `
-"PARAMETERS
-----------
+exports[`if parameter has description it is shown > monochrome 1`] = `
+"
+PARAMETERS
 
---------------------------------optional--------------------------------
-a           string                        
-            
-
+  
+  a      string            
+  a      Blah blah blah.   
+  
 "
 `;
 
-exports[`long description wraps within column 1`] = `
-"PARAMETERS
-----------
+exports[`if parameter has description it is shown > polychrome 1`] = `
+"
+PARAMETERS
 
---------------------------------optional--------------------------------
-a           string                        
-            Blah blah blah. Blah blah blah. Blah blah blah.
+  
+  [32ma[39m      [32mstring[39m            
+  [90ma[39m      Blah blah blah.   
+  
+"
+`;
 
+exports[`if there is optional param it is shown > monochrome 1`] = `
+"
+PARAMETERS
+
+  
+  a      string    
+  a                
+  
+"
+`;
+
+exports[`if there is optional param it is shown > polychrome 1`] = `
+"
+PARAMETERS
+
+  
+  [32ma[39m      [32mstring[39m    
+  [90ma[39m                
+  
+"
+`;
+
+exports[`long description wraps within column > monochrome 1`] = `
+"
+PARAMETERS
+
+  
+  a      string                                     
+  a      Blah blah blah. Blah blah blah. Blah bla   
+         h blah.                                    
+  
+"
+`;
+
+exports[`long description wraps within column > polychrome 1`] = `
+"
+PARAMETERS
+
+  
+  [32ma[39m      [32mstring[39m                                     
+  [90ma[39m      Blah blah blah. Blah blah blah. Blah bla   
+         h blah.                                    
+  
 "
 `;

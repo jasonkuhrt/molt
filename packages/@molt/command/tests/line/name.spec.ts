@@ -21,7 +21,7 @@ describe(`string`, () => {
 		[`-v`,              [`-v`, `foo`], 							{ v:   `foo` }],
 	])(`spec %s + input %s = internal %s`, (spec, input, expectedArgs) => {
 		const args = Command.create({ [spec]: z.string() }).parseOrThrow(input)
-		expect(args).toEqual(expectedArgs)
+		expect(args).toMatchObject(expectedArgs)
 	})
 })
 
@@ -41,12 +41,12 @@ describe(`boolean`, () => {
 		[`-v`,              [`-v`], 							{ v:   true }],
 	])(`spec %s + input %s = internal %s`, (spec, input, expectedArgs) => {
 		const args = Command.create({ [spec]: z.boolean() }).parseOrThrow(input)
-		expect(args).toEqual(expectedArgs)
+		expect(args).toMatchObject(expectedArgs)
 	})
 })
 
 describe(`stacked short flags`, () => {
-  test.only.each([
+  test.each([
     [[`-abc`], { a: true, b: true, c: true, d: undefined }],
     [[`-ac`], { a: true, b: false, c: true, d: undefined }],
     [[`-abcd`, `foo`], { a: true, b: true, c: true, d: `foo` }],
@@ -57,7 +57,7 @@ describe(`stacked short flags`, () => {
       c: z.boolean().default(false),
       d: z.string().optional(),
     }).parseOrThrow(input)
-    expect(args).toEqual(expectedArgs)
+    expect(args).toMatchObject(expectedArgs)
   })
 })
 
@@ -69,7 +69,7 @@ describe(`separator`, () => {
     [[`--foo`, `=bar`], { foo: `=bar` }],
   ])(`spec %s becomes %s`, (input, expectedArgs) => {
     const args = Command.create({ foo: z.string() }).parseOrThrow(input)
-    expect(args).toEqual(expectedArgs)
+    expect(args).toMatchObject(expectedArgs)
   })
 })
 
@@ -83,7 +83,7 @@ describe(`case`, () => {
       [`--fooBar`,  [`--foo-bar`, `foo`], { fooBar: `foo` }],
     ])(`spec %s + input %s = internal %s`, (spec, input, expectedArgs) => {
       const args = Command.create({ [spec]: z.string() }).parseOrThrow(input)
-      expect(args).toEqual(expectedArgs)
+      expect(args).toMatchObject(expectedArgs)
     })
   })
 
@@ -100,7 +100,7 @@ describe(`case`, () => {
       [`--fooBar`,  [`--no-foo-bar`],   { fooBar: false }],
     ])(`spec %s + input %s = internal %s`, (spec, input, expectedArgs) => {
       const args = Command.create({ [spec]: z.boolean() }).parseOrThrow(input)
-      expect(args).toEqual(expectedArgs)
+      expect(args).toMatchObject(expectedArgs)
     })
   })
 

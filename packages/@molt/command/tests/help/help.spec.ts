@@ -1,21 +1,30 @@
 import { Command } from '../../src/index.js'
-import { expect, it } from 'vitest'
-import { mockProcessExit } from 'vitest-mock-process'
+import { expect, test } from 'vitest'
+import { mockProcessExit, mockProcessStdout } from 'vitest-mock-process'
 import { z } from 'zod'
 
 const processExit = mockProcessExit()
+const processStdout = mockProcessStdout()
 
-it(`exits 0`, () => {
+test(`exits 0`, () => {
   Command.create({ a: z.string().optional() }).parseOrThrow([`-h`])
   expect(processExit.mock.lastCall?.[0]).toBe(0)
 })
 
-it(`can be triggered by -h`, () => {
+test(`can be triggered by -h`, () => {
   Command.create({ a: z.string().optional() }).parseOrThrow([`-h`])
   expect(processExit.mock.lastCall?.[0]).toBe(0)
+  expect(processStdout.mock.calls[0]).toMatch(/parameters/i)
 })
 
-it(`can be triggered by --help`, () => {
+test(`can be triggered by --help`, () => {
   Command.create({ a: z.string().optional() }).parseOrThrow([`-h`])
   expect(processExit.mock.lastCall?.[0]).toBe(0)
+  expect(processStdout.mock.calls[0]).toMatch(/parameters/i)
+})
+
+test(`can be triggered by passing no arguments`, () => {
+  Command.create({ a: z.string().optional() }).parseOrThrow([])
+  expect(processExit.mock.lastCall?.[0]).toBe(0)
+  expect(processStdout.mock.calls[0]).toMatch(/parameters/i)
 })

@@ -12,7 +12,7 @@ it(`can toggle environment on for one parameter`, () => {
   })
     .settings({ parameters: { environment: { foo: true } } })
     .parseOrThrow([])
-  expect(args).toEqual({ foo: `env1`, bar: `bar` })
+  expect(args).toMatchObject({ foo: `env1`, bar: `bar` })
 })
 
 it(`can change prefix for one parameter`, () => {
@@ -24,7 +24,7 @@ it(`can change prefix for one parameter`, () => {
   })
     .settings({ parameters: { environment: { foo: { prefix: false }, bar: true } } })
     .parseOrThrow([])
-  expect(args).toEqual({ foo: `foo_env`, bar: `bar_env` })
+  expect(args).toMatchObject({ foo: `foo_env`, bar: `bar_env` })
 })
 
 it(`can change default prefix and prfix for one parameter`, () => {
@@ -44,7 +44,7 @@ it(`can change default prefix and prfix for one parameter`, () => {
       },
     })
     .parseOrThrow([])
-  expect(args).toEqual({ foo: `foo_env`, bar: `bar_env` })
+  expect(args).toMatchObject({ foo: `foo_env`, bar: `bar_env` })
 })
 
 describe(`when configuring parameters environment becomes opt-in`, () => {
@@ -63,7 +63,7 @@ describe(`when configuring parameters environment becomes opt-in`, () => {
         },
       })
       .parseOrThrow([])
-    expect(args).toEqual({ foo: `foo_env`, bar: `bar`, qux: `qux` })
+    expect(args).toMatchObject({ foo: `foo_env`, bar: `bar`, qux: `qux` })
   })
   it(`even with default configured`, () => {
     environmentManager.set({ moo_foo: `foo_env`, moo_bar: `bar_env`, moo_qux: `qux_env` })
@@ -81,7 +81,7 @@ describe(`when configuring parameters environment becomes opt-in`, () => {
         },
       })
       .parseOrThrow([])
-    expect(args).toEqual({ foo: `foo_env`, bar: `bar`, qux: `qux` })
+    expect(args).toMatchObject({ foo: `foo_env`, bar: `bar`, qux: `qux` })
   })
   describe(` unless...`, () => {
     it(`default is shorthand true`, () => {
@@ -93,7 +93,7 @@ describe(`when configuring parameters environment becomes opt-in`, () => {
       })
         .settings({ parameters: { environment: { $default: true, foo: { prefix: `MOO` } } } })
         .parseOrThrow([])
-      expect(args).toEqual({ foo: `moo_foo_env`, bar: `bar_env`, qux: `qux_env` })
+      expect(args).toMatchObject({ foo: `moo_foo_env`, bar: `bar_env`, qux: `qux_env` })
     })
     it(`default is longhand true`, () => {
       environmentManager.set({ moo_foo: `moo_foo_env`, cli_param_bar: `bar_env`, cli_param_qux: `qux_env` })
@@ -104,7 +104,7 @@ describe(`when configuring parameters environment becomes opt-in`, () => {
       })
         .settings({ parameters: { environment: { $default: { enabled: true }, foo: { prefix: `MOO` } } } })
         .parseOrThrow([])
-      expect(args).toEqual({ foo: `moo_foo_env`, bar: `bar_env`, qux: `qux_env` })
+      expect(args).toMatchObject({ foo: `moo_foo_env`, bar: `bar_env`, qux: `qux_env` })
     })
   })
 })

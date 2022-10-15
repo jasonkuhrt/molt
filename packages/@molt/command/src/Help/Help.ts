@@ -113,9 +113,9 @@ const title = (string: string) => {
   return Text.line(string.toUpperCase())
 }
 
-const sectionTitle = (title: string) => {
-  const borderLength = 40
-  const borderChar = Text.chars.lineH
-  const border = borderChar.repeat(borderLength)
-  return `${border}${title.toLowerCase()}${border}`
-}
+// const sectionTitle = (title: string) => {
+//   const borderLength = 40
+//   const borderChar = Text.chars.lineH
+//   const border = borderChar.repeat(borderLength)
+//   return `${border}${title.toLowerCase()}${border}`
+// }

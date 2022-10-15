@@ -41,11 +41,15 @@ export const create = <Schema extends z.ZodRawShape>(schema: Schema): Definition
       const specs = ParameterSpec.parse(schema_, settings)
       // eslint-disable-next-line
       const result = Input.parseOrThrow(specs, processArguments_)
+      // console.log({ result })
+      const requiredParamsMissing = specs
+        .filter((_) => !_.optional)
+        .filter((_) => result.args[_.name.canonical] === undefined)
       if (
         // eslint-disable-next-line
         // @ts-expect-error
         (settings.help && `help` in result.args && result.args.help === true) ||
-        (settings.helpOnNoArguments && processArguments_.length === 0)
+        (settings.helpOnNoArguments && requiredParamsMissing.length > 0)
       ) {
         process.stdout.write(Help.render(specs) + `\n`)
         process.exit(0)

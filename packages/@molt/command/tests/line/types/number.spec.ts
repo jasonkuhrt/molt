@@ -7,7 +7,7 @@ import { z } from 'zod'
 it(`casts the input as a number`, () => {
   const args = Command.create({ '--age': z.number() }).parseOrThrow([`--age`, `1`])
   assert<IsExact<{ age: number }, typeof args>>(true)
-  expect(args).toEqual({ age: 1 })
+  expect(args).toMatchObject({ age: 1 })
 })
 
 it(`validates the  input`, () => {

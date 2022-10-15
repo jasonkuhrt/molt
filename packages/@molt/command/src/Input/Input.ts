@@ -8,7 +8,7 @@ export * from './types.js'
 export const parseOrThrow = (
   specs: Spec[],
   rawLineInputs: Line.RawLineInputs
-): { args: object; errors: Errors.ErrorMissingArgument[] } => {
+): { args: Record<string, unknown>; errors: Errors.ErrorMissingArgument[] } => {
   const errors = []
   const env = Environment.parse(specs)
   const line = Line.parse(rawLineInputs, specs)
@@ -50,6 +50,8 @@ export const parseOrThrow = (
     if (!spec.optional) {
       errors.push(new Errors.ErrorMissingArgument({ spec }))
     }
+
+    args[spec.name.canonical] = undefined
   }
 
   // dump({ args })

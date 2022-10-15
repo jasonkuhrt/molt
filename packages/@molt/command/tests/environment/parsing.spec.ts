@@ -10,51 +10,51 @@ describe(`boolean can be parsed`, () => {
   it(`parses value of true`, () => {
     environmentManager.set(`CLI_PARAM_VERBOSE`, `true`)
     const args = Command.create({ '--verbose': z.boolean() }).parseOrThrow([])
-    expect(args).toEqual({ verbose: true })
+    expect(args).toMatchObject({ verbose: true })
   })
   it(`parses value of true which overrides a spec default of false`, () => {
     environmentManager.set(`CLI_PARAM_VERBOSE`, `true`)
     const args = Command.create({ '--verbose': z.boolean().default(false) }).parseOrThrow([])
-    expect(args).toEqual({ verbose: true })
+    expect(args).toMatchObject({ verbose: true })
   })
   it(`parses value of false`, () => {
     environmentManager.set(`cli_param_verbose`, `false`)
     const args = Command.create({ '--verbose': z.boolean() }).parseOrThrow([])
-    expect(args).toEqual({ verbose: false })
+    expect(args).toMatchObject({ verbose: false })
   })
   describe(`alias`, () => {
     it(`parses value of true`, () => {
       environmentManager.set(`cli_param_VERB`, `true`)
       const args = Command.create({ '--verbose --verb': z.boolean() }).parseOrThrow([])
-      expect(args).toEqual({ verbose: true })
+      expect(args).toMatchObject({ verbose: true })
     })
     it(`parses value of false`, () => {
       environmentManager.set(`cli_param_VERB`, `false`)
       const args = Command.create({ '--verbose --verb': z.boolean() }).parseOrThrow([])
-      expect(args).toEqual({ verbose: false })
+      expect(args).toMatchObject({ verbose: false })
     })
   })
   describe(`negated`, () => {
     it(`parses negated name with false value`, () => {
       environmentManager.set(`cli_param_no_foo`, `false`)
       const args = Command.create({ '--foo': z.boolean() }).parseOrThrow([])
-      expect(args).toEqual({ foo: true })
+      expect(args).toMatchObject({ foo: true })
     })
     it(`parses negated name with true value`, () => {
       environmentManager.set(`cli_param_no_foo`, `true`)
       const args = Command.create({ '--foo': z.boolean() }).parseOrThrow([])
-      expect(args).toEqual({ foo: false })
+      expect(args).toMatchObject({ foo: false })
     })
     describe(`alias`, () => {
       it(`parses negated alias name with true value`, () => {
         environmentManager.set(`cli_param_no_foobar`, `true`)
         const args = Command.create({ '--foo --foobar': z.boolean() }).parseOrThrow([])
-        expect(args).toEqual({ foo: false })
+        expect(args).toMatchObject({ foo: false })
       })
       it(`parses negated alias name with false value`, () => {
         environmentManager.set(`cli_param_no_foobar`, `false`)
         const args = Command.create({ '--foo --foobar': z.boolean() }).parseOrThrow([])
-        expect(args).toEqual({ foo: true })
+        expect(args).toMatchObject({ foo: true })
       })
     })
   })
@@ -63,12 +63,12 @@ describe(`boolean can be parsed`, () => {
 it(`parses a value specified to be a string`, () => {
   environmentManager.set(`cli_param_foo`, `bar`)
   const args = Command.create({ '--foo': z.string() }).parseOrThrow([])
-  expect(args).toEqual({ foo: `bar` })
+  expect(args).toMatchObject({ foo: `bar` })
 })
 it(`parses a value specified to be a number`, () => {
   environmentManager.set(`cli_param_foo`, `4.3`)
   const args = Command.create({ '--foo': z.number() }).parseOrThrow([])
-  expect(args).toEqual({ foo: 4.3 })
+  expect(args).toMatchObject({ foo: 4.3 })
 })
 describe(`enum can be parsed`, () => {
   it(`throws an error if the value does not pass validation`, () => {
@@ -82,7 +82,7 @@ describe(`enum can be parsed`, () => {
 it(`ignores the letter casing of env name`, () => {
   environmentManager.set(`cLi_PARAM_fOo`, `bar`)
   const args = Command.create({ '--foo': z.string() }).parseOrThrow([])
-  expect(args).toEqual({ foo: `bar` })
+  expect(args).toMatchObject({ foo: `bar` })
 })
 
 it.todo(`takes lower precedence than flags`)
