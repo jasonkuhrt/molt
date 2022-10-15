@@ -11,7 +11,8 @@
     "build:cjs": "ts-node scripts/build-cjs.ts",
     "build:esm": "pnpm tsc --project tsconfig.esm.json",
     "build:toc": "markdown-toc README.md -i --maxdepth 4 && prettier --write README.md",
-    "prepublishOnly": "pnpm build"
+    "prepublishOnly": "pnpm build",
+    "examples:intro": "ts-node examples/intro.ts"
   },
   "files": [
     "src",
@@ -36,8 +37,10 @@
   "dependencies": {
     "@molt/types": "workspace:*",
     "alge": "0.7.0-next.1",
+    "chalk": "^5.1.2",
     "lodash.camelcase": "^4.3.0",
     "lodash.snakecase": "^4.1.1",
+    "strip-ansi": "^7.0.1",
     "ts-toolbelt": "^9.6.0",
     "zod": "^3.19.1"
   },
@@ -47,6 +50,7 @@
     "conditional-type-checks": "1.0.6",
     "execa": "6.1.0",
     "fast-glob": "3.2.12",
-    "fs-jetpack": "5.0.0"
+    "fs-jetpack": "5.0.0",
+    "vitest-mock-process": "^1.0.4"
   }
 }

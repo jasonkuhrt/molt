@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/setup
-      - run: pnpm -r test
+      - run: FORCE_COLOR=3 pnpm -r test
   lint:
     needs: setup
     runs-on: ubuntu-latest

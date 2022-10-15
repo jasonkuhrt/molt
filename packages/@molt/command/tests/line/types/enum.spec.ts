@@ -19,7 +19,7 @@ describe(`errors`, () => {
 it(`is validated`, () => {
   // const args = Parameters.create({ '--mode': z.enum([`a`, `b`, `c`]) }).parseOrThrow([`--mode`, `bad`])
   // assert<IsExact<{ mode: 'a'|'b'|'c' }, typeof args>>(true)
-  // expect(args).toEqual({ mode: true })
+  // expect(args).toMatchObject({ mode: true })
   expect(() =>
     Command.create({ '--mode': z.enum([`a`, `b`, `c`]) }).parseOrThrow([`--mode`, `bad`])
   ).toThrowErrorMatchingInlineSnapshot(`"Invalid value for mode: todo"`)

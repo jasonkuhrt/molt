@@ -1,16 +1,15 @@
 import { Errors } from '../Errors/index.js'
-import { ParameterSpec } from '../ParameterSpec/index.js'
-import type { Normalized } from '../Settings/settings.js'
+import type { Spec } from '../ParameterSpec/ParametersSpec.js'
 import { Environment } from './Environment/index.js'
 import { Line } from './Line/index.js'
-import type { z } from 'zod'
+
+export * from './types.js'
 
 export const parseOrThrow = (
-  schema: z.ZodRawShape,
-  rawLineInputs: Line.RawLineInputs,
-  settings: Normalized
-): object => {
-  const specs = ParameterSpec.parse(schema, settings)
+  specs: Spec[],
+  rawLineInputs: Line.RawLineInputs
+): { args: Record<string, unknown>; errors: Errors.ErrorMissingArgument[] } => {
+  const errors = []
   const env = Environment.parse(specs)
   const line = Line.parse(rawLineInputs, specs)
   const args: Record<string, unknown> = {}
@@ -49,10 +48,12 @@ export const parseOrThrow = (
     }
 
     if (!spec.optional) {
-      throw new Errors.ErrorMissingArgument({ spec })
+      errors.push(new Errors.ErrorMissingArgument({ spec }))
     }
+
+    args[spec.name.canonical] = undefined
   }
 
   // dump({ args })
-  return args
+  return { args, errors }
 }

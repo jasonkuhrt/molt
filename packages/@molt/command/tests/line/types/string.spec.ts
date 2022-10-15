@@ -31,11 +31,11 @@ describe(`optional`, () => {
   it(`specified input can be omitted, undefined is possible`, () => {
     const args = Command.create({ '--foo': z.string().optional() }).parseOrThrow([])
     assert<IsExact<{ foo: string | undefined }, typeof args>>(true)
-    expect(args).toEqual({ foo: undefined })
+    expect(args).toMatchObject({ foo: undefined })
   })
   it(`input can be given`, () => {
     const args = Command.create({ '--foo': z.string().optional() }).parseOrThrow([`--foo`, `bar`])
     assert<IsExact<{ foo: string | undefined }, typeof args>>(true)
-    expect(args).toEqual({ foo: `bar` })
+    expect(args).toMatchObject({ foo: `bar` })
   })
 })
