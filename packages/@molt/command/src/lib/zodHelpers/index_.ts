@@ -1,21 +1,48 @@
-import type { z } from 'zod'
+import { z } from 'zod'
 
 export type ZodPrimitive = 'ZodBoolean' | 'ZodNumber' | 'ZodString' | 'ZodEnum'
 
 export type Primitive = 'boolean' | 'number' | 'string'
+
+export const getEnum = (schema: z.ZodTypeAny): null | z.ZodEnum<[string, ...string[]]> => {
+  if (!(`_def` in schema)) throw new Error(`Expected a Zod schema.`)
+  if (!(`typeName` in schema._def)) throw new Error(`Expected a Zod schema.`)
+
+  // eslint-disable-next-line
+  if (schema instanceof z.ZodDefault) {
+    // if (schema._def.typeName === `ZodDefault`) {
+    // eslint-disable-next-line
+    return getEnum(schema._def.innerType)
+  }
+
+  // eslint-disable-next-line
+  if (schema instanceof z.ZodOptional) {
+    // if (schema._def.typeName === `ZodOptional`) {
+    // eslint-disable-next-line
+    return getEnum(schema._def.innerType)
+  }
+
+  if (schema instanceof z.ZodEnum) {
+    return schema
+  }
+
+  return null
+}
 
 export const getZodPrimitive = (schema: z.ZodTypeAny): ZodPrimitive => {
   if (!(`_def` in schema)) throw new Error(`Expected a Zod schema.`)
   if (!(`typeName` in schema._def)) throw new Error(`Expected a Zod schema.`)
 
   // eslint-disable-next-line
-  if (schema._def.typeName === `ZodDefault`) {
+  if (schema instanceof z.ZodDefault) {
+    // if (schema._def.typeName === `ZodDefault`) {
     // eslint-disable-next-line
     return getZodPrimitive(schema._def.innerType)
   }
 
   // eslint-disable-next-line
-  if (schema._def.typeName === `ZodOptional`) {
+  if (schema instanceof z.ZodOptional) {
+    // if (schema._def.typeName === `ZodOptional`) {
     // eslint-disable-next-line
     return getZodPrimitive(schema._def.innerType)
   }

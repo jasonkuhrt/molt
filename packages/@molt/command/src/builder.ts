@@ -53,11 +53,11 @@ export const create = <Schema extends z.ZodRawShape>(schema: Schema): Definition
       ) {
         process.stdout.write(Help.render(specs) + `\n`)
         process.exit(0)
-      }
-      if (result.errors.length > 0) {
+      } else if (result.errors.length > 0) {
         // TODO report all errors
         throw result.errors[0]
       }
+
       return result.args
     },
     schema,

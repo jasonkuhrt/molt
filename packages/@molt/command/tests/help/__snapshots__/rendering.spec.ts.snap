@@ -1,5 +1,25 @@
 // Vitest Snapshot v1
 
+exports[`enum members are listed > monochrome 1`] = `
+"
+PARAMETERS
+
+  
+  foo    apple | dolphin | cab    REQUIRED            
+  
+"
+`;
+
+exports[`enum members are listed > polychrome 1`] = `
+"
+PARAMETERS
+
+  
+  [32mfoo[39m    [32mapple[39m[33m | [39m[32mdolphin[39m[33m | [39m[32mcab[39m   [101m REQUIRED [49m           
+  
+"
+`;
+
 exports[`if parameter has default it is shown > monochrome 1`] = `
 "
 PARAMETERS
@@ -86,6 +106,68 @@ PARAMETERS
   [32ma[39m      [32mstring[39m                                     
   [90ma[39m      Blah blah blah. Blah blah blah. Blah bla   
          h blah.                                    
+  
+"
+`;
+
+exports[`optional enum members are listed > monochrome 1`] = `
+"
+PARAMETERS
+
+  
+  foo    apple | dolphin | cab   
+  
+"
+`;
+
+exports[`optional enum members are listed > polychrome 1`] = `
+"
+PARAMETERS
+
+  
+  [32mfoo[39m    [32mapple[39m[33m | [39m[32mdolphin[39m[33m | [39m[32mcab[39m   
+  
+"
+`;
+
+exports[`when there are many members they wrap > monochrome 1`] = `
+"
+PARAMETERS
+
+  
+  foo    apple | baby | cannabis | dinosaur    REQUIRED            
+         fanna | goat | house | island | jake                        
+  
+"
+`;
+
+exports[`when there are many members they wrap > polychrome 1`] = `
+"
+PARAMETERS
+
+  
+  [32mfoo[39m    [32mapple[39m[33m | [39m[32mbaby[39m[33m | [39m[32mcannabis[39m[33m | [39m[32mdinosaur[39m   [101m REQUIRED [49m           
+         [32mfanna[39m[33m | [39m[32mgoat[39m[33m | [39m[32mhouse[39m[33m | [39m[32misland[39m[33m | [39m[32mjake[39m                        
+  
+"
+`;
+
+exports[`when there is only one enum member it is prefixed with "enum:" to avoid confusion of it looking like the name of a kind of type > monochrome 1`] = `
+"
+PARAMETERS
+
+  
+  foo    apple (enum)    REQUIRED            
+  
+"
+`;
+
+exports[`when there is only one enum member it is prefixed with "enum:" to avoid confusion of it looking like the name of a kind of type > polychrome 1`] = `
+"
+PARAMETERS
+
+  
+  [32mfoo[39m    [32mapple[39m [90m(enum)[39m   [101m REQUIRED [49m           
   
 "
 `;

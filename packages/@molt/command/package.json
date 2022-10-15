@@ -12,7 +12,8 @@
     "build:esm": "pnpm tsc --project tsconfig.esm.json",
     "build:toc": "markdown-toc README.md -i --maxdepth 4 && prettier --write README.md",
     "prepublishOnly": "pnpm build",
-    "examples:intro": "ts-node examples/intro.ts"
+    "examples:intro": "ts-node examples/intro.ts",
+    "examples:kitchen-sink": "ts-node examples/kitchen-sink.ts"
   },
   "files": [
     "src",

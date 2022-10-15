@@ -3,7 +3,7 @@ import { z } from 'zod'
 
 const args = Command.create({
   '--file-path': z.string().describe(`Path to the file to convert.`),
-  '--to': z.enum([`json`, ` yaml`, `toml`]).describe(`Format to convert to.`),
+  '--to': z.enum([`json`, `yaml`, `toml`]).describe(`Format to convert to.`),
   '--from': z
     .enum([`json`, `yaml`, `toml`])
     .optional()
