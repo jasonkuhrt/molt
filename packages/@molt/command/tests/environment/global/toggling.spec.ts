@@ -36,7 +36,7 @@ it(`can be disabled by environment`, () => {
   const args = Command.create({ '--foo': z.string().default(`foo_default`) }).parseOrThrow([])
   expect(args).toMatchObject({ foo: `foo_default` })
 })
-it.only(`environment supersedes settings`, () => {
+it(`environment supersedes settings`, () => {
   environmentManager.set(`ClI_settings_READ_arguments_FROM_ENVIRONMENT`, `false`)
   environmentManager.set(`cli_foo`, `bar`)
   expect(() =>
