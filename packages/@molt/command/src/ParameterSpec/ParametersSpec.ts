@@ -12,6 +12,7 @@ export interface Spec {
   schema: z.ZodType
   schemaPrimitive: ZodHelpers.Primitive
   optional: boolean
+  description: string | null
   default: null | {
     get: () => unknown
   }
@@ -73,6 +74,7 @@ export const parse = (schema: z.ZodRawShape, settings: Settings.Normalized): Spe
 
     const spec: Spec = {
       schema,
+      description: schema.description ?? null,
       optional: isOptional,
       default: hasDefault
         ? {

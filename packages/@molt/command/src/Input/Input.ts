@@ -5,7 +5,11 @@ import { Line } from './Line/index.js'
 
 export * from './types.js'
 
-export const parseOrThrow = (specs: Spec[], rawLineInputs: Line.RawLineInputs): object => {
+export const parseOrThrow = (
+  specs: Spec[],
+  rawLineInputs: Line.RawLineInputs
+): { args: object; errors: Errors.ErrorMissingArgument[] } => {
+  const errors = []
   const env = Environment.parse(specs)
   const line = Line.parse(rawLineInputs, specs)
   const args: Record<string, unknown> = {}
@@ -44,10 +48,10 @@ export const parseOrThrow = (specs: Spec[], rawLineInputs: Line.RawLineInputs): 
     }
 
     if (!spec.optional) {
-      throw new Errors.ErrorMissingArgument({ spec })
+      errors.push(new Errors.ErrorMissingArgument({ spec }))
     }
   }
 
   // dump({ args })
-  return args
+  return { args, errors }
 }

@@ -11,7 +11,8 @@
     "build:cjs": "ts-node scripts/build-cjs.ts",
     "build:esm": "pnpm tsc --project tsconfig.esm.json",
     "build:toc": "markdown-toc README.md -i --maxdepth 4 && prettier --write README.md",
-    "prepublishOnly": "pnpm build"
+    "prepublishOnly": "pnpm build",
+    "examples:intro": "ts-node examples/intro.ts"
   },
   "files": [
     "src",

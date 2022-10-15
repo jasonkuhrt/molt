@@ -1,0 +1,45 @@
+// Vitest Snapshot v1
+
+exports[`if parameter has default it is shown 1`] = `
+"PARAMETERS
+----------
+
+--------------------------------optional--------------------------------
+a           string                        foobar
+            
+
+"
+`;
+
+exports[`if parameter has description it is shown 1`] = `
+"PARAMETERS
+----------
+
+--------------------------------optional--------------------------------
+a           string                        
+            Blah blah blah.
+
+"
+`;
+
+exports[`if there is optional param it is shown 1`] = `
+"PARAMETERS
+----------
+
+--------------------------------optional--------------------------------
+a           string                        
+            
+
+"
+`;
+
+exports[`long description wraps within column 1`] = `
+"PARAMETERS
+----------
+
+--------------------------------optional--------------------------------
+a           string                        
+            Blah blah blah. Blah blah blah. Blah blah blah.
+
+"
+`;

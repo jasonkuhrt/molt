@@ -32,16 +32,22 @@ export const create = <Schema extends z.ZodRawShape>(schema: Schema): Definition
       return api
     },
     parseOrThrow: (processArguments) => {
-      const schema_ = settings.help ? { ...schema, '-h --help': z.boolean().default(false) } : schema
-      // dump(schema_)
+      const schema_ = settings.help
+        ? {
+            ...schema,
+            '-h --help': z.boolean().default(false),
+          }
+        : schema
       const specs = ParameterSpec.parse(schema_, settings)
       // eslint-disable-next-line
-      const args = Input.parseOrThrow(specs, processArguments ?? process.argv.slice(2)) as any
-      if (settings.help && args.help) {
+      const result = Input.parseOrThrow(specs, processArguments ?? process.argv.slice(2))
+      // eslint-disable-next-line
+      // @ts-expect-error
+      if (settings.help && `help` in result.args && result.args.help === true) {
         process.stdout.write(Help.render(specs) + `\n`)
         process.exit(0)
       }
-      return args
+      return result.args
     },
     schema,
   } as Definition<Schema>
