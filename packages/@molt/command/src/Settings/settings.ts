@@ -8,6 +8,7 @@ import type { z } from 'zod'
 export interface Normalized {
   description?: string | undefined
   help: boolean
+  helpOnNoArguments: boolean
   parameters: {
     environment: Record<string, SettingNormalizedEnvironmentParameter> & {
       $default: SettingNormalizedEnvironmentParameterDefault
@@ -33,6 +34,7 @@ interface SettingInputEnvironmentParameter {
 export interface Input<ParametersSchema extends z.ZodRawShape> {
   description?: string
   help?: boolean
+  helpOnNoArguments?: boolean
   parameters?: {
     // prettier-ignore
     environment?:
@@ -46,17 +48,19 @@ export interface Input<ParametersSchema extends z.ZodRawShape> {
 }
 
 // eslint-disable-next-line
-export const change = (normalized: Normalized, input: Input<{}>): void => {
-  normalized.description = input.description ?? normalized.description
+export const change = (current: Normalized, input: Input<{}>): void => {
+  current.description = input.description ?? current.description
+
+  current.helpOnNoArguments = input.helpOnNoArguments ?? current.helpOnNoArguments
 
   if (input.parameters !== undefined) {
     if (input.help) {
-      normalized.help = input.help
+      current.help = input.help
     }
     if (input.parameters.environment !== undefined) {
       // Handle environment
       if (typeof input.parameters.environment === `boolean`) {
-        normalized.parameters.environment.$default.enabled = input.parameters.environment
+        current.parameters.environment.$default.enabled = input.parameters.environment
       } else {
         // As soon as the settings begin to specify explicit parameter settings
         // AND there is NO explicit default toggle setting, then we disable all the rest by default.
@@ -65,15 +69,15 @@ export const change = (normalized: Normalized, input: Input<{}>): void => {
           (typeof input.parameters.environment.$default !== `boolean` &&
             input.parameters.environment.$default.enabled === undefined)
         ) {
-          normalized.parameters.environment.$default.enabled =
+          current.parameters.environment.$default.enabled =
             Object.keys(input.parameters.environment).filter((k) => k !== `$default`).length === 0
         }
 
         for (const [parameterName, spec] of Object.entries(input.parameters.environment)) {
-          let spec_ = normalized.parameters.environment[parameterName]
+          let spec_ = current.parameters.environment[parameterName]
           if (!spec_) {
             spec_ = {}
-            normalized.parameters.environment[parameterName] = spec_
+            current.parameters.environment[parameterName] = spec_
           }
           if (typeof spec === `boolean`) {
             spec_.enabled = spec
@@ -124,6 +128,7 @@ const isEnvironmentEnabled = (lowercaseEnv: NodeJS.ProcessEnv) => {
 export const getDefaults = (lowercaseEnv: NodeJS.ProcessEnv): Normalized => {
   return {
     help: true,
+    helpOnNoArguments: true,
     parameters: {
       environment: {
         $default: {

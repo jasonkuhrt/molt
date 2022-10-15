@@ -37,8 +37,10 @@
   "dependencies": {
     "@molt/types": "workspace:*",
     "alge": "0.7.0-next.1",
+    "chalk": "^5.1.2",
     "lodash.camelcase": "^4.3.0",
     "lodash.snakecase": "^4.1.1",
+    "strip-ansi": "^7.0.1",
     "ts-toolbelt": "^9.6.0",
     "zod": "^3.19.1"
   },

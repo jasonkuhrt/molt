@@ -11,3 +11,9 @@ const args = Command.create({
   '--verbose -v': z.boolean().default(false).describe(`Log detailed progress as conversion executes.`),
   '--move -m': z.boolean().default(false).describe(`Delete the original file after it has been converted.`),
 }).parseOrThrow()
+
+args.filePath
+args.from
+args.move
+args.to
+args.verbose

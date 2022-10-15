@@ -1,5 +1,19 @@
 import { partition } from '../lib/prelude.js'
+import { Text } from '../lib/Text/index.js'
 import type { ParameterSpec } from '../ParameterSpec/index.js'
+import { chalk } from '../singletons/chalk.js'
+import stripAnsi from 'strip-ansi'
+
+interface ColumnSpecs {
+  name: {
+    width: number
+    padding?: number
+  }
+  typeAndDescription: {
+    width: number
+    padding?: number
+  }
+}
 
 // TODO use
 interface Settings {
@@ -8,6 +22,11 @@ interface Settings {
    * @defaultValue false
    */
   flagDash?: boolean
+  /**
+   * Should the help output be colored?
+   * @defaultValue true
+   */
+  color?: boolean
 }
 
 export const render = (specs: ParameterSpec.Spec[], _settings?: Settings) => {
@@ -16,141 +35,87 @@ export const render = (specs: ParameterSpec.Spec[], _settings?: Settings) => {
     (spec) => spec.optional
   )
 
-  const columnWidths = {
-    name: specs.reduce((width, spec) => Math.max(width, spec.name.canonical.length), 0),
-    typeAndDescription: specs.reduce(
-      (width, spec) => Math.max(width, spec.schemaPrimitive.length, (spec.description ?? ``).length),
-      0
-    ),
+  const columnSpecs: ColumnSpecs = {
+    name: {
+      width: specs.reduce((width, spec) => Math.max(width, spec.name.canonical.length), 0),
+    },
+    typeAndDescription: {
+      width: specs.reduce(
+        (width, spec) =>
+          Math.min(40, Math.max(width, spec.schemaPrimitive.length, (spec.description ?? ``).length)),
+        0
+      ),
+    },
   }
 
-  let help = ``
+  let help = Text.line()
   help += title(`PARAMETERS`)
-  help += line(``)
+  help += Text.line()
 
   if (requiredSpecs.length > 0) {
-    help += line(sectionTitle(`required`))
-    for (const spec of requiredSpecs) {
-      help += line(``)
-      help += parameter(spec, { columnWidths })
-      help += line(``)
-    }
-    help += line(``)
+    // help += Text.line(Text.indent(chalk.gray(sectionTitle(`required`))))
+    help += Text.indent(parameters(requiredSpecs, { columnSpecs })) + Text.line()
   }
 
   if (optionalSpecs.length > 0) {
-    help += line(sectionTitle(`optional`))
-    for (const spec of optionalSpecs) {
-      help += line(``)
-      help += parameter(spec, { columnWidths })
-      help += line(``)
-    }
+    // help += Text.line(Text.indent(chalk.gray(sectionTitle(`optional`))))
+    help += Text.indent(parameters(optionalSpecs, { columnSpecs }))
   }
 
   return help
 }
 
+const parameters = (specs: ParameterSpec.Spec[], options: { columnSpecs: ColumnSpecs }) => {
+  let t = ``
+  for (const spec of specs) {
+    t += Text.line()
+    t += parameter(spec, { columnSpecs: options.columnSpecs })
+    t += Text.line()
+  }
+  return t
+}
+
 const parameter = (
   spec: ParameterSpec.Spec,
   options: {
-    columnWidths: {
-      name: number
-      typeAndDescription: number
-    }
+    columnSpecs: ColumnSpecs
   }
 ): string => {
-  return renderColumns(
+  return Text.columns(
     [
       {
-        lines: [spec.name.canonical, spec.name.aliases.long.join(`, `), spec.name.aliases.long.join(`, `)],
-        width: options.columnWidths.name,
+        lines: [
+          chalk.green(spec.name.canonical),
+          chalk.gray(spec.name.aliases.long.join(`, `)),
+          chalk.gray(spec.name.short ?? ``),
+          chalk.gray(spec.name.aliases.long.join(`, `)),
+        ],
+        width: options.columnSpecs.name.width,
       },
       {
-        lines: [spec.schemaPrimitive, spec.description],
-        width: options.columnWidths.typeAndDescription,
+        lines: [
+          chalk.green(spec.schemaPrimitive),
+          ...Text.column(options.columnSpecs.typeAndDescription.width, spec.description ?? ``),
+        ],
+        width: options.columnSpecs.typeAndDescription.width,
+      },
+      {
+        lines: [!spec.optional ? chalk.bgRedBright(` REQUIRED `) : ``],
       },
     ].map((_) => ({
-      lines: _.lines.filter((_): _ is string => _ !== null && _ !== ``),
+      lines: _.lines.filter((_): _ is string => _ !== null && stripAnsi(_) !== ``),
       width: _.width,
     }))
   )
-  // let str = ``
-  // str += span()
-  // if (spec.default) {
-  //   str += spec.default.get()
-  // }
-  // str += line(``)
-  // str += span(options.columns.name, ``)
-  // if (spec.description) {
-  //   str += span(options.columns.typeDescription)
-  // }
-
-  // return line(str)
 }
 
 const title = (string: string) => {
-  return line(underline(string))
-}
-
-const underline = (string: string) => {
-  return line(string) + `-`.repeat(string.length)
+  return Text.line(string.toUpperCase())
 }
 
 const sectionTitle = (title: string) => {
-  const border = `--------------------------------`
+  const borderLength = 40
+  const borderChar = Text.chars.lineH
+  const border = borderChar.repeat(borderLength)
   return `${border}${title.toLowerCase()}${border}`
-}
-
-const line = (text: string) => `${text}\n`
-
-const space = ` `
-const newline = `\n`
-
-// const span = (size: number, text: string) => {
-//   const paddingSize = size - text.length
-//   if (paddingSize < 0) {
-//     return toLines(size, text).join(newline)
-//   }
-//   return pad(`right`, paddingSize, space, text)
-// }
-
-const pad = (side: 'left' | 'right', size: number, char: string, text: string) => {
-  return side === `left` ? char.repeat(size) + text : text + char.repeat(size)
-}
-
-// const toLines = (size: number, text: string): string[] => {
-//   const lines = []
-//   let textToConsume = text
-//   while (textToConsume.length > 0) {
-//     lines.push(textToConsume.slice(0, size))
-//     textToConsume = textToConsume.slice(size)
-//   }
-//   return lines
-// }
-
-const renderColumns = (columns: { lines: string[]; width?: number }[]) => {
-  const columnsSized = columns.map((_) => {
-    return {
-      lines: _.lines,
-      width: _.width ?? _.lines.reduce((width, line) => Math.max(width, line.length), 0),
-    }
-  })
-  const lineCount = Math.max(...columns.map((_) => _.lines.length))
-  const columnSeparator = space.repeat(3)
-  let currentLine = 0
-  const lines = []
-  while (currentLine < lineCount) {
-    const line = columnsSized
-      .map((col) => span(`left`, col.width, col.lines[currentLine] ?? ``))
-      // .map((col) => col.lines[currentLine] ?? ``)
-      .join(columnSeparator)
-    lines.push(line)
-    currentLine++
-  }
-  return lines.join(newline)
-}
-
-const span = (side: 'left' | 'right', width: number, content: string) => {
-  return pad(side === `left` ? `right` : `left`, Math.max(0, width - content.length), space, content)
-  // return pad(side, width - content.length, space, content)
 }

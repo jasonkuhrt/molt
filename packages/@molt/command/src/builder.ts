@@ -2,7 +2,6 @@ import { Help } from './Help/index.js'
 import type { FlagSpecExpressionParseResultToPropertyName } from './helpers.js'
 import { getLowerCaseEnvironment } from './helpers.js'
 import { Input } from './Input/index.js'
-import { dump } from './lib/prelude.js'
 import { ParameterSpec } from './ParameterSpec/index.js'
 import { Settings } from './Settings/index.js'
 import type { FlagName } from '@molt/types'
@@ -32,6 +31,7 @@ export const create = <Schema extends z.ZodRawShape>(schema: Schema): Definition
       return api
     },
     parseOrThrow: (processArguments) => {
+      const processArguments_ = processArguments ?? process.argv.slice(2)
       const schema_ = settings.help
         ? {
             ...schema,
@@ -40,12 +40,19 @@ export const create = <Schema extends z.ZodRawShape>(schema: Schema): Definition
         : schema
       const specs = ParameterSpec.parse(schema_, settings)
       // eslint-disable-next-line
-      const result = Input.parseOrThrow(specs, processArguments ?? process.argv.slice(2))
-      // eslint-disable-next-line
-      // @ts-expect-error
-      if (settings.help && `help` in result.args && result.args.help === true) {
+      const result = Input.parseOrThrow(specs, processArguments_)
+      if (
+        // eslint-disable-next-line
+        // @ts-expect-error
+        (settings.help && `help` in result.args && result.args.help === true) ||
+        (settings.helpOnNoArguments && processArguments_.length === 0)
+      ) {
         process.stdout.write(Help.render(specs) + `\n`)
         process.exit(0)
+      }
+      if (result.errors.length > 0) {
+        // TODO report all errors
+        throw result.errors[0]
       }
       return result.args
     },
