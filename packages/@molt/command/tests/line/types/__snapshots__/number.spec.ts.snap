@@ -16,7 +16,7 @@ Here are the docs for this command:
 PARAMETERS
 
   
-  [32mage[39m    [32mnumber[39m       [1m[30m[101m REQUIRED [49m[39m[22m                              
+  [32mage[39m    [32mnumber[39m       [1m[30m[101m REQUIRED [49m[39m[22m                  [34m✓[39m          
   
 ",
   ],
@@ -39,9 +39,9 @@ Here are the docs for this command:
 PARAMETERS
 
   
-  [32mname[39m   [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m                              
+  [32mname[39m   [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m                  [34m✓[39m          
   
-  [32mage[39m    [32mnumber[39m       [1m[30m[101m REQUIRED [49m[39m[22m                              
+  [32mage[39m    [32mnumber[39m       [1m[30m[101m REQUIRED [49m[39m[22m                  [34m✓[39m          
   
 ",
   ],
@@ -64,7 +64,7 @@ Here are the docs for this command:
 PARAMETERS
 
   
-  [32mage[39m    [32mnumber[39m       [1m[30m[101m REQUIRED [49m[39m[22m                              
+  [32mage[39m    [32mnumber[39m       [1m[30m[101m REQUIRED [49m[39m[22m                  [34m✓[39m          
   
 ",
   ],

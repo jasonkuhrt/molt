@@ -21,7 +21,7 @@ export const underline = (string: string): string => {
   return line(string) + chars.lineH.repeat(string.length)
 }
 
-export const columns = (
+export const row = (
   columns: {
     lines: string[]
     width?: number | undefined
@@ -67,6 +67,8 @@ export const column = (width: number, text: string): string[] => {
 export const chars = {
   lineH: `─`,
   lineHBold: `━`,
+  x: `✕`,
+  check: `✓`,
   newline,
   space,
 }

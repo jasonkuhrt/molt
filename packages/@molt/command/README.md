@@ -74,21 +74,22 @@ ts-node convert -h
 
 PARAMETERS
 
-  Name           Type / Summary                          Default                 Via Environment
+  Name           Type / Summary                          Default                 Environment
+                                                                                 CLI_PARAM_ | CLI_PARAMETER_
 
-  to             json | yaml | toml                      REQUIRED                ✕
+  to             json | yaml | toml                      REQUIRED                ✓
                  Format to convert to.
 
   file-path      string                                  REQUIRED                FILE_PATH
                  Path to the file to convert.
 
-  from           json | yaml | toml                      Inferred from the file  ✕
+  from           json | yaml | toml                      Inferred from the file  ✓
                  Format to convert from.                 extension.
 
-  verbose        boolean                                 false                   ✕
+  verbose        boolean                                 false                   ✓
   v              Log detailed progress.
 
-  move           boolean                                 false                   ✕
+  move           boolean                                 false                   ✓
   v              Delete the original file after
                  it has been converted.
 
@@ -99,6 +100,7 @@ PARAMETERS
   help           boolean                                 false                   ✕
                  Output detailed info on how to
                  use this CLI.
+
 ```
 
 ## Features

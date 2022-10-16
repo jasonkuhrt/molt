@@ -4,6 +4,7 @@ import { column } from '../lib/Text/Text.js'
 import { ZodHelpers } from '../lib/zodHelpers/index.js'
 import type { ParameterSpec } from '../ParameterSpec/index.js'
 import { chalk } from '../singletons/chalk.js'
+import snakeCase from 'lodash.snakecase'
 import stripAnsi from 'strip-ansi'
 import type { z } from 'zod'
 
@@ -18,6 +19,11 @@ interface ColumnSpecs {
   }
   default: {
     width: number
+    padding?: number
+  }
+  environment: {
+    width: number
+    padding?: number
   }
 }
 
@@ -36,10 +42,8 @@ interface Settings {
 }
 
 export const render = (specs: ParameterSpec.Spec[], _settings?: Settings) => {
-  const [requiredSpecs, optionalSpecs] = partition(
-    specs.filter((_) => _.name.canonical !== `help`),
-    (spec) => spec.optional
-  )
+  const specsWithoutHelp = specs.filter((_) => _.name.canonical !== `help`)
+  const [requiredSpecs, optionalSpecs] = partition(specsWithoutHelp, (spec) => spec.optional)
 
   const columnSpecs: ColumnSpecs = {
     name: {
@@ -49,7 +53,7 @@ export const render = (specs: ParameterSpec.Spec[], _settings?: Settings) => {
       width: specs.reduce((width, spec) => {
         const maybeEnum = ZodHelpers.getEnum(spec.schema)
         const typeLength = maybeEnum
-          ? Math.max(...renderEnumType(maybeEnum).map((_) => stripAnsi(_).length))
+          ? Math.max(...typeEnum(maybeEnum).map((_) => stripAnsi(_).length))
           : spec.schemaPrimitive.length
         const descriptionLength = (spec.description ?? ``).length
         const contentWidth = Math.max(width, typeLength, descriptionLength)
@@ -58,6 +62,9 @@ export const render = (specs: ParameterSpec.Spec[], _settings?: Settings) => {
     },
     default: {
       width: 25,
+    },
+    environment: {
+      width: 40,
     },
   }
 
@@ -93,7 +100,7 @@ const parameter = (
   }
 ): string => {
   const maybeZodEnum = ZodHelpers.getEnum(spec.schema)
-  return Text.columns(
+  return Text.row(
     [
       {
         lines: [
@@ -106,14 +113,32 @@ const parameter = (
       },
       {
         lines: [
-          ...(maybeZodEnum ? renderEnumType(maybeZodEnum) : [chalk.green(spec.schemaPrimitive)]),
+          ...(maybeZodEnum ? typeEnum(maybeZodEnum) : [chalk.green(spec.schemaPrimitive)]),
           ...Text.column(options.columnSpecs.typeAndDescription.width, spec.description ?? ``),
         ],
         width: options.columnSpecs.typeAndDescription.width,
       },
       {
+        lines: parameterDefault(options.columnSpecs.default.width, spec),
         separator: Text.chars.space.repeat(6),
-        lines: renderDefault(options.columnSpecs.default.width, spec),
+        width: options.columnSpecs.default.width,
+      },
+      {
+        lines: spec.environment?.enabled
+          ? [
+              chalk.blue(Text.chars.check) +
+                ` ${chalk.gray(
+                  spec.environment.namespaces.length > 0
+                    ? spec.environment.namespaces
+                        .map(
+                          (_) =>
+                            `${snakeCase(_).toUpperCase()}_${snakeCase(spec.name.canonical).toUpperCase()}`
+                        )
+                        .join(` | `)
+                    : `${snakeCase(spec.name.canonical).toUpperCase()}`
+                )}`,
+            ]
+          : [chalk.gray(Text.chars.x)],
       },
     ].map((_) => ({
       ..._,
@@ -122,11 +147,7 @@ const parameter = (
   )
 }
 
-const title = (string: string) => {
-  return Text.line(string.toUpperCase())
-}
-
-const renderDefault = (width: number, spec: ParameterSpec.Spec): Text.Lines => {
+const parameterDefault = (width: number, spec: ParameterSpec.Spec): Text.Lines => {
   if (spec.optional) {
     if (spec.default) {
       try {
@@ -143,7 +164,7 @@ const renderDefault = (width: number, spec: ParameterSpec.Spec): Text.Lines => {
   return [chalk.bold(chalk.black(chalk.bgRedBright(` REQUIRED `)))]
 }
 
-const renderEnumType = (schema: z.ZodEnum<[string, ...string[]]>): Text.Lines => {
+const typeEnum = (schema: z.ZodEnum<[string, ...string[]]>): Text.Lines => {
   const separator = chalk.yellow(` | `)
   const members = Object.values(schema.Values)
   const lines = columnFitEnumDoc(30, members).map((line) =>
@@ -186,3 +207,7 @@ const columnFitEnumDoc = (width: number, members: string[]): string[][] => {
 //   const border = borderChar.repeat(borderLength)
 //   return `${border}${title.toLowerCase()}${border}`
 // }
+
+const title = (string: string) => {
+  return Text.line(string.toUpperCase())
+}

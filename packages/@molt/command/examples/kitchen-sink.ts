@@ -30,7 +30,16 @@ const args = Command.create({
     .describe(`Format to convert from. By default inferred from the file extension.`),
   '--verbose -v': z.boolean().default(false).describe(`Log detailed progress as conversion executes.`),
   '--move -m': z.boolean().default(false).describe(`Delete the original file after it has been converted.`),
-}).parseOrThrow()
+})
+  .settings({
+    parameters: {
+      environment: {
+        // $default: true,
+        big: true,
+      },
+    },
+  })
+  .parseOrThrow()
 
 args.filePath
 args.from
