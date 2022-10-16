@@ -74,9 +74,6 @@ ts-node convert -h
 
 PARAMETERS
 
-  name           type/description                        default
-  ----           ----------------                        -------
-
   to             enum:  json, yaml, toml                 REQUIRED
                  Format to convert to.
 

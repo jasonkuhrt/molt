@@ -33,17 +33,26 @@ export const parseOrThrow = (
       if (input.value._tag === `boolean`) {
         args[spec.name.canonical] = input.value.negated ? !input.value.value : input.value.value
       } else {
-        const value = input.spec.schema.safeParse(input.value.value)
-        if (!value.success) {
-          throw new Error(`Invalid value for ${spec.name.canonical}: todo`)
+        let value: unknown
+        try {
+          value = input.spec.schema.parse(input.value.value)
+        } catch (e) {
+          errors.push(new Error(`Invalid value for ${spec.name.canonical}`, { cause: e }))
+          args[spec.name.canonical] = undefined
+          continue
         }
-        args[spec.name.canonical] = value.data
+        args[spec.name.canonical] = value
       }
       continue
     }
 
     if (spec.default) {
-      args[spec.name.canonical] = spec.default.get()
+      try {
+        args[spec.name.canonical] = spec.default.get()
+      } catch (error) {
+        errors.push(new Error(`Failed to get default value for ${spec.name.canonical}`, { cause: error }))
+        args[spec.name.canonical] = undefined
+      }
       continue
     }
 

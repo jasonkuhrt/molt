@@ -102,11 +102,12 @@ const parameter = (
         width: options.columnSpecs.typeAndDescription.width,
       },
       {
-        lines: [!spec.optional ? chalk.bgRedBright(` REQUIRED `) : ``],
+        separator: Text.chars.space.repeat(6),
+        lines: renderDefault(spec),
       },
     ].map((_) => ({
+      ..._,
       lines: _.lines.filter((_): _ is string => _ !== null && stripAnsi(_) !== ``),
-      width: _.width,
     }))
   )
 }
@@ -115,7 +116,22 @@ const title = (string: string) => {
   return Text.line(string.toUpperCase())
 }
 
-const renderEnumType = (schema: z.ZodEnum<[string, ...string[]]>): string[] => {
+const renderDefault = (spec: ParameterSpec.Spec): Text.Lines => {
+  if (spec.optional) {
+    if (spec.default) {
+      try {
+        return [chalk.blue(String(spec.default.get()))]
+      } catch (e) {
+        const error = e instanceof Error ? e : new Error(String(e))
+        return [chalk.bold(chalk.red(`Error trying to render this default: ${error.message}`))]
+      }
+    }
+    return [chalk.blue(`undefined`)]
+  }
+  return [chalk.bold(chalk.black(chalk.bgRedBright(` REQUIRED `)))]
+}
+
+const renderEnumType = (schema: z.ZodEnum<[string, ...string[]]>): Text.Lines => {
   const separator = chalk.yellow(` | `)
   const members = Object.values(schema.Values)
   const lines = columnFitEnumDoc(30, members).map((line) =>

@@ -1,5 +1,7 @@
 import stripAnsi from 'strip-ansi'
 
+export type Lines = string[]
+
 export const line = (text = ``): string => `${text}\n`
 
 export const space = ` `
@@ -20,7 +22,11 @@ export const underline = (string: string): string => {
 }
 
 export const columns = (
-  columns: { lines: string[]; width?: number | undefined; separator?: string | undefined }[]
+  columns: {
+    lines: string[]
+    width?: number | undefined
+    separator?: string | undefined
+  }[]
 ): string => {
   const columnsSized = columns.map((_) => {
     return {

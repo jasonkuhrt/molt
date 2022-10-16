@@ -1,21 +1,83 @@
 // Vitest Snapshot v1
 
-exports[`enum members are listed > monochrome 1`] = `
+exports[`enum > enum members are listed > monochrome 1`] = `
 "
 PARAMETERS
 
   
-  foo    apple | dolphin | cab    REQUIRED            
+  foo    apple | dolphin | cab       REQUIRED                               
   
 "
 `;
 
-exports[`enum members are listed > polychrome 1`] = `
+exports[`enum > enum members are listed > polychrome 1`] = `
 "
 PARAMETERS
 
   
-  [32mfoo[39m    [32mapple[39m[33m | [39m[32mdolphin[39m[33m | [39m[32mcab[39m   [101m REQUIRED [49m           
+  [32mfoo[39m    [32mapple[39m[33m | [39m[32mdolphin[39m[33m | [39m[32mcab[39m      [1m[30m[101m REQUIRED [49m[39m[22m                              
+  
+"
+`;
+
+exports[`enum > optional enum members are listed > monochrome 1`] = `
+"
+PARAMETERS
+
+  
+  foo    apple | dolphin | cab      undefined          
+  
+"
+`;
+
+exports[`enum > optional enum members are listed > polychrome 1`] = `
+"
+PARAMETERS
+
+  
+  [32mfoo[39m    [32mapple[39m[33m | [39m[32mdolphin[39m[33m | [39m[32mcab[39m      [34mundefined[39m          
+  
+"
+`;
+
+exports[`enum > when there are many members they wrap > monochrome 1`] = `
+"
+PARAMETERS
+
+  
+  foo    apple | baby | cannabis | dinosaur       REQUIRED                               
+         fanna | goat | house | island | jake                                              
+  
+"
+`;
+
+exports[`enum > when there are many members they wrap > polychrome 1`] = `
+"
+PARAMETERS
+
+  
+  [32mfoo[39m    [32mapple[39m[33m | [39m[32mbaby[39m[33m | [39m[32mcannabis[39m[33m | [39m[32mdinosaur[39m      [1m[30m[101m REQUIRED [49m[39m[22m                              
+         [32mfanna[39m[33m | [39m[32mgoat[39m[33m | [39m[32mhouse[39m[33m | [39m[32misland[39m[33m | [39m[32mjake[39m                                              
+  
+"
+`;
+
+exports[`enum > when there is only one enum member it is prefixed with "enum:" to avoid confusion of it looking like the name of a kind of type > monochrome 1`] = `
+"
+PARAMETERS
+
+  
+  foo    apple (enum)       REQUIRED                               
+  
+"
+`;
+
+exports[`enum > when there is only one enum member it is prefixed with "enum:" to avoid confusion of it looking like the name of a kind of type > polychrome 1`] = `
+"
+PARAMETERS
+
+  
+  [32mfoo[39m    [32mapple[39m [90m(enum)[39m      [1m[30m[101m REQUIRED [49m[39m[22m                              
   
 "
 `;
@@ -25,8 +87,7 @@ exports[`if parameter has default it is shown > monochrome 1`] = `
 PARAMETERS
 
   
-  a      string    
-  a                
+  foo    string       bar          
   
 "
 `;
@@ -36,8 +97,7 @@ exports[`if parameter has default it is shown > polychrome 1`] = `
 PARAMETERS
 
   
-  [32ma[39m      [32mstring[39m    
-  [90ma[39m                
+  [32mfoo[39m    [32mstring[39m       [34mbar[39m          
   
 "
 `;
@@ -47,8 +107,8 @@ exports[`if parameter has description it is shown > monochrome 1`] = `
 PARAMETERS
 
   
-  a      string            
-  a      Blah blah blah.   
+  a      string               undefined          
+  a      Blah blah blah.                         
   
 "
 `;
@@ -58,8 +118,48 @@ exports[`if parameter has description it is shown > polychrome 1`] = `
 PARAMETERS
 
   
-  [32ma[39m      [32mstring[39m            
-  [90ma[39m      Blah blah blah.   
+  [32ma[39m      [32mstring[39m               [34mundefined[39m          
+  [90ma[39m      Blah blah blah.                         
+  
+"
+`;
+
+exports[`if parameter is optional without default then its default shows up as "undefined" > monochrome 1`] = `
+"
+PARAMETERS
+
+  
+  foo    string       undefined          
+  
+"
+`;
+
+exports[`if parameter is optional without default then its default shows up as "undefined" > polychrome 1`] = `
+"
+PARAMETERS
+
+  
+  [32mfoo[39m    [32mstring[39m       [34mundefined[39m          
+  
+"
+`;
+
+exports[`if there is an error trying to get default then a nice message is shown > monochrome 1`] = `
+"
+PARAMETERS
+
+  
+  foo    string       Error trying to render this default: whoops                   
+  
+"
+`;
+
+exports[`if there is an error trying to get default then a nice message is shown > polychrome 1`] = `
+"
+PARAMETERS
+
+  
+  [32mfoo[39m    [32mstring[39m       [1m[31mError trying to render this default: whoops[39m[22m                   
   
 "
 `;
@@ -69,8 +169,8 @@ exports[`if there is optional param it is shown > monochrome 1`] = `
 PARAMETERS
 
   
-  a      string    
-  a                
+  a      string       undefined          
+  a                                      
   
 "
 `;
@@ -80,8 +180,8 @@ exports[`if there is optional param it is shown > polychrome 1`] = `
 PARAMETERS
 
   
-  [32ma[39m      [32mstring[39m    
-  [90ma[39m                
+  [32ma[39m      [32mstring[39m       [34mundefined[39m          
+  [90ma[39m                                      
   
 "
 `;
@@ -91,9 +191,9 @@ exports[`long description wraps within column > monochrome 1`] = `
 PARAMETERS
 
   
-  a      string                                     
-  a      Blah blah blah. Blah blah blah. Blah bla   
-         h blah.                                    
+  a      string                                        undefined          
+  a      Blah blah blah. Blah blah blah. Blah bla                         
+         h blah.                                                          
   
 "
 `;
@@ -103,71 +203,9 @@ exports[`long description wraps within column > polychrome 1`] = `
 PARAMETERS
 
   
-  [32ma[39m      [32mstring[39m                                     
-  [90ma[39m      Blah blah blah. Blah blah blah. Blah bla   
-         h blah.                                    
-  
-"
-`;
-
-exports[`optional enum members are listed > monochrome 1`] = `
-"
-PARAMETERS
-
-  
-  foo    apple | dolphin | cab   
-  
-"
-`;
-
-exports[`optional enum members are listed > polychrome 1`] = `
-"
-PARAMETERS
-
-  
-  [32mfoo[39m    [32mapple[39m[33m | [39m[32mdolphin[39m[33m | [39m[32mcab[39m   
-  
-"
-`;
-
-exports[`when there are many members they wrap > monochrome 1`] = `
-"
-PARAMETERS
-
-  
-  foo    apple | baby | cannabis | dinosaur    REQUIRED            
-         fanna | goat | house | island | jake                        
-  
-"
-`;
-
-exports[`when there are many members they wrap > polychrome 1`] = `
-"
-PARAMETERS
-
-  
-  [32mfoo[39m    [32mapple[39m[33m | [39m[32mbaby[39m[33m | [39m[32mcannabis[39m[33m | [39m[32mdinosaur[39m   [101m REQUIRED [49m           
-         [32mfanna[39m[33m | [39m[32mgoat[39m[33m | [39m[32mhouse[39m[33m | [39m[32misland[39m[33m | [39m[32mjake[39m                        
-  
-"
-`;
-
-exports[`when there is only one enum member it is prefixed with "enum:" to avoid confusion of it looking like the name of a kind of type > monochrome 1`] = `
-"
-PARAMETERS
-
-  
-  foo    apple (enum)    REQUIRED            
-  
-"
-`;
-
-exports[`when there is only one enum member it is prefixed with "enum:" to avoid confusion of it looking like the name of a kind of type > polychrome 1`] = `
-"
-PARAMETERS
-
-  
-  [32mfoo[39m    [32mapple[39m [90m(enum)[39m   [101m REQUIRED [49m           
+  [32ma[39m      [32mstring[39m                                        [34mundefined[39m          
+  [90ma[39m      Blah blah blah. Blah blah blah. Blah bla                         
+         h blah.                                                          
   
 "
 `;

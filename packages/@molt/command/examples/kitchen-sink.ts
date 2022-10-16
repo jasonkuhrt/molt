@@ -2,7 +2,11 @@ import { Command } from '../src/index.js'
 import { z } from 'zod'
 
 const args = Command.create({
+  '--bad-default': z.string().default(() => {
+    throw new Error(`whoops`)
+  }),
   '--one': z.enum([`apple`]),
+  '--figbar': z.enum([`zebra`, `monkey`, `giraffe`]).default(`monkey`),
   '--big': z
     .enum([
       `apple`,

@@ -6,6 +6,7 @@
     "esm": true
   },
   "compilerOptions": {
+    "lib": ["es2022"],
     // Use ESM
     "module": "NodeNext",
     "moduleResolution": "nodenext",

@@ -63,7 +63,7 @@ export const parse = (schema: z.ZodRawShape, settings: Settings.Normalized): Spe
     const canonical = (canonicalLong ?? canonicalShort)!
 
     // TODO check how to actually do this.
-    const isOptional = schema.isOptional()
+    const isOptional = ZodHelpers.isOptional(schema)
 
     // TODO check how to actually do this.
     // eslint-disable-next-line
