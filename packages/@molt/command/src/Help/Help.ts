@@ -1,5 +1,6 @@
 import { partition } from '../lib/prelude.js'
 import { Text } from '../lib/Text/index.js'
+import { column } from '../lib/Text/Text.js'
 import { ZodHelpers } from '../lib/zodHelpers/index.js'
 import type { ParameterSpec } from '../ParameterSpec/index.js'
 import { chalk } from '../singletons/chalk.js'
@@ -14,6 +15,9 @@ interface ColumnSpecs {
   typeAndDescription: {
     width: number
     padding?: number
+  }
+  default: {
+    width: number
   }
 }
 
@@ -51,6 +55,9 @@ export const render = (specs: ParameterSpec.Spec[], _settings?: Settings) => {
         const contentWidth = Math.max(width, typeLength, descriptionLength)
         return Math.min(40, contentWidth)
       }, 0),
+    },
+    default: {
+      width: 25,
     },
   }
 
@@ -106,7 +113,7 @@ const parameter = (
       },
       {
         separator: Text.chars.space.repeat(6),
-        lines: renderDefault(spec),
+        lines: renderDefault(options.columnSpecs.default.width, spec),
       },
     ].map((_) => ({
       ..._,
@@ -119,14 +126,16 @@ const title = (string: string) => {
   return Text.line(string.toUpperCase())
 }
 
-const renderDefault = (spec: ParameterSpec.Spec): Text.Lines => {
+const renderDefault = (width: number, spec: ParameterSpec.Spec): Text.Lines => {
   if (spec.optional) {
     if (spec.default) {
       try {
         return [chalk.blue(String(spec.default.get()))]
       } catch (e) {
         const error = e instanceof Error ? e : new Error(String(e))
-        return [chalk.bold(chalk.red(`Error trying to render this default: ${error.message}`))]
+        return column(width, `Error trying to render this default: ${error.message}`).map((_) =>
+          chalk.bold(chalk.red(_))
+        )
       }
     }
     return [chalk.blue(`undefined`)]
@@ -141,6 +150,7 @@ const renderEnumType = (schema: z.ZodEnum<[string, ...string[]]>): Text.Lines =>
     line.map((member) => chalk.green(member)).join(separator)
   )
 
+  // eslint-disable-next-line
   return members.length > 1 ? lines : [`${lines[0]!} ${chalk.gray(`(enum)`)}`]
 }
 

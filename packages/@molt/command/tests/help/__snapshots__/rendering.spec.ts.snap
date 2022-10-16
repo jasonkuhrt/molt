@@ -5,7 +5,7 @@ exports[`enum > enum members are listed > monochrome 1`] = `
 PARAMETERS
 
   
-  foo    apple | dolphin | cab       REQUIRED                               
+  foo    apple | dolphin | cab       REQUIRED 
   
 "
 `;
@@ -15,7 +15,7 @@ exports[`enum > enum members are listed > polychrome 1`] = `
 PARAMETERS
 
   
-  [32mfoo[39m    [32mapple[39m[33m | [39m[32mdolphin[39m[33m | [39m[32mcab[39m      [1m[30m[101m REQUIRED [49m[39m[22m                              
+  [32mfoo[39m    [32mapple[39m[33m | [39m[32mdolphin[39m[33m | [39m[32mcab[39m      [1m[30m[101m REQUIRED [49m[39m[22m
   
 "
 `;
@@ -25,7 +25,7 @@ exports[`enum > optional enum members are listed > monochrome 1`] = `
 PARAMETERS
 
   
-  foo    apple | dolphin | cab      undefined          
+  foo    apple | dolphin | cab      undefined 
   
 "
 `;
@@ -35,7 +35,7 @@ exports[`enum > optional enum members are listed > polychrome 1`] = `
 PARAMETERS
 
   
-  [32mfoo[39m    [32mapple[39m[33m | [39m[32mdolphin[39m[33m | [39m[32mcab[39m      [34mundefined[39m          
+  [32mfoo[39m    [32mapple[39m[33m | [39m[32mdolphin[39m[33m | [39m[32mcab[39m      [34mundefined[39m 
   
 "
 `;
@@ -45,8 +45,8 @@ exports[`enum > when there are many members they wrap > monochrome 1`] = `
 PARAMETERS
 
   
-  foo    apple | baby | cannabis | dinosaur         REQUIRED                               
-         fanna | goat | house | island | jake                                              
+  foo    apple | baby | cannabis | dinosaur         REQUIRED 
+         fanna | goat | house | island | jake                
   
 "
 `;
@@ -56,8 +56,8 @@ exports[`enum > when there are many members they wrap > polychrome 1`] = `
 PARAMETERS
 
   
-  [32mfoo[39m    [32mapple[39m[33m | [39m[32mbaby[39m[33m | [39m[32mcannabis[39m[33m | [39m[32mdinosaur[39m        [1m[30m[101m REQUIRED [49m[39m[22m                              
-         [32mfanna[39m[33m | [39m[32mgoat[39m[33m | [39m[32mhouse[39m[33m | [39m[32misland[39m[33m | [39m[32mjake[39m                                              
+  [32mfoo[39m    [32mapple[39m[33m | [39m[32mbaby[39m[33m | [39m[32mcannabis[39m[33m | [39m[32mdinosaur[39m        [1m[30m[101m REQUIRED [49m[39m[22m
+         [32mfanna[39m[33m | [39m[32mgoat[39m[33m | [39m[32mhouse[39m[33m | [39m[32misland[39m[33m | [39m[32mjake[39m                
   
 "
 `;
@@ -67,7 +67,7 @@ exports[`enum > when there is only one enum member it is prefixed with "enum:" t
 PARAMETERS
 
   
-  foo    apple (enum)       REQUIRED                               
+  foo    apple (enum)       REQUIRED 
   
 "
 `;
@@ -77,7 +77,7 @@ exports[`enum > when there is only one enum member it is prefixed with "enum:" t
 PARAMETERS
 
   
-  [32mfoo[39m    [32mapple[39m [90m(enum)[39m      [1m[30m[101m REQUIRED [49m[39m[22m                              
+  [32mfoo[39m    [32mapple[39m [90m(enum)[39m      [1m[30m[101m REQUIRED [49m[39m[22m
   
 "
 `;
@@ -87,11 +87,11 @@ exports[`enums do not mess up alignment when they are widest line in the column 
 PARAMETERS
 
   
-  foo    a | b | c | d | e | f | g | h | i       REQUIRED                               
-         k | l | m | n | o | p | q | r | s                                              
-         u | v | w | x | y | z                                                          
+  foo    a | b | c | d | e | f | g | h | i       REQUIRED 
+         k | l | m | n | o | p | q | r | s                
+         u | v | w | x | y | z                            
     
-  bar    string                                 undefined          
+  bar    string                                 undefined 
   
 "
 `;
@@ -101,11 +101,11 @@ exports[`enums do not mess up alignment when they are widest line in the column 
 PARAMETERS
 
   
-  [32mfoo[39m    [32ma[39m[33m | [39m[32mb[39m[33m | [39m[32mc[39m[33m | [39m[32md[39m[33m | [39m[32me[39m[33m | [39m[32mf[39m[33m | [39m[32mg[39m[33m | [39m[32mh[39m[33m | [39m[32mi[39m      [1m[30m[101m REQUIRED [49m[39m[22m                              
-         [32mk[39m[33m | [39m[32ml[39m[33m | [39m[32mm[39m[33m | [39m[32mn[39m[33m | [39m[32mo[39m[33m | [39m[32mp[39m[33m | [39m[32mq[39m[33m | [39m[32mr[39m[33m | [39m[32ms[39m                                              
-         [32mu[39m[33m | [39m[32mv[39m[33m | [39m[32mw[39m[33m | [39m[32mx[39m[33m | [39m[32my[39m[33m | [39m[32mz[39m                                                          
+  [32mfoo[39m    [32ma[39m[33m | [39m[32mb[39m[33m | [39m[32mc[39m[33m | [39m[32md[39m[33m | [39m[32me[39m[33m | [39m[32mf[39m[33m | [39m[32mg[39m[33m | [39m[32mh[39m[33m | [39m[32mi[39m      [1m[30m[101m REQUIRED [49m[39m[22m
+         [32mk[39m[33m | [39m[32ml[39m[33m | [39m[32mm[39m[33m | [39m[32mn[39m[33m | [39m[32mo[39m[33m | [39m[32mp[39m[33m | [39m[32mq[39m[33m | [39m[32mr[39m[33m | [39m[32ms[39m                
+         [32mu[39m[33m | [39m[32mv[39m[33m | [39m[32mw[39m[33m | [39m[32mx[39m[33m | [39m[32my[39m[33m | [39m[32mz[39m                            
     
-  [32mbar[39m    [32mstring[39m                                 [34mundefined[39m          
+  [32mbar[39m    [32mstring[39m                                 [34mundefined[39m 
   
 "
 `;
@@ -115,7 +115,7 @@ exports[`if parameter has default it is shown > monochrome 1`] = `
 PARAMETERS
 
   
-  foo    string       bar          
+  foo    string       bar       
   
 "
 `;
@@ -125,7 +125,7 @@ exports[`if parameter has default it is shown > polychrome 1`] = `
 PARAMETERS
 
   
-  [32mfoo[39m    [32mstring[39m       [34mbar[39m          
+  [32mfoo[39m    [32mstring[39m       [34mbar[39m       
   
 "
 `;
@@ -135,8 +135,8 @@ exports[`if parameter has description it is shown > monochrome 1`] = `
 PARAMETERS
 
   
-  a      string               undefined          
-  a      Blah blah blah.                         
+  a      string               undefined 
+  a      Blah blah blah.                
   
 "
 `;
@@ -146,8 +146,8 @@ exports[`if parameter has description it is shown > polychrome 1`] = `
 PARAMETERS
 
   
-  [32ma[39m      [32mstring[39m               [34mundefined[39m          
-  [90ma[39m      Blah blah blah.                         
+  [32ma[39m      [32mstring[39m               [34mundefined[39m 
+  [90ma[39m      Blah blah blah.                
   
 "
 `;
@@ -157,7 +157,7 @@ exports[`if parameter is optional without default then its default shows up as "
 PARAMETERS
 
   
-  foo    string       undefined          
+  foo    string       undefined 
   
 "
 `;
@@ -167,7 +167,7 @@ exports[`if parameter is optional without default then its default shows up as "
 PARAMETERS
 
   
-  [32mfoo[39m    [32mstring[39m       [34mundefined[39m          
+  [32mfoo[39m    [32mstring[39m       [34mundefined[39m 
   
 "
 `;
@@ -177,7 +177,8 @@ exports[`if there is an error trying to get default then a nice message is shown
 PARAMETERS
 
   
-  foo    string       Error trying to render this default: whoops                   
+  foo    string       Error trying to render th
+                      is default: whoops
   
 "
 `;
@@ -187,7 +188,8 @@ exports[`if there is an error trying to get default then a nice message is shown
 PARAMETERS
 
   
-  foo    string       Error trying to render this default: whoops                   
+  foo    string       Error trying to render th
+                      is default: whoops
   
 "
 `;
@@ -197,7 +199,8 @@ exports[`if there is an error trying to get default then a nice message is shown
 PARAMETERS
 
   
-  [32mfoo[39m    [32mstring[39m       [1m[31mError trying to render this default: whoops[39m[22m                   
+  [32mfoo[39m    [32mstring[39m       [1m[31mError trying to render th[39m[22m
+                      [1m[31mis default: whoops[39m[22m
   
 "
 `;
@@ -207,7 +210,8 @@ exports[`if there is an error trying to get default then a nice message is shown
 PARAMETERS
 
   
-  [32mfoo[39m    [32mstring[39m       [1m[31mError trying to render this default: whoops[39m[22m                   
+  [32mfoo[39m    [32mstring[39m       [1m[31mError trying to render th[39m[22m
+                      [1m[31mis default: whoops[39m[22m
   
 "
 `;
@@ -217,8 +221,8 @@ exports[`if there is optional param it is shown > monochrome 1`] = `
 PARAMETERS
 
   
-  a      string       undefined          
-  a                                      
+  a      string       undefined 
+  a                             
   
 "
 `;
@@ -228,8 +232,8 @@ exports[`if there is optional param it is shown > polychrome 1`] = `
 PARAMETERS
 
   
-  [32ma[39m      [32mstring[39m       [34mundefined[39m          
-  [90ma[39m                                      
+  [32ma[39m      [32mstring[39m       [34mundefined[39m 
+  [90ma[39m                             
   
 "
 `;
@@ -239,9 +243,9 @@ exports[`long description wraps within column > monochrome 1`] = `
 PARAMETERS
 
   
-  a      string                                        undefined          
-  a      Blah blah blah. Blah blah blah. Blah bla                         
-         h blah.                                                          
+  a      string                                        undefined 
+  a      Blah blah blah. Blah blah blah. Blah bla                
+         h blah.                                                 
   
 "
 `;
@@ -251,9 +255,9 @@ exports[`long description wraps within column > polychrome 1`] = `
 PARAMETERS
 
   
-  [32ma[39m      [32mstring[39m                                        [34mundefined[39m          
-  [90ma[39m      Blah blah blah. Blah blah blah. Blah bla                         
-         h blah.                                                          
+  [32ma[39m      [32mstring[39m                                        [34mundefined[39m 
+  [90ma[39m      Blah blah blah. Blah blah blah. Blah bla                
+         h blah.                                                 
   
 "
 `;

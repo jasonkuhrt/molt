@@ -74,33 +74,31 @@ ts-node convert -h
 
 PARAMETERS
 
-  to             enum:  json, yaml, toml                 REQUIRED
+  Name           Type / Summary                          Default                 Via Environment
+
+  to             json | yaml | toml                      REQUIRED                ✕
                  Format to convert to.
 
-  file-path      string
-                 Path to the file to convert.            REQUIRED
+  file-path      string                                  REQUIRED                FILE_PATH
+                 Path to the file to convert.
 
-  from           enum?: json | yaml | toml               Inferred from the file extension.
-                 Format to convert from.
+  from           json | yaml | toml                      Inferred from the file  ✕
+                 Format to convert from.                 extension.
 
-
-  verbose        boolean?                                false
+  verbose        boolean                                 false                   ✕
   v              Log detailed progress.
 
-  move           boolean?                                false
+  move           boolean                                 false                   ✕
   v              Delete the original file after
                  it has been converted.
 
-  h              boolean?                                false
+  h              boolean                                 false                   ✕
                  Output succinct info on how to
                  use this CLI.
 
-  help           boolean?                                false
+  help           boolean                                 false                   ✕
                  Output detailed info on how to
-                 use this CLI. Includes info about
-                 flag passing styles, long parameter
-                 descriptions, passing arguments from
-                 the environment, and more.
+                 use this CLI.
 ```
 
 ## Features
