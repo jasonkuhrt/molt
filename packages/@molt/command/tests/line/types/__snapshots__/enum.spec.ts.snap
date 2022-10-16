@@ -1,0 +1,72 @@
+// Vitest Snapshot v1
+
+exports[`errors > is validated 1`] = `
+[
+  [
+    "Cannot run command, you made some mistakes:
+
+Invalid value for mode
+
+Here are the docs for this command:
+
+",
+  ],
+  [
+    "
+PARAMETERS
+
+  
+  [32mmode[39m   [32ma[39m[33m | [39m[32mb[39m[33m | [39m[32mc[39m      [1m[30m[101m REQUIRED [49m[39m[22m                              
+  
+",
+  ],
+]
+`;
+
+exports[`errors > when argument missing (last position) 1`] = `
+[
+  [
+    "Cannot run command, you made some mistakes:
+
+Missing argument
+
+Here are the docs for this command:
+
+",
+  ],
+  [
+    "
+PARAMETERS
+
+  
+  [32mmode[39m   [32ma[39m[33m | [39m[32mb[39m        [1m[30m[101m REQUIRED [49m[39m[22m                              
+  
+",
+  ],
+]
+`;
+
+exports[`errors > when argument missing (non-last position) 1`] = `
+[
+  [
+    "Cannot run command, you made some mistakes:
+
+Missing argument
+
+Here are the docs for this command:
+
+",
+  ],
+  [
+    "
+PARAMETERS
+
+  
+  [32mname[39m   [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m                              
+  
+  [32mmode[39m   [32ma[39m[33m | [39m[32mb[39m        [1m[30m[101m REQUIRED [49m[39m[22m                              
+  
+",
+  ],
+]
+`;

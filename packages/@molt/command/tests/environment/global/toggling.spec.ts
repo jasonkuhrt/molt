@@ -1,4 +1,5 @@
 import { Command } from '../../../src/index.js'
+import { stdout } from '../../__helpers__.js'
 import { environmentManager } from '../__helpers__.js'
 import { expect } from 'vitest'
 import { it } from 'vitest'
@@ -39,9 +40,8 @@ it(`can be disabled by environment`, () => {
 it(`environment supersedes settings`, () => {
   environmentManager.set(`ClI_settings_READ_arguments_FROM_ENVIRONMENT`, `false`)
   environmentManager.set(`cli_foo`, `bar`)
-  expect(() =>
-    Command.create({ '--foo': z.string() })
-      .settings({ parameters: { environment: true }, helpOnNoArguments: false })
-      .parseOrThrow([])
-  ).toThrow()
+  Command.create({ '--foo': z.string() })
+    .settings({ parameters: { environment: true }, helpOnNoArguments: false })
+    .parseOrThrow([])
+  expect(stdout.mock.calls).toMatchSnapshot()
 })

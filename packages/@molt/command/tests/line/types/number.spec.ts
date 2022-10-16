@@ -1,4 +1,5 @@
 import { Command } from '../../../src/index.js'
+import { stdout } from '../../__helpers__.js'
 import type { IsExact } from 'conditional-type-checks'
 import { assert } from 'conditional-type-checks'
 import { describe, expect, it } from 'vitest'
@@ -10,21 +11,17 @@ it(`casts the input as a number`, () => {
   expect(args).toMatchObject({ age: 1 })
 })
 
-it(`validates the  input`, () => {
-  expect(() =>
-    Command.create({ '--age': z.number().int() }).parseOrThrow([`--age`, `1.1`])
-  ).toThrowErrorMatchingInlineSnapshot(`"Invalid value for age: todo"`)
-})
-
 describe(`errors`, () => {
+  it(`validates the  input`, () => {
+    Command.create({ '--age': z.number().int() }).parseOrThrow([`--age`, `1.1`])
+    expect(stdout.mock.calls).toMatchSnapshot()
+  })
   it(`throws error when argument missing (last position)`, () => {
-    expect(() =>
-      Command.create({ '--age': z.number() }).parseOrThrow([`--age`])
-    ).toThrowErrorMatchingInlineSnapshot(`"Missing argument"`)
+    Command.create({ '--age': z.number() }).parseOrThrow([`--age`])
+    expect(stdout.mock.calls).toMatchSnapshot()
   })
   it(`throws error when argument missing (non-last position)`, () => {
-    expect(() =>
-      Command.create({ '--name': z.string(), '--age': z.number() }).parseOrThrow([` --age`, `--name`, `joe`])
-    ).toThrowErrorMatchingInlineSnapshot(`"Missing argument"`)
+    Command.create({ '--name': z.string(), '--age': z.number() }).parseOrThrow([` --age`, `--name`, `joe`])
+    expect(stdout.mock.calls).toMatchSnapshot()
   })
 })

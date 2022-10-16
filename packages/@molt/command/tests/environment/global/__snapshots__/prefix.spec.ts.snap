@@ -1,7 +1,73 @@
 // Vitest Snapshot v1
 
-exports[`default environment argument parameter name prefix > when both argument CLI_PARAM and CLI_PARAMETER are passed then an error is thrown 1`] = `"Duplicate input for parameter foo"`;
+exports[`default environment argument parameter name prefix > when both argument CLI_PARAM and CLI_PARAMETER are passed then an error is thrown 1`] = `
+[
+  [
+    "Cannot run command, you made some mistakes:
 
-exports[`error > when using multiple prefixes and args passed for all param variations 1`] = `"Duplicate input for parameter foo"`;
+Duplicate input for parameter foo
 
-exports[`error > when using prefix and there is a typo 1`] = `"Missing argument for flag \\"foo\\"."`;
+Here are the docs for this command:
+
+",
+  ],
+  [
+    "
+PARAMETERS
+
+  
+  [32mfoo[39m    [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m                              
+  
+",
+  ],
+]
+`;
+
+exports[`error > when using multiple prefixes and args passed for all param variations 1`] = `
+[
+  [
+    "Cannot run command, you made some mistakes:
+
+Duplicate input for parameter foo
+X Duplicate input for parameter bar
+
+Here are the docs for this command:
+
+",
+  ],
+  [
+    "
+PARAMETERS
+
+  
+  [32mfoo[39m    [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m                              
+  
+  [32mbar[39m    [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m                              
+  
+",
+  ],
+]
+`;
+
+exports[`error > when using prefix and there is a typo 1`] = `
+[
+  [
+    "Cannot run command, you made some mistakes:
+
+Missing argument for flag \\"foo\\".
+
+Here are the docs for this command:
+
+",
+  ],
+  [
+    "
+PARAMETERS
+
+  
+  [32mfoo[39m    [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m                              
+  
+",
+  ],
+]
+`;

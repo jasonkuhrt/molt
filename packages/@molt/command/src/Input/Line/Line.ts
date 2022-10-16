@@ -6,7 +6,12 @@ import camelCase from 'lodash.camelcase'
 
 export type RawLineInputs = string[]
 
-export const parse = (rawLineInputs: RawLineInputs, specs: ParameterSpec.Spec[]): Index<ArgumentReport> => {
+export const parse = (
+  rawLineInputs: RawLineInputs,
+  specs: ParameterSpec.Spec[]
+): { errors: Error[]; line: Index<ArgumentReport> } => {
+  const errors: Error[] = []
+
   const rawLineInputsPrepared = rawLineInputs
     .map((lineInput) => lineInput.trim())
     .flatMap((lineInput) => {
@@ -37,7 +42,8 @@ export const parse = (rawLineInputs: RawLineInputs, specs: ParameterSpec.Spec[])
       const flagNameNoDashPrefixNoNegate = stripeNegatePrefixLoose(flagNameNoDashPrefixCamel)
       const spec = ParameterSpec.findByName(flagNameNoDashPrefixCamel, specs)
       if (!spec) {
-        throw new Error(`Unknown flag "${flagNameNoDashPrefixNoNegate}"`)
+        errors.push(new Error(`Unknown flag "${flagNameNoDashPrefixNoNegate}"`))
+        continue
       }
 
       const existing = reports[spec.name.canonical]
@@ -91,7 +97,10 @@ export const parse = (rawLineInputs: RawLineInputs, specs: ParameterSpec.Spec[])
   }
 
   // dump({ flags })
-  return reports
+  return {
+    errors,
+    line: reports,
+  }
 }
 
 const isFlag = (lineInput: string) => isLongFlag(lineInput) || isShortFlag(lineInput)

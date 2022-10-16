@@ -5,7 +5,6 @@ import type { ParameterSpec } from '../ParameterSpec/index.js'
 import { chalk } from '../singletons/chalk.js'
 import stripAnsi from 'strip-ansi'
 import type { z } from 'zod'
-import { map } from 'zod'
 
 interface ColumnSpecs {
   name: {
@@ -43,11 +42,15 @@ export const render = (specs: ParameterSpec.Spec[], _settings?: Settings) => {
       width: specs.reduce((width, spec) => Math.max(width, spec.name.canonical.length), 0),
     },
     typeAndDescription: {
-      width: specs.reduce(
-        (width, spec) =>
-          Math.min(40, Math.max(width, spec.schemaPrimitive.length, (spec.description ?? ``).length)),
-        0
-      ),
+      width: specs.reduce((width, spec) => {
+        const maybeEnum = ZodHelpers.getEnum(spec.schema)
+        const typeLength = maybeEnum
+          ? Math.max(...renderEnumType(maybeEnum).map((_) => stripAnsi(_).length))
+          : spec.schemaPrimitive.length
+        const descriptionLength = (spec.description ?? ``).length
+        const contentWidth = Math.max(width, typeLength, descriptionLength)
+        return Math.min(40, contentWidth)
+      }, 0),
     },
   }
 

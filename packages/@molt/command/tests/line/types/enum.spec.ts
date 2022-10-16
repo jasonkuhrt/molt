@@ -1,26 +1,23 @@
 import { Command } from '../../../src/index.js'
+import { stdout } from '../../__helpers__.js'
 import { describe, expect, it } from 'vitest'
 import { z } from 'zod'
 
 describe(`errors`, () => {
   it(`when argument missing (last position)`, () => {
-    expect(() =>
-      Command.create({ '--mode': z.enum([`a`, `b`]) }).parseOrThrow([`--mode`])
-    ).toThrowErrorMatchingInlineSnapshot(`"Missing argument"`)
+    Command.create({ '--mode': z.enum([`a`, `b`]) }).parseOrThrow([`--mode`])
+    expect(stdout.mock.calls).toMatchSnapshot()
   })
   it(`when argument missing (non-last position)`, () => {
-    expect(() =>
-      // prettier-ignore
-      Command.create({ '--name': z.string(), '--mode': z.enum([`a`,`b`]) }).parseOrThrow([` --mode`, `--name`, `joe`])
-    ).toThrowErrorMatchingInlineSnapshot(`"Missing argument"`)
+    // prettier-ignore
+    Command.create({ '--name': z.string(), '--mode': z.enum([`a`,`b`]) }).parseOrThrow([` --mode`, `--name`, `joe`])
+    expect(stdout.mock.calls).toMatchSnapshot()
   })
-})
-
-it(`is validated`, () => {
-  // const args = Parameters.create({ '--mode': z.enum([`a`, `b`, `c`]) }).parseOrThrow([`--mode`, `bad`])
-  // assert<IsExact<{ mode: 'a'|'b'|'c' }, typeof args>>(true)
-  // expect(args).toMatchObject({ mode: true })
-  expect(() =>
+  it(`is validated`, () => {
+    // const args = Parameters.create({ '--mode': z.enum([`a`, `b`, `c`]) }).parseOrThrow([`--mode`, `bad`])
+    // assert<IsExact<{ mode: 'a'|'b'|'c' }, typeof args>>(true)
+    // expect(args).toMatchObject({ mode: true })
     Command.create({ '--mode': z.enum([`a`, `b`, `c`]) }).parseOrThrow([`--mode`, `bad`])
-  ).toThrowErrorMatchingInlineSnapshot(`"Invalid value for mode: todo"`)
+    expect(stdout.mock.calls).toMatchSnapshot()
+  })
 })

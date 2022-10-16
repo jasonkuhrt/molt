@@ -45,17 +45,29 @@ export const create = <Schema extends z.ZodRawShape>(schema: Schema): Definition
       const requiredParamsMissing = specs
         .filter((_) => !_.optional)
         .filter((_) => result.args[_.name.canonical] === undefined)
+
+      // eslint-disable-next-line
+      // @ts-expect-error
+      const askedForHelp = `help` in result.args && result.args.help === true
+
+      if (result.errors.length > 0 && !askedForHelp) {
+        const errors =
+          `Cannot run command, you made some mistakes:\n\n` +
+          result.errors.map((_) => _.message).join(`\nX `) +
+          `\n\nHere are the docs for this command:\n`
+        process.stdout.write(errors + `\n`)
+        process.stdout.write(Help.render(specs) + `\n`)
+        process.exit(1)
+        return // When testing we will reach this case
+      }
+
       if (
-        // eslint-disable-next-line
-        // @ts-expect-error
-        (settings.help && `help` in result.args && result.args.help === true) ||
+        (settings.help && askedForHelp) ||
         (settings.helpOnNoArguments && requiredParamsMissing.length > 0)
       ) {
         process.stdout.write(Help.render(specs) + `\n`)
         process.exit(0)
-      } else if (result.errors.length > 0) {
-        // TODO report all errors
-        throw result.errors[0]
+        return // When testing we will reach this case
       }
 
       return result.args

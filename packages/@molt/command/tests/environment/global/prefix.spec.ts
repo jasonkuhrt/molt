@@ -1,4 +1,5 @@
 import { Command } from '../../../src/index.js'
+import { stdout } from '../../__helpers__.js'
 import { environmentManager } from '../__helpers__.js'
 import { beforeEach, expect } from 'vitest'
 import { describe, it } from 'vitest'
@@ -36,9 +37,8 @@ describe(`error`, () => {
   it(`when using prefix and there is a typo`, () => {
     environmentManager.set(`cli_param_bar`, `qux1`)
     // TODO show not just envar prefix in error message json
-    expect(() =>
-      Command.create({ '--foo': z.string() }).settings({ helpOnNoArguments: false }).parseOrThrow([])
-    ).toThrowErrorMatchingSnapshot()
+    Command.create({ '--foo': z.string() }).settings({ helpOnNoArguments: false }).parseOrThrow([])
+    expect(stdout.mock.calls).toMatchSnapshot()
   })
   it(`when using multiple prefixes and args passed for all param variations`, () => {
     environmentManager.set(`cli_param_bar`, `qux1`)
@@ -46,9 +46,8 @@ describe(`error`, () => {
     environmentManager.set(`cli_param_foo`, `qux1`)
     environmentManager.set(`cli_parameter_foo`, `qux2`)
     // TODO show not just envar prefix in error message json
-    expect(() =>
-      Command.create({ '--foo': z.string(), '--bar': z.string() }).parseOrThrow([])
-    ).toThrowErrorMatchingSnapshot()
+    Command.create({ '--foo': z.string(), '--bar': z.string() }).parseOrThrow([])
+    expect(stdout.mock.calls).toMatchSnapshot()
   })
   it.todo(`when argument collision and typo then both errors are shown`)
 })
@@ -69,8 +68,7 @@ describe(`default environment argument parameter name prefix`, () => {
   it(`when both argument CLI_PARAM and CLI_PARAMETER are passed then an error is thrown`, () => {
     environmentManager.set(`cli_param_foo`, `bar1`)
     environmentManager.set(`cli_parameter_foo`, `bar2`)
-    expect(() =>
-      Command.create({ '--foo': z.string() }).settings({ helpOnNoArguments: false }).parseOrThrow([])
-    ).toThrowErrorMatchingSnapshot()
+    Command.create({ '--foo': z.string() }).settings({ helpOnNoArguments: false }).parseOrThrow([])
+    expect(stdout.mock.calls).toMatchSnapshot()
   })
 })

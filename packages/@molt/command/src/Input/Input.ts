@@ -10,24 +10,27 @@ export const parseOrThrow = (
   rawLineInputs: Line.RawLineInputs
 ): { args: Record<string, unknown>; errors: Errors.ErrorMissingArgument[] } => {
   const errors = []
-  const env = Environment.parse(specs)
-  const line = Line.parse(rawLineInputs, specs)
   const args: Record<string, unknown> = {}
+  const env = Environment.parse(specs)
+  const lineParseResult = Line.parse(rawLineInputs, specs)
+
+  if (lineParseResult.errors.length > 0) errors.push(...lineParseResult.errors)
 
   // dump({ specs })
   // dump({ line })
   // dump({ env })
 
   for (const spec of specs) {
-    const input = line[spec.name.canonical] ?? env[spec.name.canonical]
+    const input = lineParseResult.line[spec.name.canonical] ?? env[spec.name.canonical]
 
     if (input) {
       if (input.errors.length > 0) {
-        // TODO aggregate error
-        throw input.errors[0]
+        errors.push(...input.errors)
+        continue
       }
       if (input.duplicates.length > 0) {
-        throw new Error(`Duplicate input for parameter ${spec.name.canonical}`)
+        errors.push(new Error(`Duplicate input for parameter ${spec.name.canonical}`))
+        continue
       }
 
       if (input.value._tag === `boolean`) {

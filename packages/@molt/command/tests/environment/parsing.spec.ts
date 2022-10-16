@@ -1,4 +1,5 @@
 import { Command } from '../../src/index.js'
+import { stdout } from '../__helpers__.js'
 import { environmentManager } from './__helpers__.js'
 import { beforeEach, expect } from 'vitest'
 import { describe, it } from 'vitest'
@@ -73,9 +74,8 @@ it(`parses a value specified to be a number`, () => {
 describe(`enum can be parsed`, () => {
   it(`throws an error if the value does not pass validation`, () => {
     environmentManager.set(`cli_param_foo`, `d`)
-    expect(() =>
-      Command.create({ '--foo': z.enum([`a`, `b`, `c`]) }).parseOrThrow([])
-    ).toThrowErrorMatchingSnapshot()
+    Command.create({ '--foo': z.enum([`a`, `b`, `c`]) }).parseOrThrow([])
+    expect(stdout.mock.calls).toMatchSnapshot()
   })
 })
 

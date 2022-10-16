@@ -1,0 +1,24 @@
+// Vitest Snapshot v1
+
+exports[`environment supersedes settings 1`] = `
+[
+  [
+    "Cannot run command, you made some mistakes:
+
+Missing argument for flag \\"foo\\".
+
+Here are the docs for this command:
+
+",
+  ],
+  [
+    "
+PARAMETERS
+
+  
+  [32mfoo[39m    [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m                              
+  
+",
+  ],
+]
+`;

@@ -55,6 +55,28 @@ it(`if there is an error trying to get default then a nice message is shown`, ()
   expect(output).toMatchSnapshot(`polychrome`)
 })
 
+it(`if there is an error trying to get default then a nice message is shown`, () => {
+  Command.create({
+    foo: z.string().default(() => {
+      throw new Error(`whoops`)
+    }),
+  }).parseOrThrow([`-h`])
+  const output = processStdout.mock.lastCall?.[0] as string
+  expect(stripAnsi(output)).toMatchSnapshot(`monochrome`)
+  expect(output).toMatchSnapshot(`polychrome`)
+})
+
+it(`enums do not mess up alignment when they are widest line in the column`, () => {
+  // prettier-ignore
+  Command.create({
+    foo: z.enum([`a`, `b`, `c`, `d`, `e`, `f`, `g`, `h`, `i`, `j`, `k`, `l`, `m`, `n`, `o`, `p`, `q`, `r`, `s`, `t`, `u`, `v`, `w`, `x`, `y`, `z`]),
+    bar: z.string().optional(),
+  }).parseOrThrow([`-h`])
+  const output = processStdout.mock.lastCall?.[0] as string
+  expect(stripAnsi(output)).toMatchSnapshot(`monochrome`)
+  expect(output).toMatchSnapshot(`polychrome`)
+})
+
 describe(`enum`, () => {
   it(`enum members are listed`, () => {
     Command.create({ foo: z.enum([`apple`, `dolphin`, `cab`]) }).parseOrThrow([`-h`])
