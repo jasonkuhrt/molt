@@ -11,9 +11,10 @@
     "lint": "eslint . --ext .ts,.tsx --fix",
     "lint:check": "eslint . --ext .ts,.tsx --max-warnings 0",
     "types:check": "tsc --noEmit",
-    "publish:@molt/command": "ts-node scripts/publish.ts --package @molt/command",
-    "publish:@molt/types": "ts-node scripts/publish.ts --package @molt/types",
-    "publish:molt": "ts-node scripts/publish.ts --package molt"
+    "release:@molt/command": "pnpm release --package @molt/command",
+    "release:@molt/types": "pnpm release --package @molt/types",
+    "release:molt": "pnpm release --package molt",
+    "release": "ts-node scripts/release.ts"
   },
   "devDependencies": {
     "@octokit/core": "^4.0.5",
