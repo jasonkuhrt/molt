@@ -43,7 +43,7 @@
     "lodash.camelcase": "^4.3.0",
     "lodash.snakecase": "^4.1.1",
     "string-length": "4",
-    "strip-ansi": "6",
+    "strip-ansi": "7",
     "ts-toolbelt": "^9.6.0",
     "zod": "^3.19.1"
   },
