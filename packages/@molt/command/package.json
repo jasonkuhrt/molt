@@ -42,7 +42,7 @@
     "chalk": "4",
     "lodash.camelcase": "^4.3.0",
     "lodash.snakecase": "^4.1.1",
-    "string-length": "4",
+    "string-length": "5",
     "strip-ansi": "6",
     "ts-toolbelt": "^9.6.0",
     "zod": "^3.19.1"
