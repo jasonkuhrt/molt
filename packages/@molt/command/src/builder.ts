@@ -56,7 +56,7 @@ export const create = <Schema extends z.ZodRawShape>(schema: Schema): Definition
           result.errors.map((_) => _.message).join(`\nX `) +
           `\n\nHere are the docs for this command:\n`
         process.stdout.write(errors + `\n`)
-        process.stdout.write(Help.render(specs) + `\n`)
+        process.stdout.write(Help.render(specs, settings) + `\n`)
         process.exit(1)
         return // When testing we will reach this case
       }
@@ -65,7 +65,7 @@ export const create = <Schema extends z.ZodRawShape>(schema: Schema): Definition
         (settings.help && askedForHelp) ||
         (settings.helpOnNoArguments && requiredParamsMissing.length > 0)
       ) {
-        process.stdout.write(Help.render(specs) + `\n`)
+        process.stdout.write(Help.render(specs, settings) + `\n`)
         process.exit(0)
         return // When testing we will reach this case
       }

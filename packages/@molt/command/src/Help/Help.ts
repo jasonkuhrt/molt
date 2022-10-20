@@ -1,34 +1,37 @@
 import { partition } from '../lib/prelude.js'
 import { Text } from '../lib/Text/index.js'
-import { column } from '../lib/Text/Text.js'
+import { column, indent } from '../lib/Text/Text.js'
 import { ZodHelpers } from '../lib/zodHelpers/index.js'
 import type { ParameterSpec } from '../ParameterSpec/index.js'
+import type { Settings } from '../Settings/index.js'
 import { chalk } from '../singletons/chalk.js'
+import camelCase from 'lodash.camelcase'
 import snakeCase from 'lodash.snakecase'
+import stringLength from 'string-length'
 import stripAnsi from 'strip-ansi'
 import type { z } from 'zod'
 
 interface ColumnSpecs {
   name: {
     width: number
-    padding?: number
+    separator?: string
   }
   typeAndDescription: {
     width: number
-    padding?: number
+    separator?: string
   }
   default: {
     width: number
-    padding?: number
+    separator?: string
   }
   environment: {
     width: number
-    padding?: number
+    separator?: string
   }
 }
 
 // TODO use
-interface Settings {
+interface RenderSettings {
   /**
    * Should parameter names be displayed with dash prefixes.
    * @defaultValue false
@@ -41,9 +44,15 @@ interface Settings {
   color?: boolean
 }
 
-export const render = (specs: ParameterSpec.Spec[], _settings?: Settings) => {
-  const specsWithoutHelp = specs.filter((_) => _.name.canonical !== `help`)
-  const [requiredSpecs, optionalSpecs] = partition(specsWithoutHelp, (spec) => spec.optional)
+export const render = (
+  specs: ParameterSpec.Spec[],
+  settings: Settings.Normalized,
+  _settings?: RenderSettings
+) => {
+  const specsWithoutHelp = specs.filter((_) => _.name.canonical !== `help`).sort((_) => (_.optional ? 1 : -1))
+  const isAcceptsAnyEnvironmentArgs = specs.filter((_) => _.environment?.enabled).length > 0
+  const isEnvironmentEnabled =
+    Object.values(settings.parameters.environment).filter((_) => _.enabled).length > 0
 
   const columnSpecs: ColumnSpecs = {
     name: {
@@ -61,7 +70,14 @@ export const render = (specs: ParameterSpec.Spec[], _settings?: Settings) => {
       }, 0),
     },
     default: {
-      width: 25,
+      width: Math.min(
+        25,
+        specs.reduce(
+          (width, spec) => Math.max(width, ...parameterDefault(25, spec).map((_) => stringLength(_))),
+          0
+        )
+      ),
+      separator: Text.chars.space.repeat(6),
     },
     environment: {
       width: 40,
@@ -72,22 +88,120 @@ export const render = (specs: ParameterSpec.Spec[], _settings?: Settings) => {
   help += title(`PARAMETERS`)
   help += Text.line()
 
-  if (requiredSpecs.length > 0) {
-    help += Text.indent(parameters(requiredSpecs, { columnSpecs }))
+  help += Text.indent(
+    Text.row([
+      { lines: [chalk.underline.gray(`Name`)], ...columnSpecs.name },
+      { lines: [chalk.underline.gray(`Type/Description`)], ...columnSpecs.typeAndDescription },
+      { lines: [chalk.underline.gray(`Default`)], ...columnSpecs.default },
+      ...(isEnvironmentEnabled
+        ? [
+            {
+              lines: [
+                chalk.underline.gray(
+                  `Environment (1)`
+                ) /*, chalk.gray.dim(`prefix: CLI_PARAM_* | CLI_PARAMETER_*`) */,
+              ],
+              ...columnSpecs.environment,
+            },
+          ]
+        : []),
+    ])
+  )
+  help += Text.line()
+
+  if (specsWithoutHelp.length > 0) {
+    help += Text.indent(
+      parameters(specsWithoutHelp, settings, {
+        columnSpecs,
+        environment: isAcceptsAnyEnvironmentArgs,
+        isEnvironmentEnabled,
+      })
+    )
   }
 
-  if (optionalSpecs.length > 0) {
-    help += Text.indent(parameters(optionalSpecs, { columnSpecs }))
+  help += Text.line()
+
+  if (isAcceptsAnyEnvironmentArgs) {
+    let notes = ``
+    notes += `NOTES\n`
+    notes += `${Text.chars.lineHBold.repeat(80)}\n`
+    notes += Text.row([
+      { lines: [`(1) `] },
+      { separator: ``, lines: environmentNote(specsWithoutHelp, settings) },
+    ])
+    help += chalk.gray(Text.indent(notes))
   }
 
   return help
 }
 
-const parameters = (specs: ParameterSpec.Spec[], options: { columnSpecs: ColumnSpecs }) => {
+const environmentNote = (specs: ParameterSpec.Spec[], settings: Settings.Normalized): string[] => {
+  const isHasSpecsWithCustomEnvironmentNamespace =
+    specs
+      .filter((_) => _.environment?.enabled)
+      .filter(
+        (_) =>
+          _.environment!.namespaces.filter((_) =>
+            settings.parameters.environment.$default.prefix.map(camelCase).includes(_)
+          ).length !== _.environment!.namespaces.length
+      ).length > 0
+
+  let content = ``
+
+  content +=
+    (settings.parameters.environment.$default.enabled ? `Parameters` : `Some parameters (marked in docs)`) +
+    ` can be passed arguments via environment variables. Command line arguments take precedence. Environment variable names are snake cased versions of the parameter name (or its aliases), case insensitive. `
+
+  if (settings.parameters.environment.$default.prefix.length > 0) {
+    if (isHasSpecsWithCustomEnvironmentNamespace) {
+      content += `By default they must be prefixed with`
+      content += ` ${Text.joinListEnglish(
+        settings.parameters.environment.$default.prefix.map((_) => chalk.blue(Text.toEnvarNameCase(_) + `_`))
+      )} (case insensitive), though some parameters deviate (shown in docs). `
+    } else {
+      content += `They must be prefixed with`
+      content += ` ${Text.joinListEnglish(
+        settings.parameters.environment.$default.prefix.map((_) => chalk.blue(Text.toEnvarNameCase(_) + `_`))
+      )} (case insensitive). `
+    }
+  } else {
+    content += isHasSpecsWithCustomEnvironmentNamespace
+      ? `By default there is no prefix, though some parameters deviate (shown in docs). `
+      : `There is no prefix.`
+  }
+
+  content += `Examples:${specs
+    .filter((_) => _.environment?.enabled)
+    .slice(0, 3)
+    .map((_) =>
+      _.environment!.namespaces.length > 0
+        ? `${chalk.blue(Text.toEnvarNameCase(_.environment?.namespaces[0]!) + `_`)}${chalk.green(
+            Text.toEnvarNameCase(_.name.canonical)
+          )}`
+        : chalk.green(Text.toEnvarNameCase(_.name.canonical))
+    )
+    .map((_) => `${_}="..."`)
+    .reduce((_, example) => _ + `\n  ${Text.chars.arrowR} ${example}`, ``)}.`
+
+  return Text.column(76, content)
+}
+
+const parameters = (
+  specs: ParameterSpec.Spec[],
+  settings: Settings.Normalized,
+  options: {
+    columnSpecs: ColumnSpecs
+    environment: boolean
+    isEnvironmentEnabled: boolean
+  }
+) => {
   let t = ``
   for (const spec of specs) {
     t += Text.line()
-    t += parameter(spec, { columnSpecs: options.columnSpecs })
+    t += parameter(spec, settings, {
+      isEnvironmentEnabled: options.isEnvironmentEnabled,
+      columnSpecs: options.columnSpecs,
+    })
     t += Text.line()
   }
   return t
@@ -95,8 +209,10 @@ const parameters = (specs: ParameterSpec.Spec[], options: { columnSpecs: ColumnS
 
 const parameter = (
   spec: ParameterSpec.Spec,
+  settings: Settings.Normalized,
   options: {
     columnSpecs: ColumnSpecs
+    isEnvironmentEnabled: boolean
   }
 ): string => {
   const maybeZodEnum = ZodHelpers.getEnum(spec.schema)
@@ -109,37 +225,47 @@ const parameter = (
           chalk.gray(spec.name.short ?? ``),
           chalk.gray(spec.name.aliases.long.join(`, `)),
         ],
-        width: options.columnSpecs.name.width,
+        ...options.columnSpecs.name,
       },
       {
         lines: [
           ...(maybeZodEnum ? typeEnum(maybeZodEnum) : [chalk.green(spec.schemaPrimitive)]),
           ...Text.column(options.columnSpecs.typeAndDescription.width, spec.description ?? ``),
         ],
-        width: options.columnSpecs.typeAndDescription.width,
+        ...options.columnSpecs.typeAndDescription,
       },
       {
         lines: parameterDefault(options.columnSpecs.default.width, spec),
-        separator: Text.chars.space.repeat(6),
-        width: options.columnSpecs.default.width,
+        ...options.columnSpecs.default,
       },
-      {
-        lines: spec.environment?.enabled
-          ? [
-              chalk.blue(Text.chars.check) +
-                ` ${chalk.gray(
-                  spec.environment.namespaces.length > 0
-                    ? spec.environment.namespaces
-                        .map(
-                          (_) =>
-                            `${snakeCase(_).toUpperCase()}_${snakeCase(spec.name.canonical).toUpperCase()}`
-                        )
-                        .join(` | `)
-                    : `${snakeCase(spec.name.canonical).toUpperCase()}`
-                )}`,
-            ]
-          : [chalk.gray(Text.chars.x)],
-      },
+      ...(options.isEnvironmentEnabled
+        ? [
+            {
+              lines: spec.environment?.enabled
+                ? [
+                    chalk.blue(Text.chars.check) +
+                      (spec.environment.enabled && spec.environment.namespaces.length === 0
+                        ? ` ` + chalk.gray(Text.toEnvarNameCase(spec.name.canonical))
+                        : spec.environment.enabled &&
+                          spec.environment.namespaces.filter(
+                            // TODO settings normalized should store prefix in camel case
+                            (_) => !settings.parameters.environment.$default.prefix.includes(snakeCase(_))
+                          ).length > 0
+                        ? ` ` +
+                          chalk.gray(
+                            spec.environment.namespaces
+                              .map(
+                                (_) =>
+                                  `${Text.toEnvarNameCase(_)}_${Text.toEnvarNameCase(spec.name.canonical)}`
+                              )
+                              .join(` | `)
+                          )
+                        : ``),
+                  ]
+                : [chalk.gray(Text.chars.x)],
+            },
+          ]
+        : []),
     ].map((_) => ({
       ..._,
       lines: _.lines.filter((_): _ is string => _ !== null && stripAnsi(_) !== ``),
@@ -200,13 +326,6 @@ const columnFitEnumDoc = (width: number, members: string[]): string[][] => {
 
   return lines
 }
-
-// const sectionTitle = (title: string) => {
-//   const borderLength = 40
-//   const borderChar = Text.chars.lineH
-//   const border = borderChar.repeat(borderLength)
-//   return `${border}${title.toLowerCase()}${border}`
-// }
 
 const title = (string: string) => {
   return Text.line(string.toUpperCase())
