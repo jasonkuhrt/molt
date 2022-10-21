@@ -13,12 +13,13 @@
     - [Flag Syntax](#flag-syntax)
     - [Short, Long, & Aliasing](#short-long--aliasing)
     - [Kebab / Camel Case](#kebab--camel-case)
-  - [Argument Passing](#argument-passing)
-    - [Parameter Argument Separator](#parameter-argument-separator)
   - [Parameter Typing](#parameter-typing)
     - [Boolean](#boolean)
     - [Number](#number)
     - [Enum](#enum)
+  - [Argument Passing](#argument-passing)
+    - [Parameter Argument Separator](#parameter-argument-separator)
+    - [Stacked Short Flags](#stacked-short-flags)
   - [Environment Arguments](#environment-arguments)
     - [Default Name Pattern](#default-name-pattern)
     - [Toggling](#toggling)
@@ -74,13 +75,12 @@ ts-node convert -h
 
 PARAMETERS
 
-  Name           Type / Summary                          Default                 Environment
-                                                                                 CLI_PARAM_ | CLI_PARAMETER_
+  Name           Type / Summary                          Default                 Environment (1)
 
   to             json | yaml | toml                      REQUIRED                ✓
                  Format to convert to.
 
-  file-path      string                                  REQUIRED                FILE_PATH
+  file-path      string                                  REQUIRED                ✓ FILE_PATH
                  Path to the file to convert.
 
   from           json | yaml | toml                      Inferred from the file  ✓
@@ -101,6 +101,15 @@ PARAMETERS
                  Output detailed info on how to
                  use this CLI.
 
+  NOTES
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  (1) Parameters can be passed arguments via environment variables. Command line a
+      rguments take precedence. Environment variable names are snake cased version
+      s of the parameter name (or its aliases), case insensitive. They must be pre
+      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:
+        → CLI_PARAMETER_TO="..."
+        → CLI_PARAMETER_FILE_PATH="..."
+        → CLI_PARAMETER_FROM="...".
 ```
 
 ## Features
