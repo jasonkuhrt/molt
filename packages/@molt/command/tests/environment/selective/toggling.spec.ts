@@ -11,7 +11,7 @@ it(`can toggle environment on for one parameter`, () => {
     '--bar': z.string().default(`bar`),
   })
     .settings({ parameters: { environment: { foo: true } } })
-    .parseOrThrow([])
+    .parse([])
   expect(args).toMatchObject({ foo: `env1`, bar: `bar` })
 })
 
@@ -23,7 +23,7 @@ it(`can change prefix for one parameter`, () => {
     '--bar': z.string().default(`bar_default`),
   })
     .settings({ parameters: { environment: { foo: { prefix: false }, bar: true } } })
-    .parseOrThrow([])
+    .parse([])
   expect(args).toMatchObject({ foo: `foo_env`, bar: `bar_env` })
 })
 
@@ -43,7 +43,7 @@ it(`can change default prefix and prfix for one parameter`, () => {
         },
       },
     })
-    .parseOrThrow([])
+    .parse([])
   expect(args).toMatchObject({ foo: `foo_env`, bar: `bar_env` })
 })
 
@@ -62,7 +62,7 @@ describe(`when configuring parameters environment becomes opt-in`, () => {
           },
         },
       })
-      .parseOrThrow([])
+      .parse([])
     expect(args).toMatchObject({ foo: `foo_env`, bar: `bar`, qux: `qux` })
   })
   it(`even with default configured`, () => {
@@ -80,7 +80,7 @@ describe(`when configuring parameters environment becomes opt-in`, () => {
           },
         },
       })
-      .parseOrThrow([])
+      .parse([])
     expect(args).toMatchObject({ foo: `foo_env`, bar: `bar`, qux: `qux` })
   })
   describe(` unless...`, () => {
@@ -92,7 +92,7 @@ describe(`when configuring parameters environment becomes opt-in`, () => {
         '--qux': z.string().default(`qux`),
       })
         .settings({ parameters: { environment: { $default: true, foo: { prefix: `MOO` } } } })
-        .parseOrThrow([])
+        .parse([])
       expect(args).toMatchObject({ foo: `moo_foo_env`, bar: `bar_env`, qux: `qux_env` })
     })
     it(`default is longhand true`, () => {
@@ -103,7 +103,7 @@ describe(`when configuring parameters environment becomes opt-in`, () => {
         '--qux': z.string().default(`qux`),
       })
         .settings({ parameters: { environment: { $default: { enabled: true }, foo: { prefix: `MOO` } } } })
-        .parseOrThrow([])
+        .parse([])
       expect(args).toMatchObject({ foo: `moo_foo_env`, bar: `bar_env`, qux: `qux_env` })
     })
   })

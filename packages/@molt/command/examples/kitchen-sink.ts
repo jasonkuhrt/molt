@@ -39,7 +39,7 @@ const args = Command.create({
       },
     },
   })
-  .parseOrThrow()
+  .parse()
 
 args.filePath
 args.from

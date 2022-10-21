@@ -6,12 +6,12 @@ import { z } from 'zod'
 
 it(`snake case environment variables are matched to parameters`, () => {
   environmentManager.set(`cli_param_foo_bar`, `toto`)
-  const args = Command.create({ fooBar: z.string() }).parseOrThrow([])
+  const args = Command.create({ fooBar: z.string() }).parse([])
   expect(args).toMatchObject({ fooBar: `toto` })
 })
 
 it(`environment variables are read case insensitive`, () => {
   environmentManager.set(`CLI_param_fOo_bAR`, `toto`)
-  const args = Command.create({ fooBar: z.string() }).parseOrThrow([])
+  const args = Command.create({ fooBar: z.string() }).parse([])
   expect(args).toMatchObject({ fooBar: `toto` })
 })

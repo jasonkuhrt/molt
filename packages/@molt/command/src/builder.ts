@@ -15,7 +15,7 @@ type ParametersToArguments<ParametersSchema extends z.ZodRawShape> = Any.Compute
 }>
 
 type Definition<ParametersSchema extends z.ZodRawShape> = {
-  parseOrThrow: (processArguments?: string[]) => ParametersToArguments<ParametersSchema>
+  parse: (processArguments?: string[]) => ParametersToArguments<ParametersSchema>
   settings: (newSettings: Settings.Input<ParametersSchema>) => Definition<ParametersSchema>
   schema: ParametersSchema
 }
@@ -30,7 +30,7 @@ export const create = <Schema extends z.ZodRawShape>(schema: Schema): Definition
       Settings.change(settings, newSettings)
       return api
     },
-    parseOrThrow: (processArguments) => {
+    parse: (processArguments) => {
       const processArguments_ = processArguments ?? process.argv.slice(2)
       const schema_ = settings.help
         ? {
@@ -40,7 +40,7 @@ export const create = <Schema extends z.ZodRawShape>(schema: Schema): Definition
         : schema
       const specs = ParameterSpec.parse(schema_, settings)
       // eslint-disable-next-line
-      const result = Input.parseOrThrow(specs, processArguments_)
+      const result = Input.parse(specs, processArguments_)
       // console.log({ result })
       const requiredParamsMissing = specs
         .filter((_) => !_.optional)

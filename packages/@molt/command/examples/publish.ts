@@ -17,6 +17,6 @@ const args = Command.create({
       },
     },
   })
-  .parseOrThrow()
+  .parse()
 
 args.bump

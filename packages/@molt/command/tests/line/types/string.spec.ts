@@ -8,11 +8,11 @@ import { z } from 'zod'
 // TODO use test.each
 describe(`errors`, () => {
   it(`when argument missing (last position)`, () => {
-    Command.create({ '--name': z.string() }).parseOrThrow([`--name`])
+    Command.create({ '--name': z.string() }).parse([`--name`])
     expect(stdout.mock.calls).toMatchSnapshot()
   })
   it(`when argument missing (non-last position)`, () => {
-    Command.create({ '--name': z.string(), '--age': z.number() }).parseOrThrow([`--name`, ` --age`, `1`])
+    Command.create({ '--name': z.string(), '--age': z.number() }).parse([`--name`, ` --age`, `1`])
     expect(stdout.mock.calls).toMatchSnapshot()
   })
   // TODO use test.each
@@ -21,18 +21,18 @@ describe(`errors`, () => {
 })
 
 it(`is validated`, () => {
-  Command.create({ '--name': z.string().regex(/[a-z]+/) }).parseOrThrow([`--name`, `BAD`])
+  Command.create({ '--name': z.string().regex(/[a-z]+/) }).parse([`--name`, `BAD`])
   expect(stdout.mock.calls).toMatchSnapshot()
 })
 
 describe(`optional`, () => {
   it(`specified input can be omitted, undefined is possible`, () => {
-    const args = Command.create({ '--foo': z.string().optional() }).parseOrThrow([])
+    const args = Command.create({ '--foo': z.string().optional() }).parse([])
     assert<IsExact<{ foo: string | undefined }, typeof args>>(true)
     expect(args).toMatchObject({ foo: undefined })
   })
   it(`input can be given`, () => {
-    const args = Command.create({ '--foo': z.string().optional() }).parseOrThrow([`--foo`, `bar`])
+    const args = Command.create({ '--foo': z.string().optional() }).parse([`--foo`, `bar`])
     assert<IsExact<{ foo: string | undefined }, typeof args>>(true)
     expect(args).toMatchObject({ foo: `bar` })
   })

@@ -5,7 +5,7 @@ import { Line } from './Line/index.js'
 
 export * from './types.js'
 
-export const parseOrThrow = (
+export const parse = (
   specs: Spec[],
   rawLineInputs: Line.RawLineInputs
 ): { args: Record<string, unknown>; errors: Errors.ErrorMissingArgument[] } => {

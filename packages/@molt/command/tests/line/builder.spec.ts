@@ -8,13 +8,13 @@ const assertAssignable = <T>(_: T): [T] => 0 as any
 describe(`.create`, () => {
   it(`creates a parameters definition`, () => {
     const def = Command.create({ x: z.string() })
-    expect(def.parseOrThrow).toBeTypeOf(`function`)
+    expect(def.parse).toBeTypeOf(`function`)
   })
 })
 
 describe(`settings`, () => {
   it(`permits setting a description`, () => {
-    Command.create({ x: z.string() }).settings({ description: `foobar` }).parseOrThrow([`-x`, `foobar`])
+    Command.create({ x: z.string() }).settings({ description: `foobar` }).parse([`-x`, `foobar`])
   })
 })
 

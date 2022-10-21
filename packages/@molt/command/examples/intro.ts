@@ -10,7 +10,7 @@ const args = Command.create({
     .describe(`Format to convert from. By default inferred from the file extension.`),
   '--verbose -v': z.boolean().default(false).describe(`Log detailed progress as conversion executes.`),
   '--move -m': z.boolean().default(false).describe(`Delete the original file after it has been converted.`),
-}).parseOrThrow()
+}).parse()
 
 args.filePath
 args.from

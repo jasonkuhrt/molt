@@ -23,7 +23,7 @@ const args = Command.create({
       },
     },
   })
-  .parseOrThrow()
+  .parse()
 
 if (!args.bump && !args.version) throw new Error(`--bump or --version is required`)
 if (args.bump && args.version) throw new Error(`--bump and --version cannot both be specified`)

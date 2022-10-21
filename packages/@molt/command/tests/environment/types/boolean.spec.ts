@@ -10,5 +10,5 @@ test.each([
   [`0`, { foo: false }],
 ])(`%s`, (value, expected) => {
   environmentManager.set(`cli_param_foo`, value)
-  expect(Command.create({ foo: z.boolean() }).parseOrThrow([])).toMatchObject(expected)
+  expect(Command.create({ foo: z.boolean() }).parse([])).toMatchObject(expected)
 })
