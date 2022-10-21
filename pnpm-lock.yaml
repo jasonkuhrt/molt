@@ -80,6 +80,7 @@ importers:
       string-length: '4'
       strip-ansi: '6'
       ts-toolbelt: ^9.6.0
+      vitest: ^0.24.3
       vitest-mock-process: ^1.0.4
       zod: ^3.19.1
     dependencies:
@@ -99,7 +100,8 @@ importers:
       execa: 6.1.0
       fast-glob: 3.2.12
       fs-jetpack: 5.0.0
-      vitest-mock-process: 1.0.4
+      vitest: 0.24.3
+      vitest-mock-process: 1.0.4_vitest@0.24.3
 
   packages/@molt/types:
     specifiers:
@@ -2960,12 +2962,13 @@ packages:
       fsevents: 2.3.2
     dev: true
 
-  /vitest-mock-process/1.0.4:
+  /vitest-mock-process/1.0.4_vitest@0.24.3:
     resolution: {integrity: sha512-WFoSE8MLTanQJkZUZSEd2/9+O1RJKqYn5tUNh3mW/SAh1VL7D7cfcxkn2F7DlhsFI0ZPILxto0OI6XEmGYFyRA==}
     peerDependencies:
       vitest: <1
     dependencies:
       deep-clone-fn: 1.1.0
+      vitest: 0.24.3
     dev: true
 
   /vitest/0.24.3:

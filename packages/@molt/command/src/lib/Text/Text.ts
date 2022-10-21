@@ -1,3 +1,5 @@
+import snakeCase from 'lodash.snakecase'
+import stringLength from 'string-length'
 import stripAnsi from 'strip-ansi'
 
 export type Lines = string[]
@@ -21,7 +23,14 @@ export const underline = (string: string): string => {
   return line(string) + chars.lineH.repeat(string.length)
 }
 
-export const columns = (
+export const joinListEnglish = (list: string[]): string => {
+  if (list.length === 0) return ``
+  if (list.length === 1) return list[0] as string
+  if (list.length === 2) return `${list[0] as string} or ${list[1] as string}`
+  return `${list.slice(0, list.length - 1).join(`, `)} or ${list[list.length - 1] as string}`
+}
+
+export const row = (
   columns: {
     lines: string[]
     width?: number | undefined
@@ -31,7 +40,7 @@ export const columns = (
   const columnsSized = columns.map((_) => {
     return {
       lines: _.lines,
-      width: _.width ?? _.lines.reduce((width, line) => Math.max(width, line.length), 0),
+      width: _.width ?? _.lines.reduce((widthSoFar, line) => Math.max(widthSoFar, line.length), 0),
       separator: _.separator ?? chars.space.repeat(3),
     }
   })
@@ -54,19 +63,45 @@ export const columns = (
   return lines.join(newline)
 }
 
+export const toEnvarNameCase = (name: string) => snakeCase(name).toUpperCase()
+
+export const visualStringTake = (string: string, size: number): string => {
+  let taken = string.slice(0, size)
+  let i = 0
+  while (stringLength(taken) < size) {
+    if (taken.length === string.length) break
+    i++
+    taken = string.slice(0, size + i)
+  }
+  return taken
+}
+
 export const column = (width: number, text: string): string[] => {
   const lines = []
-  let textToConsume = stripAnsi(text)
+  let textToConsume = text
   while (textToConsume.length > 0) {
-    lines.push(textToConsume.slice(0, width).trim())
-    textToConsume = textToConsume.slice(width)
+    const textConsumed = visualStringTake(textToConsume, width)
+    const textLines = textConsumed.split(newline)
+    if (textLines.length === 1) {
+      // eslint-disable-next-line
+      lines.push(textLines[0]!)
+      textToConsume = textToConsume.slice(textConsumed.length)
+    } else {
+      // eslint-disable-next-line
+      const lastTextLine = textLines.pop()!
+      textToConsume = textToConsume.slice(textConsumed.length - lastTextLine.length)
+      lines.push(...textLines)
+    }
   }
   return lines
 }
 
 export const chars = {
+  arrowR: `→`,
   lineH: `─`,
   lineHBold: `━`,
+  x: `✕`,
+  check: `✓`,
   newline,
   space,
 }

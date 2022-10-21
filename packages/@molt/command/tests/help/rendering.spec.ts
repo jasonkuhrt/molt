@@ -120,3 +120,54 @@ describe(`enum`, () => {
     expect(output).toMatchSnapshot(`polychrome`)
   })
 })
+
+describe(`environment`, () => {
+  it(`when environment is disabled then environment doc is not shown`, () => {
+    Command.create({ foo: z.string() })
+      .settings({ parameters: { environment: false } })
+      .parseOrThrow([`-h`])
+    const output = processStdout.mock.lastCall?.[0] as string
+    expect(stripAnsi(output)).toMatchSnapshot(`monochrome`)
+    expect(output).toMatchSnapshot(`polychrome`)
+  })
+  it(`when environment is enabled it shows as the last column`, () => {
+    Command.create({ foo: z.string() })
+      .settings({ parameters: { environment: true } })
+      .parseOrThrow([`-h`])
+    const output = processStdout.mock.lastCall?.[0] as string
+    expect(stripAnsi(output)).toMatchSnapshot(`monochrome`)
+    expect(output).toMatchSnapshot(`polychrome`)
+  })
+  it(`when environment is disabled for one parameter it has X indicating that`, () => {
+    Command.create({ foo: z.string(), bar: z.string() })
+      .settings({ parameters: { environment: { $default: true, foo: false } } })
+      .parseOrThrow([`-h`])
+    const output = processStdout.mock.lastCall?.[0] as string
+    expect(stripAnsi(output)).toMatchSnapshot(`monochrome`)
+    expect(output).toMatchSnapshot(`polychrome`)
+  })
+  it(`when environment has custom prefix it is displayed`, () => {
+    Command.create({ foo: z.string(), bar: z.string() })
+      .settings({ parameters: { environment: { $default: true, foo: { prefix: `moo` } } } })
+      .parseOrThrow([`-h`])
+    const output = processStdout.mock.lastCall?.[0] as string
+    expect(stripAnsi(output)).toMatchSnapshot(`monochrome`)
+    expect(output).toMatchSnapshot(`polychrome`)
+  })
+  it(`when environment has multiple custom prefix they are displayed`, () => {
+    Command.create({ foo: z.string(), bar: z.string() })
+      .settings({ parameters: { environment: { $default: true, foo: { prefix: [`moo`, `boo`] } } } })
+      .parseOrThrow([`-h`])
+    const output = processStdout.mock.lastCall?.[0] as string
+    expect(stripAnsi(output)).toMatchSnapshot(`monochrome`)
+    expect(output).toMatchSnapshot(`polychrome`)
+  })
+  it(`when environment has no prefix it is displayed`, () => {
+    Command.create({ foo: z.string(), bar: z.string() })
+      .settings({ parameters: { environment: { $default: true, foo: { prefix: false } } } })
+      .parseOrThrow([`-h`])
+    const output = processStdout.mock.lastCall?.[0] as string
+    expect(stripAnsi(output)).toMatchSnapshot(`monochrome`)
+    expect(output).toMatchSnapshot(`polychrome`)
+  })
+})

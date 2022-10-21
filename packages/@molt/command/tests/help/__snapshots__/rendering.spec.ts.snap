@@ -4,9 +4,17 @@ exports[`enum > enum members are listed > monochrome 1`] = `
 "
 PARAMETERS
 
+  Name   Type/Description           Default      Environment (1)                         
   
-  foo    apple | dolphin | cab       REQUIRED 
+  foo    apple | dolphin | cab       REQUIRED    ✓          
   
+  NOTES
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  (1) Parameters can be passed arguments via environment variables. Command line a             
+      rguments take precedence. Environment variable names are snake cased version             
+      s of the parameter name (or its aliases), case insensitive. They must be pre             
+      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
+        → CLI_PARAMETER_FOO=\\"...\\".                                                             
 "
 `;
 
@@ -14,9 +22,17 @@ exports[`enum > enum members are listed > polychrome 1`] = `
 "
 PARAMETERS
 
+  [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m           [4m[90mDefault[39m[24m      [4m[90mEnvironment (1)[39m[24m                         
   
-  [32mfoo[39m    [32mapple[39m[33m | [39m[32mdolphin[39m[33m | [39m[32mcab[39m      [1m[30m[101m REQUIRED [49m[39m[22m
+  [32mfoo[39m    [32mapple[39m[33m | [39m[32mdolphin[39m[33m | [39m[32mcab[39m      [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m          
   
+[90m  NOTES[39m
+[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m
+[90m      rguments take precedence. Environment variable names are snake cased version             [39m
+[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m
+[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m
+[90m        → [34mCLI_PARAMETER_[39m[90m[32mFOO[39m[90m=\\"...\\".                                                             [39m
 "
 `;
 
@@ -24,9 +40,17 @@ exports[`enum > optional enum members are listed > monochrome 1`] = `
 "
 PARAMETERS
 
+  Name   Type/Description           Default     Environment (1)                         
   
-  foo    apple | dolphin | cab      undefined 
+  foo    apple | dolphin | cab      undefined   ✓          
   
+  NOTES
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  (1) Parameters can be passed arguments via environment variables. Command line a             
+      rguments take precedence. Environment variable names are snake cased version             
+      s of the parameter name (or its aliases), case insensitive. They must be pre             
+      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
+        → CLI_PARAMETER_FOO=\\"...\\".                                                             
 "
 `;
 
@@ -34,9 +58,17 @@ exports[`enum > optional enum members are listed > polychrome 1`] = `
 "
 PARAMETERS
 
+  [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m           [4m[90mDefault[39m[24m     [4m[90mEnvironment (1)[39m[24m                         
   
-  [32mfoo[39m    [32mapple[39m[33m | [39m[32mdolphin[39m[33m | [39m[32mcab[39m      [34mundefined[39m 
+  [32mfoo[39m    [32mapple[39m[33m | [39m[32mdolphin[39m[33m | [39m[32mcab[39m      [34mundefined[39m   [34m✓[39m          
   
+[90m  NOTES[39m
+[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m
+[90m      rguments take precedence. Environment variable names are snake cased version             [39m
+[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m
+[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m
+[90m        → [34mCLI_PARAMETER_[39m[90m[32mFOO[39m[90m=\\"...\\".                                                             [39m
 "
 `;
 
@@ -44,10 +76,18 @@ exports[`enum > when there are many members they wrap > monochrome 1`] = `
 "
 PARAMETERS
 
+  Name   Type/Description                          Default      Environment (1)                         
   
-  foo    apple | baby | cannabis | dinosaur         REQUIRED 
-         fanna | goat | house | island | jake                
+  foo    apple | baby | cannabis | dinosaur         REQUIRED    ✓          
+         fanna | goat | house | island | jake                              
   
+  NOTES
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  (1) Parameters can be passed arguments via environment variables. Command line a             
+      rguments take precedence. Environment variable names are snake cased version             
+      s of the parameter name (or its aliases), case insensitive. They must be pre             
+      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
+        → CLI_PARAMETER_FOO=\\"...\\".                                                             
 "
 `;
 
@@ -55,10 +95,18 @@ exports[`enum > when there are many members they wrap > polychrome 1`] = `
 "
 PARAMETERS
 
+  [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m                          [4m[90mDefault[39m[24m      [4m[90mEnvironment (1)[39m[24m                         
   
-  [32mfoo[39m    [32mapple[39m[33m | [39m[32mbaby[39m[33m | [39m[32mcannabis[39m[33m | [39m[32mdinosaur[39m        [1m[30m[101m REQUIRED [49m[39m[22m
-         [32mfanna[39m[33m | [39m[32mgoat[39m[33m | [39m[32mhouse[39m[33m | [39m[32misland[39m[33m | [39m[32mjake[39m                
+  [32mfoo[39m    [32mapple[39m[33m | [39m[32mbaby[39m[33m | [39m[32mcannabis[39m[33m | [39m[32mdinosaur[39m        [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m          
+         [32mfanna[39m[33m | [39m[32mgoat[39m[33m | [39m[32mhouse[39m[33m | [39m[32misland[39m[33m | [39m[32mjake[39m                              
   
+[90m  NOTES[39m
+[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m
+[90m      rguments take precedence. Environment variable names are snake cased version             [39m
+[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m
+[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m
+[90m        → [34mCLI_PARAMETER_[39m[90m[32mFOO[39m[90m=\\"...\\".                                                             [39m
 "
 `;
 
@@ -66,9 +114,17 @@ exports[`enum > when there is only one enum member it is prefixed with "enum:" t
 "
 PARAMETERS
 
+  Name   Type/Description      Default      Environment (1)                         
   
-  foo    apple (enum)       REQUIRED 
+  foo    apple (enum)       REQUIRED    ✓          
   
+  NOTES
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  (1) Parameters can be passed arguments via environment variables. Command line a             
+      rguments take precedence. Environment variable names are snake cased version             
+      s of the parameter name (or its aliases), case insensitive. They must be pre             
+      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
+        → CLI_PARAMETER_FOO=\\"...\\".                                                             
 "
 `;
 
@@ -76,9 +132,17 @@ exports[`enum > when there is only one enum member it is prefixed with "enum:" t
 "
 PARAMETERS
 
+  [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m      [4m[90mEnvironment (1)[39m[24m                         
   
-  [32mfoo[39m    [32mapple[39m [90m(enum)[39m      [1m[30m[101m REQUIRED [49m[39m[22m
+  [32mfoo[39m    [32mapple[39m [90m(enum)[39m      [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m          
   
+[90m  NOTES[39m
+[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m
+[90m      rguments take precedence. Environment variable names are snake cased version             [39m
+[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m
+[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m
+[90m        → [34mCLI_PARAMETER_[39m[90m[32mFOO[39m[90m=\\"...\\".                                                             [39m
 "
 `;
 
@@ -86,13 +150,22 @@ exports[`enums do not mess up alignment when they are widest line in the column 
 "
 PARAMETERS
 
+  Name   Type/Description                       Default      Environment (1)                         
   
-  foo    a | b | c | d | e | f | g | h | i       REQUIRED 
-         k | l | m | n | o | p | q | r | s                
-         u | v | w | x | y | z                            
-    
-  bar    string                                 undefined 
+  foo    a | b | c | d | e | f | g | h | i       REQUIRED    ✓          
+         k | l | m | n | o | p | q | r | s                              
+         u | v | w | x | y | z                                          
   
+  bar    string                                 undefined    ✓          
+  
+  NOTES
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  (1) Parameters can be passed arguments via environment variables. Command line a             
+      rguments take precedence. Environment variable names are snake cased version             
+      s of the parameter name (or its aliases), case insensitive. They must be pre             
+      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
+        → CLI_PARAMETER_FOO=\\"...\\"                                                              
+        → CLI_PARAMETER_BAR=\\"...\\".                                                             
 "
 `;
 
@@ -100,13 +173,252 @@ exports[`enums do not mess up alignment when they are widest line in the column 
 "
 PARAMETERS
 
+  [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m                       [4m[90mDefault[39m[24m      [4m[90mEnvironment (1)[39m[24m                         
   
-  [32mfoo[39m    [32ma[39m[33m | [39m[32mb[39m[33m | [39m[32mc[39m[33m | [39m[32md[39m[33m | [39m[32me[39m[33m | [39m[32mf[39m[33m | [39m[32mg[39m[33m | [39m[32mh[39m[33m | [39m[32mi[39m      [1m[30m[101m REQUIRED [49m[39m[22m
-         [32mk[39m[33m | [39m[32ml[39m[33m | [39m[32mm[39m[33m | [39m[32mn[39m[33m | [39m[32mo[39m[33m | [39m[32mp[39m[33m | [39m[32mq[39m[33m | [39m[32mr[39m[33m | [39m[32ms[39m                
-         [32mu[39m[33m | [39m[32mv[39m[33m | [39m[32mw[39m[33m | [39m[32mx[39m[33m | [39m[32my[39m[33m | [39m[32mz[39m                            
-    
-  [32mbar[39m    [32mstring[39m                                 [34mundefined[39m 
+  [32mfoo[39m    [32ma[39m[33m | [39m[32mb[39m[33m | [39m[32mc[39m[33m | [39m[32md[39m[33m | [39m[32me[39m[33m | [39m[32mf[39m[33m | [39m[32mg[39m[33m | [39m[32mh[39m[33m | [39m[32mi[39m      [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m          
+         [32mk[39m[33m | [39m[32ml[39m[33m | [39m[32mm[39m[33m | [39m[32mn[39m[33m | [39m[32mo[39m[33m | [39m[32mp[39m[33m | [39m[32mq[39m[33m | [39m[32mr[39m[33m | [39m[32ms[39m                              
+         [32mu[39m[33m | [39m[32mv[39m[33m | [39m[32mw[39m[33m | [39m[32mx[39m[33m | [39m[32my[39m[33m | [39m[32mz[39m                                          
   
+  [32mbar[39m    [32mstring[39m                                 [34mundefined[39m    [34m✓[39m          
+  
+[90m  NOTES[39m
+[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m
+[90m      rguments take precedence. Environment variable names are snake cased version             [39m
+[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m
+[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m
+[90m        → [34mCLI_PARAMETER_[39m[90m[32mFOO[39m[90m=\\"...\\"                                                              [39m
+[90m        → [34mCLI_PARAMETER_[39m[90m[32mBAR[39m[90m=\\"...\\".                                                             [39m
+"
+`;
+
+exports[`environment > when environment has custom prefix it is displayed > monochrome 1`] = `
+"
+PARAMETERS
+
+  Name   Type/Description      Default      Environment (1)                         
+  
+  bar    string        REQUIRED    ✓          
+  
+  foo    string        REQUIRED    ✓ MOO_FOO                    
+  
+  NOTES
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  (1) Parameters can be passed arguments via environment variables. Command line a                    
+      rguments take precedence. Environment variable names are snake cased version                    
+      s of the parameter name (or its aliases), case insensitive. By default they                     
+      must be prefixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive), thoug                    
+      h some parameters deviate (shown in docs). Examples:                                            
+        → CLI_PARAMETER_BAR=\\"...\\"                                                                     
+        → MOO_FOO=\\"...\\".                                                                              
+"
+`;
+
+exports[`environment > when environment has custom prefix it is displayed > polychrome 1`] = `
+"
+PARAMETERS
+
+  [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m      [4m[90mEnvironment (1)[39m[24m                         
+  
+  [32mbar[39m    [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m          
+  
+  [32mfoo[39m    [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m [90mMOO_FOO[39m                    
+  
+[90m  NOTES[39m
+[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[90m  (1) Parameters can be passed arguments via environment variables. Command line a                    [39m
+[90m      rguments take precedence. Environment variable names are snake cased version                    [39m
+[90m      s of the parameter name (or its aliases), case insensitive. By default they                     [39m
+[90m      must be prefixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive), thoug                    [39m
+[90m      h some parameters deviate (shown in docs). Examples:                                            [39m
+[90m        → [34mCLI_PARAMETER_[39m[90m[32mBAR[39m[90m=\\"...\\"                                                                     [39m
+[90m        → [34mMOO_[39m[90m[32mFOO[39m[90m=\\"...\\".                                                                              [39m
+"
+`;
+
+exports[`environment > when environment has multiple custom prefix they are displayed > monochrome 1`] = `
+"
+PARAMETERS
+
+  Name   Type/Description      Default      Environment (1)                         
+  
+  bar    string        REQUIRED    ✓          
+  
+  foo    string        REQUIRED    ✓ MOO_FOO | BOO_FOO                    
+  
+  NOTES
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  (1) Parameters can be passed arguments via environment variables. Command line a                    
+      rguments take precedence. Environment variable names are snake cased version                    
+      s of the parameter name (or its aliases), case insensitive. By default they                     
+      must be prefixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive), thoug                    
+      h some parameters deviate (shown in docs). Examples:                                            
+        → CLI_PARAMETER_BAR=\\"...\\"                                                                     
+        → MOO_FOO=\\"...\\".                                                                              
+"
+`;
+
+exports[`environment > when environment has multiple custom prefix they are displayed > polychrome 1`] = `
+"
+PARAMETERS
+
+  [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m      [4m[90mEnvironment (1)[39m[24m                         
+  
+  [32mbar[39m    [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m          
+  
+  [32mfoo[39m    [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m [90mMOO_FOO | BOO_FOO[39m                    
+  
+[90m  NOTES[39m
+[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[90m  (1) Parameters can be passed arguments via environment variables. Command line a                    [39m
+[90m      rguments take precedence. Environment variable names are snake cased version                    [39m
+[90m      s of the parameter name (or its aliases), case insensitive. By default they                     [39m
+[90m      must be prefixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive), thoug                    [39m
+[90m      h some parameters deviate (shown in docs). Examples:                                            [39m
+[90m        → [34mCLI_PARAMETER_[39m[90m[32mBAR[39m[90m=\\"...\\"                                                                     [39m
+[90m        → [34mMOO_[39m[90m[32mFOO[39m[90m=\\"...\\".                                                                              [39m
+"
+`;
+
+exports[`environment > when environment has no prefix it is displayed > monochrome 1`] = `
+"
+PARAMETERS
+
+  Name   Type/Description      Default      Environment (1)                         
+  
+  bar    string        REQUIRED    ✓          
+  
+  foo    string        REQUIRED    ✓ FOO                    
+  
+  NOTES
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  (1) Parameters can be passed arguments via environment variables. Command line a             
+      rguments take precedence. Environment variable names are snake cased version             
+      s of the parameter name (or its aliases), case insensitive. They must be pre             
+      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
+        → CLI_PARAMETER_BAR=\\"...\\"                                                              
+        → FOO=\\"...\\".                                                                           
+"
+`;
+
+exports[`environment > when environment has no prefix it is displayed > polychrome 1`] = `
+"
+PARAMETERS
+
+  [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m      [4m[90mEnvironment (1)[39m[24m                         
+  
+  [32mbar[39m    [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m          
+  
+  [32mfoo[39m    [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m [90mFOO[39m                    
+  
+[90m  NOTES[39m
+[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m
+[90m      rguments take precedence. Environment variable names are snake cased version             [39m
+[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m
+[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m
+[90m        → [34mCLI_PARAMETER_[39m[90m[32mBAR[39m[90m=\\"...\\"                                                              [39m
+[90m        → [32mFOO[39m[90m=\\"...\\".                                                                           [39m
+"
+`;
+
+exports[`environment > when environment is disabled for one parameter it has X indicating that > monochrome 1`] = `
+"
+PARAMETERS
+
+  Name   Type/Description      Default      Environment (1)                         
+  
+  bar    string        REQUIRED    ✓          
+  
+  foo    string        REQUIRED    ✕          
+  
+  NOTES
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  (1) Parameters can be passed arguments via environment variables. Command line a             
+      rguments take precedence. Environment variable names are snake cased version             
+      s of the parameter name (or its aliases), case insensitive. They must be pre             
+      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
+        → CLI_PARAMETER_BAR=\\"...\\".                                                             
+"
+`;
+
+exports[`environment > when environment is disabled for one parameter it has X indicating that > polychrome 1`] = `
+"
+PARAMETERS
+
+  [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m      [4m[90mEnvironment (1)[39m[24m                         
+  
+  [32mbar[39m    [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m          
+  
+  [32mfoo[39m    [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m   [90m✕[39m          
+  
+[90m  NOTES[39m
+[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m
+[90m      rguments take precedence. Environment variable names are snake cased version             [39m
+[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m
+[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m
+[90m        → [34mCLI_PARAMETER_[39m[90m[32mBAR[39m[90m=\\"...\\".                                                             [39m
+"
+`;
+
+exports[`environment > when environment is disabled then environment doc is not shown > monochrome 1`] = `
+"
+PARAMETERS
+
+  Name   Type/Description      Default   
+  
+  foo    string        REQUIRED 
+  
+
+"
+`;
+
+exports[`environment > when environment is disabled then environment doc is not shown > polychrome 1`] = `
+"
+PARAMETERS
+
+  [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m   
+  
+  [32mfoo[39m    [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m
+  
+
+"
+`;
+
+exports[`environment > when environment is enabled it shows as the last column > monochrome 1`] = `
+"
+PARAMETERS
+
+  Name   Type/Description      Default      Environment (1)                         
+  
+  foo    string        REQUIRED    ✓          
+  
+  NOTES
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  (1) Parameters can be passed arguments via environment variables. Command line a             
+      rguments take precedence. Environment variable names are snake cased version             
+      s of the parameter name (or its aliases), case insensitive. They must be pre             
+      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
+        → CLI_PARAMETER_FOO=\\"...\\".                                                             
+"
+`;
+
+exports[`environment > when environment is enabled it shows as the last column > polychrome 1`] = `
+"
+PARAMETERS
+
+  [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m      [4m[90mEnvironment (1)[39m[24m                         
+  
+  [32mfoo[39m    [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m          
+  
+[90m  NOTES[39m
+[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m
+[90m      rguments take precedence. Environment variable names are snake cased version             [39m
+[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m
+[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m
+[90m        → [34mCLI_PARAMETER_[39m[90m[32mFOO[39m[90m=\\"...\\".                                                             [39m
 "
 `;
 
@@ -114,9 +426,17 @@ exports[`if parameter has default it is shown > monochrome 1`] = `
 "
 PARAMETERS
 
+  Name   Type/Description      Default   Environment (1)                         
   
-  foo    string       bar       
+  foo    string       bar     ✓          
   
+  NOTES
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  (1) Parameters can be passed arguments via environment variables. Command line a             
+      rguments take precedence. Environment variable names are snake cased version             
+      s of the parameter name (or its aliases), case insensitive. They must be pre             
+      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
+        → CLI_PARAMETER_FOO=\\"...\\".                                                             
 "
 `;
 
@@ -124,9 +444,17 @@ exports[`if parameter has default it is shown > polychrome 1`] = `
 "
 PARAMETERS
 
+  [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m   [4m[90mEnvironment (1)[39m[24m                         
   
-  [32mfoo[39m    [32mstring[39m       [34mbar[39m       
+  [32mfoo[39m    [32mstring[39m       [34mbar[39m     [34m✓[39m          
   
+[90m  NOTES[39m
+[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m
+[90m      rguments take precedence. Environment variable names are snake cased version             [39m
+[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m
+[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m
+[90m        → [34mCLI_PARAMETER_[39m[90m[32mFOO[39m[90m=\\"...\\".                                                             [39m
 "
 `;
 
@@ -134,10 +462,18 @@ exports[`if parameter has description it is shown > monochrome 1`] = `
 "
 PARAMETERS
 
+  Name   Type/Description      Default     Environment (1)                         
   
-  a      string               undefined 
-  a      Blah blah blah.                
+  a      string               undefined   ✓          
+  a      Blah blah blah.                             
   
+  NOTES
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  (1) Parameters can be passed arguments via environment variables. Command line a             
+      rguments take precedence. Environment variable names are snake cased version             
+      s of the parameter name (or its aliases), case insensitive. They must be pre             
+      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
+        → CLI_PARAMETER_A=\\"...\\".                                                               
 "
 `;
 
@@ -145,10 +481,18 @@ exports[`if parameter has description it is shown > polychrome 1`] = `
 "
 PARAMETERS
 
+  [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m     [4m[90mEnvironment (1)[39m[24m                         
   
-  [32ma[39m      [32mstring[39m               [34mundefined[39m 
-  [90ma[39m      Blah blah blah.                
+  [32ma[39m      [32mstring[39m               [34mundefined[39m   [34m✓[39m          
+  [90ma[39m      Blah blah blah.                             
   
+[90m  NOTES[39m
+[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m
+[90m      rguments take precedence. Environment variable names are snake cased version             [39m
+[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m
+[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m
+[90m        → [34mCLI_PARAMETER_[39m[90m[32mA[39m[90m=\\"...\\".                                                               [39m
 "
 `;
 
@@ -156,9 +500,17 @@ exports[`if parameter is optional without default then its default shows up as "
 "
 PARAMETERS
 
+  Name   Type/Description      Default     Environment (1)                         
   
-  foo    string       undefined 
+  foo    string       undefined   ✓          
   
+  NOTES
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  (1) Parameters can be passed arguments via environment variables. Command line a             
+      rguments take precedence. Environment variable names are snake cased version             
+      s of the parameter name (or its aliases), case insensitive. They must be pre             
+      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
+        → CLI_PARAMETER_FOO=\\"...\\".                                                             
 "
 `;
 
@@ -166,9 +518,17 @@ exports[`if parameter is optional without default then its default shows up as "
 "
 PARAMETERS
 
+  [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m     [4m[90mEnvironment (1)[39m[24m                         
   
-  [32mfoo[39m    [32mstring[39m       [34mundefined[39m 
+  [32mfoo[39m    [32mstring[39m       [34mundefined[39m   [34m✓[39m          
   
+[90m  NOTES[39m
+[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m
+[90m      rguments take precedence. Environment variable names are snake cased version             [39m
+[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m
+[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m
+[90m        → [34mCLI_PARAMETER_[39m[90m[32mFOO[39m[90m=\\"...\\".                                                             [39m
 "
 `;
 
@@ -176,10 +536,18 @@ exports[`if there is an error trying to get default then a nice message is shown
 "
 PARAMETERS
 
+  Name   Type/Description      Default                     Environment (1)                         
   
-  foo    string       Error trying to render th
-                      is default: whoops
+  foo    string       Error trying to render th   ✓          
+                      is default: whoops                     
   
+  NOTES
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  (1) Parameters can be passed arguments via environment variables. Command line a             
+      rguments take precedence. Environment variable names are snake cased version             
+      s of the parameter name (or its aliases), case insensitive. They must be pre             
+      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
+        → CLI_PARAMETER_FOO=\\"...\\".                                                             
 "
 `;
 
@@ -187,10 +555,18 @@ exports[`if there is an error trying to get default then a nice message is shown
 "
 PARAMETERS
 
+  Name   Type/Description      Default                     Environment (1)                         
   
-  foo    string       Error trying to render th
-                      is default: whoops
+  foo    string       Error trying to render th   ✓          
+                      is default: whoops                     
   
+  NOTES
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  (1) Parameters can be passed arguments via environment variables. Command line a             
+      rguments take precedence. Environment variable names are snake cased version             
+      s of the parameter name (or its aliases), case insensitive. They must be pre             
+      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
+        → CLI_PARAMETER_FOO=\\"...\\".                                                             
 "
 `;
 
@@ -198,10 +574,18 @@ exports[`if there is an error trying to get default then a nice message is shown
 "
 PARAMETERS
 
+  [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m                     [4m[90mEnvironment (1)[39m[24m                         
   
-  [32mfoo[39m    [32mstring[39m       [1m[31mError trying to render th[39m[22m
-                      [1m[31mis default: whoops[39m[22m
+  [32mfoo[39m    [32mstring[39m       [1m[31mError trying to render th[39m[22m   [34m✓[39m          
+                      [1m[31mis default: whoops[39m[22m                     
   
+[90m  NOTES[39m
+[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m
+[90m      rguments take precedence. Environment variable names are snake cased version             [39m
+[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m
+[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m
+[90m        → [34mCLI_PARAMETER_[39m[90m[32mFOO[39m[90m=\\"...\\".                                                             [39m
 "
 `;
 
@@ -209,10 +593,18 @@ exports[`if there is an error trying to get default then a nice message is shown
 "
 PARAMETERS
 
+  [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m                     [4m[90mEnvironment (1)[39m[24m                         
   
-  [32mfoo[39m    [32mstring[39m       [1m[31mError trying to render th[39m[22m
-                      [1m[31mis default: whoops[39m[22m
+  [32mfoo[39m    [32mstring[39m       [1m[31mError trying to render th[39m[22m   [34m✓[39m          
+                      [1m[31mis default: whoops[39m[22m                     
   
+[90m  NOTES[39m
+[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m
+[90m      rguments take precedence. Environment variable names are snake cased version             [39m
+[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m
+[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m
+[90m        → [34mCLI_PARAMETER_[39m[90m[32mFOO[39m[90m=\\"...\\".                                                             [39m
 "
 `;
 
@@ -220,10 +612,18 @@ exports[`if there is optional param it is shown > monochrome 1`] = `
 "
 PARAMETERS
 
+  Name   Type/Description      Default     Environment (1)                         
   
-  a      string       undefined 
-  a                             
+  a      string       undefined   ✓          
+  a                                          
   
+  NOTES
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  (1) Parameters can be passed arguments via environment variables. Command line a             
+      rguments take precedence. Environment variable names are snake cased version             
+      s of the parameter name (or its aliases), case insensitive. They must be pre             
+      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
+        → CLI_PARAMETER_A=\\"...\\".                                                               
 "
 `;
 
@@ -231,10 +631,18 @@ exports[`if there is optional param it is shown > polychrome 1`] = `
 "
 PARAMETERS
 
+  [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m     [4m[90mEnvironment (1)[39m[24m                         
   
-  [32ma[39m      [32mstring[39m       [34mundefined[39m 
-  [90ma[39m                             
+  [32ma[39m      [32mstring[39m       [34mundefined[39m   [34m✓[39m          
+  [90ma[39m                                          
   
+[90m  NOTES[39m
+[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m
+[90m      rguments take precedence. Environment variable names are snake cased version             [39m
+[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m
+[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m
+[90m        → [34mCLI_PARAMETER_[39m[90m[32mA[39m[90m=\\"...\\".                                                               [39m
 "
 `;
 
@@ -242,11 +650,19 @@ exports[`long description wraps within column > monochrome 1`] = `
 "
 PARAMETERS
 
+  Name   Type/Description                              Default     Environment (1)                         
   
-  a      string                                        undefined 
-  a      Blah blah blah. Blah blah blah. Blah bla                
-         h blah.                                                 
+  a      string                                        undefined   ✓          
+  a      Blah blah blah. Blah blah blah. Blah bla                             
+         h blah.                                                              
   
+  NOTES
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  (1) Parameters can be passed arguments via environment variables. Command line a             
+      rguments take precedence. Environment variable names are snake cased version             
+      s of the parameter name (or its aliases), case insensitive. They must be pre             
+      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
+        → CLI_PARAMETER_A=\\"...\\".                                                               
 "
 `;
 
@@ -254,10 +670,18 @@ exports[`long description wraps within column > polychrome 1`] = `
 "
 PARAMETERS
 
+  [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m                              [4m[90mDefault[39m[24m     [4m[90mEnvironment (1)[39m[24m                         
   
-  [32ma[39m      [32mstring[39m                                        [34mundefined[39m 
-  [90ma[39m      Blah blah blah. Blah blah blah. Blah bla                
-         h blah.                                                 
+  [32ma[39m      [32mstring[39m                                        [34mundefined[39m   [34m✓[39m          
+  [90ma[39m      Blah blah blah. Blah blah blah. Blah bla                             
+         h blah.                                                              
   
+[90m  NOTES[39m
+[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m
+[90m      rguments take precedence. Environment variable names are snake cased version             [39m
+[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m
+[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m
+[90m        → [34mCLI_PARAMETER_[39m[90m[32mA[39m[90m=\\"...\\".                                                               [39m
 "
 `;
