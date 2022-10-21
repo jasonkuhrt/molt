@@ -1,6 +1,5 @@
-import { partition } from '../lib/prelude.js'
 import { Text } from '../lib/Text/index.js'
-import { column, indent } from '../lib/Text/Text.js'
+import { column } from '../lib/Text/Text.js'
 import { ZodHelpers } from '../lib/zodHelpers/index.js'
 import type { ParameterSpec } from '../ParameterSpec/index.js'
 import type { Settings } from '../Settings/index.js'
@@ -141,8 +140,10 @@ const environmentNote = (specs: ParameterSpec.Spec[], settings: Settings.Normali
       .filter((_) => _.environment?.enabled)
       .filter(
         (_) =>
-          _.environment!.namespaces.filter((_) =>
-            settings.parameters.environment.$default.prefix.map(camelCase).includes(_)
+          // eslint-disable-next-line
+          _.environment!.namespaces.filter(
+            (_) => settings.parameters.environment.$default.prefix.map(camelCase).includes(_)
+            // eslint-disable-next-line
           ).length !== _.environment!.namespaces.length
       ).length > 0
 
@@ -174,8 +175,10 @@ const environmentNote = (specs: ParameterSpec.Spec[], settings: Settings.Normali
     .filter((_) => _.environment?.enabled)
     .slice(0, 3)
     .map((_) =>
+      // eslint-disable-next-line
       _.environment!.namespaces.length > 0
-        ? `${chalk.blue(Text.toEnvarNameCase(_.environment?.namespaces[0]!) + `_`)}${chalk.green(
+        ? // eslint-disable-next-line
+          `${chalk.blue(Text.toEnvarNameCase(_.environment?.namespaces[0]!) + `_`)}${chalk.green(
             Text.toEnvarNameCase(_.name.canonical)
           )}`
         : chalk.green(Text.toEnvarNameCase(_.name.canonical))

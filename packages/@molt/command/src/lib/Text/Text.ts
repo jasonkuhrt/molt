@@ -83,9 +83,11 @@ export const column = (width: number, text: string): string[] => {
     const textConsumed = visualStringTake(textToConsume, width)
     const textLines = textConsumed.split(newline)
     if (textLines.length === 1) {
+      // eslint-disable-next-line
       lines.push(textLines[0]!)
       textToConsume = textToConsume.slice(textConsumed.length)
     } else {
+      // eslint-disable-next-line
       const lastTextLine = textLines.pop()!
       textToConsume = textToConsume.slice(textConsumed.length - lastTextLine.length)
       lines.push(...textLines)
