@@ -15,9 +15,17 @@ Here are the docs for this command:
     "
 PARAMETERS
 
+  [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m      [4m[90mEnvironment (1)[39m[24m                         
   
-  [32mfoo[39m    [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m                  [34m✓[39m          
+  [32mfoo[39m    [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m          
   
+[90m  NOTES[39m
+[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m
+[90m      rguments take precedence. Environment variable names are snake cased version             [39m
+[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m
+[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m
+[90m        → [34mCLI_PARAMETER_[39m[90m[32mFOO[39m[90m=\\"...\\".                                                             [39m
 ",
   ],
 ]
