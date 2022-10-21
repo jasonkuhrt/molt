@@ -61,7 +61,7 @@ const repo = {
 if (args.publish) {
   await $Fs.writeAsync(`package.json`, JSON.stringify({ ...pkg, version: newVersion }, null, 2) + `\n`)
   await execa(`git`, [`add`, `package.json`], { cwd })
-  await execa(`git`, [`commit`, `--message`, `'chore(${args.package}): bump version'`], { stdio: `inherit` })
+  await execa(`git`, [`commit`, `--message`, `chore(${args.package}): bump version`], { stdio: `inherit` })
   await execa(`pnpm`, [`publish`], { cwd, stdio: `inherit` })
   // prettier-ignore
   await execa(`git`, [`tag`, gitTagName, `--annotate`, `--message`, `Version ${newVersion} for package ${args.package}`], { stdio: `inherit` })
