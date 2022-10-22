@@ -1,4 +1,4 @@
-import { getLowerCaseEnvironment, parseRawInput } from '../../helpers.js'
+import { parseRawInput } from '../../helpers.js'
 import type { Index } from '../../lib/prelude.js'
 import type { Spec } from '../../ParameterSpec/ParametersSpec.js'
 import { getNames } from '../../ParameterSpec/ParametersSpec.js'
