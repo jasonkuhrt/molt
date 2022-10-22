@@ -3,15 +3,18 @@ import type { Spec } from '../ParameterSpec/ParametersSpec.js'
 import { Environment } from './Environment/index.js'
 import { Line } from './Line/index.js'
 
+export { Environment } from './Environment/index.js'
+export { Line } from './Line/index.js'
 export * from './types.js'
 
 export const parse = (
   specs: Spec[],
-  rawLineInputs: Line.RawLineInputs
+  rawLineInputs: Line.RawInputs,
+  rawEnvironmentInputs: Environment.RawInputs
 ): { args: Record<string, unknown>; errors: Errors.ErrorMissingArgument[] } => {
   const errors = []
   const args: Record<string, unknown> = {}
-  const env = Environment.parse(specs)
+  const env = Environment.parse(rawEnvironmentInputs, specs)
   const lineParseResult = Line.parse(rawLineInputs, specs)
 
   if (lineParseResult.errors.length > 0) errors.push(...lineParseResult.errors)

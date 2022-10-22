@@ -4,10 +4,10 @@ import { ParameterSpec } from '../../ParameterSpec/index.js'
 import type { ArgumentReport } from '../types.js'
 import camelCase from 'lodash.camelcase'
 
-export type RawLineInputs = string[]
+export type RawInputs = string[]
 
 export const parse = (
-  rawLineInputs: RawLineInputs,
+  rawLineInputs: RawInputs,
   specs: ParameterSpec.Spec[]
 ): { errors: Error[]; line: Index<ArgumentReport> } => {
   const errors: Error[] = []

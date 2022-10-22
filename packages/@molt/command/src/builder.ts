@@ -1,12 +1,13 @@
 import { Help } from './Help/index.js'
 import type { FlagSpecExpressionParseResultToPropertyName } from './helpers.js'
+import { lowerCaseObjectKeys } from './helpers.js'
 import { getLowerCaseEnvironment } from './helpers.js'
 import { Input } from './Input/index.js'
 import { ParameterSpec } from './ParameterSpec/index.js'
 import { Settings } from './Settings/index.js'
 import type { FlagName } from '@molt/types'
 import type { Any } from 'ts-toolbelt'
-import { z } from 'zod'
+import type { z } from 'zod'
 
 // prettier-ignore
 type ParametersToArguments<ParametersSchema extends z.ZodRawShape> = Any.Compute<{
@@ -15,32 +16,32 @@ type ParametersToArguments<ParametersSchema extends z.ZodRawShape> = Any.Compute
 }>
 
 type Definition<ParametersSchema extends z.ZodRawShape> = {
-  parse: (processArguments?: string[]) => ParametersToArguments<ParametersSchema>
-  settings: (newSettings: Settings.Input<ParametersSchema>) => Definition<ParametersSchema>
   schema: ParametersSchema
+  settings: (newSettings: Settings.Input<ParametersSchema>) => Definition<ParametersSchema>
+  parse: (inputs?: {
+    line?: Input.Line.RawInputs
+    environment?: Input.Environment.RawInputs
+  }) => ParametersToArguments<ParametersSchema>
 }
 
-export const create = <Schema extends z.ZodRawShape>(schema: Schema): Definition<Schema> => {
+export const create = <Schema extends ParameterSpec.SomeSpecInput>(schema: Schema): Definition<Schema> => {
   const settings = {
     ...Settings.getDefaults(getLowerCaseEnvironment()),
   }
 
-  const api = {
+  const chain = {
     settings: (newSettings) => {
       Settings.change(settings, newSettings)
-      return api
+      return chain
     },
-    parse: (processArguments) => {
-      const processArguments_ = processArguments ?? process.argv.slice(2)
-      const schema_ = settings.help
-        ? {
-            ...schema,
-            '-h --help': z.boolean().default(false),
-          }
-        : schema
-      const specs = ParameterSpec.parse(schema_, settings)
+    parse: (inputs) => {
+      const lineInputs = inputs?.line ?? process.argv.slice(2)
+      const environmentInputs = inputs?.environment
+        ? lowerCaseObjectKeys(inputs.environment)
+        : getLowerCaseEnvironment()
+      const specs = ParameterSpec.parse(schema, settings)
       // eslint-disable-next-line
-      const result = Input.parse(specs, processArguments_)
+      const result = Input.parse(specs, lineInputs, environmentInputs)
       // console.log({ result })
       const requiredParamsMissing = specs
         .filter((_) => !_.optional)
@@ -74,5 +75,5 @@ export const create = <Schema extends z.ZodRawShape>(schema: Schema): Definition
     },
     schema,
   } as Definition<Schema>
-  return api
+  return chain
 }

@@ -3,7 +3,7 @@ import { partition } from '../lib/prelude.js'
 import { ZodHelpers } from '../lib/zodHelpers/index.js'
 import type { Settings } from '../Settings/index.js'
 import camelCase from 'lodash.camelcase'
-import type { z } from 'zod'
+import { z } from 'zod'
 
 /**
  * The normalized specification for a parameter.
@@ -29,8 +29,24 @@ export interface Spec {
   } & ({ long: string; short: null } | { long: null; short: string } | { long: string; short: string })
 }
 
-export const parse = (schema: z.ZodRawShape, settings: Settings.Normalized): Spec[] =>
-  Object.entries(schema).map(([expression, schema]) => {
+export type SomeZodType =
+  | z.ZodString
+  | z.ZodEnum<[string, ...string[]]>
+  | z.ZodNumber
+  | z.ZodBoolean
+  | z.ZodOptional<z.ZodString | z.ZodBoolean | z.ZodNumber | z.ZodEnum<[string, ...string[]]>>
+  | z.ZodDefault<z.ZodString | z.ZodBoolean | z.ZodNumber | z.ZodEnum<[string, ...string[]]>>
+
+export type SomeSpecInput = Record<string, SomeZodType>
+
+export const parse = (schema: SomeSpecInput, settings: Settings.Normalized): Spec[] => {
+  const schema_ = settings.help
+    ? {
+        ...schema,
+        '-h --help': z.boolean().default(false),
+      }
+    : schema
+  return Object.entries(schema_).map(([expression, schema]) => {
     const names = expression
       .trim()
       .split(` `)
@@ -67,6 +83,7 @@ export const parse = (schema: z.ZodRawShape, settings: Settings.Normalized): Spe
 
     // TODO check how to actually do this.
     // eslint-disable-next-line
+    // @ts-expect-error todo
     const hasDefault = typeof schema._def.defaultValue !== `undefined`
 
     const hasEnvironment =
@@ -78,6 +95,7 @@ export const parse = (schema: z.ZodRawShape, settings: Settings.Normalized): Spe
       optional: isOptional,
       default: hasDefault
         ? {
+            // @ts-expect-error todo
             // eslint-disable-next-line
             get: () => schema._def.defaultValue(),
           }
@@ -105,6 +123,7 @@ export const parse = (schema: z.ZodRawShape, settings: Settings.Normalized): Spe
 
     return spec
   })
+}
 
 export const findByName = (name: string, specs: Spec[]): null | Spec => {
   for (const spec of specs) {

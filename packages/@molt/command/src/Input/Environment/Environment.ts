@@ -1,4 +1,4 @@
-import { getLowerCaseEnvironment, parseRawInput } from '../../helpers.js'
+import { parseRawInput } from '../../helpers.js'
 import type { Index } from '../../lib/prelude.js'
 import type { Spec } from '../../ParameterSpec/ParametersSpec.js'
 import { getNames } from '../../ParameterSpec/ParametersSpec.js'
@@ -40,8 +40,9 @@ export const lookupEnvironmentVariableArgument = (
   return environmentVariable
 }
 
-export const parse = (specs: Spec[]): Index<ArgumentReport> => {
-  const environment = getLowerCaseEnvironment()
+export type RawInputs = Record<string, string | undefined>
+
+export const parse = (environment: RawInputs, specs: Spec[]): Index<ArgumentReport> => {
   const envars = Object.entries(environment)
     .map(([name, value]) =>
       value === undefined
