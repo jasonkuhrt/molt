@@ -24,9 +24,7 @@ type Definition<ParametersSchema extends z.ZodRawShape> = {
   }) => ParametersToArguments<ParametersSchema>
 }
 
-export const initializeViaParameters = <Schema extends ParameterSpec.SomeSpecInput>(
-  schema: Schema
-): Definition<Schema> => {
+export const create = <Schema extends ParameterSpec.SomeSpecInput>(schema: Schema): Definition<Schema> => {
   const settings = {
     ...Settings.getDefaults(getLowerCaseEnvironment()),
   }
