@@ -14,10 +14,100 @@ type ParametersToArguments<ParametersSchema extends z.ZodRawShape> = Any.Compute
     z.infer<ParametersSchema[FlagSpecExpression]>
 }>
 
+type SomeSpec = {
+  Parameters: {
+    [key: string]: {
+      NameParsed: FlagName.Types.FlagNames
+      NameUnion: string
+      Schema: SupportedZodSchemas
+    }
+  }
+}
+
+// TODO move to types lib
+type GetCanonicalName<Names extends FlagName.Types.FlagNames> = Names['long'] extends string
+  ? Names['long']
+  : Names['short'] extends string
+  ? Names['short']
+  : never
+
+// TODO move to types lib
+// prettier-ignore
+type GetName<Names extends FlagName.Types.SomeParseResult> = Names extends FlagName.Types.FlagNames
+  ? (
+      | (Names['long'] extends undefined ? never : Names['long'])
+      | (Names['short'] extends undefined ? never : Names['short'])
+      | Names['aliases']['long'][number]
+      | Names['aliases']['short'][number]
+    )
+  : ''
+
+type Values<T> = T[keyof T]
+
+type SupportedZodSchemas =
+  | z.ZodString
+  | z.ZodNumber
+  | z.ZodBoolean
+  | z.ZodOptional<z.ZodString | z.ZodBoolean | z.ZodNumber>
+  | z.ZodDefault<z.ZodString | z.ZodBoolean | z.ZodNumber>
+
+type SpecToArgs<Spec extends SomeSpec> = Any.Compute<{
+  [K in keyof Spec['Parameters'] & string as GetCanonicalName<Spec['Parameters'][K]['NameParsed']>]: z.infer<
+    Spec['Parameters'][K]['Schema']
+  >
+}>
+
+type SpecToSchema<Spec extends SomeSpec> = {
+  [K in keyof Spec['Parameters'] & string as GetCanonicalName<
+    Spec['Parameters'][K]['NameParsed']
+  >]: Spec['Parameters'][K]['Schema']
+}
+
+// prettier-ignore
+interface Builder<Spec extends SomeSpec> {
+  parameter: <Name extends string, Schema extends SupportedZodSchemas>(
+    name: 
+    FlagName.Errors.$Is<FlagName.Parse<Name, { usedNames: Values<Spec['Parameters']>['NameUnion'], reservedNames: 'help' | 'h' }>> extends true
+      ?                 FlagName.Parse<Name, { usedNames: Values<Spec['Parameters']>['NameUnion'], reservedNames: 'help' | 'h' }>
+      : Name,
+    schema: Schema
+  ) =>
+    Builder<{
+      Parameters: Spec['Parameters'] & {
+        [k in Name]: {
+          Schema: Schema
+          NameParsed:        FlagName.Parse<Name, { usedNames: Values<Spec['Parameters']>['NameUnion'], reservedNames: 'help' | 'h' }>
+          NameUnion: GetName<FlagName.Parse<Name, { usedNames: Values<Spec['Parameters']>['NameUnion'], reservedNames: 'help' | 'h' }>>
+        }
+      }
+    }>
+  settings: (newSettings: Settings.Input<SpecToSchema<Spec>>) => BuilderAfterSettings<Spec>
+  parse: (processArguments?: string[]) => SpecToArgs<Spec>
+}
+
+interface BuilderAfterSettings<Spec extends SomeSpec> {
+  parse: (processArguments?: string[]) => SpecToArgs<Spec>
+}
+
+// declare const builder: Builder<{ Parameters: {} }>
+
+// const args = builder
+//   .parameter(`a alpha`, z.string())
+//   .parameter(`bravo b`, z.number())
+//   // .parameter(`b`, z.boolean())
+//   // .settings({
+//   //   parameters: {
+//   //     environment: {
+
+//   //     }
+//   //   }
+//   // })
+//   .parse()
+
 type Definition<ParametersSchema extends z.ZodRawShape> = {
-  parse: (processArguments?: string[]) => ParametersToArguments<ParametersSchema>
-  settings: (newSettings: Settings.Input<ParametersSchema>) => Definition<ParametersSchema>
   schema: ParametersSchema
+  settings: (newSettings: Settings.Input<ParametersSchema>) => Definition<ParametersSchema>
+  parse: (processArguments?: string[]) => ParametersToArguments<ParametersSchema>
 }
 
 export const create = <Schema extends z.ZodRawShape>(schema: Schema): Definition<Schema> => {

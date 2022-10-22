@@ -54,7 +54,7 @@ const args = Command.create({
     .describe(`Format to convert from. By default inferred from the file extension.`),
   '--verbose -v': z.boolean().default(false).describe(`Log detailed progress as conversion executes.`),
   '--move -m': z.boolean().default(false).describe(`Delete the original file after it has been converted.`),
-}).parseOrThrow()
+}).parse()
 
 // Normalized, validated, statically typed, and ready to go!
 args.filePath
@@ -124,7 +124,7 @@ PARAMETERS
       '--do-it-a': z.boolean()
       '--doItB': z.boolean()
       doItC: z.boolean()
-      }).parseOrThrow()
+      }).parse()
 
     args1.doItA
     args2.doItB
@@ -140,13 +140,13 @@ PARAMETERS
 - Specify one or multiple (aka. aliases) short and long flags:
 
   ```ts
-  Command.create({ '-f --force --forcefully': z.boolean() }).parseOrThrow()
+  Command.create({ '-f --force --forcefully': z.boolean() }).parse()
   ```
 
 - Use Zod `.default(...)` method for setting default values.
 
   ```ts
-  const args = Command.create({ '--path': z.string().default('./a/b/c') }).parseOrThrow()
+  const args = Command.create({ '--path': z.string().default('./a/b/c') }).parse()
   args.path === './a/b/c/' //   $ binary
   args.path === '/over/ride' // $ binary --path /over/ride
   ```
@@ -154,7 +154,7 @@ PARAMETERS
 - Pass arguments via environment variables (customizable)
 
   ```ts
-  const args = Command.create({ '--path': z.string() }).parseOrThrow()
+  const args = Command.create({ '--path': z.string() }).parse()
   args.path === './a/b/c/' // $ CLI_PARAM_PATH='./a/b/c' binary
   ```
 
@@ -176,7 +176,7 @@ const args = Command.create({
   foo: z.string(),
   bar: z.number(),
   qux: z.boolean(),
-}).parseOrThrow()
+}).parse()
 
 args.foo
 args.bar
@@ -192,7 +192,7 @@ const args = Command.create({
   '--foo': z.string(),
   '--bar': z.number(),
   '--qux': z.boolean(),
-}).parseOrThrow()
+}).parse()
 
 args.foo
 args.bar
@@ -214,7 +214,7 @@ const args = Command.create({
   '--bar -b -x': z.number(),
   '-q --qux': z.boolean(),
   '-m -n': z.boolean(),
-}).parseOrThrow()
+}).parse()
 
 // $ binary --foobar moo --bar 2 --qux -m
 // $ binary --foo    moo  -x   2 --qux -m
@@ -233,7 +233,7 @@ const args = Command.create({
   'bar b x': z.number(),
   'q qux': z.boolean(),
   'm n': z.boolean(),
-}).parseOrThrow()
+}).parse()
 ```
 
 #### Kebab / Camel Case
@@ -244,7 +244,7 @@ You can use kebab or camel case (and likewise your users can pass flags in eithe
 const args = Command.create({
   'foo-bar': z.string(),
   quxLot: z.string(),
-}).parseOrThrow()
+}).parse()
 
 // $ binary --foo-bar moo --qux-lot zoo
 // $ binary --fooBar moo --quxLot zoo
@@ -265,7 +265,7 @@ Parameter types via Zod schemas affect parsing in the following ways.
 Examples:
 
 ```ts
-const args = Command.create({ 'f force forcefully': z.boolean() }).parseOrThrow()
+const args = Command.create({ 'f force forcefully': z.boolean() }).parse()
 // $ CLI_PARAM_NO_F='true' binary
 // $ CLI_PARAM_NO_FORCE='true' binary
 // $ CLI_PARAM_NO_FORCEFULLY='true' binary
@@ -356,7 +356,7 @@ CLI_PARAM_{parameter_name}
 ```
 
 ```ts
-const args = Command.create({ '--path': z.string() }).parseOrThrow()
+const args = Command.create({ '--path': z.string() }).parse()
 args.path === './a/b/c/' // $ CLI_PARAMETER_PATH='./a/b/c' binary
 ```
 
@@ -370,7 +370,7 @@ const command = Command.create({ '--path': z.string() }).settings({
 })
 // $ CLI_PARAMETER_PATH='./a/b/c' binary
 // Throws error because no argument given for "path"
-command.parseOrThrow()
+command.parse()
 ```
 
 You can also toggle with the environment variable `CLI_SETTINGS_READ_ARGUMENTS_FROM_ENVIRONMENT` (case insensitive):
@@ -379,7 +379,7 @@ You can also toggle with the environment variable `CLI_SETTINGS_READ_ARGUMENTS_F
 const command = Command.create({ '--path': z.string() })
 // $ CLI_SETTINGS_READ_ARGUMENTS_FROM_ENVIRONMENT='false' CLI_PARAMETER_PATH='./a/b/c' binary
 // Throws error because no argument given for "path"
-command.parseOrThrow()
+command.parse()
 ```
 
 #### Selective Toggling
@@ -392,7 +392,7 @@ const args = Command.create({
   '--bar': z.string().default('not_from_env'),
 })
   .settings({ environment: { foo: true } })
-  .parseOrThrow()
+  .parse()
 
 // $ CLI_PARAMETER_FOO='foo' CLI_PARAMETER_BAR='bar' binary
 args.foo === 'foo'
@@ -408,7 +408,7 @@ const args = Command.create({
   '--qux': z.string().default('not_from_env'),
 })
   .settings({ environment: { $default: true, bar: false } })
-  .parseOrThrow()
+  .parse()
 
 // $ CLI_PARAMETER_FOO='foo' CLI_PARAMETER_BAR='bar' CLI_PARAMETER_QUX='qux' binary
 args.foo === 'foo'
@@ -424,7 +424,7 @@ You can customize the environment variable name prefix:
 const args = Command.create({ '--path': z.string() })
   //                                              o-- case insensitive
   .settings({ environment: { $default: { prefix: 'foo' } } })
-  .parseOrThrow()
+  .parse()
 
 args.path === './a/b/c/' // $ FOO_PATH='./a/b/c' binary
 ```
@@ -435,7 +435,7 @@ You can pass a list of accepted prefixes instead of just one. Earlier ones take 
 const args = Command.create({ '--path': z.string() })
   //                                               o---------o--- case insensitive
   .settings({ environment: { $default: { prefix: ['foobar', 'foo'] } } })
-  .parseOrThrow()
+  .parse()
 
 args.path === './a/b/c/' // $ FOOBAR_PATH='./a/b/c' binary
 args.path === './a/b/c/' // $ FOO_PATH='./a/b/c' binary
@@ -453,7 +453,7 @@ const args = Command.create({
   '--qux': z.string().default('not_from_env'),
 })
   .settings({ environment: { bar: { prefix: 'MOO' } } })
-  .parseOrThrow()
+  .parse()
 
 // $ CLI_PARAMETER_FOO='foo' MOO_BAR='bar' CLI_PARAMETER_QUX='qux' binary
 args.foo === 'foo'
@@ -470,7 +470,7 @@ const args = Command.create({
   '--qux': z.string().default('not_from_env'),
 })
   .settings({ environment: { $default: { enabled: true, prefix: 'MOO' }, bar: { prefix: true } } })
-  .parseOrThrow()
+  .parse()
 
 // $ MOO_FOO='foo' CLI_PARAM_BAR='bar' MOO_QUX='qux' binary
 args.foo === 'foo'
@@ -485,7 +485,7 @@ You can remove the prefix altogether. Pretty and convenient, but be careful for 
 ```ts
 const args = Command.create({ '--path': z.string() })
   .settings({ environment: { $default: { prefix: false } } })
-  .parseOrThrow()
+  .parse()
 
 args.path === './a/b/c/' // $ PATH='./a/b/c' binary
 ```
@@ -501,7 +501,7 @@ const args = Command.create({
   '--qux': z.string().default('not_from_env'),
 })
   .settings({ environment: { bar: { prefix: false } } })
-  .parseOrThrow()
+  .parse()
 
 // $ CLI_PARAMETER_FOO='foo' BAR='bar' CLI_PARAMETER_QUX='qux' binary
 args.foo === 'foo'
@@ -518,7 +518,7 @@ const args = Command.create({
   '--qux': z.string().default('not_from_env'),
 })
   .settings({ environment: { $default: { enabled: true, prefix: false }, bar: { prefix: true } } })
-  .parseOrThrow()
+  .parse()
 
 // $ FOO='foo' CLI_PARAM_BAR='bar' QUX='qux' binary
 args.foo === 'foo'
@@ -531,7 +531,7 @@ args.qux === 'qux'
 Environment variables are considered in a case insensitive way so all of these work:
 
 ```ts
-const args = Command.create({ '--path': z.string() }).parseOrThrow()
+const args = Command.create({ '--path': z.string() }).parse()
 // $ CLI_PARAM_PATH='./a/b/c' binary
 // $ cli_param_path='./a/b/c' binary
 // $ cLi_pAraM_paTh='./a/b/c' binary
@@ -547,7 +547,7 @@ const command = Command.create({ '--path': z.string() })
 
 // $ CLI_PARAM_PAH='./a/b/c' binary
 // Throws error because there is no parameter named "pah" defined.
-command.parseOrThrow()
+command.parse()
 ```
 
 If you pass arguments for a parameter multiple times under different environment variable name aliases an error will be raised.
@@ -557,5 +557,5 @@ const command = Command.create({ '--path': z.string() })
 
 // $ CLI_PARAMETER_PAH='./1/2/3' CLI_PARAM_PAH='./a/b/c' binary
 /ole/ Throws error because user intent is ambiguous.
-command.parseOrThrow()
+command.parse()
 ```
