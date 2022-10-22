@@ -14,7 +14,9 @@ describe(`.create`, () => {
 
 describe(`settings`, () => {
   it(`permits setting a description`, () => {
-    Command.create({ x: z.string() }).settings({ description: `foobar` }).parse([`-x`, `foobar`])
+    Command.create({ x: z.string() })
+      .settings({ description: `foobar` })
+      .parse({ line: [`-x`, `foobar`] })
   })
 })
 

@@ -7,8 +7,10 @@ export const stripeDashPrefix = (flagNameInput: string): string => {
   return flagNameInput.replace(/^-+/, ``)
 }
 
-export const getLowerCaseEnvironment = () =>
-  Object.fromEntries(Object.entries(process.env).map(([k, v]) => [k.toLowerCase(), v?.trim()]))
+export const getLowerCaseEnvironment = () => lowerCaseObjectKeys(process.env)
+
+export const lowerCaseObjectKeys = (obj: object) =>
+  Object.fromEntries(Object.entries(obj).map(([k, v]) => [k.toLowerCase(), v]))
 
 // prettier-ignore
 export const parseRawInput = (name: string, rawValue: string, spec: ParameterSpec.Spec): Value => {

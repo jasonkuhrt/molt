@@ -20,7 +20,7 @@ describe(`string`, () => {
 		[`-v --ver`,        [`-v`, `foo`], 							{ ver: `foo` }],
 		[`-v`,              [`-v`, `foo`], 							{ v:   `foo` }],
 	])(`spec %s + input %s = internal %s`, (spec, input, expectedArgs) => {
-		const args = Command.create({ [spec]: z.string() }).parse(input)
+		const args = Command.create({ [spec]: z.string() }).parse({line:input})
 		expect(args).toMatchObject(expectedArgs)
 	})
 })
@@ -40,7 +40,7 @@ describe(`boolean`, () => {
 		[`-v --ver`,        [`-v`], 							{ ver: true }],
 		[`-v`,              [`-v`], 							{ v:   true }],
 	])(`spec %s + input %s = internal %s`, (spec, input, expectedArgs) => {
-		const args = Command.create({ [spec]: z.boolean() }).parse(input)
+		const args = Command.create({ [spec]: z.boolean() }).parse({line:input})
 		expect(args).toMatchObject(expectedArgs)
 	})
 })
@@ -56,7 +56,7 @@ describe(`stacked short flags`, () => {
       b: z.boolean().default(false),
       c: z.boolean().default(false),
       d: z.string().optional(),
-    }).parse(input)
+    }).parse({ line: input })
     expect(args).toMatchObject(expectedArgs)
   })
 })
@@ -68,7 +68,7 @@ describe(`separator`, () => {
     [[`--foo= `, `bar`], { foo: `bar` }],
     [[`--foo`, `=bar`], { foo: `=bar` }],
   ])(`spec %s becomes %s`, (input, expectedArgs) => {
-    const args = Command.create({ foo: z.string() }).parse(input)
+    const args = Command.create({ foo: z.string() }).parse({ line: input })
     expect(args).toMatchObject(expectedArgs)
   })
 })
@@ -82,7 +82,7 @@ describe(`case`, () => {
       [`--fooBar`,  [`--fooBar`, `foo`], { fooBar: `foo` }],
       [`--fooBar`,  [`--foo-bar`, `foo`], { fooBar: `foo` }],
     ])(`spec %s + input %s = internal %s`, (spec, input, expectedArgs) => {
-      const args = Command.create({ [spec]: z.string() }).parse(input)
+      const args = Command.create({ [spec]: z.string() }).parse({line:input})
       expect(args).toMatchObject(expectedArgs)
     })
   })
@@ -99,25 +99,25 @@ describe(`case`, () => {
       [`--fooBar`,  [`--noFooBar`],     { fooBar: false }],
       [`--fooBar`,  [`--no-foo-bar`],   { fooBar: false }],
     ])(`spec %s + input %s = internal %s`, (spec, input, expectedArgs) => {
-      const args = Command.create({ [spec]: z.boolean() }).parse(input)
+      const args = Command.create({ [spec]: z.boolean() }).parse({line:input})
       expect(args).toMatchObject(expectedArgs)
     })
   })
 
   test(`kebab case param spec can be passed camel case parameter`, () => {
-    const args = Command.create({ '--foo-bar': z.string() }).parse([`--fooBar`, `foo`])
+    const args = Command.create({ '--foo-bar': z.string() }).parse({ line: [`--fooBar`, `foo`] })
     assert<IsExact<{ fooBar: string }, typeof args>>(true)
   })
   test(`kebab case param spec can be passed kebab case parameter`, () => {
-    const args = Command.create({ '--foo-bar': z.string() }).parse([`--foo-bar`, `foo`])
+    const args = Command.create({ '--foo-bar': z.string() }).parse({ line: [`--foo-bar`, `foo`] })
     assert<IsExact<{ fooBar: string }, typeof args>>(true)
   })
   test(`camel case param spec can be passed kebab case parameter`, () => {
-    const args = Command.create({ '--fooBar': z.string() }).parse([`--foo-bar`, `foo`])
+    const args = Command.create({ '--fooBar': z.string() }).parse({ line: [`--foo-bar`, `foo`] })
     assert<IsExact<{ fooBar: string }, typeof args>>(true)
   })
   test(`camel case param spec can be passed camel case parameter`, () => {
-    const args = Command.create({ '--fooBar': z.string() }).parse([`--fooBar`, `foo`])
+    const args = Command.create({ '--fooBar': z.string() }).parse({ line: [`--fooBar`, `foo`] })
     assert<IsExact<{ fooBar: string }, typeof args>>(true)
   })
 })

@@ -3,7 +3,7 @@ import { partition } from '../lib/prelude.js'
 import { ZodHelpers } from '../lib/zodHelpers/index.js'
 import type { Settings } from '../Settings/index.js'
 import camelCase from 'lodash.camelcase'
-import type { z } from 'zod'
+import { z } from 'zod'
 
 /**
  * The normalized specification for a parameter.
@@ -29,8 +29,23 @@ export interface Spec {
   } & ({ long: string; short: null } | { long: null; short: string } | { long: string; short: string })
 }
 
-export const parse = (schema: z.ZodRawShape, settings: Settings.Normalized): Spec[] =>
-  Object.entries(schema).map(([expression, schema]) => {
+export type SomeZodType =
+  | z.ZodString
+  | z.ZodNumber
+  | z.ZodBoolean
+  | z.ZodOptional<z.ZodString | z.ZodBoolean | z.ZodNumber>
+  | z.ZodDefault<z.ZodString | z.ZodBoolean | z.ZodNumber>
+
+export type SomeSpecInput = Record<string, SomeZodType>
+
+export const parse = (schema: SomeSpecInput, settings: Settings.Normalized): Spec[] => {
+  const schema_ = settings.help
+    ? {
+        ...schema,
+        '-h --help': z.boolean().default(false),
+      }
+    : schema
+  return Object.entries(schema_).map(([expression, schema]) => {
     const names = expression
       .trim()
       .split(` `)
@@ -105,6 +120,7 @@ export const parse = (schema: z.ZodRawShape, settings: Settings.Normalized): Spe
 
     return spec
   })
+}
 
 export const findByName = (name: string, specs: Spec[]): null | Spec => {
   for (const spec of specs) {
