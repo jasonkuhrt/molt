@@ -31,10 +31,11 @@ export interface Spec {
 
 export type SomeZodType =
   | z.ZodString
+  | z.ZodEnum<[string, ...string[]]>
   | z.ZodNumber
   | z.ZodBoolean
-  | z.ZodOptional<z.ZodString | z.ZodBoolean | z.ZodNumber>
-  | z.ZodDefault<z.ZodString | z.ZodBoolean | z.ZodNumber>
+  | z.ZodOptional<z.ZodString | z.ZodBoolean | z.ZodNumber | z.ZodEnum<[string, ...string[]]>>
+  | z.ZodDefault<z.ZodString | z.ZodBoolean | z.ZodNumber | z.ZodEnum<[string, ...string[]]>>
 
 export type SomeSpecInput = Record<string, SomeZodType>
 
@@ -82,6 +83,7 @@ export const parse = (schema: SomeSpecInput, settings: Settings.Normalized): Spe
 
     // TODO check how to actually do this.
     // eslint-disable-next-line
+    // @ts-expect-error todo
     const hasDefault = typeof schema._def.defaultValue !== `undefined`
 
     const hasEnvironment =
@@ -93,6 +95,7 @@ export const parse = (schema: SomeSpecInput, settings: Settings.Normalized): Spe
       optional: isOptional,
       default: hasDefault
         ? {
+            // @ts-expect-error todo
             // eslint-disable-next-line
             get: () => schema._def.defaultValue(),
           }
