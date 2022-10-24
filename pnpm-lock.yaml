@@ -80,6 +80,7 @@ importers:
       string-length: '4'
       strip-ansi: '6'
       ts-toolbelt: ^9.6.0
+      tsd: 0.24.1
       vitest: ^0.24.3
       vitest-mock-process: ^1.0.4
       zod: ^3.19.1
@@ -100,6 +101,7 @@ importers:
       execa: 6.1.0
       fast-glob: 3.2.12
       fs-jetpack: 5.1.0
+      tsd: 0.24.1
       vitest: 0.24.3
       vitest-mock-process: 1.0.4_vitest@0.24.3
 

@@ -5,10 +5,30 @@ import type { FlagName } from '@molt/types'
 import snakeCase from 'lodash.snakecase'
 import type { z } from 'zod'
 
+export type OnErrorReaction = 'exit' | 'throw'
+
+export interface Input<ParametersSchema extends z.ZodRawShape> {
+  description?: string
+  help?: boolean
+  helpOnNoArguments?: boolean
+  onError?: OnErrorReaction
+  parameters?: {
+    // prettier-ignore
+    environment?:
+      | boolean
+      | ({
+          [FlagSpecExpression in keyof ParametersSchema as FlagSpecExpressionParseResultToPropertyName<FlagName.Parse<FlagSpecExpression & string>>]?: boolean | SettingInputEnvironmentParameter
+        } & {
+          $default?: boolean | SettingInputEnvironmentParameter
+        })
+  }
+}
+
 export interface Normalized {
   description?: string | undefined
   help: boolean
   helpOnNoArguments: boolean
+  onError: OnErrorReaction
   parameters: {
     environment: Record<string, SettingNormalizedEnvironmentParameter> & {
       $default: SettingNormalizedEnvironmentParameterDefault
@@ -31,24 +51,10 @@ interface SettingInputEnvironmentParameter {
   prefix?: boolean | string | string[]
 }
 
-export interface Input<ParametersSchema extends z.ZodRawShape> {
-  description?: string
-  help?: boolean
-  helpOnNoArguments?: boolean
-  parameters?: {
-    // prettier-ignore
-    environment?:
-      | boolean
-      | ({
-          [FlagSpecExpression in keyof ParametersSchema as FlagSpecExpressionParseResultToPropertyName<FlagName.Parse<FlagSpecExpression & string>>]?: boolean | SettingInputEnvironmentParameter
-        } & {
-          $default?: boolean | SettingInputEnvironmentParameter
-        })
-  }
-}
-
 // eslint-disable-next-line
 export const change = (current: Normalized, input: Input<{}>): void => {
+  current.onError = input.onError ?? current.onError
+
   current.description = input.description ?? current.description
 
   current.helpOnNoArguments = input.helpOnNoArguments ?? current.helpOnNoArguments
@@ -129,6 +135,7 @@ export const getDefaults = (lowercaseEnv: NodeJS.ProcessEnv): Normalized => {
   return {
     help: true,
     helpOnNoArguments: true,
+    onError: `exit`,
     parameters: {
       environment: {
         $default: {
