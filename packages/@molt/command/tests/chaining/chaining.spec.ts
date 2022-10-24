@@ -1,5 +1,5 @@
 import { Command } from '../../src/index.js'
-import { describe, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { z } from 'zod'
 
 let c
@@ -28,4 +28,12 @@ describe(`errors`, () => {
       c.parameter(`b`, s)
     })
   })
+})
+
+it(`works`, () => {
+  const args = Command.parameter(`foo`, z.string())
+    .parameter(`bar`, z.string())
+    .settings({ onError: `throw` })
+    .parse({ line: [`--foo`, `1`, `--bar`, `2`] })
+  expect(args).toMatchObject({ foo: `1`, bar: `2` })
 })
