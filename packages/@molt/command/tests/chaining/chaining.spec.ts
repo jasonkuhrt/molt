@@ -3,10 +3,24 @@ import { describe, expect, it } from 'vitest'
 import { z } from 'zod'
 
 let c
+const s = z.string()
 
 describe(`errors`, () => {
+  describe(`reserved flag`, () => {
+    it(`help`, () => {
+      // @ts-expect-error test
+      Command.parameter(`help`, s)
+    })
+    it(`help`, () => {
+      // @ts-expect-error test
+      Command.parameter(`h`, s)
+    })
+    it(`h help`, () => {
+      // @ts-expect-error test
+      Command.parameter(`h help`, s)
+    })
+  })
   describe(`reuse flag`, () => {
-    const s = z.string()
     it(`long flag`, () => {
       c = Command.parameter(`alpha`, s)
       // @ts-expect-error test
@@ -33,7 +47,6 @@ describe(`errors`, () => {
 it(`works`, () => {
   const args = Command.parameter(`foo`, z.string())
     .parameter(`bar`, z.string())
-    .settings({ onError: `throw` })
     .parse({ line: [`--foo`, `1`, `--bar`, `2`] })
   expect(args).toMatchObject({ foo: `1`, bar: `2` })
 })
