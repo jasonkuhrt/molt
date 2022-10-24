@@ -109,6 +109,7 @@ type SpecToSchema<Spec extends SomeSpec> = {
   >]: Spec['Parameters'][K]['Schema']
 }
 
+// eslint-disable-next-line
 export const initializeViaParameter: Builder<{ Parameters: {} }>['parameter'] = (name, type) => {
   type State = {
     settings: Settings.Normalized
@@ -121,9 +122,11 @@ export const initializeViaParameter: Builder<{ Parameters: {} }>['parameter'] = 
     parameterSpecInputs: {},
   }
 
+  // eslint-disable-next-line
   const chain: Builder<{ Parameters: {} }> = {
     parameter: (name, type) => {
       state.parameterSpecInputs[name] = type
+      // eslint-disable-next-line
       return chain as any
     },
     settings: (newSettings) => {
