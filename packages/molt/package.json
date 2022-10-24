@@ -36,6 +36,6 @@
   "devDependencies": {
     "execa": "6.1.0",
     "fast-glob": "3.2.12",
-    "fs-jetpack": "5.0.0"
+    "fs-jetpack": "5.1.0"
   }
 }
