@@ -115,6 +115,38 @@ PARAMETERS
         → CLI_PARAMETER_FROM="...".
 ```
 
+```
+PARAMETERS
+
+  Name            Type/Description                        Default      Environment (1)
+
+  githubToken     string                                  REQUIRED     ✓ GITHUB_TOKEN
+
+  package         @molt/command | @molt/types | molt      REQUIRED     ✕
+  p
+
+┌─method (mutually exclusive)                             REQUIRED
+◒ version         string                                               ✕
+│ v
+│
+◒ bump            major | minor | patch                                ✕
+│ b
+└─
+
+  publish         boolean                                 true         ✕
+
+  githubRelease   boolean                                 true         ✕
+
+  NOTES
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  (1) Some parameters (marked in docs) can be passed arguments via environment var
+      iables. Command line arguments take precedence. Environment variable names a
+      re snake cased versions of the parameter name (or its aliases), case insensi
+      tive. They must be prefixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensit
+      ive). Examples:
+        → GITHUB_TOKEN="...".
+```
+
 ## Features
 
 - ⛑ Type safe
