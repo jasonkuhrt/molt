@@ -8,14 +8,18 @@ import Semver from 'semver'
 import semverRegex from 'semver-regex'
 import { z } from 'zod'
 
-const args = Command.parameters({
-  'p package': z.enum([`@molt/command`, `@molt/types`, `molt`]),
-  'v version': z.string().regex(semverRegex()).optional(),
-  'b bump': z.enum([`major`, `minor`, `patch`]).optional(),
-  publish: z.boolean().default(true),
-  githubRelease: z.boolean().default(true),
-  githubToken: z.string(),
-})
+// prettier-ignore
+const args = Command
+  .parameter(`githubToken`, z.string())
+  .parameter(`publish`, z.boolean().default(true))
+  .parameter(`githubRelease`, z.boolean().default(true))
+  .parameter(`p package`, z.enum([`@molt/command`, `@molt/types`, `molt`]))
+  .parametersExclusive(`method`, (c) => {
+    return c
+      .parameter(`v version`, z.string().regex(semverRegex()))
+      .parameter(`b bump`, z.enum([`major`, `minor`, `patch`]))
+      .optional()
+  })
   .settings({
     parameters: {
       environment: {
@@ -24,9 +28,6 @@ const args = Command.parameters({
     },
   })
   .parse()
-
-if (!args.bump && !args.version) throw new Error(`--bump or --version is required`)
-if (args.bump && args.version) throw new Error(`--bump and --version cannot both be specified`)
 
 const cwd = Path.join(Path.dirname(url.fileURLToPath(import.meta.url)), `../packages`, args.package)
 const $Fs = Fs.cwd(cwd)
@@ -44,7 +45,8 @@ const pkg = (await $Fs.readAsync(`package.json`, `json`)) as {
 }
 
 //eslint-disable-next-line
-const newVersion = args.bump ? Semver.inc(pkg.version, args.bump)! : args.version!
+const newVersion =
+  args.method._tag === `bump` ? Semver.inc(pkg.version, args.method.level)! : args.method.version
 const gitTagName = `${args.package}@${newVersion}`
 
 const match = workspacePkg.repository.match(/git@github.com:(.+)\/(.+)\.git/)
