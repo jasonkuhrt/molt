@@ -7,14 +7,14 @@ const assertAssignable = <T>(_: T): [T] => 0 as any
 
 describe(`.create`, () => {
   it(`creates a parameters definition`, () => {
-    const def = Command.create({ x: z.string() })
+    const def = Command.parameters({ x: z.string() })
     expect(def.parse).toBeTypeOf(`function`)
   })
 })
 
 describe(`settings`, () => {
   it(`permits setting a description`, () => {
-    Command.create({ x: z.string() })
+    Command.parameters({ x: z.string() })
       .settings({ description: `foobar` })
       .parse({ line: [`-x`, `foobar`] })
   })
@@ -22,7 +22,7 @@ describe(`settings`, () => {
 
 describe(`#.schema`, () => {
   it(`is the schema used to define the parameters`, () => {
-    const def = Command.create({ x: z.string() })
+    const def = Command.parameters({ x: z.string() })
     assertAssignable<z.ZodRawShape>(def.schema)
     assertAssignable<{ x: z.ZodString }>(def.schema)
     expect(def.schema).toBeDefined()

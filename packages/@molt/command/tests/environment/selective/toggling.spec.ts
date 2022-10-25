@@ -6,7 +6,7 @@ import { z } from 'zod'
 it(`can toggle environment on for one parameter`, () => {
   environmentManager.set(`cli_param_foo`, `env1`)
   environmentManager.set(`cli_param_bar`, `env2`)
-  const args = Command.create({
+  const args = Command.parameters({
     '--foo': z.string().default(`foo`),
     '--bar': z.string().default(`bar`),
   })
@@ -18,7 +18,7 @@ it(`can toggle environment on for one parameter`, () => {
 it(`can change prefix for one parameter`, () => {
   environmentManager.set(`foo`, `foo_env`)
   environmentManager.set(`cli_param_bar`, `bar_env`)
-  const args = Command.create({
+  const args = Command.parameters({
     '--foo': z.string().default(`foo_default`),
     '--bar': z.string().default(`bar_default`),
   })
@@ -30,7 +30,7 @@ it(`can change prefix for one parameter`, () => {
 it(`can change default prefix and prfix for one parameter`, () => {
   environmentManager.set(`foo`, `foo_env`)
   environmentManager.set(`param_bar`, `bar_env`)
-  const args = Command.create({
+  const args = Command.parameters({
     '--foo': z.string().default(`default_foo`),
     '--bar': z.string().default(`default_bar`),
   })
@@ -50,7 +50,7 @@ it(`can change default prefix and prfix for one parameter`, () => {
 describe(`when configuring parameters environment becomes opt-in`, () => {
   it(`with default not set`, () => {
     environmentManager.set({ foo: `foo_env`, cli_param_bar: `foo_env`, cli_param_qux: `foo_env` })
-    const args = Command.create({
+    const args = Command.parameters({
       '--foo': z.string().default(`foo`),
       '--bar': z.string().default(`bar`),
       '--qux': z.string().default(`qux`),
@@ -67,7 +67,7 @@ describe(`when configuring parameters environment becomes opt-in`, () => {
   })
   it(`even with default configured`, () => {
     environmentManager.set({ moo_foo: `foo_env`, moo_bar: `bar_env`, moo_qux: `qux_env` })
-    const args = Command.create({
+    const args = Command.parameters({
       '--foo': z.string().default(`foo`),
       '--bar': z.string().default(`bar`),
       '--qux': z.string().default(`qux`),
@@ -86,7 +86,7 @@ describe(`when configuring parameters environment becomes opt-in`, () => {
   describe(` unless...`, () => {
     it(`default is shorthand true`, () => {
       environmentManager.set({ moo_foo: `moo_foo_env`, cli_param_bar: `bar_env`, cli_param_qux: `qux_env` })
-      const args = Command.create({
+      const args = Command.parameters({
         '--foo': z.string().default(`foo`),
         '--bar': z.string().default(`bar`),
         '--qux': z.string().default(`qux`),
@@ -97,7 +97,7 @@ describe(`when configuring parameters environment becomes opt-in`, () => {
     })
     it(`default is longhand true`, () => {
       environmentManager.set({ moo_foo: `moo_foo_env`, cli_param_bar: `bar_env`, cli_param_qux: `qux_env` })
-      const args = Command.create({
+      const args = Command.parameters({
         '--foo': z.string().default(`foo`),
         '--bar': z.string().default(`bar`),
         '--qux': z.string().default(`qux`),

@@ -48,7 +48,7 @@ npm add @molt/command
 import { Command } from '@molt/command'
 import { z } from 'zod'
 
-const args = Command.create({
+const args = Command.parameters({
   '--file-path': z.string().describe(`Path to the file to convert.`),
   '--to': z.enum(['json', ' yaml', 'toml']).describe(`Format to convert to.`),
   '--from': z
@@ -125,7 +125,7 @@ PARAMETERS
   - Normalization between camel and kebab case and optional dash prefix:
 
     ```ts
-    const args = Command.create({
+    const args = Command.parameters({
       '--do-it-a': z.boolean(),
       '--doItB': z.boolean(),
       doItC: z.boolean(),
@@ -139,13 +139,13 @@ PARAMETERS
   - Specify one or multiple (aka. aliases) short and long flags:
 
     ```ts
-    Command.create({ '-f --force --forcefully': z.boolean() }).parse()
+    Command.parameters({ '-f --force --forcefully': z.boolean() }).parse()
     ```
 
   - Use Zod `.default(...)` method for setting default values.
 
     ```ts
-    const args = Command.create({ '--path': z.string().default('./a/b/c') }).parse()
+    const args = Command.parameters({ '--path': z.string().default('./a/b/c') }).parse()
     args.path === './a/b/c/' //   $ binary
     args.path === '/over/ride' // $ binary --path /over/ride
     ```
@@ -157,7 +157,7 @@ PARAMETERS
   - Pass via environment variables (customizable)
 
     ```ts
-    const args = Command.create({ '--path': z.string() }).parse()
+    const args = Command.parameters({ '--path': z.string() }).parse()
     args.path === './a/b/c/' // $ CLI_PARAM_PATH='./a/b/c' binary
     ```
 
@@ -176,7 +176,7 @@ PARAMETERS
 There is a chaining API which is more verbose but has more features for more complex use-cases.
 
 ```ts
-const args1 = Command.create({
+const args1 = Command.parameters({
   foo: z.string(),
   bar: z.string(),
   qux: z.string(),
@@ -199,7 +199,7 @@ const args2 = Command
 You can define parameters as a zod object schema using regular property names. These are flags for your CLI but arguments can also be passed by environment variables so in a way this is a neutral form that doesn't privilege either argument passing mechanism.
 
 ```ts
-const args = Command.create({
+const args = Command.parameters({
   foo: z.string(),
   bar: z.number(),
   qux: z.boolean(),
@@ -215,7 +215,7 @@ args.qux
 You can also define them using flag syntax if you prefer. Thanks to `@molt/types` this style doesn't sacrifice any type safety.
 
 ```ts
-const args = Command.create({
+const args = Command.parameters({
   '--foo': z.string(),
   '--bar': z.number(),
   '--qux': z.boolean(),
@@ -236,7 +236,7 @@ A set of parameter names gets normalized into its canonical name internally (aga
 2. Otherwise the first short flag
 
 ```ts
-const args = Command.create({
+const args = Command.parameters({
   '--foobar --foo -f ': z.string(),
   '--bar -b -x': z.number(),
   '-q --qux': z.boolean(),
@@ -255,7 +255,7 @@ args.m === true
 If you prefer you can use a dash-prefix free syntax:
 
 ```ts
-const args = Command.create({
+const args = Command.parameters({
   'foobar foo f ': z.string(),
   'bar b x': z.number(),
   'q qux': z.boolean(),
@@ -268,7 +268,7 @@ const args = Command.create({
 You can use kebab or camel case (and likewise your users can pass flags in either style). Canonical form internally uses camel case.
 
 ```ts
-const args = Command.create({
+const args = Command.parameters({
   'foo-bar': z.string(),
   quxLot: z.string(),
 }).parse()
@@ -308,7 +308,7 @@ Parameter types via Zod schemas affect parsing in the following ways.
 Examples:
 
 ```ts
-const args = Command.create({ 'f force forcefully': z.boolean() }).parse()
+const args = Command.parameters({ 'f force forcefully': z.boolean() }).parse()
 // $ CLI_PARAM_NO_F='true' binary
 // $ CLI_PARAM_NO_FORCE='true' binary
 // $ CLI_PARAM_NO_FORCEFULLY='true' binary
@@ -408,7 +408,7 @@ CLI_PARAM_{parameter_name}
 ```
 
 ```ts
-const args = Command.create({ '--path': z.string() }).parse()
+const args = Command.parameters({ '--path': z.string() }).parse()
 args.path === './a/b/c/' // $ CLI_PARAMETER_PATH='./a/b/c' binary
 ```
 
@@ -417,7 +417,7 @@ args.path === './a/b/c/' // $ CLI_PARAMETER_PATH='./a/b/c' binary
 You can toggle environment arguments on/off. It is on by default.
 
 ```ts
-const command = Command.create({ '--path': z.string() }).settings({
+const command = Command.parameters({ '--path': z.string() }).settings({
   environment: false,
 })
 // $ CLI_PARAMETER_PATH='./a/b/c' binary
@@ -428,7 +428,7 @@ command.parse()
 You can also toggle with the environment variable `CLI_SETTINGS_READ_ARGUMENTS_FROM_ENVIRONMENT` (case insensitive):
 
 ```ts
-const command = Command.create({ '--path': z.string() })
+const command = Command.parameters({ '--path': z.string() })
 // $ CLI_SETTINGS_READ_ARGUMENTS_FROM_ENVIRONMENT='false' CLI_PARAMETER_PATH='./a/b/c' binary
 // Throws error because no argument given for "path"
 command.parse()
@@ -439,7 +439,7 @@ command.parse()
 You can toggle environment on for just one or some parameters.
 
 ```ts
-const args = Command.create({
+const args = Command.parameters({
   '--foo': z.string(),
   '--bar': z.string().default('not_from_env'),
 })
@@ -454,7 +454,7 @@ args.bar === 'not_from_env'
 You can toggle environment on except for just one or some parameters.
 
 ```ts
-const args = Command.create({
+const args = Command.parameters({
   '--foo': z.string().default('not_from_env'),
   '--bar': z.string().default('not_from_env'),
   '--qux': z.string().default('not_from_env'),
@@ -473,7 +473,7 @@ args.qux === 'qux'
 You can customize the environment variable name prefix:
 
 ```ts
-const args = Command.create({ '--path': z.string() })
+const args = Command.parameters({ '--path': z.string() })
   //                                              o-- case insensitive
   .settings({ environment: { $default: { prefix: 'foo' } } })
   .parse()
@@ -484,7 +484,7 @@ args.path === './a/b/c/' // $ FOO_PATH='./a/b/c' binary
 You can pass a list of accepted prefixes instead of just one. Earlier ones take precedence over later ones:
 
 ```ts
-const args = Command.create({ '--path': z.string() })
+const args = Command.parameters({ '--path': z.string() })
   //                                               o---------o--- case insensitive
   .settings({ environment: { $default: { prefix: ['foobar', 'foo'] } } })
   .parse()
@@ -499,7 +499,7 @@ args.path === './a/b/c/' // $ FOO_PATH='./x/y/z' FOOBAR_PATH='./a/b/c' binary
 You can customize the environment variable name prefix for just one or some parameters.
 
 ```ts
-const args = Command.create({
+const args = Command.parameters({
   '--foo': z.string().default('not_from_env'),
   '--bar': z.string().default('not_from_env'),
   '--qux': z.string().default('not_from_env'),
@@ -516,7 +516,7 @@ args.qux === 'qux'
 You can customize the environment variable name prefix except for just one or some parameters.
 
 ```ts
-const args = Command.create({
+const args = Command.parameters({
   '--foo': z.string().default('not_from_env'),
   '--bar': z.string().default('not_from_env'),
   '--qux': z.string().default('not_from_env'),
@@ -535,7 +535,7 @@ args.qux === 'qux'
 You can remove the prefix altogether. Pretty and convenient, but be careful for unexpected use of variables in host environment that would affect your CLI execution!
 
 ```ts
-const args = Command.create({ '--path': z.string() })
+const args = Command.parameters({ '--path': z.string() })
   .settings({ environment: { $default: { prefix: false } } })
   .parse()
 
@@ -547,7 +547,7 @@ args.path === './a/b/c/' // $ PATH='./a/b/c' binary
 You can disable environment variable name prefixes for just one or some parameters.
 
 ```ts
-const args = Command.create({
+const args = Command.parameters({
   '--foo': z.string().default('not_from_env'),
   '--bar': z.string().default('not_from_env'),
   '--qux': z.string().default('not_from_env'),
@@ -564,7 +564,7 @@ args.qux === 'qux'
 You can disable environment variable name prefixes except for just one or some parameters.
 
 ```ts
-const args = Command.create({
+const args = Command.parameters({
   '--foo': z.string().default('not_from_env'),
   '--bar': z.string().default('not_from_env'),
   '--qux': z.string().default('not_from_env'),
@@ -583,7 +583,7 @@ args.qux === 'qux'
 Environment variables are considered in a case insensitive way so all of these work:
 
 ```ts
-const args = Command.create({ '--path': z.string() }).parse()
+const args = Command.parameters({ '--path': z.string() }).parse()
 // $ CLI_PARAM_PATH='./a/b/c' binary
 // $ cli_param_path='./a/b/c' binary
 // $ cLi_pAraM_paTh='./a/b/c' binary
@@ -595,7 +595,7 @@ args.path === './a/b/c/'
 By default, when a prefix is defined, a typo will raise an error:
 
 ```ts
-const command = Command.create({ '--path': z.string() })
+const command = Command.parameters({ '--path': z.string() })
 
 // $ CLI_PARAM_PAH='./a/b/c' binary
 // Throws error because there is no parameter named "pah" defined.
@@ -605,7 +605,7 @@ command.parse()
 If you pass arguments for a parameter multiple times under different environment variable name aliases an error will be raised.
 
 ```ts
-const command = Command.create({ '--path': z.string() })
+const command = Command.parameters({ '--path': z.string() })
 
 // $ CLI_PARAMETER_PAH='./1/2/3' CLI_PARAM_PAH='./a/b/c' binary
 /ole/ Throws error because user intent is ambiguous.
