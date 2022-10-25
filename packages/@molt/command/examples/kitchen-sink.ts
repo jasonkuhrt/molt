@@ -1,7 +1,7 @@
 import { Command } from '../src/index.js'
 import { z } from 'zod'
 
-const args = Command.create({
+const args = Command.parameters({
   '--bad-default': z.string().default(() => {
     throw new Error(`whoops`)
   }),

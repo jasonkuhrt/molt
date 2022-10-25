@@ -8,7 +8,7 @@ import Semver from 'semver'
 import semverRegex from 'semver-regex'
 import { z } from 'zod'
 
-const args = Command.create({
+const args = Command.parameters({
   'p package': z.enum([`@molt/command`, `@molt/types`, `molt`]),
   'v version': z.string().regex(semverRegex()).optional(),
   'b bump': z.enum([`major`, `minor`, `patch`]).optional(),
