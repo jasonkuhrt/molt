@@ -14,8 +14,8 @@ const args = Command
   .parameter(`publish`, z.boolean().default(true))
   .parameter(`githubRelease`, z.boolean().default(true))
   .parameter(`p package`, z.enum([`@molt/command`, `@molt/types`, `molt`]))
-  .parametersExclusive(`method`, (c) => {
-    return c
+  .parametersExclusive(`method`, ($) => {
+    return $
       .parameter(`v version`, z.string().regex(semverRegex()))
       .parameter(`b bump`, z.enum([`major`, `minor`, `patch`]))
       .optional()
