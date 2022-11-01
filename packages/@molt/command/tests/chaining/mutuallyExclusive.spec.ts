@@ -7,13 +7,11 @@ let c
 const s = z.string()
 
 it(`works`, () => {
-  const args = Command.parametersExclusive(`method`, ($) =>
-    $.parameter(`v version`, s)
+  const args = Command.parametersExclusive(`method`, ($$) =>
+    $$.parameter(`v version`, s)
       .parameter(`b bump`, z.enum([`major`, `minor`, `patch`]))
       .optional()
-  ).parse({
-    line: [`-v`, `1.0.0`],
-  })
+  ).parse({ line: [`-v`, `1.0.0`] })
 
   expectType<{
     method:
