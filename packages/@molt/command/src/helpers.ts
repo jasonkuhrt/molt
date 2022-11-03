@@ -1,11 +1,17 @@
 import type { Value } from './Input/types.js'
 import type { ParameterSpec } from './ParameterSpec/index.js'
+import type { FlagName } from '@molt/types'
 import { Alge } from 'alge'
 import camelCase from 'lodash.camelcase'
+import { z } from 'zod'
 
 export const stripeDashPrefix = (flagNameInput: string): string => {
   return flagNameInput.replace(/^-+/, ``)
 }
+
+export const zodPassthrough = <T>() => z.any().transform((_) => _ as T)
+
+export type Values<T> = T[keyof T]
 
 export const getLowerCaseEnvironment = () => lowerCaseObjectKeys(process.env)
 
@@ -13,9 +19,9 @@ export const lowerCaseObjectKeys = (obj: object) =>
   Object.fromEntries(Object.entries(obj).map(([k, v]) => [k.toLowerCase(), v]))
 
 // prettier-ignore
-export const parseRawInput = (name: string, rawValue: string, spec: ParameterSpec.Spec): Value => {
+export const parseRawInput = (name: string, rawValue: string, spec: ParameterSpec.Normalized): Value => {
   const parsedValue = parseRawValue(rawValue, spec)
-  if (parsedValue === null) throw new Error(`Failed to parse input ${name} with value ${rawValue}. Expected type of ${spec.schemaPrimitive}.`)
+  if (parsedValue === null) throw new Error(`Failed to parse input ${name} with value ${rawValue}. Expected type of ${spec.typePrimitiveKind}.`)
   if (typeof parsedValue === `string`) return { _tag: `string`, value: parsedValue }
   if (typeof parsedValue === `number`) return { _tag: `number`, value: parsedValue }
   if (typeof parsedValue === `boolean`){
@@ -33,7 +39,7 @@ const casesHandled = (value: never): never => {
  * Is the environment variable input negated? Unlike line input the environment can be
  * namespaced so a bit more work is needed to parse out the name pattern.
  */
-export const isEnvarNegated = (name: string, spec: ParameterSpec.Spec): boolean => {
+export const isEnvarNegated = (name: string, spec: ParameterSpec.Normalized): boolean => {
   const nameWithNamespaceStripped = stripeNamespace(name, spec)
   // dump({ nameWithNamespaceStripped })
   return negateNamePattern.test(nameWithNamespaceStripped)
@@ -43,15 +49,18 @@ export const isNegated = (name: string): boolean => {
   return negateNamePattern.test(name)
 }
 
-const stripeNamespace = (name: string, spec: ParameterSpec.Spec): string => {
+const stripeNamespace = (name: string, spec: ParameterSpec.Normalized): string => {
   for (const namespace of spec.environment?.namespaces ?? []) {
     if (name.startsWith(namespace)) return camelCase(name.slice(namespace.length))
   }
   return name
 }
 
-export const parseRawValue = (value: string, spec: ParameterSpec.Spec): boolean | number | null | string => {
-  return Alge.match(spec.schemaPrimitive)
+export const parseRawValue = (
+  value: string,
+  spec: ParameterSpec.Normalized
+): boolean | number | null | string => {
+  return Alge.match(spec.typePrimitiveKind)
     .string(() => value)
     .boolean(() => parseEnvironmentVariableBoolean(value))
     .number(() => Number(value))
@@ -92,15 +101,3 @@ export const stripeNegatePrefixLoose = (name: string): string => {
   const result = stripeNegatePrefix(name)
   return result ? result : name
 }
-
-import type { FlagName } from '@molt/types'
-import type { z } from 'zod'
-
-export type SomeSchema = z.ZodRawShape
-
-// prettier-ignore
-export type FlagSpecExpressionParseResultToPropertyName<result extends FlagName.Types.SomeParseResult> = 
-	FlagName.Errors.$Is<result> extends true 		? result :
-	result extends { long: string } 						? result['long'] :
-	result extends { short: string} 						? result['short'] :
-																							  never

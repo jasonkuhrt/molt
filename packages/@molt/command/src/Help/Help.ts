@@ -9,6 +9,7 @@ import snakeCase from 'lodash.snakecase'
 import stringLength from 'string-length'
 import stripAnsi from 'strip-ansi'
 import type { z } from 'zod'
+import { partitionByTag } from '../lib/prelude.js'
 
 interface ColumnSpecs {
   name: {
@@ -44,10 +45,11 @@ interface RenderSettings {
 }
 
 export const render = (
-  specs: ParameterSpec.Spec[],
+  specs_: ParameterSpec.Normalized[],
   settings: Settings.Normalized,
   _settings?: RenderSettings
 ) => {
+  const specs = partitionByTag(specs_).Basic
   const specsWithoutHelp = specs.filter((_) => _.name.canonical !== `help`).sort((_) => (_.optional ? 1 : -1))
   const isAcceptsAnyEnvironmentArgs = specs.filter((_) => _.environment?.enabled).length > 0
   const isEnvironmentEnabled =
@@ -59,10 +61,10 @@ export const render = (
     },
     typeAndDescription: {
       width: specs.reduce((width, spec) => {
-        const maybeEnum = ZodHelpers.getEnum(spec.schema)
+        const maybeEnum = ZodHelpers.getEnum(spec.type)
         const typeLength = maybeEnum
           ? Math.max(...typeEnum(maybeEnum).map((_) => stripAnsi(_).length))
-          : spec.schemaPrimitive.length
+          : spec.typePrimitiveKind.length
         const descriptionLength = (spec.description ?? ``).length
         const contentWidth = Math.max(width, typeLength, descriptionLength)
         return Math.min(40, contentWidth)
@@ -134,7 +136,7 @@ export const render = (
   return help
 }
 
-const environmentNote = (specs: ParameterSpec.Spec[], settings: Settings.Normalized): string[] => {
+const environmentNote = (specs: ParameterSpec.Normalized[], settings: Settings.Normalized): string[] => {
   const isHasSpecsWithCustomEnvironmentNamespace =
     specs
       .filter((_) => _.environment?.enabled)
@@ -190,7 +192,7 @@ const environmentNote = (specs: ParameterSpec.Spec[], settings: Settings.Normali
 }
 
 const parameters = (
-  specs: ParameterSpec.Spec[],
+  specs: ParameterSpec.Normalized.Basic[],
   settings: Settings.Normalized,
   options: {
     columnSpecs: ColumnSpecs
@@ -211,14 +213,14 @@ const parameters = (
 }
 
 const parameter = (
-  spec: ParameterSpec.Spec,
+  spec: ParameterSpec.Normalized.Basic,
   settings: Settings.Normalized,
   options: {
     columnSpecs: ColumnSpecs
     isEnvironmentEnabled: boolean
   }
 ): string => {
-  const maybeZodEnum = ZodHelpers.getEnum(spec.schema)
+  const maybeZodEnum = ZodHelpers.getEnum(spec.type)
   return Text.row(
     [
       {
@@ -232,7 +234,7 @@ const parameter = (
       },
       {
         lines: [
-          ...(maybeZodEnum ? typeEnum(maybeZodEnum) : [chalk.green(spec.schemaPrimitive)]),
+          ...(maybeZodEnum ? typeEnum(maybeZodEnum) : [chalk.green(spec.typePrimitiveKind)]),
           ...Text.column(options.columnSpecs.typeAndDescription.width, spec.description ?? ``),
         ],
         ...options.columnSpecs.typeAndDescription,
@@ -276,7 +278,7 @@ const parameter = (
   )
 }
 
-const parameterDefault = (width: number, spec: ParameterSpec.Spec): Text.Lines => {
+const parameterDefault = (width: number, spec: ParameterSpec.Normalized.Basic): Text.Lines => {
   if (spec.optional) {
     if (spec.default) {
       try {

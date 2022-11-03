@@ -1,5 +1,6 @@
 import { Errors } from '../Errors/index.js'
-import type { Spec } from '../ParameterSpec/ParametersSpec.js'
+import { partitionByTag } from '../lib/prelude.js'
+import { ParameterSpec } from '../ParameterSpec/index.js'
 import { Environment } from './Environment/index.js'
 import { Line } from './Line/index.js'
 
@@ -8,7 +9,7 @@ export { Line } from './Line/index.js'
 export * from './types.js'
 
 export const parse = (
-  specs: Spec[],
+  specs: ParameterSpec.Normalized[],
   rawLineInputs: Line.RawInputs,
   rawEnvironmentInputs: Environment.RawInputs
 ): { args: Record<string, unknown>; errors: Errors.ErrorMissingArgument[] } => {
@@ -23,7 +24,14 @@ export const parse = (
   // dump({ line })
   // dump({ env })
 
-  for (const spec of specs) {
+  const groups = partitionByTag(specs)
+
+  // TODO
+  // for (const spec of groups.Exclusive) {
+  // }
+
+  console.log(groups.Basic)
+  for (const spec of groups.Basic) {
     const input = lineParseResult.line[spec.name.canonical] ?? env[spec.name.canonical]
 
     if (input) {
@@ -41,7 +49,7 @@ export const parse = (
       } else {
         let value: unknown
         try {
-          value = input.spec.schema.parse(input.value.value)
+          value = input.spec.type.parse(input.value.value)
         } catch (e) {
           errors.push(new Error(`Invalid value for ${spec.name.canonical}`, { cause: e }))
           args[spec.name.canonical] = undefined

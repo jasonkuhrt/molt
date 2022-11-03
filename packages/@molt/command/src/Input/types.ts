@@ -1,7 +1,7 @@
 import type { ParameterSpec } from '../ParameterSpec/index.js'
 
 export interface ArgumentReport extends Argument {
-  spec: ParameterSpec.Spec
+  spec: ParameterSpec.Normalized
   duplicates: Argument[]
   errors: Error[]
 }

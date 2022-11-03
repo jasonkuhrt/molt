@@ -1,10 +1,9 @@
 import { parseRawInput } from '../../helpers.js'
 import type { Index } from '../../lib/prelude.js'
-import type { Spec } from '../../ParameterSpec/ParametersSpec.js'
-import { getNames } from '../../ParameterSpec/ParametersSpec.js'
 import type { ArgumentReport } from '../types.js'
 import camelCase from 'lodash.camelcase'
 import snakecase from 'lodash.snakecase'
+import { ParameterSpec } from '../../ParameterSpec/index.js'
 
 export const defaultParameterNamePrefixes = [`cli_parameter`, `cli_param`]
 
@@ -42,7 +41,7 @@ export const lookupEnvironmentVariableArgument = (
 
 export type RawInputs = Record<string, string | undefined>
 
-export const parse = (environment: RawInputs, specs: Spec[]): Index<ArgumentReport> => {
+export const parse = (environment: RawInputs, specs: ParameterSpec.Normalized[]): Index<ArgumentReport> => {
   const envars = Object.entries(environment)
     .map(([name, value]) =>
       value === undefined
@@ -67,7 +66,7 @@ export const parse = (environment: RawInputs, specs: Spec[]): Index<ArgumentRepo
       // eslint-disable-next-line
       const isNamespaced = spec.environment!.namespaces.length > 0
       if (isNamespaced) {
-        const specParameterNames = getNames(spec)
+        const specParameterNames = ParameterSpec.getNames(spec)
         // eslint-disable-next-line
         const namespaceAndNameHit = spec
           .environment!.namespaces.flatMap((namespace) =>
@@ -104,7 +103,7 @@ export const parse = (environment: RawInputs, specs: Spec[]): Index<ArgumentRepo
         }
         // .map((enVarName) => ({ enVarName, value: enVar.name.camel === enVarName ? enVar.value : null }))
       } else {
-        const specParameterNames = getNames(spec)
+        const specParameterNames = ParameterSpec.getNames(spec)
         // dump(specParameterNames, enVar)
         if (specParameterNames.includes(envar.name.camel)) {
           // eslint-disable-next-line

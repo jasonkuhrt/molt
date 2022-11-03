@@ -1,13 +1,12 @@
-import type { FlagSpecExpressionParseResultToPropertyName } from '../helpers.js'
 import { parseEnvironmentVariableBooleanOrThrow } from '../helpers.js'
 import { defaultParameterNamePrefixes } from '../Input/Environment/Environment.js'
 import type { FlagName } from '@molt/types'
 import snakeCase from 'lodash.snakecase'
-import type { z } from 'zod'
+import { State } from '../Builder/State.js'
 
 export type OnErrorReaction = 'exit' | 'throw'
 
-export interface Input<ParametersSchema extends z.ZodRawShape> {
+export interface Input<ParametersObject extends State.ParametersObjectBase> {
   description?: string
   help?: boolean
   helpOnNoArguments?: boolean
@@ -17,7 +16,7 @@ export interface Input<ParametersSchema extends z.ZodRawShape> {
     environment?:
       | boolean
       | ({
-          [FlagSpecExpression in keyof ParametersSchema as FlagSpecExpressionParseResultToPropertyName<FlagName.Parse<FlagSpecExpression & string>>]?: boolean | SettingInputEnvironmentParameter
+          [FlagSpecExpression in keyof ParametersObject as FlagName.Data.GetCanonicalNameOrErrorFromParseResult<FlagName.Parse<FlagSpecExpression & string>>]?: boolean | SettingInputEnvironmentParameter
         } & {
           $default?: boolean | SettingInputEnvironmentParameter
         })

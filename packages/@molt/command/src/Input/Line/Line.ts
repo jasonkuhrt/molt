@@ -8,7 +8,7 @@ export type RawInputs = string[]
 
 export const parse = (
   rawLineInputs: RawInputs,
-  specs: ParameterSpec.Spec[]
+  specs: ParameterSpec.Normalized[]
 ): { errors: Error[]; line: Index<ArgumentReport> } => {
   const errors: Error[] = []
 
@@ -52,7 +52,7 @@ export const parse = (
         continue
       }
 
-      if (spec.schemaPrimitive === `boolean`) {
+      if (spec.typePrimitiveKind === `boolean`) {
         current = {
           spec,
           errors: [],
