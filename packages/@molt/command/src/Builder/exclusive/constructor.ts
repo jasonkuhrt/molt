@@ -11,7 +11,7 @@ export const create = (): SomeBuilderExclusiveInitial => {
   }
 
   const chain: SomeBuilderExclusiveInitial = {
-    parameter: (nameExpression, type) => {
+    parameter: (nameExpression: string, type) => {
       _.input.values.push({ nameExpression, type })
       return chain as any // eslint-disable-line
     },

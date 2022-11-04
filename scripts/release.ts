@@ -1,5 +1,6 @@
 import { Command } from '../packages/@molt/command/src/index.js'
 import { Octokit } from '@octokit/core'
+import { Alge } from 'alge'
 import { execa } from 'execa'
 import Fs from 'fs-jetpack'
 import * as Path from 'node:path'
@@ -14,8 +15,8 @@ const args = Command
   .parameter(`publish`, z.boolean().default(true))
   .parameter(`githubRelease`, z.boolean().default(true))
   .parameter(`p package`, z.enum([`@molt/command`, `@molt/types`, `molt`]))
-  .parametersExclusive(`method`, ($$) => 
-    $$
+  .parametersExclusive(`method`, (__) => 
+    __
       .parameter(`v version`, z.string().regex(semverRegex()))
       .parameter(`b bump`, z.enum([`major`, `minor`, `patch`]))
   )
@@ -43,9 +44,13 @@ const pkg = (await $Fs.readAsync(`package.json`, `json`)) as {
   repository: string
 }
 
-//eslint-disable-next-line
-const newVersion =
-  args.method._tag === `bump` ? Semver.inc(pkg.version, args.method.level)! : args.method.version
+if (!args.method) throw new Error(``)
+
+const newVersion = Alge.match(args.method)
+  .bump((bump) => Semver.inc(pkg.version, bump.value)!) // eslint-disable-line
+  .version((version) => version.value)
+  .done()
+
 const gitTagName = `${args.package}@${newVersion}`
 
 const match = workspacePkg.repository.match(/git@github.com:(.+)\/(.+)\.git/)

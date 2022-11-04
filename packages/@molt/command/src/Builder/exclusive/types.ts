@@ -32,12 +32,9 @@ export interface BuilderAfterSettings<Spec extends State.Base> {
 }
 
 export type SomeBuilderExclusiveInitial = {
-  // eslint-disable-next-line
-  _: any
-  // eslint-disable-next-line
-  parameter: (nameExpression: string, type: ParameterSpec.SomeExclusiveZodType) => any
-  // eslint-disable-next-line
-  optional: any
+  _: any // eslint-disable-line
+  parameter: (nameExpression: any, type: ParameterSpec.SomeExclusiveZodType) => any // eslint-disable-line
+  optional: any // eslint-disable-line
 }
 
 export type SomeBuilderMutuallyExclusiveAfterOptional = BuilderExclusiveAfterOptional<State.Base>

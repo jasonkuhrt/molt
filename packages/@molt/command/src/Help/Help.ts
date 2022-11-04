@@ -49,7 +49,7 @@ export const render = (
   settings: Settings.Normalized,
   _settings?: RenderSettings
 ) => {
-  const specs = partitionByTag(specs_).Basic
+  const specs = partitionByTag(specs_).Basic ?? []
   const specsWithoutHelp = specs.filter((_) => _.name.canonical !== `help`).sort((_) => (_.optional ? 1 : -1))
   const isAcceptsAnyEnvironmentArgs = specs.filter((_) => _.environment?.enabled).length > 0
   const isEnvironmentEnabled =
