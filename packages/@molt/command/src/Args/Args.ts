@@ -1,6 +1,6 @@
 import { Errors } from '../Errors/index.js'
 import { groupByWith } from '../helpers.js'
-import { keyBy } from '../lib/prelude.js'
+import { groupBy } from '../lib/prelude.js'
 import type { ParameterSpec } from '../ParameterSpec/index.js'
 import { Environment } from './Environment/index.js'
 import { Line } from './Line/index.js'
@@ -25,7 +25,7 @@ export const parse = (
   // dump({ line })
   // dump({ env })
 
-  const specVariants = keyBy(specs, `_tag`)
+  const specVariants = groupBy(specs, `_tag`)
 
   for (const spec of specVariants.Basic ?? []) {
     /**

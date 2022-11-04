@@ -21,13 +21,13 @@ export const partition = <Item>(list: Item[], partitioner: (item: Item) => boole
 }
 
 // prettier-ignore
-export function keyBy<Item extends object, Key extends string>(items: Item[], keyer: (item: Item) => Key): { [k in Key]?: Item[] }
+export function groupBy<Item extends object, Key extends string>(items: Item[], keyer: (item: Item) => Key): { [k in Key]?: Item[] }
 // prettier-ignore
-export function keyBy<Item extends object, Key extends keyof Item>(items: Item[], key: Key): { [k in Item[Key] & string]?: Include<Item, { [_ in Key]: k }>[] }
+export function groupBy<Item extends object, Key extends keyof Item>(items: Item[], key: Key): { [k in Item[Key] & string]?: Include<Item, { [_ in Key]: k }>[] }
 // prettier-ignore
 //eslint-disable-next-line
-export function keyBy<Item extends object, Key extends keyof Item>(items: Item[], key: Key | ((item: Item) => string)): { [k in Item[Key] & string]?: Item[] } {
-  const result: Record<string, Item> = {}
+export function groupBy<Item extends object, Key extends keyof Item>(items: Item[], key: Key | ((item: Item) => string)): { [k in Item[Key] & string]?: Item[] } {
+  const result: Record<string, Item[]> = {}
 
   for (const item of items) {
     const keyValue = typeof key === `function`? key(item) : item[key]
@@ -35,7 +35,8 @@ export function keyBy<Item extends object, Key extends keyof Item>(items: Item[]
       const message = typeof key === `function` ? `Invalid key type returned from keyer function: ${typeof keyValue}` : `Invalid key type: ${typeof keyValue}`
       throw Error(message)
     }
-    result[keyValue] = item
+    if (!Array.isArray(result[keyValue])) result[keyValue] = []
+    result[keyValue]! .push( item) // eslint-disable-line
   }
 
   // eslint-disable-next-line
