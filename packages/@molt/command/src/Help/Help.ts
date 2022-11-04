@@ -1,4 +1,4 @@
-import { partitionByTag } from '../lib/prelude.js'
+import { keyBy, partitionByTag } from '../lib/prelude.js'
 import { Text } from '../lib/Text/index.js'
 import { column } from '../lib/Text/Text.js'
 import { ZodHelpers } from '../lib/zodHelpers/index.js'
@@ -49,7 +49,7 @@ export const render = (
   settings: Settings.Normalized,
   _settings?: RenderSettings
 ) => {
-  const specs = partitionByTag(specs_).Basic ?? []
+  const specs = keyBy(specs_, `_tag`).Basic ?? []
   const specsWithoutHelp = specs.filter((_) => _.name.canonical !== `help`).sort((_) => (_.optional ? 1 : -1))
   const isAcceptsAnyEnvironmentArgs = specs.filter((_) => _.environment?.enabled).length > 0
   const isEnvironmentEnabled =
