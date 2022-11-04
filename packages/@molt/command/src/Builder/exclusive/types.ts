@@ -35,7 +35,7 @@ export type SomeBuilderExclusiveInitial = {
   // eslint-disable-next-line
   _: any
   // eslint-disable-next-line
-  parameter: any
+  parameter: (nameExpression: string, type: ParameterSpec.SomeExclusiveZodType) => any
   // eslint-disable-next-line
   optional: any
 }

@@ -13,9 +13,9 @@ export const partitionByTag = <Item extends { _tag: string }>(
   const variants: Record<string, Item[]> = {}
   for (const item of list) {
     if (variants[item._tag] === undefined) variants[item._tag] = []
-    variants[item._tag]!.push(item)
+    variants[item._tag]!.push(item) // eslint-disable-line
   }
-  return variants as any
+  return variants as any // eslint-disable-line
 }
 
 export const partition = <Item>(list: Item[], partitioner: (item: Item) => boolean): [Item[], Item[]] => {
@@ -32,7 +32,7 @@ export const partition = <Item>(list: Item[], partitioner: (item: Item) => boole
 }
 
 // prettier-ignore
-export function keyBy<Item extends object, Key extends keyof Item>(items: Item[], keyer: (item:Item) => string): Record<string, Item>
+export function keyBy<Item extends object, Key extends string>(items: Item[], keyer: (item:Item) => Key): Record<Key, Item>
 // prettier-ignore
 export function keyBy<Item extends object, Key extends keyof Item>(items: Item[], key: Key): Item[Key] extends string ? Record<Item[Key], Item> : Record<string, never>
 // prettier-ignore
@@ -50,6 +50,5 @@ export function keyBy<Item extends object, Key extends keyof Item>(items: Item[]
   }
 
   // eslint-disable-next-line
-  console.log({result})
-  return result as any
+  return result as any // eslint-disable-line
 }

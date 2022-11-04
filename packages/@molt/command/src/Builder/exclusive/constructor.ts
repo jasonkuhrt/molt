@@ -7,13 +7,13 @@ export const create = (): SomeBuilderExclusiveInitial => {
       optional: false,
       values: [],
     }),
-    typeState: undefined as any,
+    typeState: undefined as any, // eslint-disable-line
   }
 
   const chain: SomeBuilderExclusiveInitial = {
     parameter: (nameExpression, type) => {
       _.input.values.push({ nameExpression, type })
-      return chain as any
+      return chain as any // eslint-disable-line
     },
     optional: () => {
       _.input.optional = true

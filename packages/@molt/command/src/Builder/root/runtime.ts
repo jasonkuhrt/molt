@@ -22,13 +22,14 @@ const create = () => {
   const chain: RootBuilder = {
     settings: (newSettings) => {
       Settings.change(_.settings, newSettings)
-      return chain as any
+      return chain as any // eslint-disable-line
     },
     parameters: (parametersObject) => {
       Object.entries(parametersObject).forEach(([nameExpression, type]) => {
+        // eslint-disable-next-line
         chain.parameter(nameExpression as any, type)
       })
-      return chain as any
+      return chain as any // eslint-disable-line
     },
     parameter: (name, type) => {
       _.parameterSpecInputs[name] = ParameterSpec.Input.Basic.create({ type })
@@ -36,7 +37,7 @@ const create = () => {
       return chain as any
     },
     parametersExclusive: (label, builderContainer) => {
-      _.parameterSpecInputs[label] = builderContainer(ExclusiveBuilder.create() as any)._.input
+      _.parameterSpecInputs[label] = builderContainer(ExclusiveBuilder.create() as any)._.input // eslint-disable-line
       return chain
     },
     parse: (argInputs) => {

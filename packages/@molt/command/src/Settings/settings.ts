@@ -6,6 +6,7 @@ import snakeCase from 'lodash.snakecase'
 
 export type OnErrorReaction = 'exit' | 'throw'
 
+// eslint-disable-next-line
 export interface Input<ParametersObject extends State.ParametersObjectBase = {}> {
   description?: string
   help?: boolean

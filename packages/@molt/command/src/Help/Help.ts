@@ -1,3 +1,4 @@
+import { partitionByTag } from '../lib/prelude.js'
 import { Text } from '../lib/Text/index.js'
 import { column } from '../lib/Text/Text.js'
 import { ZodHelpers } from '../lib/zodHelpers/index.js'
@@ -9,7 +10,6 @@ import snakeCase from 'lodash.snakecase'
 import stringLength from 'string-length'
 import stripAnsi from 'strip-ansi'
 import type { z } from 'zod'
-import { partitionByTag } from '../lib/prelude.js'
 
 interface ColumnSpecs {
   name: {

@@ -1,13 +1,13 @@
+import type { Values } from '../helpers.js'
+import type { ParameterSpec } from '../ParameterSpec/index.js'
+import type { FlagName } from '@molt/types'
 import type { Any } from 'ts-toolbelt'
-import { FlagName } from '@molt/types'
-import { Values } from '../helpers.js'
-import { ParameterSpec } from '../ParameterSpec/index.js'
-import { z } from 'zod'
+import type { z } from 'zod'
 
 export namespace State {
   export type BaseEmpty = {
-    ParametersExclusive: {}
-    Parameters: {}
+    ParametersExclusive: {} // eslint-disable-line
+    Parameters: {} // eslint-disable-line
   }
 
   export type Base = {
@@ -148,6 +148,7 @@ export namespace State {
 /**
  * @see https://stackoverflow.com/questions/50374908/transform-union-type-to-intersection-type
  */
+// eslint-disable-next-line
 type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (k: infer I) => void
   ? I
   : never

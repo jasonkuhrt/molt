@@ -1,6 +1,6 @@
+import type { Args } from '../Args/index.js'
+import type { ParameterSpec } from '../ParameterSpec/index.js'
 import type { z } from 'zod'
-import { Args } from '../Args/index.js'
-import { ParameterSpec } from '../ParameterSpec/index.js'
 
 export class ErrorMissingFlagArgument extends Error {
   constructor(params: { flagName: string }) {
@@ -20,7 +20,7 @@ export class ErrorMissingArgumentForMutuallyExclusiveParameters extends Error {
   constructor(params: { group: ParameterSpec.Exclusive }) {
     const message = `Missing argument for one of the following paramters: ${Object.values(params.group.values)
       .map((_) => _.name.canonical)
-      .join(', ')}`
+      .join(`, `)}`
     super(message)
   }
 }
@@ -28,7 +28,7 @@ export class ErrorArgsToMultipleMutuallyExclusiveParameters extends Error {
   constructor(params: { offenses: { spec: ParameterSpec.Normalized.Exclusive; arg: Args.Argument }[] }) {
     const message = `Arguments given to multiple mutually exclusive parameters: ${params.offenses
       .map((_) => _.spec.name.canonical)
-      .join(', ')}`
+      .join(`, `)}`
     super(message)
   }
 }

@@ -5,7 +5,7 @@ import camelCase from 'lodash.camelcase'
 import { z } from 'zod'
 
 export const groupByWith = <T, K extends string>(items: T[], grouper: (item: T) => K): Record<K, T[]> => {
-  const result: Record<K, T[]> = {} as any
+  const result: Record<K, T[]> = {} as any // eslint-disable-line
   for (const item of items) {
     const key = grouper(item)
     if (!result[key]) result[key] = []
