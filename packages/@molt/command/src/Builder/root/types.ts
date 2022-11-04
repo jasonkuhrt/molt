@@ -1,4 +1,4 @@
-import type { Input } from '../../Input/index.js'
+import type { Args } from '../../Args/index.js'
 import type { ParameterSpec } from '../../ParameterSpec/index.js'
 import type { Settings } from '../../Settings/index.js'
 import type {
@@ -19,8 +19,8 @@ export interface RootBuilder<State extends State.Base = State.BaseEmpty> {
 }
 
 export type RawArgInputs = {
-  line?: Input.Line.RawInputs
-  environment?: Input.Environment.RawInputs
+  line?: Args.Line.RawInputs
+  environment?: Args.Environment.RawInputs
 }
 
 export type SomeArgsNormalized = Record<string, unknown>

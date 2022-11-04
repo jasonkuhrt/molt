@@ -2,7 +2,7 @@ import { Alge } from 'alge'
 import console from 'console'
 import { Help } from '../../Help/index.js'
 import { getLowerCaseEnvironment, lowerCaseObjectKeys } from '../../helpers.js'
-import { Input } from '../../Input/index.js'
+import { Args } from '../../Args/index.js'
 import { ParameterSpec } from '../../ParameterSpec/index.js'
 import { Settings } from '../../Settings/index.js'
 import * as ExclusiveBuilder from '../exclusive/constructor.js'
@@ -24,7 +24,13 @@ const create = () => {
   const chain: RootBuilder = {
     settings: (newSettings) => {
       Settings.change(_.settings, newSettings)
-      return chain
+      return chain as any
+    },
+    parameters: (parametersObject) => {
+      Object.entries(parametersObject).forEach(([nameExpression, type]) => {
+        chain.parameter(nameExpression as any, type)
+      })
+      return chain as any
     },
     parameter: (name, type) => {
       _.parameterSpecInputs[name] = ParameterSpec.Input.Basic.create({ type })
@@ -32,52 +38,52 @@ const create = () => {
       return chain as any
     },
     parametersExclusive: (label, builderContainer) => {
-      _.parameterSpecInputs[label] = builderContainer(ExclusiveBuilder.create())._.input
+      _.parameterSpecInputs[label] = builderContainer(ExclusiveBuilder.create() as any)._.input
       return chain
     },
     parse: (argInputs) => {
-      const lineInputs = argInputs?.line ?? process.argv.slice(2)
-      const environmentInputs = argInputs?.environment
+      const argInputsLine = argInputs?.line ?? process.argv.slice(2)
+      const argInputsEnvironment = argInputs?.environment
         ? lowerCaseObjectKeys(argInputs.environment)
         : getLowerCaseEnvironment()
-      const specs = ParameterSpec.parse(_.parameterSpecInputs, _.settings)
+      // todo handle concept of specs themselves having errors
+      const specsResult = {
+        specs: ParameterSpec.parse(_.parameterSpecInputs, _.settings),
+      }
       // eslint-disable-next-line
-      const result = Input.parse(specs, lineInputs, environmentInputs)
+      const argsResult = Args.parse(specsResult.specs, argInputsLine, argInputsEnvironment)
       // console.log({ result })
-      const requiredParamsMissing = specs
+      const missingArgs = specsResult.specs
         .filter((_) =>
           Alge.match(_)
             .Basic((_) => !_.optional)
             .Exclusive((_) => !_.group.optional)
         )
-        .filter((_) => result.args[_.name.canonical] === undefined)
+        .filter((_) => argsResult.args[_.name.canonical] === undefined)
 
       // eslint-disable-next-line
       // @ts-expect-error
-      const askedForHelp = `help` in result.args && result.args.help === true
+      const askedForHelp = `help` in argsResult.args && argsResult.args.help === true
 
-      if (result.errors.length > 0 && !askedForHelp) {
+      if (argsResult.errors.length > 0 && !askedForHelp) {
         const errors =
           `Cannot run command, you made some mistakes:\n\n` +
-          result.errors.map((_) => _.message).join(`\nX `) +
+          argsResult.errors.map((_) => _.message).join(`\nX `) +
           `\n\nHere are the docs for this command:\n`
         process.stdout.write(errors + `\n`)
-        process.stdout.write(Help.render(specs, _.settings) + `\n`)
+        process.stdout.write(Help.render(specsResult.specs, _.settings) + `\n`)
         if (_.settings.onError === `exit`) process.exit(1)
-        else throw new AggregateError(result.errors)
+        else throw new AggregateError(argsResult.errors)
         return undefined as never // When testing we will reach this case
       }
 
-      if (
-        (_.settings.help && askedForHelp) ||
-        (_.settings.helpOnNoArguments && requiredParamsMissing.length > 0)
-      ) {
-        process.stdout.write(Help.render(specs, _.settings) + `\n`)
+      if ((_.settings.help && askedForHelp) || (_.settings.helpOnNoArguments && missingArgs.length > 0)) {
+        process.stdout.write(Help.render(specsResult.specs, _.settings) + `\n`)
         process.exit(0)
         return undefined as never // When testing we will reach this case
       }
 
-      return result.args
+      return argsResult.args
     },
   }
 

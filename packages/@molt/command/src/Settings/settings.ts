@@ -1,5 +1,5 @@
 import { parseEnvironmentVariableBooleanOrThrow } from '../helpers.js'
-import { defaultParameterNamePrefixes } from '../Input/Environment/Environment.js'
+import { defaultParameterNamePrefixes } from '../Args/Environment/Environment.js'
 import type { FlagName } from '@molt/types'
 import snakeCase from 'lodash.snakecase'
 import { State } from '../Builder/State.js'

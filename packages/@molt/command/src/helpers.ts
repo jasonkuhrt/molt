@@ -1,4 +1,4 @@
-import type { Value } from './Input/types.js'
+import type { Value } from './Args/types.js'
 import type { ParameterSpec } from './ParameterSpec/index.js'
 import type { FlagName } from '@molt/types'
 import { Alge } from 'alge'

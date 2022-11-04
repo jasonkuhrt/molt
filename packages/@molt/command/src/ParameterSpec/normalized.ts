@@ -30,8 +30,8 @@ export interface Exclusive {
 }
 
 interface Parameter {
-  type: SomeBasicZodType
-  typePrimitiveKind: ZodHelpers.Primitive
+  // type: SomeBasicZodType
+  // typePrimitiveKind: ZodHelpers.Primitive
   description: string | null
   name: {
     canonical: string

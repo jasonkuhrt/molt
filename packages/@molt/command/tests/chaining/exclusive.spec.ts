@@ -1,5 +1,5 @@
 import { Command } from '../../src/index.js'
-import { expectType, expectAssignable } from 'tsd'
+import { expectType } from 'tsd'
 import { expect, it } from 'vitest'
 import { z } from 'zod'
 
