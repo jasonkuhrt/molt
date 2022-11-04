@@ -1,6 +1,6 @@
 import type { ParameterSpec } from '../../ParameterSpec/index.js'
 import type { RawArgInputs } from '../root/types.js'
-import { State } from '../State.js'
+import type { State } from '../State.js'
 
 /**
  * This property is present to support internal functions. It is not intended to be used by you.
@@ -31,7 +31,14 @@ export interface BuilderAfterSettings<Spec extends State.Base> {
   parse: (inputs?: RawArgInputs) => State.ToArgs<Spec>
 }
 
-export type SomeBuilderExclusiveInitial = BuilderExclusiveInitial<State.Base, string>
+export type SomeBuilderExclusiveInitial = {
+  // eslint-disable-next-line
+  _: any
+  // eslint-disable-next-line
+  parameter: any
+  // eslint-disable-next-line
+  optional: any
+}
 
 export type SomeBuilderMutuallyExclusiveAfterOptional = BuilderExclusiveAfterOptional<State.Base>
 

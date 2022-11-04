@@ -1,6 +1,6 @@
 import { zodPassthrough } from '../helpers.js'
 import type { ZodHelpers } from '../lib/zodHelpers/index.js'
-import type { SomeBasicZodType, SomeExclusiveZodType } from './ParametersSpec.js'
+import type { SomeBasicZodType } from './ParametersSpec.js'
 import { Alge } from 'alge'
 import { z } from 'zod'
 

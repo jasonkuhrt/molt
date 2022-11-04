@@ -1,12 +1,10 @@
 export type Index<T> = Record<string, T>
 
 import { inspect } from 'node:util'
-import { T } from 'vitest/dist/global-732f9b14.js'
 
 export const dump = (...args: unknown[]) =>
   console.log(...args.map((arg) => inspect(arg, { depth: Infinity, colors: true })))
 
-type ExcludeWhere<T, U> = T extends U ? never : T
 type IncludeWhere<T, U> = T extends U ? T : never
 
 export const partitionByTag = <Item extends { _tag: string }>(
@@ -38,18 +36,20 @@ export function keyBy<Item extends object, Key extends keyof Item>(items: Item[]
 // prettier-ignore
 export function keyBy<Item extends object, Key extends keyof Item>(items: Item[], key: Key): Item[Key] extends string ? Record<Item[Key], Item> : Record<string, never>
 // prettier-ignore
+//eslint-disable-next-line
 export function keyBy<Item extends object, Key extends keyof Item>(items: Item[], key: Key|((item:Item)=>string)): Item[Key] extends string ? Record<Item[Key], Item> : Record<string, never> {
   const result: Record<string, Item> = {}
 
   for (const item of items) {
-    const keyValue = typeof key === 'function'? key(item) : item[key]
+    const keyValue = typeof key === `function`? key(item) : item[key]
     if (typeof keyValue !== `string`) {
-      const message = typeof key === 'function' ? `Invalid key type returned from keyer function: ${typeof keyValue}` : `Invalid key type: ${typeof keyValue}`
+      const message = typeof key === `function` ? `Invalid key type returned from keyer function: ${typeof keyValue}` : `Invalid key type: ${typeof keyValue}`
       throw Error(message)
     }
     result[keyValue] = item
   }
 
   // eslint-disable-next-line
+  console.log({result})
   return result as any
 }

@@ -1,9 +1,9 @@
 import { Command } from '../../../src/index.js'
+import { stdout } from '../../_/mocks.js'
 import { environmentManager } from '../__helpers__.js'
 import { expect } from 'vitest'
 import { it } from 'vitest'
 import { z } from 'zod'
-import { stdout } from '../../__mock__.js'
 
 it(`is enabled by default`, () => {
   environmentManager.set(`cli_parameter_foo`, `bar`)

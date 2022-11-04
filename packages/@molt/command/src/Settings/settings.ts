@@ -1,15 +1,16 @@
-import { parseEnvironmentVariableBooleanOrThrow } from '../helpers.js'
 import { defaultParameterNamePrefixes } from '../Args/Environment/Environment.js'
+import type { State } from '../Builder/State.js'
+import { parseEnvironmentVariableBooleanOrThrow } from '../helpers.js'
 import type { FlagName } from '@molt/types'
 import snakeCase from 'lodash.snakecase'
-import { State } from '../Builder/State.js'
 
 export type OnErrorReaction = 'exit' | 'throw'
 
-export interface Input<ParametersObject extends State.ParametersObjectBase> {
+export interface Input<ParametersObject extends State.ParametersObjectBase = {}> {
   description?: string
   help?: boolean
   helpOnNoArguments?: boolean
+  helpOnError?: boolean
   onError?: OnErrorReaction
   parameters?: {
     // prettier-ignore
@@ -27,6 +28,7 @@ export interface Normalized {
   description?: string | undefined
   help: boolean
   helpOnNoArguments: boolean
+  helpOnError: boolean
   onError: OnErrorReaction
   parameters: {
     environment: Record<string, SettingNormalizedEnvironmentParameter> & {
@@ -57,6 +59,8 @@ export const change = (current: Normalized, input: Input<{}>): void => {
   current.description = input.description ?? current.description
 
   current.helpOnNoArguments = input.helpOnNoArguments ?? current.helpOnNoArguments
+
+  current.helpOnError = input.helpOnError ?? current.helpOnError
 
   if (input.parameters !== undefined) {
     if (input.help) {
@@ -134,6 +138,7 @@ export const getDefaults = (lowercaseEnv: NodeJS.ProcessEnv): Normalized => {
   return {
     help: true,
     helpOnNoArguments: true,
+    helpOnError: true,
     onError: `exit`,
     parameters: {
       environment: {

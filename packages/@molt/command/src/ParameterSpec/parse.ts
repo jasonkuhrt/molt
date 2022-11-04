@@ -2,13 +2,13 @@ import { stripeDashPrefix } from '../helpers.js'
 import { keyBy, partition } from '../lib/prelude.js'
 import { ZodHelpers } from '../lib/zodHelpers/index.js'
 import type { Settings } from '../Settings/index.js'
+import type { ParameterSpec } from './index.js'
 import { Input } from './input.js'
 import { Normalized } from './normalized.js'
 import type { SomeInputs } from './ParametersSpec.js'
 import { Alge } from 'alge'
 import camelCase from 'lodash.camelcase'
 import { z } from 'zod'
-import { ParameterSpec } from './index.js'
 
 /**
  * Process the spec input into a normalized spec.
@@ -113,11 +113,21 @@ const parseExclusive = (
           short: shorts,
         },
       },
-      group,
+      // See comment/code below.
+      group: { label: ``, optional: true, values: {} },
       typePrimitiveKind: ZodHelpers.ZodPrimitiveToPrimitive[ZodHelpers.getZodPrimitive(_.type)],
     })
   })
-  group.values = keyBy(values, (_) => _.name.canonical)
+
+  /**
+   * Link up the group to each value and vice versa. Cannot do this in the above constructor since
+   * it would create a copy of group for each value.
+   */
+  values.forEach((_) => {
+    _.group = group
+    group.values[_.name.canonical] = _
+  })
+
   return values
 }
 

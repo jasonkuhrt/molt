@@ -3,7 +3,7 @@ import type { IsExact } from 'conditional-type-checks'
 import { assert } from 'conditional-type-checks'
 import { describe, expect, it } from 'vitest'
 import { z } from 'zod'
-import { stdout } from '../../__mock__.js'
+import { stdout } from '../../_/mocks.js'
 
 // TODO use test.each
 describe(`errors`, () => {
