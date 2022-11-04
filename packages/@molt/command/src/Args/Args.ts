@@ -1,11 +1,10 @@
-import { group } from 'console'
 import { Errors } from '../Errors/index.js'
+import { groupByWith } from '../helpers.js'
 import { partitionByTag } from '../lib/prelude.js'
 import { ParameterSpec } from '../ParameterSpec/index.js'
 import { Environment } from './Environment/index.js'
 import { Line } from './Line/index.js'
 import { ArgumentReport } from './types.js'
-
 export { Environment } from './Environment/index.js'
 export { Line } from './Line/index.js'
 export * from './types.js'
@@ -28,7 +27,7 @@ export const parse = (
 
   const specVariants = partitionByTag(specs)
 
-  for (const spec of specVariants.Basic) {
+  for (const spec of specVariants.Basic ?? []) {
     /**
      * A note about types.
      *
@@ -94,7 +93,7 @@ export const parse = (
    * 4. If a group has more than one parameter with an arg then error
    * 5. If a group has exactly one parameter with an arg then OK
    */
-  const exclusiveGroups = Object.values(groupByWith(specVariants.Exclusive, (spec) => spec.group.label))
+  const exclusiveGroups = Object.values(groupByWith(specVariants.Exclusive ?? [], (spec) => spec.group.label))
 
   for (const specs of exclusiveGroups) {
     const group = specs[0]!.group
@@ -134,19 +133,17 @@ export const parse = (
     }
   }
 
+  // const missingArgs = specsResult.specs
+  //         .filter((_) =>
+  //           Alge.match(_)
+  //             .Basic((_) => !_.optional)
+  //             .Exclusive((_) => !_.group.optional)
+  //         )
+  //         .filter((_) => argsResult.args[_.name.canonical] === undefined)
+
   // dump({ args })
   return {
     args: argsFinal,
     errors,
   }
-}
-
-export const groupByWith = <T, K extends string>(items: T[], grouper: (item: T) => K): Record<K, T[]> => {
-  const result: Record<K, T[]> = {} as any
-  for (const item of items) {
-    const key = grouper(item)
-    if (!result[key]) result[key] = []
-    result[key].push(item)
-  }
-  return result
 }

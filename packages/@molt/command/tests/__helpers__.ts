@@ -1,10 +1,6 @@
-import { beforeEach } from 'vitest'
-import { mockProcessExit, mockProcessStdout } from 'vitest-mock-process'
+import { z } from 'zod'
 
-export let stdout: ReturnType<typeof mockProcessStdout>
-export let exit: ReturnType<typeof mockProcessExit>
-
-beforeEach(() => {
-  stdout = mockProcessStdout()
-  exit = mockProcessExit()
-})
+export const assertAssignable = <T>(_: T): [T] => 0 as any
+export const as = <T>(): T => undefined as any
+export const s = z.string()
+export const e = z.enum([`major`, `minor`, `patch`])

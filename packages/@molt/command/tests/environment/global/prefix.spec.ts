@@ -1,9 +1,9 @@
 import { Command } from '../../../src/index.js'
-import { stdout } from '../../__helpers__.js'
 import { environmentManager } from '../__helpers__.js'
 import { beforeEach, expect } from 'vitest'
 import { describe, it } from 'vitest'
 import { z } from 'zod'
+import { stdout } from '../../__mock__.js'
 
 it(`can be disabled`, () => {
   environmentManager.set(`foo`, `bar`)

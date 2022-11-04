@@ -4,6 +4,7 @@
   "description": "Type-safe CLI command definition and execution.",
   "type": "module",
   "scripts": {
+    "vitest": "vitest",
     "types:check": "tsc --noEmit",
     "test": "vitest",
     "clean": "tsc --build --clean",

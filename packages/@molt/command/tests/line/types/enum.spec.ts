@@ -1,7 +1,7 @@
 import { Command } from '../../../src/index.js'
-import { stdout } from '../../__helpers__.js'
 import { describe, expect, it } from 'vitest'
 import { z } from 'zod'
+import { stdout } from '../../__mock__.js'
 
 describe(`errors`, () => {
   it(`when argument missing (last position)`, () => {

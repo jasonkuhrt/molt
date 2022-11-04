@@ -1,9 +1,18 @@
 import type { Value } from './Args/types.js'
 import type { ParameterSpec } from './ParameterSpec/index.js'
-import type { FlagName } from '@molt/types'
 import { Alge } from 'alge'
 import camelCase from 'lodash.camelcase'
 import { z } from 'zod'
+
+export const groupByWith = <T, K extends string>(items: T[], grouper: (item: T) => K): Record<K, T[]> => {
+  const result: Record<K, T[]> = {} as any
+  for (const item of items) {
+    const key = grouper(item)
+    if (!result[key]) result[key] = []
+    result[key].push(item)
+  }
+  return result
+}
 
 export const stripeDashPrefix = (flagNameInput: string): string => {
   return flagNameInput.replace(/^-+/, ``)

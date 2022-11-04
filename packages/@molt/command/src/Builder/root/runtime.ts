@@ -1,12 +1,12 @@
-import { Alge } from 'alge'
-import console from 'console'
+import { Args } from '../../Args/index.js'
 import { Help } from '../../Help/index.js'
 import { getLowerCaseEnvironment, lowerCaseObjectKeys } from '../../helpers.js'
-import { Args } from '../../Args/index.js'
 import { ParameterSpec } from '../../ParameterSpec/index.js'
 import { Settings } from '../../Settings/index.js'
 import * as ExclusiveBuilder from '../exclusive/constructor.js'
 import type { RootBuilder } from './types.js'
+import { Alge } from 'alge'
+import console from 'console'
 
 type RuntimeState = {
   settings: Settings.Normalized
@@ -42,6 +42,7 @@ const create = () => {
       return chain
     },
     parse: (argInputs) => {
+      const testDebuggingNoExit = process.env['testing_molt'] === 'true'
       const argInputsLine = argInputs?.line ?? process.argv.slice(2)
       const argInputsEnvironment = argInputs?.environment
         ? lowerCaseObjectKeys(argInputs.environment)
@@ -52,35 +53,36 @@ const create = () => {
       }
       // eslint-disable-next-line
       const argsResult = Args.parse(specsResult.specs, argInputsLine, argInputsEnvironment)
-      // console.log({ result })
-      const missingArgs = specsResult.specs
-        .filter((_) =>
-          Alge.match(_)
-            .Basic((_) => !_.optional)
-            .Exclusive((_) => !_.group.optional)
-        )
-        .filter((_) => argsResult.args[_.name.canonical] === undefined)
+      // console.log({ argsResult })
 
       // eslint-disable-next-line
       // @ts-expect-error
       const askedForHelp = `help` in argsResult.args && argsResult.args.help === true
 
-      if (argsResult.errors.length > 0 && !askedForHelp) {
+      if (askedForHelp) {
+        process.stdout.write(Help.render(specsResult.specs, _.settings) + `\n`)
+        if (!testDebuggingNoExit) process.exit(0)
+        return undefined as never // When testing, with process.exit mock, we will reach this case
+      }
+
+      if (argsResult.errors.length > 0) {
         const errors =
           `Cannot run command, you made some mistakes:\n\n` +
           argsResult.errors.map((_) => _.message).join(`\nX `) +
           `\n\nHere are the docs for this command:\n`
         process.stdout.write(errors + `\n`)
         process.stdout.write(Help.render(specsResult.specs, _.settings) + `\n`)
-        if (_.settings.onError === `exit`) process.exit(1)
-        else throw new AggregateError(argsResult.errors)
-        return undefined as never // When testing we will reach this case
+        if (_.settings.onError === `exit` && !testDebuggingNoExit) {
+          process.exit(1)
+          return undefined as never // When testing, with process.exit mock, we will reach this case
+        }
+        throw new AggregateError(argsResult.errors)
       }
 
-      if ((_.settings.help && askedForHelp) || (_.settings.helpOnNoArguments && missingArgs.length > 0)) {
+      if (_.settings.helpOnNoArguments && Object.values(argsResult.args).length === 0) {
         process.stdout.write(Help.render(specsResult.specs, _.settings) + `\n`)
-        process.exit(0)
-        return undefined as never // When testing we will reach this case
+        if (!testDebuggingNoExit) process.exit(0)
+        throw new Error(`missing args`) // When testing, with process.exit mock, we will reach this case
       }
 
       return argsResult.args

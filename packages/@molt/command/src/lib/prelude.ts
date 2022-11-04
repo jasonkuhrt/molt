@@ -11,7 +11,7 @@ type IncludeWhere<T, U> = T extends U ? T : never
 
 export const partitionByTag = <Item extends { _tag: string }>(
   list: Item[]
-): { [k in Item['_tag']]: IncludeWhere<Item, { _tag: k }>[] } => {
+): { [k in Item['_tag']]?: IncludeWhere<Item, { _tag: k }>[] } => {
   const variants: Record<string, Item[]> = {}
   for (const item of list) {
     if (variants[item._tag] === undefined) variants[item._tag] = []

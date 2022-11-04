@@ -1,12 +1,10 @@
 import { Command } from '../../src/index.js'
 import { expectType } from 'tsd'
 import { expect, it } from 'vitest'
-import { z } from 'zod'
+import { s, e, as } from '../__helpers__.js'
 
 let c
-const as = <T>(): T => undefined as any
-const s = z.string()
-const e = z.enum([`major`, `minor`, `patch`])
+
 const settings = { onError: 'throw' as const, helpOnNoArguments: false }
 
 it(`works`, () => {
