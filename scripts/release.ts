@@ -47,8 +47,8 @@ const pkg = (await $Fs.readAsync(`package.json`, `json`)) as {
 if (!args.method) throw new Error(``)
 
 const newVersion = Alge.match(args.method)
-  .bump((bump) => Semver.inc(pkg.version, bump.value)!) // eslint-disable-line
-  .version((version) => version.value)
+  .bump((_) => Semver.inc(pkg.version, _.value)!) // eslint-disable-line
+  .version((_) => _.value)
   .done()
 
 const gitTagName = `${args.package}@${newVersion}`
