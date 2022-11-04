@@ -1,4 +1,5 @@
 import { Command } from '../../src/index.js'
+import { s } from '../_/helpers.js'
 import stripAnsi from 'strip-ansi'
 import { describe, expect, it } from 'vitest'
 import { mockProcessExit, mockProcessStdout } from 'vitest-mock-process'
@@ -8,14 +9,14 @@ const processStdout = mockProcessStdout()
 mockProcessExit()
 
 it(`if there is optional param it is shown`, () => {
-  Command.parameters({ a: z.string().optional() }).parse({ line: [`-h`] })
+  Command.parameters({ a: s.optional() }).parse({ line: [`-h`] })
   const output = processStdout.mock.lastCall?.[0] as string
   expect(stripAnsi(output)).toMatchSnapshot(`monochrome`)
   expect(output).toMatchSnapshot(`polychrome`)
 })
 
 it(`if parameter has description it is shown`, () => {
-  Command.parameters({ a: z.string().optional().describe(`Blah blah blah.`) }).parse({ line: [`-h`] })
+  Command.parameters({ a: s.optional().describe(`Blah blah blah.`) }).parse({ line: [`-h`] })
   const output = processStdout.mock.lastCall?.[0] as string
   expect(stripAnsi(output)).toMatchSnapshot(`monochrome`)
   expect(output).toMatchSnapshot(`polychrome`)
@@ -23,7 +24,7 @@ it(`if parameter has description it is shown`, () => {
 
 it(`long description wraps within column`, () => {
   Command.parameters({
-    a: z.string().optional().describe(`Blah blah blah. Blah blah blah. Blah blah blah.`),
+    a: s.optional().describe(`Blah blah blah. Blah blah blah. Blah blah blah.`),
   }).parse({ line: [`-h`] })
   const output = processStdout.mock.lastCall?.[0] as string
   expect(stripAnsi(output)).toMatchSnapshot(`monochrome`)
@@ -31,14 +32,14 @@ it(`long description wraps within column`, () => {
 })
 
 it(`if parameter has default it is shown`, () => {
-  Command.parameters({ foo: z.string().default(`bar`) }).parse({ line: [`-h`] })
+  Command.parameters({ foo: s.default(`bar`) }).parse({ line: [`-h`] })
   const output = processStdout.mock.lastCall?.[0] as string
   expect(stripAnsi(output)).toMatchSnapshot(`monochrome`)
   expect(output).toMatchSnapshot(`polychrome`)
 })
 
 it(`if parameter is optional without default then its default shows up as "undefined"`, () => {
-  Command.parameters({ foo: z.string().optional() }).parse({ line: [`-h`] })
+  Command.parameters({ foo: s.optional() }).parse({ line: [`-h`] })
   const output = processStdout.mock.lastCall?.[0] as string
   expect(stripAnsi(output)).toMatchSnapshot(`monochrome`)
   expect(output).toMatchSnapshot(`polychrome`)
@@ -46,7 +47,7 @@ it(`if parameter is optional without default then its default shows up as "undef
 
 it(`if there is an error trying to get default then a nice message is shown`, () => {
   Command.parameters({
-    foo: z.string().default(() => {
+    foo: s.default(() => {
       throw new Error(`whoops`)
     }),
   }).parse({ line: [`-h`] })
@@ -57,7 +58,7 @@ it(`if there is an error trying to get default then a nice message is shown`, ()
 
 it(`if there is an error trying to get default then a nice message is shown`, () => {
   Command.parameters({
-    foo: z.string().default(() => {
+    foo: s.default(() => {
       throw new Error(`whoops`)
     }),
   }).parse({ line: [`-h`] })
@@ -70,7 +71,7 @@ it(`enums do not mess up alignment when they are widest line in the column`, () 
   // prettier-ignore
   Command.parameters({
     foo: z.enum([`a`, `b`, `c`, `d`, `e`, `f`, `g`, `h`, `i`, `j`, `k`, `l`, `m`, `n`, `o`, `p`, `q`, `r`, `s`, `t`, `u`, `v`, `w`, `x`, `y`, `z`]),
-    bar: z.string().optional(),
+    bar: s.optional(),
   }).parse({line:[`-h`]})
   const output = processStdout.mock.lastCall?.[0] as string
   expect(stripAnsi(output)).toMatchSnapshot(`monochrome`)
@@ -123,7 +124,7 @@ describe(`enum`, () => {
 
 describe(`environment`, () => {
   it(`when environment is disabled then environment doc is not shown`, () => {
-    Command.parameters({ foo: z.string() })
+    Command.parameters({ foo: s })
       .settings({ parameters: { environment: false } })
       .parse({ line: [`-h`] })
     const output = processStdout.mock.lastCall?.[0] as string
@@ -131,7 +132,7 @@ describe(`environment`, () => {
     expect(output).toMatchSnapshot(`polychrome`)
   })
   it(`when environment is enabled it shows as the last column`, () => {
-    Command.parameters({ foo: z.string() })
+    Command.parameters({ foo: s })
       .settings({ parameters: { environment: true } })
       .parse({ line: [`-h`] })
     const output = processStdout.mock.lastCall?.[0] as string
@@ -139,7 +140,7 @@ describe(`environment`, () => {
     expect(output).toMatchSnapshot(`polychrome`)
   })
   it(`when environment is disabled for one parameter it has X indicating that`, () => {
-    Command.parameters({ foo: z.string(), bar: z.string() })
+    Command.parameters({ foo: s, bar: s })
       .settings({ parameters: { environment: { $default: true, foo: false } } })
       .parse({ line: [`-h`] })
     const output = processStdout.mock.lastCall?.[0] as string
@@ -147,7 +148,7 @@ describe(`environment`, () => {
     expect(output).toMatchSnapshot(`polychrome`)
   })
   it(`when environment has custom prefix it is displayed`, () => {
-    Command.parameters({ foo: z.string(), bar: z.string() })
+    Command.parameters({ foo: s, bar: s })
       .settings({ parameters: { environment: { $default: true, foo: { prefix: `moo` } } } })
       .parse({ line: [`-h`] })
     const output = processStdout.mock.lastCall?.[0] as string
@@ -155,7 +156,7 @@ describe(`environment`, () => {
     expect(output).toMatchSnapshot(`polychrome`)
   })
   it(`when environment has multiple custom prefix they are displayed`, () => {
-    Command.parameters({ foo: z.string(), bar: z.string() })
+    Command.parameters({ foo: s, bar: s })
       .settings({ parameters: { environment: { $default: true, foo: { prefix: [`moo`, `boo`] } } } })
       .parse({ line: [`-h`] })
     const output = processStdout.mock.lastCall?.[0] as string
@@ -163,11 +164,26 @@ describe(`environment`, () => {
     expect(output).toMatchSnapshot(`polychrome`)
   })
   it(`when environment has no prefix it is displayed`, () => {
-    Command.parameters({ foo: z.string(), bar: z.string() })
+    Command.parameters({ foo: s, bar: s })
       .settings({ parameters: { environment: { $default: true, foo: { prefix: false } } } })
       .parse({ line: [`-h`] })
     const output = processStdout.mock.lastCall?.[0] as string
     expect(stripAnsi(output)).toMatchSnapshot(`monochrome`)
     expect(output).toMatchSnapshot(`polychrome`)
+  })
+})
+
+describe(`exclusive`, () => {
+  describe(`optional`, () => {
+    it(`shows exclusive parameters as a group`, () => {
+      Command.parametersExclusive(`foo`, (_) =>
+        _.parameter(`b bar`, s).parameter(`z baz`, s).optional()
+      ).parse({
+        line: [`-h`],
+      })
+      const output = processStdout.mock.lastCall?.[0] as string
+      expect(stripAnsi(output)).toMatchSnapshot(`monochrome`)
+      expect(output).toMatchSnapshot(`polychrome`)
+    })
   })
 })

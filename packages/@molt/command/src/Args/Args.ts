@@ -1,5 +1,4 @@
 import { Errors } from '../Errors/index.js'
-import { groupByWith } from '../helpers.js'
 import { groupBy } from '../lib/prelude.js'
 import type { ParameterSpec } from '../ParameterSpec/index.js'
 import { Environment } from './Environment/index.js'
@@ -93,7 +92,7 @@ export const parse = (
    * 4. If a group has more than one parameter with an arg then error
    * 5. If a group has exactly one parameter with an arg then OK
    */
-  const exclusiveGroups = Object.values(groupByWith(specVariants.Exclusive ?? [], (spec) => spec.group.label))
+  const exclusiveGroups = Object.values(groupBy(specVariants.Exclusive ?? [], (spec) => spec.group.label))
 
   for (const specs of exclusiveGroups) {
     const group = specs[0]!.group // eslint-disable-line

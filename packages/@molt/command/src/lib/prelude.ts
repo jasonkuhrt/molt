@@ -21,7 +21,7 @@ export const partition = <Item>(list: Item[], partitioner: (item: Item) => boole
 }
 
 // prettier-ignore
-export function groupBy<Item extends object, Key extends string>(items: Item[], keyer: (item: Item) => Key): { [k in Key]?: Item[] }
+export function groupBy<Item extends object, Key extends string>(items: Item[], keyer: (item: Item) => Key): string extends Key ? Record<string,Item[]> : { [k in Key]?: Item[] }
 // prettier-ignore
 export function groupBy<Item extends object, Key extends keyof Item>(items: Item[], key: Key): { [k in Item[Key] & string]?: Include<Item, { [_ in Key]: k }>[] }
 // prettier-ignore
