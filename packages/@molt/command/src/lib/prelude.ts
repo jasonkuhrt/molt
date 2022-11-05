@@ -5,6 +5,8 @@ import { inspect } from 'node:util'
 export const dump = (...args: unknown[]) =>
   console.log(...args.map((arg) => inspect(arg, { depth: Infinity, colors: true })))
 
+type Include<T, U> = T extends U ? T : never
+
 export const partition = <Item>(list: Item[], partitioner: (item: Item) => boolean): [Item[], Item[]] => {
   const left: Item[] = []
   const right: Item[] = []
@@ -18,20 +20,25 @@ export const partition = <Item>(list: Item[], partitioner: (item: Item) => boole
   return [left, right]
 }
 
-export const keyBy = <Item extends object, Key extends keyof Item>(
-  items: Item[],
-  key: Key
-): Item[Key] extends string ? Record<Item[Key], Item> : Record<string, never> => {
-  const result: Record<string, Item> = {}
+// prettier-ignore
+export function groupBy<Item extends object, Key extends string>(items: Item[], keyer: (item: Item) => Key): string extends Key ? Record<string,Item[]> : { [k in Key]?: Item[] }
+// prettier-ignore
+export function groupBy<Item extends object, Key extends keyof Item>(items: Item[], key: Key): { [k in Item[Key] & string]?: Include<Item, { [_ in Key]: k }>[] }
+// prettier-ignore
+//eslint-disable-next-line
+export function groupBy<Item extends object, Key extends keyof Item>(items: Item[], key: Key | ((item: Item) => string)): { [k in Item[Key] & string]?: Item[] } {
+  const result: Record<string, Item[]> = {}
 
   for (const item of items) {
-    const keyValue = item[key]
+    const keyValue = typeof key === `function`? key(item) : item[key]
     if (typeof keyValue !== `string`) {
-      throw Error(`Invalid key type: ${typeof item[key]}`)
+      const message = typeof key === `function` ? `Invalid key type returned from keyer function: ${typeof keyValue}` : `Invalid key type: ${typeof keyValue}`
+      throw Error(message)
     }
-    result[keyValue] = item
+    if (!Array.isArray(result[keyValue])) result[keyValue] = []
+    result[keyValue]! .push( item) // eslint-disable-line
   }
 
   // eslint-disable-next-line
-  return result as any
+  return result as any // eslint-disable-line
 }

@@ -2,7 +2,11 @@ import snakeCase from 'lodash.snakecase'
 import stringLength from 'string-length'
 import stripAnsi from 'strip-ansi'
 
-export type Lines = string[]
+export type Line = string
+
+export type Column = Line[]
+
+export type Row = Column[]
 
 export const line = (text = ``): string => `${text}\n`
 
@@ -41,7 +45,7 @@ export const row = (
     return {
       lines: _.lines,
       width: _.width ?? _.lines.reduce((widthSoFar, line) => Math.max(widthSoFar, line.length), 0),
-      separator: _.separator ?? chars.space.repeat(3),
+      separator: _.separator ?? defaultColumnSeparator,
     }
   })
   const lineCount = Math.max(...columns.map((_) => _.lines.length))
@@ -106,10 +110,20 @@ export const chars = {
   space,
 }
 
-export const indent = (text: string, size = 2): string => {
-  return indentLines(text.split(chars.newline), size).join(chars.newline)
+export const indentBlock = (text: string, symbol = `  `): string => {
+  return indentColumn(text.split(chars.newline), symbol).join(chars.newline)
 }
 
-export const indentLines = (lines: string[], size = 2): string[] => {
-  return lines.map((line) => space.repeat(size) + line)
+export const indentColumn = (column: Column, symbol = `  `): Column => {
+  return column.map((line) => symbol + line)
 }
+
+export const indentBlockWith = (text: string, indenter: (line: Line, index: number) => Line): string => {
+  return indentColumnWith(text.split(chars.newline), indenter).join(chars.newline)
+}
+
+export const indentColumnWith = (column: Column, indenter: (line: Line, index: number) => Line): Column => {
+  return column.map((line, index) => indenter(line, index) + line)
+}
+
+export const defaultColumnSeparator = chars.space.repeat(3)

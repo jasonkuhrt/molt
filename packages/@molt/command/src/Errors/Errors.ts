@@ -1,4 +1,5 @@
-import type { Spec } from '../ParameterSpec/ParametersSpec.js'
+import type { Args } from '../Args/index.js'
+import type { ParameterSpec } from '../ParameterSpec/index.js'
 import type { z } from 'zod'
 
 export class ErrorMissingFlagArgument extends Error {
@@ -9,8 +10,25 @@ export class ErrorMissingFlagArgument extends Error {
 }
 
 export class ErrorMissingArgument extends Error {
-  constructor(params: { spec: Spec }) {
+  constructor(params: { spec: ParameterSpec.Normalized }) {
     const message = `Missing argument for flag "${params.spec.name.canonical}".`
+    super(message)
+  }
+}
+
+export class ErrorMissingArgumentForMutuallyExclusiveParameters extends Error {
+  constructor(params: { group: ParameterSpec.Exclusive }) {
+    const message = `Missing argument for one of the following paramters: ${Object.values(params.group.values)
+      .map((_) => _.name.canonical)
+      .join(`, `)}`
+    super(message)
+  }
+}
+export class ErrorArgsToMultipleMutuallyExclusiveParameters extends Error {
+  constructor(params: { offenses: { spec: ParameterSpec.Normalized.Exclusive; arg: Args.Argument }[] }) {
+    const message = `Arguments given to multiple mutually exclusive parameters: ${params.offenses
+      .map((_) => _.spec.name.canonical)
+      .join(`, `)}`
     super(message)
   }
 }

@@ -1,5 +1,5 @@
 import { Command } from '../../../src/index.js'
-import { stdout } from '../../__helpers__.js'
+import { stdout } from '../../_/mocks.js'
 import { describe, expect, it } from 'vitest'
 import { z } from 'zod'
 

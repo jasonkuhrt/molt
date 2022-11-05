@@ -1,5 +1,5 @@
 import { Command } from '../../../src/index.js'
-import { stdout } from '../../__helpers__.js'
+import { stdout } from '../../_/mocks.js'
 import { environmentManager } from '../__helpers__.js'
 import { expect } from 'vitest'
 import { it } from 'vitest'

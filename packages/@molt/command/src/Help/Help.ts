@@ -1,3 +1,4 @@
+import { groupBy } from '../lib/prelude.js'
 import { Text } from '../lib/Text/index.js'
 import { column } from '../lib/Text/Text.js'
 import { ZodHelpers } from '../lib/zodHelpers/index.js'
@@ -9,6 +10,8 @@ import snakeCase from 'lodash.snakecase'
 import stringLength from 'string-length'
 import stripAnsi from 'strip-ansi'
 import type { z } from 'zod'
+
+type SomeEnumType = z.ZodEnum<[string, ...string[]]>
 
 interface ColumnSpecs {
   name: {
@@ -44,25 +47,34 @@ interface RenderSettings {
 }
 
 export const render = (
-  specs: ParameterSpec.Spec[],
+  specs_: ParameterSpec.Normalized[],
   settings: Settings.Normalized,
   _settings?: RenderSettings
 ) => {
-  const specsWithoutHelp = specs.filter((_) => _.name.canonical !== `help`).sort((_) => (_.optional ? 1 : -1))
-  const isAcceptsAnyEnvironmentArgs = specs.filter((_) => _.environment?.enabled).length > 0
+  const allSpecs = specs_
+  const specsByKind = groupBy(specs_, `_tag`)
+  const basicSpecs = specsByKind.Basic ?? []
+  const allSpecsWithoutHelp = allSpecs
+    .filter((_) => _.name.canonical !== `help`)
+    .sort((_) => (_._tag === `Exclusive` ? (_.group.optional ? 1 : -1) : _.optional ? 1 : -1))
+
+  const basicSpecsWithoutHelp = basicSpecs
+    .filter((_) => _.name.canonical !== `help`)
+    .sort((_) => (_.optional ? 1 : -1))
+  const isAcceptsAnyEnvironmentArgs = basicSpecs.filter((_) => _.environment?.enabled).length > 0
   const isEnvironmentEnabled =
     Object.values(settings.parameters.environment).filter((_) => _.enabled).length > 0
 
   const columnSpecs: ColumnSpecs = {
     name: {
-      width: specs.reduce((width, spec) => Math.max(width, spec.name.canonical.length), 0),
+      width: allSpecs.reduce((width, spec) => Math.max(width, spec.name.canonical.length), 0),
     },
     typeAndDescription: {
-      width: specs.reduce((width, spec) => {
-        const maybeEnum = ZodHelpers.getEnum(spec.schema)
+      width: allSpecs.reduce((width, spec) => {
+        const maybeEnum = ZodHelpers.getEnum(spec.type)
         const typeLength = maybeEnum
           ? Math.max(...typeEnum(maybeEnum).map((_) => stripAnsi(_).length))
-          : spec.schemaPrimitive.length
+          : spec.typePrimitiveKind.length
         const descriptionLength = (spec.description ?? ``).length
         const contentWidth = Math.max(width, typeLength, descriptionLength)
         return Math.min(40, contentWidth)
@@ -71,7 +83,7 @@ export const render = (
     default: {
       width: Math.min(
         25,
-        specs.reduce(
+        basicSpecs.reduce(
           (width, spec) => Math.max(width, ...parameterDefault(25, spec).map((_) => stringLength(_))),
           0
         )
@@ -83,11 +95,15 @@ export const render = (
     },
   }
 
-  let help = Text.line()
-  help += title(`PARAMETERS`)
-  help += Text.line()
+  let str = Text.line()
 
-  help += Text.indent(
+  /**
+   * Render header
+   */
+
+  str += title(`PARAMETERS`)
+  str += Text.line()
+  str += Text.indentBlock(
     Text.row([
       { lines: [chalk.underline.gray(`Name`)], ...columnSpecs.name },
       { lines: [chalk.underline.gray(`Type/Description`)], ...columnSpecs.typeAndDescription },
@@ -106,11 +122,15 @@ export const render = (
         : []),
     ])
   )
-  help += Text.line()
+  str += Text.line()
 
-  if (specsWithoutHelp.length > 0) {
-    help += Text.indent(
-      parameters(specsWithoutHelp, settings, {
+  /**
+   * Render basic parameters
+   */
+
+  if (basicSpecsWithoutHelp.length > 0) {
+    str += Text.indentBlock(
+      basicParameters(basicSpecsWithoutHelp, settings, {
         columnSpecs,
         environment: isAcceptsAnyEnvironmentArgs,
         isEnvironmentEnabled,
@@ -118,7 +138,25 @@ export const render = (
     )
   }
 
-  help += Text.line()
+  /**
+   * Render exclusive parameters
+   */
+
+  const groups = Object.values(groupBy(specsByKind.Exclusive ?? [], (_) => _.group.label)).map(
+    (_) => _[0]!.group // eslint-disable-line
+  )
+  if (groups.length > 0) {
+    str += exclusiveGroups(groups, settings, {
+      columnSpecs,
+      environment: isAcceptsAnyEnvironmentArgs,
+      isEnvironmentEnabled,
+    })
+  }
+  str += Text.line()
+
+  /**
+   * Render Notes
+   */
 
   if (isAcceptsAnyEnvironmentArgs) {
     let notes = ``
@@ -126,15 +164,15 @@ export const render = (
     notes += `${Text.chars.lineHBold.repeat(80)}\n`
     notes += Text.row([
       { lines: [`(1) `] },
-      { separator: ``, lines: environmentNote(specsWithoutHelp, settings) },
+      { separator: ``, lines: environmentNote(allSpecsWithoutHelp, settings) },
     ])
-    help += chalk.gray(Text.indent(notes))
+    str += chalk.gray(Text.indentBlock(notes))
   }
 
-  return help
+  return str
 }
 
-const environmentNote = (specs: ParameterSpec.Spec[], settings: Settings.Normalized): string[] => {
+const environmentNote = (specs: ParameterSpec.Normalized[], settings: Settings.Normalized): string[] => {
   const isHasSpecsWithCustomEnvironmentNamespace =
     specs
       .filter((_) => _.environment?.enabled)
@@ -189,8 +227,8 @@ const environmentNote = (specs: ParameterSpec.Spec[], settings: Settings.Normali
   return Text.column(76, content)
 }
 
-const parameters = (
-  specs: ParameterSpec.Spec[],
+const basicParameters = (
+  specs: ParameterSpec.Normalized[],
   settings: Settings.Normalized,
   options: {
     columnSpecs: ColumnSpecs
@@ -201,74 +239,73 @@ const parameters = (
   let t = ``
   for (const spec of specs) {
     t += Text.line()
-    t += parameter(spec, settings, {
-      isEnvironmentEnabled: options.isEnvironmentEnabled,
-      columnSpecs: options.columnSpecs,
-    })
+    t += parameter(spec, settings, options)
+    t += Text.line()
+  }
+  return t
+}
+
+const exclusiveGroups = (
+  groups: ParameterSpec.Exclusive[],
+  settings: Settings.Normalized,
+  options: {
+    columnSpecs: ColumnSpecs
+    environment: boolean
+    isEnvironmentEnabled: boolean
+  }
+) => {
+  let t = ``
+  for (const g of groups) {
+    t += Text.line()
+    const widthToDefaultCol =
+      (options.columnSpecs.name.separator?.length ?? Text.defaultColumnSeparator.length) +
+      options.columnSpecs.name.width +
+      (options.columnSpecs.typeAndDescription.separator?.length ?? Text.defaultColumnSeparator.length) +
+      options.columnSpecs.typeAndDescription.width +
+      `  `.length
+    const header = chalk.gray(
+      Text.row([
+        { lines: [`┌─` + g.label + ` (mutually exclusive)`], width: widthToDefaultCol },
+        { lines: [g.optional ? `undefined` : labels.required] },
+      ])
+    )
+    t += header
+    t += Text.line()
+    for (const spec of Object.values(g.values)) {
+      t += Text.indentBlockWith(parameter(spec, settings, options), (_, index) =>
+        index === 0 ? chalk.yellow(`◒ `) : chalk.gray(`│ `)
+      )
+      t += Text.line()
+    }
+    t += chalk.gray(`└─`)
     t += Text.line()
   }
   return t
 }
 
 const parameter = (
-  spec: ParameterSpec.Spec,
+  spec: ParameterSpec.Normalized,
   settings: Settings.Normalized,
   options: {
     columnSpecs: ColumnSpecs
     isEnvironmentEnabled: boolean
   }
 ): string => {
-  const maybeZodEnum = ZodHelpers.getEnum(spec.schema)
   return Text.row(
     [
       {
-        lines: [
-          chalk.green(spec.name.canonical),
-          chalk.gray(spec.name.aliases.long.join(`, `)),
-          chalk.gray(spec.name.short ?? ``),
-          chalk.gray(spec.name.aliases.long.join(`, `)),
-        ],
+        lines: parameterName(spec),
         ...options.columnSpecs.name,
       },
       {
-        lines: [
-          ...(maybeZodEnum ? typeEnum(maybeZodEnum) : [chalk.green(spec.schemaPrimitive)]),
-          ...Text.column(options.columnSpecs.typeAndDescription.width, spec.description ?? ``),
-        ],
+        lines: parameterTypeAndDescription(spec, options.columnSpecs),
         ...options.columnSpecs.typeAndDescription,
       },
       {
         lines: parameterDefault(options.columnSpecs.default.width, spec),
         ...options.columnSpecs.default,
       },
-      ...(options.isEnvironmentEnabled
-        ? [
-            {
-              lines: spec.environment?.enabled
-                ? [
-                    chalk.blue(Text.chars.check) +
-                      (spec.environment.enabled && spec.environment.namespaces.length === 0
-                        ? ` ` + chalk.gray(Text.toEnvarNameCase(spec.name.canonical))
-                        : spec.environment.enabled &&
-                          spec.environment.namespaces.filter(
-                            // TODO settings normalized should store prefix in camel case
-                            (_) => !settings.parameters.environment.$default.prefix.includes(snakeCase(_))
-                          ).length > 0
-                        ? ` ` +
-                          chalk.gray(
-                            spec.environment.namespaces
-                              .map(
-                                (_) =>
-                                  `${Text.toEnvarNameCase(_)}_${Text.toEnvarNameCase(spec.name.canonical)}`
-                              )
-                              .join(` | `)
-                          )
-                        : ``),
-                  ]
-                : [chalk.gray(Text.chars.x)],
-            },
-          ]
-        : []),
+      ...(options.isEnvironmentEnabled ? [{ lines: parameterEnvironment(spec, settings) }] : []),
     ].map((_) => ({
       ..._,
       lines: _.lines.filter((_): _ is string => _ !== null && stripAnsi(_) !== ``),
@@ -276,7 +313,9 @@ const parameter = (
   )
 }
 
-const parameterDefault = (width: number, spec: ParameterSpec.Spec): Text.Lines => {
+const parameterDefault = (width: number, spec: ParameterSpec.Normalized): Text.Column => {
+  if (spec._tag === `Exclusive`) return [chalk.gray(`–`)]
+
   if (spec.optional) {
     if (spec.default) {
       try {
@@ -290,10 +329,59 @@ const parameterDefault = (width: number, spec: ParameterSpec.Spec): Text.Lines =
     }
     return [chalk.blue(`undefined`)]
   }
-  return [chalk.bold(chalk.black(chalk.bgRedBright(` REQUIRED `)))]
+  return [labels.required]
 }
 
-const typeEnum = (schema: z.ZodEnum<[string, ...string[]]>): Text.Lines => {
+const labels = {
+  required: chalk.bold(chalk.black(chalk.bgRedBright(` REQUIRED `))),
+}
+
+const parameterName = (spec: ParameterSpec.Normalized): Text.Column => {
+  return [
+    chalk.green(spec.name.canonical),
+    chalk.gray(spec.name.aliases.long.join(`, `)),
+    chalk.gray(spec.name.short ?? ``),
+    chalk.gray(spec.name.aliases.long.join(`, `)),
+  ]
+}
+
+const parameterTypeAndDescription = (
+  spec: ParameterSpec.Normalized,
+  columnSpecs: ColumnSpecs
+): Text.Column => {
+  const maybeZodEnum = ZodHelpers.getEnum(spec.type)
+  return [
+    ...(maybeZodEnum ? typeEnum(maybeZodEnum) : [chalk.green(spec.typePrimitiveKind)]),
+    ...Text.column(columnSpecs.typeAndDescription.width, spec.description ?? ``),
+  ]
+}
+
+const parameterEnvironment = (spec: ParameterSpec.Normalized, settings: Settings.Normalized): Text.Column => {
+  return spec.environment?.enabled
+    ? [
+        chalk.blue(Text.chars.check) +
+          (spec.environment.enabled && spec.environment.namespaces.length === 0
+            ? ` ` + chalk.gray(Text.toEnvarNameCase(spec.name.canonical))
+            : spec.environment.enabled &&
+              spec.environment.namespaces.filter(
+                // TODO settings normalized should store prefix in camel case
+                (_) => !settings.parameters.environment.$default.prefix.includes(snakeCase(_))
+              ).length > 0
+            ? ` ` +
+              chalk.gray(
+                spec.environment.namespaces
+                  .map((_) => `${Text.toEnvarNameCase(_)}_${Text.toEnvarNameCase(spec.name.canonical)}`)
+                  .join(` | `)
+              )
+            : ``),
+      ]
+    : [chalk.gray(Text.chars.x)]
+}
+
+/**
+ * Render an enum type into a column.
+ */
+const typeEnum = (schema: SomeEnumType): Text.Column => {
   const separator = chalk.yellow(` | `)
   const members = Object.values(schema.Values)
   const lines = columnFitEnumDoc(30, members).map((line) =>
@@ -304,6 +392,11 @@ const typeEnum = (schema: z.ZodEnum<[string, ...string[]]>): Text.Lines => {
   return members.length > 1 ? lines : [`${lines[0]!} ${chalk.gray(`(enum)`)}`]
 }
 
+/**
+ * Split an enum type across lines in accordance with fitting into a column width.
+ * The members are not flattened but kept as an array of members, hence the nested array
+ * data structure.
+ */
 const columnFitEnumDoc = (width: number, members: string[]): string[][] => {
   const separator = ` | `
   const lines: string[][] = []

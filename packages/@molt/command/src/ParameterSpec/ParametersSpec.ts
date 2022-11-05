@@ -1,35 +1,14 @@
-import { stripeDashPrefix, stripeNegatePrefix } from '../helpers.js'
-import { partition } from '../lib/prelude.js'
-import { ZodHelpers } from '../lib/zodHelpers/index.js'
-import type { Settings } from '../Settings/index.js'
-import camelCase from 'lodash.camelcase'
-import { z } from 'zod'
+export * from './input.js'
+export * from './normalized.js'
+export * from './parse.js'
+import { stripeNegatePrefix } from '../helpers.js'
+import type { Input } from './input.js'
+import type { Normalized } from './normalized.js'
+import type { z } from 'zod'
 
-/**
- * The normalized specification for a parameter.
- */
-export interface Spec {
-  schema: z.ZodType
-  schemaPrimitive: ZodHelpers.Primitive
-  optional: boolean
-  description: string | null
-  default: null | {
-    get: () => unknown
-  }
-  environment: null | {
-    enabled: boolean
-    namespaces: Array<string>
-  }
-  name: {
-    canonical: string
-    aliases: {
-      short: [...string[]]
-      long: [...string[]]
-    }
-  } & ({ long: string; short: null } | { long: null; short: string } | { long: string; short: string })
-}
+export type SomeExclusiveZodType = z.ZodString | z.ZodEnum<[string, ...string[]]> | z.ZodNumber | z.ZodBoolean
 
-export type SomeZodType =
+export type SomeBasicZodType =
   | z.ZodString
   | z.ZodEnum<[string, ...string[]]>
   | z.ZodNumber
@@ -37,95 +16,9 @@ export type SomeZodType =
   | z.ZodOptional<z.ZodString | z.ZodBoolean | z.ZodNumber | z.ZodEnum<[string, ...string[]]>>
   | z.ZodDefault<z.ZodString | z.ZodBoolean | z.ZodNumber | z.ZodEnum<[string, ...string[]]>>
 
-export type SomeSpecInput = Record<string, SomeZodType>
+export type SomeInputs = Record<string, Input>
 
-export const parse = (schema: SomeSpecInput, settings: Settings.Normalized): Spec[] => {
-  const schema_ = settings.help
-    ? {
-        ...schema,
-        '-h --help': z.boolean().default(false),
-      }
-    : schema
-  return Object.entries(schema_).map(([expression, schema]) => {
-    const names = expression
-      .trim()
-      .split(` `)
-      .map((exp) => exp.trim())
-      .map(stripeDashPrefix)
-      .map(camelCase)
-      .filter((exp) => exp.length > 0)
-
-    const [shorts, longs] = partition(names, (name) => name.length > 1)
-
-    // User should static error before hitting this at runtime thanks to
-    // @molt/types.
-    if (shorts.length === 0 && longs.length === 0) {
-      throw new Error(`Invalid parameter expression: ${expression}`)
-    }
-
-    /**
-     * Pick the first of both short/long groups as being the canonical forms of either group.
-     * Then get the overall canonical name for the parameter.
-     *
-     * We've checked about that both groups are not empty. Therefore we know we will have at least
-     * one name that thus satisfies the return type. Its tricky to convince TS of the union though
-     * so we just use non-null type casts on all the following name values.
-     */
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const canonicalShort = (shorts.shift() ?? null)!
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const canonicalLong = (longs.shift() ?? null)!
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const canonical = (canonicalLong ?? canonicalShort)!
-
-    // TODO check how to actually do this.
-    const isOptional = ZodHelpers.isOptional(schema)
-
-    // TODO check how to actually do this.
-    // eslint-disable-next-line
-    // @ts-expect-error todo
-    const hasDefault = typeof schema._def.defaultValue !== `undefined`
-
-    const hasEnvironment =
-      settings.parameters.environment[canonical]?.enabled ?? settings.parameters.environment.$default.enabled
-
-    const spec: Spec = {
-      schema,
-      description: schema.description ?? null,
-      optional: isOptional,
-      default: hasDefault
-        ? {
-            // @ts-expect-error todo
-            // eslint-disable-next-line
-            get: () => schema._def.defaultValue(),
-          }
-        : null,
-      schemaPrimitive: ZodHelpers.ZodPrimitiveToPrimitive[ZodHelpers.getZodPrimitive(schema)],
-      environment: hasEnvironment
-        ? {
-            enabled: hasEnvironment,
-            namespaces: (
-              settings.parameters.environment[canonical]?.prefix ??
-              settings.parameters.environment.$default.prefix
-            ).map((_) => camelCase(_)),
-          }
-        : null,
-      name: {
-        canonical: canonical,
-        long: canonicalLong,
-        short: canonicalShort,
-        aliases: {
-          long: longs,
-          short: shorts,
-        },
-      },
-    }
-
-    return spec
-  })
-}
-
-export const findByName = (name: string, specs: Spec[]): null | Spec => {
+export const findByName = (name: string, specs: Normalized[]): null | Normalized => {
   for (const spec of specs) {
     const result = hasName(spec, name)
     if (result !== null) return spec
@@ -135,7 +28,7 @@ export const findByName = (name: string, specs: Spec[]): null | Spec => {
 /**
  * Get all the names of a parameter in array form.
  */
-export const getNames = (spec: Spec): [string, ...string[]] => {
+export const getNames = (spec: Normalized): [string, ...string[]] => {
   return [
     ...spec.name.aliases.long,
     ...spec.name.aliases.short,
@@ -159,10 +52,10 @@ type NameHit =
 /**
  * Is one of the parameter's names the given name?
  */
-export const hasName = (spec: Spec, name: string): null | NameHit => {
+export const hasName = (spec: Normalized, name: string): null | NameHit => {
   const result = parameterSpecHasNameDo(spec, name, false)
 
-  if (spec.schemaPrimitive === `boolean`) {
+  if (spec.typePrimitiveKind === `boolean`) {
     const nameWithoutNegatePrefix = stripeNegatePrefix(name)
     if (nameWithoutNegatePrefix) {
       return parameterSpecHasNameDo(spec, nameWithoutNegatePrefix, true)
@@ -173,7 +66,7 @@ export const hasName = (spec: Spec, name: string): null | NameHit => {
 }
 
 const parameterSpecHasNameDo = (
-  spec: Spec,
+  spec: Normalized,
   name: string,
   negated: boolean
 ): null | { kind: 'long' | 'longAlias'; negated: boolean } | { kind: 'short' | 'shortAlias' } => {
