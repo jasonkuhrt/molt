@@ -56,7 +56,7 @@
     "fast-glob": "3.2.12",
     "tsd": "0.24.1",
     "fs-jetpack": "5.1.0",
-    "vitest": "^0.24.3",
+    "vitest": "0.25.0",
     "vitest-mock-process": "^1.0.4"
   }
 }
