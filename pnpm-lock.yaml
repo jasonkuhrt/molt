@@ -32,7 +32,7 @@ importers:
       semver-regex: 4.0.5
       ts-node: 10.9.1
       typescript: 4.8.4
-      vitest: 0.25.0
+      vitest: 0.25.1
       zod: 3.19.1
     dependencies:
       alge: 0.7.0-next.1
@@ -64,7 +64,7 @@ importers:
       semver-regex: 4.0.5
       ts-node: 10.9.1_c7vtmw4r5lhzpzjntnohxhujqu
       typescript: 4.8.4
-      vitest: 0.25.0
+      vitest: 0.25.1
       zod: 3.19.1
 
   packages/@molt/command:
@@ -84,7 +84,7 @@ importers:
       strip-ansi: '6'
       ts-toolbelt: ^9.6.0
       tsd: 0.24.1
-      vitest: 0.25.0
+      vitest: 0.25.1
       vitest-mock-process: ^1.0.4
       zod: ^3.19.1
     dependencies:
@@ -105,8 +105,8 @@ importers:
       fast-glob: 3.2.12
       fs-jetpack: 5.1.0
       tsd: 0.24.1
-      vitest: 0.25.0
-      vitest-mock-process: 1.0.4_vitest@0.25.0
+      vitest: 0.25.1
+      vitest-mock-process: 1.0.4_vitest@0.25.1
 
   packages/@molt/types:
     specifiers:
@@ -2925,17 +2925,17 @@ packages:
       fsevents: 2.3.2
     dev: true
 
-  /vitest-mock-process/1.0.4_vitest@0.25.0:
+  /vitest-mock-process/1.0.4_vitest@0.25.1:
     resolution: {integrity: sha512-WFoSE8MLTanQJkZUZSEd2/9+O1RJKqYn5tUNh3mW/SAh1VL7D7cfcxkn2F7DlhsFI0ZPILxto0OI6XEmGYFyRA==}
     peerDependencies:
       vitest: <1
     dependencies:
       deep-clone-fn: 1.1.0
-      vitest: 0.25.0
+      vitest: 0.25.1
     dev: true
 
-  /vitest/0.25.0:
-    resolution: {integrity: sha512-CVgBdKSeA27mowKC/C31Tx7ZBjRoyasq/yW7zoqUaCdKaOsjdzRUH5KgSL3eG36DzaaUsbnwWPUbAOtFz5k6tQ==}
+  /vitest/0.25.1:
+    resolution: {integrity: sha512-eH74h6MkuEgsqR4mAQZeMK9O0PROiKY+i+1GMz/fBi5A3L2ml5U7JQs7LfPU7+uWUziZyLHagl+rkyfR8SLhlA==}
     engines: {node: '>=v14.16.0'}
     hasBin: true
     peerDependencies:
