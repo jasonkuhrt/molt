@@ -2,7 +2,7 @@
   "name": "molt",
   "repository": "git@github.com:jasonkuhrt/molt.git",
   "author": "Jason Kuhrt",
-  "packageManager": "pnpm@7.14.2",
+  "packageManager": "pnpm@7.15.0",
   "license": "MIT",
   "type": "module",
   "scripts": {
