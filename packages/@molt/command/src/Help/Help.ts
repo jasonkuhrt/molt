@@ -140,7 +140,6 @@ export const render = (
   /**
    * Render basic parameters
    */
-  console.log(columnSpecs)
 
   if (basicSpecsWithoutHelp.length > 0) {
     str += Text.indentBlock(
