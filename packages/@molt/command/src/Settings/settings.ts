@@ -74,13 +74,13 @@ export const change = (current: Normalized, input: Input<{}>): void => {
       } else {
         // As soon as the settings begin to specify explicit parameter settings
         // AND there is NO explicit default toggle setting, then we disable all the rest by default.
+        // prettier-ignore
         if (
           input.parameters.environment.$default === undefined ||
-          (typeof input.parameters.environment.$default !== `boolean` &&
-            input.parameters.environment.$default.enabled === undefined)
+          typeof input.parameters.environment.$default !== 'boolean' && input.parameters.environment.$default.enabled === undefined
         ) {
-          current.parameters.environment.$default.enabled =
-            Object.keys(input.parameters.environment).filter((k) => k !== `$default`).length === 0
+          const parameterEnvironmentSpecs = Object.keys(input.parameters.environment).filter((k) => k !== `$default`)
+          current.parameters.environment.$default.enabled = parameterEnvironmentSpecs.length === 0
         }
 
         for (const [parameterName, spec] of Object.entries(input.parameters.environment)) {

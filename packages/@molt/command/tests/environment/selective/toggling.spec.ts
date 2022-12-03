@@ -47,9 +47,8 @@ it(`can change default prefix and prfix for one parameter`, () => {
   expect(args).toMatchObject({ foo: `foo_env`, bar: `bar_env` })
 })
 
-describe(`when configuring parameters environment becomes opt-in`, () => {
+describe(`when configuring parameters, environment becomes opt-in`, () => {
   it(`with default not set`, () => {
-    environmentManager.set({ foo: `foo_env`, cli_param_bar: `foo_env`, cli_param_qux: `foo_env` })
     const args = Command.parameters({
       '--foo': z.string().default(`foo`),
       '--bar': z.string().default(`bar`),
@@ -62,11 +61,13 @@ describe(`when configuring parameters environment becomes opt-in`, () => {
           },
         },
       })
-      .parse({ line: [] })
+      .parse({
+        line: [],
+        environment: { foo: `foo_env`, cli_param_bar: `foo_env`, cli_param_qux: `foo_env` },
+      })
     expect(args).toMatchObject({ foo: `foo_env`, bar: `bar`, qux: `qux` })
   })
   it(`even with default configured`, () => {
-    environmentManager.set({ moo_foo: `foo_env`, moo_bar: `bar_env`, moo_qux: `qux_env` })
     const args = Command.parameters({
       '--foo': z.string().default(`foo`),
       '--bar': z.string().default(`bar`),
@@ -80,7 +81,7 @@ describe(`when configuring parameters environment becomes opt-in`, () => {
           },
         },
       })
-      .parse({ line: [] })
+      .parse({ line: [], environment: { moo_foo: `foo_env`, moo_bar: `bar_env`, moo_qux: `qux_env` } })
     expect(args).toMatchObject({ foo: `foo_env`, bar: `bar`, qux: `qux` })
   })
   describe(` unless...`, () => {
