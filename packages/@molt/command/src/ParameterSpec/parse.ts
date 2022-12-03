@@ -23,7 +23,7 @@ export const parse = (inputs: SomeInputs, settings: Settings.Normalized): Normal
   return Object.entries(inputsWithHelp).flatMap(([expression, input]): Normalized[] =>
     Alge.match(input)
       .Basic((_) => [parseBasic(expression, _, settings)])
-      .Exclusive((_) => parseExclusive(expression, _ as any, settings))
+      .Exclusive((_) => parseExclusive(expression, _ as any, settings)) // eslint-disable-line
       .done()
   )
 }

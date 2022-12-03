@@ -1,10 +1,7 @@
-import { Values } from '../../helpers.js'
 import type { ParameterSpec } from '../../ParameterSpec/index.js'
 import type { RawArgInputs } from '../root/types.js'
 import type { State } from '../State.js'
-import { Any } from 'ts-toolbelt'
-import { FlagName } from '@molt/types'
-import { z } from 'zod'
+import type { z } from 'zod'
 
 /**
  * This property is present to support internal functions. It is not intended to be used by you.
@@ -44,7 +41,7 @@ export type SomeBuilderExclusiveInitial = {
   _: any // eslint-disable-line
   parameter: (nameExpression: any, type: ParameterSpec.SomeExclusiveZodType) => any // eslint-disable-line
   optional: any // eslint-disable-line
-  default: any // eslint-disable-line
+  default: (tag: any, value: any) => any // eslint-disable-line
 }
 
 export type SomeBuilderMutuallyExclusiveAfterOptional = BuilderExclusiveAfterOptional<State.Base>

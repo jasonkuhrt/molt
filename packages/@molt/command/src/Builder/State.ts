@@ -84,7 +84,7 @@ export namespace State {
         [_ in Label]: {
           Optional: State['ParametersExclusive'][_]['Optional']
           Parameters: {
-            // @ts-ignore
+            // @ts-expect-error - Trust the name expression here...
             [_ in NameExpression as FlagName.Data.GetCanonicalName<FlagName.Parse<NameExpression>>]: {
               Schema: Type
               NameParsed: FlagName.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>

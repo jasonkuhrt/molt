@@ -280,7 +280,11 @@ const exclusiveGroups = (
         { lines: [`┌─` + g.label + ` (mutually exclusive)`], width: widthToDefaultCol },
         {
           lines: [
-            g.default ? `${g.default.tag}@${g.default.value}` : g.optional ? `undefined` : labels.required,
+            g.default
+              ? `${g.default.tag}@${String(g.default.value)}`
+              : g.optional
+              ? `undefined`
+              : labels.required,
           ],
         },
       ])

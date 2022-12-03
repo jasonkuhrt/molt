@@ -189,7 +189,7 @@ describe(`exclusive`, () => {
   describe(`default`, () => {
     it(`shows the group default`, () => {
       Command.parametersExclusive(`foo`, (_) =>
-        _.parameter(`b bar`, s).parameter(`z baz`, s).default('bar', 'bar_default')
+        _.parameter(`b bar`, s).parameter(`z baz`, s).default(`bar`, `bar_default`)
       ).parse({
         line: [`-h`],
       })

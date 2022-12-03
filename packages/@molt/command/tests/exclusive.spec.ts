@@ -3,7 +3,6 @@ import { Command } from '../src/index.js'
 import { as, e, s } from './_/helpers.js'
 import { expectType } from 'tsd'
 import { describe, expect, it } from 'vitest'
-import { Any } from 'ts-toolbelt'
 
 let c
 const settings: Settings.Input = { onError: `throw`, helpOnError: false }
@@ -72,7 +71,7 @@ describe(`required`, () => {
 })
 
 describe(`default`, () => {
-  it('method params are based on group params defined above', () => {
+  it(`method params are based on group params defined above`, () => {
     // prettier-ignore
     Command.parametersExclusive(`method`, ($$) => {
       const c = $$.parameter(`v version`, s).parameter(`b bump`, e)
@@ -85,7 +84,7 @@ describe(`default`, () => {
       return c
     })
   })
-  it('leads to non-optional type', () => {
+  it(`leads to non-optional type`, () => {
     const a = Command.parametersExclusive(`method`, ($$) =>
       $$.parameter(`v version`, s).parameter(`b bump`, e).default(`bump`, `major`)
     )
@@ -111,6 +110,6 @@ describe(`default`, () => {
     )
       .settings(settings)
       .parse()
-    expect(a.method).toMatchObject({ _tag: 'bump', value: 'patch' })
+    expect(a.method).toMatchObject({ _tag: `bump`, value: `patch` })
   })
 })

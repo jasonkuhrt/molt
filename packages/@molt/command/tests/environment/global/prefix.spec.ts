@@ -14,7 +14,7 @@ it(`can be disabled`, () => {
 it(`can be customized to a different prefix`, () => {
   const args = Command.parameters({ '--foo': z.string() })
     .settings({ parameters: { environment: { $default: { prefix: `FOO` } } } })
-    .parse({ line: [], environment: { FOO_foo: 'bar' } })
+    .parse({ line: [], environment: { FOO_foo: `bar` } })
   expect(args).toMatchObject({ foo: `bar` })
 })
 it(`can be customized to multiple accepted different prefixes`, () => {
