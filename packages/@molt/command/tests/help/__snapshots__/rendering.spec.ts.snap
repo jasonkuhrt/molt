@@ -4,7 +4,7 @@ exports[`enum > enum members are listed > monochrome 1`] = `
 "
 PARAMETERS
 
-  Name   Type/Description           Default      Environment (1)                         
+  Name   Type                       Default      Environment (1)                         
   
   foo    apple | dolphin | cab       REQUIRED    ✓          
   
@@ -22,7 +22,7 @@ exports[`enum > enum members are listed > polychrome 1`] = `
 "
 PARAMETERS
 
-  [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m           [4m[90mDefault[39m[24m      [4m[90mEnvironment (1)[39m[24m                         
+  [4m[90mName[39m[24m   [4m[90mType[39m[24m                       [4m[90mDefault[39m[24m      [4m[90mEnvironment (1)[39m[24m                         
   
   [32mfoo[39m    [32mapple[39m[33m | [39m[32mdolphin[39m[33m | [39m[32mcab[39m      [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m          
   
@@ -40,7 +40,7 @@ exports[`enum > optional enum members are listed > monochrome 1`] = `
 "
 PARAMETERS
 
-  Name   Type/Description           Default     Environment (1)                         
+  Name   Type                       Default     Environment (1)                         
   
   foo    apple | dolphin | cab      undefined   ✓          
   
@@ -58,7 +58,7 @@ exports[`enum > optional enum members are listed > polychrome 1`] = `
 "
 PARAMETERS
 
-  [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m           [4m[90mDefault[39m[24m     [4m[90mEnvironment (1)[39m[24m                         
+  [4m[90mName[39m[24m   [4m[90mType[39m[24m                       [4m[90mDefault[39m[24m     [4m[90mEnvironment (1)[39m[24m                         
   
   [32mfoo[39m    [32mapple[39m[33m | [39m[32mdolphin[39m[33m | [39m[32mcab[39m      [34mundefined[39m   [34m✓[39m          
   
@@ -76,7 +76,7 @@ exports[`enum > when there are many members they wrap > monochrome 1`] = `
 "
 PARAMETERS
 
-  Name   Type/Description                          Default      Environment (1)                         
+  Name   Type                                      Default      Environment (1)                         
   
   foo    apple | baby | cannabis | dinosaur         REQUIRED    ✓          
          fanna | goat | house | island | jake                              
@@ -95,7 +95,7 @@ exports[`enum > when there are many members they wrap > polychrome 1`] = `
 "
 PARAMETERS
 
-  [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m                          [4m[90mDefault[39m[24m      [4m[90mEnvironment (1)[39m[24m                         
+  [4m[90mName[39m[24m   [4m[90mType[39m[24m                                      [4m[90mDefault[39m[24m      [4m[90mEnvironment (1)[39m[24m                         
   
   [32mfoo[39m    [32mapple[39m[33m | [39m[32mbaby[39m[33m | [39m[32mcannabis[39m[33m | [39m[32mdinosaur[39m        [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m          
          [32mfanna[39m[33m | [39m[32mgoat[39m[33m | [39m[32mhouse[39m[33m | [39m[32misland[39m[33m | [39m[32mjake[39m                              
@@ -114,9 +114,9 @@ exports[`enum > when there is only one enum member it is prefixed with "enum:" t
 "
 PARAMETERS
 
-  Name   Type/Description      Default      Environment (1)                         
+  Name   Type              Default      Environment (1)                         
   
-  foo    apple (enum)           REQUIRED    ✓          
+  foo    apple (enum)       REQUIRED    ✓          
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -132,9 +132,9 @@ exports[`enum > when there is only one enum member it is prefixed with "enum:" t
 "
 PARAMETERS
 
-  [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m      [4m[90mEnvironment (1)[39m[24m                         
+  [4m[90mName[39m[24m   [4m[90mType[39m[24m              [4m[90mDefault[39m[24m      [4m[90mEnvironment (1)[39m[24m                         
   
-  [32mfoo[39m    [32mapple[39m [90m(enum)[39m          [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m          
+  [32mfoo[39m    [32mapple[39m [90m(enum)[39m      [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m          
   
 [90m  NOTES[39m
 [90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
@@ -150,7 +150,7 @@ exports[`enums do not mess up alignment when they are widest line in the column 
 "
 PARAMETERS
 
-  Name   Type/Description                       Default      Environment (1)                         
+  Name   Type                                   Default      Environment (1)                         
   
   foo    a | b | c | d | e | f | g | h | i       REQUIRED    ✓          
          k | l | m | n | o | p | q | r | s                              
@@ -173,7 +173,7 @@ exports[`enums do not mess up alignment when they are widest line in the column 
 "
 PARAMETERS
 
-  [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m                       [4m[90mDefault[39m[24m      [4m[90mEnvironment (1)[39m[24m                         
+  [4m[90mName[39m[24m   [4m[90mType[39m[24m                                   [4m[90mDefault[39m[24m      [4m[90mEnvironment (1)[39m[24m                         
   
   [32mfoo[39m    [32ma[39m[33m | [39m[32mb[39m[33m | [39m[32mc[39m[33m | [39m[32md[39m[33m | [39m[32me[39m[33m | [39m[32mf[39m[33m | [39m[32mg[39m[33m | [39m[32mh[39m[33m | [39m[32mi[39m      [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m          
          [32mk[39m[33m | [39m[32ml[39m[33m | [39m[32mm[39m[33m | [39m[32mn[39m[33m | [39m[32mo[39m[33m | [39m[32mp[39m[33m | [39m[32mq[39m[33m | [39m[32mr[39m[33m | [39m[32ms[39m                              
@@ -196,11 +196,11 @@ exports[`environment > when environment has custom prefix it is displayed > mono
 "
 PARAMETERS
 
-  Name   Type/Description      Default      Environment (1)                         
+  Name   Type         Default      Environment (1)                         
   
-  bar    string                 REQUIRED    ✓          
+  bar    string        REQUIRED    ✓          
   
-  foo    string                 REQUIRED    ✓ MOO_FOO                    
+  foo    string        REQUIRED    ✓ MOO_FOO                    
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -218,11 +218,11 @@ exports[`environment > when environment has custom prefix it is displayed > poly
 "
 PARAMETERS
 
-  [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m      [4m[90mEnvironment (1)[39m[24m                         
+  [4m[90mName[39m[24m   [4m[90mType[39m[24m         [4m[90mDefault[39m[24m      [4m[90mEnvironment (1)[39m[24m                         
   
-  [32mbar[39m    [32mstring[39m                [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m          
+  [32mbar[39m    [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m          
   
-  [32mfoo[39m    [32mstring[39m                [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m [90mMOO_FOO[39m                    
+  [32mfoo[39m    [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m [90mMOO_FOO[39m                    
   
 [90m  NOTES[39m
 [90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
@@ -240,11 +240,11 @@ exports[`environment > when environment has multiple custom prefix they are disp
 "
 PARAMETERS
 
-  Name   Type/Description      Default      Environment (1)                         
+  Name   Type         Default      Environment (1)                         
   
-  bar    string                 REQUIRED    ✓          
+  bar    string        REQUIRED    ✓          
   
-  foo    string                 REQUIRED    ✓ MOO_FOO | BOO_FOO                    
+  foo    string        REQUIRED    ✓ MOO_FOO | BOO_FOO                    
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -262,11 +262,11 @@ exports[`environment > when environment has multiple custom prefix they are disp
 "
 PARAMETERS
 
-  [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m      [4m[90mEnvironment (1)[39m[24m                         
+  [4m[90mName[39m[24m   [4m[90mType[39m[24m         [4m[90mDefault[39m[24m      [4m[90mEnvironment (1)[39m[24m                         
   
-  [32mbar[39m    [32mstring[39m                [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m          
+  [32mbar[39m    [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m          
   
-  [32mfoo[39m    [32mstring[39m                [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m [90mMOO_FOO | BOO_FOO[39m                    
+  [32mfoo[39m    [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m [90mMOO_FOO | BOO_FOO[39m                    
   
 [90m  NOTES[39m
 [90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
@@ -284,11 +284,11 @@ exports[`environment > when environment has no prefix it is displayed > monochro
 "
 PARAMETERS
 
-  Name   Type/Description      Default      Environment (1)                         
+  Name   Type         Default      Environment (1)                         
   
-  bar    string                 REQUIRED    ✓          
+  bar    string        REQUIRED    ✓          
   
-  foo    string                 REQUIRED    ✓ FOO                    
+  foo    string        REQUIRED    ✓ FOO                    
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -305,11 +305,11 @@ exports[`environment > when environment has no prefix it is displayed > polychro
 "
 PARAMETERS
 
-  [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m      [4m[90mEnvironment (1)[39m[24m                         
+  [4m[90mName[39m[24m   [4m[90mType[39m[24m         [4m[90mDefault[39m[24m      [4m[90mEnvironment (1)[39m[24m                         
   
-  [32mbar[39m    [32mstring[39m                [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m          
+  [32mbar[39m    [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m          
   
-  [32mfoo[39m    [32mstring[39m                [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m [90mFOO[39m                    
+  [32mfoo[39m    [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m [90mFOO[39m                    
   
 [90m  NOTES[39m
 [90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
@@ -326,11 +326,11 @@ exports[`environment > when environment is disabled for one parameter it has X i
 "
 PARAMETERS
 
-  Name   Type/Description      Default      Environment (1)                         
+  Name   Type         Default      Environment (1)                         
   
-  bar    string                 REQUIRED    ✓          
+  bar    string        REQUIRED    ✓          
   
-  foo    string                 REQUIRED    ✕          
+  foo    string        REQUIRED    ✕          
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -346,11 +346,11 @@ exports[`environment > when environment is disabled for one parameter it has X i
 "
 PARAMETERS
 
-  [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m      [4m[90mEnvironment (1)[39m[24m                         
+  [4m[90mName[39m[24m   [4m[90mType[39m[24m         [4m[90mDefault[39m[24m      [4m[90mEnvironment (1)[39m[24m                         
   
-  [32mbar[39m    [32mstring[39m                [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m          
+  [32mbar[39m    [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m          
   
-  [32mfoo[39m    [32mstring[39m                [1m[30m[101m REQUIRED [49m[39m[22m   [90m✕[39m          
+  [32mfoo[39m    [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m   [90m✕[39m          
   
 [90m  NOTES[39m
 [90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
@@ -366,9 +366,9 @@ exports[`environment > when environment is disabled then environment doc is not 
 "
 PARAMETERS
 
-  Name   Type/Description      Default   
+  Name   Type         Default   
   
-  foo    string                 REQUIRED 
+  foo    string        REQUIRED 
   
 
 "
@@ -378,9 +378,9 @@ exports[`environment > when environment is disabled then environment doc is not 
 "
 PARAMETERS
 
-  [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m   
+  [4m[90mName[39m[24m   [4m[90mType[39m[24m         [4m[90mDefault[39m[24m   
   
-  [32mfoo[39m    [32mstring[39m                [1m[30m[101m REQUIRED [49m[39m[22m
+  [32mfoo[39m    [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m
   
 
 "
@@ -390,9 +390,9 @@ exports[`environment > when environment is enabled it shows as the last column >
 "
 PARAMETERS
 
-  Name   Type/Description      Default      Environment (1)                         
+  Name   Type         Default      Environment (1)                         
   
-  foo    string                 REQUIRED    ✓          
+  foo    string        REQUIRED    ✓          
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -408,9 +408,9 @@ exports[`environment > when environment is enabled it shows as the last column >
 "
 PARAMETERS
 
-  [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m      [4m[90mEnvironment (1)[39m[24m                         
+  [4m[90mName[39m[24m   [4m[90mType[39m[24m         [4m[90mDefault[39m[24m      [4m[90mEnvironment (1)[39m[24m                         
   
-  [32mfoo[39m    [32mstring[39m                [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m          
+  [32mfoo[39m    [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m          
   
 [90m  NOTES[39m
 [90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
@@ -426,13 +426,13 @@ exports[`exclusive > optional > shows exclusive parameters as a group > monochro
 "
 PARAMETERS
 
-  Name   Type/Description      Default   Environment (1)                         
+  Name   Type         Default   Environment (1)                         
 
-┌─foo (mutually exclusive)     undefined
-◒ bar    string                –       ✓          
-│ b                                               
-◒ baz    string                –       ✓          
-│ z                                               
+┌─foo (mutually exclusive)   undefined
+◒ bar    string       –       ✓          
+│ b                                      
+◒ baz    string       –       ✓          
+│ z                                      
 └─
 
   NOTES
@@ -450,13 +450,13 @@ exports[`exclusive > optional > shows exclusive parameters as a group > polychro
 "
 PARAMETERS
 
-  [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m   [4m[90mEnvironment (1)[39m[24m                         
+  [4m[90mName[39m[24m   [4m[90mType[39m[24m         [4m[90mDefault[39m[24m   [4m[90mEnvironment (1)[39m[24m                         
 
-[90m┌─foo (mutually exclusive)     undefined[39m
-[33m◒ [39m[32mbar[39m    [32mstring[39m                [90m–[39m       [34m✓[39m          
-[90m│ [39m[90mb[39m                                               
-[33m◒ [39m[32mbaz[39m    [32mstring[39m                [90m–[39m       [34m✓[39m          
-[90m│ [39m[90mz[39m                                               
+[90m┌─foo (mutually exclusive)   undefined[39m
+[33m◒ [39m[32mbar[39m    [32mstring[39m       [90m–[39m       [34m✓[39m          
+[90m│ [39m[90mb[39m                                      
+[33m◒ [39m[32mbaz[39m    [32mstring[39m       [90m–[39m       [34m✓[39m          
+[90m│ [39m[90mz[39m                                      
 [90m└─[39m
 
 [90m  NOTES[39m
@@ -474,9 +474,9 @@ exports[`if parameter has default it is shown > monochrome 1`] = `
 "
 PARAMETERS
 
-  Name   Type/Description      Default   Environment (1)                         
+  Name   Type         Default   Environment (1)                         
   
-  foo    string                bar     ✓          
+  foo    string       bar     ✓          
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -492,9 +492,9 @@ exports[`if parameter has default it is shown > polychrome 1`] = `
 "
 PARAMETERS
 
-  [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m   [4m[90mEnvironment (1)[39m[24m                         
+  [4m[90mName[39m[24m   [4m[90mType[39m[24m         [4m[90mDefault[39m[24m   [4m[90mEnvironment (1)[39m[24m                         
   
-  [32mfoo[39m    [32mstring[39m                [34mbar[39m     [34m✓[39m          
+  [32mfoo[39m    [32mstring[39m       [34mbar[39m     [34m✓[39m          
   
 [90m  NOTES[39m
 [90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
@@ -506,13 +506,51 @@ PARAMETERS
 "
 `;
 
-exports[`if parameter is optional without default then its default shows up as "undefined" > monochrome 1`] = `
+exports[`if parameter has description it is shown > monochrome 1`] = `
 "
 PARAMETERS
 
   Name   Type/Description      Default     Environment (1)                         
   
-  foo    string                undefined   ✓          
+  a      string                undefined   ✓          
+  a      Blah blah blah.                              
+  
+  NOTES
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  (1) Parameters can be passed arguments via environment variables. Command line a             
+      rguments take precedence. Environment variable names are snake cased version             
+      s of the parameter name (or its aliases), case insensitive. They must be pre             
+      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
+        → CLI_PARAMETER_A=\\"...\\".                                                               
+"
+`;
+
+exports[`if parameter has description it is shown > polychrome 1`] = `
+"
+PARAMETERS
+
+  [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m     [4m[90mEnvironment (1)[39m[24m                         
+  
+  [32ma[39m      [32mstring[39m                [34mundefined[39m   [34m✓[39m          
+  [90ma[39m      Blah blah blah.                              
+  
+[90m  NOTES[39m
+[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
+[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m
+[90m      rguments take precedence. Environment variable names are snake cased version             [39m
+[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m
+[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m
+[90m        → [34mCLI_PARAMETER_[39m[90m[32mA[39m[90m=\\"...\\".                                                               [39m
+"
+`;
+
+exports[`if parameter is optional without default then its default shows up as "undefined" > monochrome 1`] = `
+"
+PARAMETERS
+
+  Name   Type         Default     Environment (1)                         
+  
+  foo    string       undefined   ✓          
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -528,9 +566,9 @@ exports[`if parameter is optional without default then its default shows up as "
 "
 PARAMETERS
 
-  [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m     [4m[90mEnvironment (1)[39m[24m                         
+  [4m[90mName[39m[24m   [4m[90mType[39m[24m         [4m[90mDefault[39m[24m     [4m[90mEnvironment (1)[39m[24m                         
   
-  [32mfoo[39m    [32mstring[39m                [34mundefined[39m   [34m✓[39m          
+  [32mfoo[39m    [32mstring[39m       [34mundefined[39m   [34m✓[39m          
   
 [90m  NOTES[39m
 [90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
@@ -542,52 +580,14 @@ PARAMETERS
 "
 `;
 
-exports[`if there are one or more parameter descriptions then call the "type" col header "type/description" > monochrome 1`] = `
-"
-PARAMETERS
-
-  Name   Type/Description          Default     Environment (1)                         
-  
-  a      string                    undefined   ✓          
-  a      Blah blah blah blah.                             
-  
-  NOTES
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  (1) Parameters can be passed arguments via environment variables. Command line a             
-      rguments take precedence. Environment variable names are snake cased version             
-      s of the parameter name (or its aliases), case insensitive. They must be pre             
-      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
-        → CLI_PARAMETER_A=\\"...\\".                                                               
-"
-`;
-
-exports[`if there are one or more parameter descriptions then call the "type" col header "type/description" > polychrome 1`] = `
-"
-PARAMETERS
-
-  [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m          [4m[90mDefault[39m[24m     [4m[90mEnvironment (1)[39m[24m                         
-  
-  [32ma[39m      [32mstring[39m                    [34mundefined[39m   [34m✓[39m          
-  [90ma[39m      Blah blah blah blah.                             
-  
-[90m  NOTES[39m
-[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
-[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m
-[90m      rguments take precedence. Environment variable names are snake cased version             [39m
-[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m
-[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m
-[90m        → [34mCLI_PARAMETER_[39m[90m[32mA[39m[90m=\\"...\\".                                                               [39m
-"
-`;
-
 exports[`if there is an error trying to get default then a nice message is shown > monochrome 1`] = `
 "
 PARAMETERS
 
-  Name   Type/Description      Default                     Environment (1)                         
+  Name   Type         Default                     Environment (1)                         
   
-  foo    string                Error trying to render th   ✓          
-                               is default: whoops                     
+  foo    string       Error trying to render th   ✓          
+                      is default: whoops                     
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -603,10 +603,10 @@ exports[`if there is an error trying to get default then a nice message is shown
 "
 PARAMETERS
 
-  Name   Type/Description      Default                     Environment (1)                         
+  Name   Type         Default                     Environment (1)                         
   
-  foo    string                Error trying to render th   ✓          
-                               is default: whoops                     
+  foo    string       Error trying to render th   ✓          
+                      is default: whoops                     
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -622,10 +622,10 @@ exports[`if there is an error trying to get default then a nice message is shown
 "
 PARAMETERS
 
-  [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m                     [4m[90mEnvironment (1)[39m[24m                         
+  [4m[90mName[39m[24m   [4m[90mType[39m[24m         [4m[90mDefault[39m[24m                     [4m[90mEnvironment (1)[39m[24m                         
   
-  [32mfoo[39m    [32mstring[39m                [1m[31mError trying to render th[39m[22m   [34m✓[39m          
-                               [1m[31mis default: whoops[39m[22m                     
+  [32mfoo[39m    [32mstring[39m       [1m[31mError trying to render th[39m[22m   [34m✓[39m          
+                      [1m[31mis default: whoops[39m[22m                     
   
 [90m  NOTES[39m
 [90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
@@ -641,10 +641,10 @@ exports[`if there is an error trying to get default then a nice message is shown
 "
 PARAMETERS
 
-  [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m                     [4m[90mEnvironment (1)[39m[24m                         
+  [4m[90mName[39m[24m   [4m[90mType[39m[24m         [4m[90mDefault[39m[24m                     [4m[90mEnvironment (1)[39m[24m                         
   
-  [32mfoo[39m    [32mstring[39m                [1m[31mError trying to render th[39m[22m   [34m✓[39m          
-                               [1m[31mis default: whoops[39m[22m                     
+  [32mfoo[39m    [32mstring[39m       [1m[31mError trying to render th[39m[22m   [34m✓[39m          
+                      [1m[31mis default: whoops[39m[22m                     
   
 [90m  NOTES[39m
 [90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
@@ -660,10 +660,10 @@ exports[`if there is optional param it is shown > monochrome 1`] = `
 "
 PARAMETERS
 
-  Name   Type/Description      Default     Environment (1)                         
+  Name   Type         Default     Environment (1)                         
   
-  a      string                undefined   ✓          
-  a                                                   
+  a      string       undefined   ✓          
+  a                                          
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -679,10 +679,10 @@ exports[`if there is optional param it is shown > polychrome 1`] = `
 "
 PARAMETERS
 
-  [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m     [4m[90mEnvironment (1)[39m[24m                         
+  [4m[90mName[39m[24m   [4m[90mType[39m[24m         [4m[90mDefault[39m[24m     [4m[90mEnvironment (1)[39m[24m                         
   
-  [32ma[39m      [32mstring[39m                [34mundefined[39m   [34m✓[39m          
-  [90ma[39m                                                   
+  [32ma[39m      [32mstring[39m       [34mundefined[39m   [34m✓[39m          
+  [90ma[39m                                          
   
 [90m  NOTES[39m
 [90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m

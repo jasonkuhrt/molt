@@ -52,7 +52,7 @@ export const render = (
   _settings?: RenderSettings
 ) => {
   const allSpecs = specs_
-  // const specsWithDescription = allSpecs.filter((_) => _.description !== null)
+  const specsWithDescription = allSpecs.filter((_) => _.description !== null)
   const specsByKind = groupBy(specs_, `_tag`)
   const basicSpecs = specsByKind.Basic ?? []
   const allSpecsWithoutHelp = allSpecs
@@ -68,8 +68,7 @@ export const render = (
 
   const columnTitles = {
     name: `Name`,
-    // typeDescription: specsWithDescription.length > 0 ? `Type/Description` : `Type`,
-    typeDescription: `Type/Description`,
+    typeDescription: specsWithDescription.length > 0 ? `Type/Description` : `Type`,
     default: `Default`,
     environment: isEnvironmentEnabled ? `Environment (1)` : null,
   }
