@@ -116,7 +116,7 @@ PARAMETERS
 
   Name   Type/Description      Default      Environment (1)                         
   
-  foo    apple (enum)       REQUIRED    ✓          
+  foo    apple (enum)           REQUIRED    ✓          
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -134,7 +134,7 @@ PARAMETERS
 
   [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m      [4m[90mEnvironment (1)[39m[24m                         
   
-  [32mfoo[39m    [32mapple[39m [90m(enum)[39m      [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m          
+  [32mfoo[39m    [32mapple[39m [90m(enum)[39m          [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m          
   
 [90m  NOTES[39m
 [90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
@@ -198,9 +198,9 @@ PARAMETERS
 
   Name   Type/Description      Default      Environment (1)                         
   
-  bar    string        REQUIRED    ✓          
+  bar    string                 REQUIRED    ✓          
   
-  foo    string        REQUIRED    ✓ MOO_FOO                    
+  foo    string                 REQUIRED    ✓ MOO_FOO                    
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -220,9 +220,9 @@ PARAMETERS
 
   [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m      [4m[90mEnvironment (1)[39m[24m                         
   
-  [32mbar[39m    [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m          
+  [32mbar[39m    [32mstring[39m                [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m          
   
-  [32mfoo[39m    [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m [90mMOO_FOO[39m                    
+  [32mfoo[39m    [32mstring[39m                [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m [90mMOO_FOO[39m                    
   
 [90m  NOTES[39m
 [90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
@@ -242,9 +242,9 @@ PARAMETERS
 
   Name   Type/Description      Default      Environment (1)                         
   
-  bar    string        REQUIRED    ✓          
+  bar    string                 REQUIRED    ✓          
   
-  foo    string        REQUIRED    ✓ MOO_FOO | BOO_FOO                    
+  foo    string                 REQUIRED    ✓ MOO_FOO | BOO_FOO                    
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -264,9 +264,9 @@ PARAMETERS
 
   [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m      [4m[90mEnvironment (1)[39m[24m                         
   
-  [32mbar[39m    [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m          
+  [32mbar[39m    [32mstring[39m                [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m          
   
-  [32mfoo[39m    [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m [90mMOO_FOO | BOO_FOO[39m                    
+  [32mfoo[39m    [32mstring[39m                [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m [90mMOO_FOO | BOO_FOO[39m                    
   
 [90m  NOTES[39m
 [90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
@@ -286,9 +286,9 @@ PARAMETERS
 
   Name   Type/Description      Default      Environment (1)                         
   
-  bar    string        REQUIRED    ✓          
+  bar    string                 REQUIRED    ✓          
   
-  foo    string        REQUIRED    ✓ FOO                    
+  foo    string                 REQUIRED    ✓ FOO                    
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -307,9 +307,9 @@ PARAMETERS
 
   [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m      [4m[90mEnvironment (1)[39m[24m                         
   
-  [32mbar[39m    [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m          
+  [32mbar[39m    [32mstring[39m                [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m          
   
-  [32mfoo[39m    [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m [90mFOO[39m                    
+  [32mfoo[39m    [32mstring[39m                [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m [90mFOO[39m                    
   
 [90m  NOTES[39m
 [90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
@@ -328,9 +328,9 @@ PARAMETERS
 
   Name   Type/Description      Default      Environment (1)                         
   
-  bar    string        REQUIRED    ✓          
+  bar    string                 REQUIRED    ✓          
   
-  foo    string        REQUIRED    ✕          
+  foo    string                 REQUIRED    ✕          
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -348,9 +348,9 @@ PARAMETERS
 
   [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m      [4m[90mEnvironment (1)[39m[24m                         
   
-  [32mbar[39m    [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m          
+  [32mbar[39m    [32mstring[39m                [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m          
   
-  [32mfoo[39m    [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m   [90m✕[39m          
+  [32mfoo[39m    [32mstring[39m                [1m[30m[101m REQUIRED [49m[39m[22m   [90m✕[39m          
   
 [90m  NOTES[39m
 [90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
@@ -368,7 +368,7 @@ PARAMETERS
 
   Name   Type/Description      Default   
   
-  foo    string        REQUIRED 
+  foo    string                 REQUIRED 
   
 
 "
@@ -380,7 +380,7 @@ PARAMETERS
 
   [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m   
   
-  [32mfoo[39m    [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m
+  [32mfoo[39m    [32mstring[39m                [1m[30m[101m REQUIRED [49m[39m[22m
   
 
 "
@@ -392,7 +392,7 @@ PARAMETERS
 
   Name   Type/Description      Default      Environment (1)                         
   
-  foo    string        REQUIRED    ✓          
+  foo    string                 REQUIRED    ✓          
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -410,7 +410,7 @@ PARAMETERS
 
   [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m      [4m[90mEnvironment (1)[39m[24m                         
   
-  [32mfoo[39m    [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m          
+  [32mfoo[39m    [32mstring[39m                [1m[30m[101m REQUIRED [49m[39m[22m   [34m✓[39m          
   
 [90m  NOTES[39m
 [90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
@@ -428,11 +428,11 @@ PARAMETERS
 
   Name   Type/Description      Default   Environment (1)                         
 
-┌─foo (mutually exclusive)   undefined
-◒ bar    string       –       ✓          
-│ b                                      
-◒ baz    string       –       ✓          
-│ z                                      
+┌─foo (mutually exclusive)     undefined
+◒ bar    string                –       ✓          
+│ b                                               
+◒ baz    string                –       ✓          
+│ z                                               
 └─
 
   NOTES
@@ -452,11 +452,11 @@ PARAMETERS
 
   [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m   [4m[90mEnvironment (1)[39m[24m                         
 
-[90m┌─foo (mutually exclusive)   undefined[39m
-[33m◒ [39m[32mbar[39m    [32mstring[39m       [90m–[39m       [34m✓[39m          
-[90m│ [39m[90mb[39m                                      
-[33m◒ [39m[32mbaz[39m    [32mstring[39m       [90m–[39m       [34m✓[39m          
-[90m│ [39m[90mz[39m                                      
+[90m┌─foo (mutually exclusive)     undefined[39m
+[33m◒ [39m[32mbar[39m    [32mstring[39m                [90m–[39m       [34m✓[39m          
+[90m│ [39m[90mb[39m                                               
+[33m◒ [39m[32mbaz[39m    [32mstring[39m                [90m–[39m       [34m✓[39m          
+[90m│ [39m[90mz[39m                                               
 [90m└─[39m
 
 [90m  NOTES[39m
@@ -476,7 +476,7 @@ PARAMETERS
 
   Name   Type/Description      Default   Environment (1)                         
   
-  foo    string       bar     ✓          
+  foo    string                bar     ✓          
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -494,7 +494,7 @@ PARAMETERS
 
   [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m   [4m[90mEnvironment (1)[39m[24m                         
   
-  [32mfoo[39m    [32mstring[39m       [34mbar[39m     [34m✓[39m          
+  [32mfoo[39m    [32mstring[39m                [34mbar[39m     [34m✓[39m          
   
 [90m  NOTES[39m
 [90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
@@ -512,8 +512,8 @@ PARAMETERS
 
   Name   Type/Description      Default     Environment (1)                         
   
-  a      string               undefined   ✓          
-  a      Blah blah blah.                             
+  a      string                undefined   ✓          
+  a      Blah blah blah.                              
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -531,8 +531,8 @@ PARAMETERS
 
   [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m     [4m[90mEnvironment (1)[39m[24m                         
   
-  [32ma[39m      [32mstring[39m               [34mundefined[39m   [34m✓[39m          
-  [90ma[39m      Blah blah blah.                             
+  [32ma[39m      [32mstring[39m                [34mundefined[39m   [34m✓[39m          
+  [90ma[39m      Blah blah blah.                              
   
 [90m  NOTES[39m
 [90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
@@ -550,7 +550,7 @@ PARAMETERS
 
   Name   Type/Description      Default     Environment (1)                         
   
-  foo    string       undefined   ✓          
+  foo    string                undefined   ✓          
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -568,7 +568,7 @@ PARAMETERS
 
   [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m     [4m[90mEnvironment (1)[39m[24m                         
   
-  [32mfoo[39m    [32mstring[39m       [34mundefined[39m   [34m✓[39m          
+  [32mfoo[39m    [32mstring[39m                [34mundefined[39m   [34m✓[39m          
   
 [90m  NOTES[39m
 [90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
@@ -586,8 +586,8 @@ PARAMETERS
 
   Name   Type/Description      Default                     Environment (1)                         
   
-  foo    string       Error trying to render th   ✓          
-                      is default: whoops                     
+  foo    string                Error trying to render th   ✓          
+                               is default: whoops                     
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -605,8 +605,8 @@ PARAMETERS
 
   Name   Type/Description      Default                     Environment (1)                         
   
-  foo    string       Error trying to render th   ✓          
-                      is default: whoops                     
+  foo    string                Error trying to render th   ✓          
+                               is default: whoops                     
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -624,8 +624,8 @@ PARAMETERS
 
   [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m                     [4m[90mEnvironment (1)[39m[24m                         
   
-  [32mfoo[39m    [32mstring[39m       [1m[31mError trying to render th[39m[22m   [34m✓[39m          
-                      [1m[31mis default: whoops[39m[22m                     
+  [32mfoo[39m    [32mstring[39m                [1m[31mError trying to render th[39m[22m   [34m✓[39m          
+                               [1m[31mis default: whoops[39m[22m                     
   
 [90m  NOTES[39m
 [90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
@@ -643,8 +643,8 @@ PARAMETERS
 
   [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m                     [4m[90mEnvironment (1)[39m[24m                         
   
-  [32mfoo[39m    [32mstring[39m       [1m[31mError trying to render th[39m[22m   [34m✓[39m          
-                      [1m[31mis default: whoops[39m[22m                     
+  [32mfoo[39m    [32mstring[39m                [1m[31mError trying to render th[39m[22m   [34m✓[39m          
+                               [1m[31mis default: whoops[39m[22m                     
   
 [90m  NOTES[39m
 [90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
@@ -662,8 +662,8 @@ PARAMETERS
 
   Name   Type/Description      Default     Environment (1)                         
   
-  a      string       undefined   ✓          
-  a                                          
+  a      string                undefined   ✓          
+  a                                                   
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -681,8 +681,8 @@ PARAMETERS
 
   [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m      [4m[90mDefault[39m[24m     [4m[90mEnvironment (1)[39m[24m                         
   
-  [32ma[39m      [32mstring[39m       [34mundefined[39m   [34m✓[39m          
-  [90ma[39m                                          
+  [32ma[39m      [32mstring[39m                [34mundefined[39m   [34m✓[39m          
+  [90ma[39m                                                   
   
 [90m  NOTES[39m
 [90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m
