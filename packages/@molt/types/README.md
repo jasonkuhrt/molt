@@ -52,7 +52,6 @@ FlagName.Parse<'-foo'>
 // Error: A short flag must be exactly one (1) character but you have: '-foo'.
 FlagName.Parse<'--foo --foo'>
 // Error: Your alias "foo" is a duplicate.
-
 ```
 
 ```ts
