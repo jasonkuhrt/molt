@@ -52,7 +52,7 @@ export const render = (
   _settings?: RenderSettings
 ) => {
   const allSpecs = specs_
-  const specsWithDescription = allSpecs.filter((_) => _.description !== null)
+  // const specsWithDescription = allSpecs.filter((_) => _.description !== null)
   const specsByKind = groupBy(specs_, `_tag`)
   const basicSpecs = specsByKind.Basic ?? []
   const allSpecsWithoutHelp = allSpecs
