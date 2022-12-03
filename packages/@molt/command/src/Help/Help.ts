@@ -52,6 +52,7 @@ export const render = (
   _settings?: RenderSettings
 ) => {
   const allSpecs = specs_
+  // const specsWithDescription = allSpecs.filter((_) => _.description !== null)
   const specsByKind = groupBy(specs_, `_tag`)
   const basicSpecs = specsByKind.Basic ?? []
   const allSpecsWithoutHelp = allSpecs
@@ -65,6 +66,14 @@ export const render = (
   const isEnvironmentEnabled =
     Object.values(settings.parameters.environment).filter((_) => _.enabled).length > 0
 
+  const columnTitles = {
+    name: `Name`,
+    // typeDescription: specsWithDescription.length > 0 ? `Type/Description` : `Type`,
+    typeDescription: `Type/Description`,
+    default: `Default`,
+    environment: isEnvironmentEnabled ? `Environment (1)` : null,
+  }
+
   const columnSpecs: ColumnSpecs = {
     name: {
       width: allSpecs.reduce((width, spec) => Math.max(width, spec.name.canonical.length), 0),
@@ -76,7 +85,12 @@ export const render = (
           ? Math.max(...typeEnum(maybeEnum).map((_) => stripAnsi(_).length))
           : spec.typePrimitiveKind.length
         const descriptionLength = (spec.description ?? ``).length
-        const contentWidth = Math.max(width, typeLength, descriptionLength)
+        const contentWidth = Math.max(
+          width,
+          typeLength,
+          descriptionLength,
+          columnTitles.typeDescription.length
+        )
         return Math.min(40, contentWidth)
       }, 0),
     },
@@ -105,16 +119,15 @@ export const render = (
   str += Text.line()
   str += Text.indentBlock(
     Text.row([
-      { lines: [chalk.underline.gray(`Name`)], ...columnSpecs.name },
-      { lines: [chalk.underline.gray(`Type/Description`)], ...columnSpecs.typeAndDescription },
-      { lines: [chalk.underline.gray(`Default`)], ...columnSpecs.default },
+      { lines: [chalk.underline.gray(columnTitles.name)], ...columnSpecs.name },
+      { lines: [chalk.underline.gray(columnTitles.typeDescription)], ...columnSpecs.typeAndDescription },
+      { lines: [chalk.underline.gray(columnTitles.default)], ...columnSpecs.default },
       ...(isEnvironmentEnabled
         ? [
             {
               lines: [
-                chalk.underline.gray(
-                  `Environment (1)`
-                ) /*, chalk.gray.dim(`prefix: CLI_PARAM_* | CLI_PARAMETER_*`) */,
+                chalk.underline.gray(columnTitles.environment!), // eslint-disable-line
+                // /*, chalk.gray.dim(`prefix: CLI_PARAM_* | CLI_PARAMETER_*`) */,
               ],
               ...columnSpecs.environment,
             },
