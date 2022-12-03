@@ -53,6 +53,7 @@ const commonFields = {
 export interface Exclusive {
   label: string
   optional: boolean
+  default: null | { tag: string; value: unknown }
   values: Record<string, ParameterExclusive>
 }
 
@@ -78,10 +79,12 @@ interface ParameterExclusive extends Parameter {
   group: Exclusive
 }
 
+// @ts-expect-error - https://github.com/colinhacks/zod/issues/1628
 const Exclusive: z.ZodType<Exclusive> = z.lazy(() =>
   z.object({
     label: z.string(),
     optional: z.boolean(),
+    default: z.null().or(z.object({ tag: z.string(), value: z.unknown() })),
     values: z.record(zodPassthrough<Normalized.Exclusive>()),
   })
 )

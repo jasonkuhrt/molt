@@ -69,3 +69,47 @@ describe(`required`, () => {
     expect(() => c.parse({ line: [`-v`, `1.0.0`, `-b`, `major`] })).toThrowErrorMatchingSnapshot()
   })
 })
+
+describe(`default`, () => {
+  it(`method params are based on group params defined above`, () => {
+    // prettier-ignore
+    Command.parametersExclusive(`method`, ($$) => {
+      const c = $$.parameter(`v version`, s).parameter(`b bump`, e)
+      const m1 = c.default 
+      expectType<Parameters<typeof m1>>(as<[tag: 'version' | 'bump', value: 'any string']>())
+      const m2 = c.default<'version'>
+      expectType<Parameters<typeof m2>>(as<[tag: 'version', value: 'any string']>())
+      const m3 = c.default<'bump'>
+      expectType<Parameters<typeof m3>>(as<[tag: 'bump', value: 'patch'|'minor'|'major']>())
+      return c
+    })
+  })
+  it(`leads to non-optional type`, () => {
+    const a = Command.parametersExclusive(`method`, ($$) =>
+      $$.parameter(`v version`, s).parameter(`b bump`, e).default(`bump`, `major`)
+    )
+      .settings(settings)
+      .parse()
+    expectType<typeof a>(
+      as<{
+        method:
+          | {
+              _tag: 'version'
+              value: string
+            }
+          | {
+              _tag: 'bump'
+              value: 'major' | 'minor' | 'patch'
+            }
+      }>()
+    )
+  })
+  it(`used if nothing passed for group`, () => {
+    const a = Command.parametersExclusive(`method`, ($$) =>
+      $$.parameter(`v version`, s).parameter(`b bump`, e).default(`bump`, `patch`)
+    )
+      .settings(settings)
+      .parse()
+    expect(a.method).toMatchObject({ _tag: `bump`, value: `patch` })
+  })
+})

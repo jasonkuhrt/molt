@@ -186,4 +186,16 @@ describe(`exclusive`, () => {
       expect(output).toMatchSnapshot(`polychrome`)
     })
   })
+  describe(`default`, () => {
+    it(`shows the group default`, () => {
+      Command.parametersExclusive(`foo`, (_) =>
+        _.parameter(`b bar`, s).parameter(`z baz`, s).default(`bar`, `bar_default`)
+      ).parse({
+        line: [`-h`],
+      })
+      const output = processStdout.mock.lastCall?.[0] as string
+      expect(stripAnsi(output)).toMatchSnapshot(`monochrome`)
+      expect(output).toMatchSnapshot(`polychrome`)
+    })
+  })
 })

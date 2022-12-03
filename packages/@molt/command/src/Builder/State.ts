@@ -15,7 +15,7 @@ export namespace State {
       [label: string]: {
         Optional: boolean
         Parameters: {
-          [nameExpression: string]: {
+          [canonicalName: string]: {
             NameParsed: FlagName.Types.FlagNames
             NameUnion: string
             Schema: ParameterSpec.SomeBasicZodType
@@ -60,12 +60,13 @@ export namespace State {
   export type SetExclusiveOptional<
     State extends Base,
     Label extends string,
+    Value extends boolean,
   > = {
     Parameters: State['Parameters']
     ParametersExclusive: Omit<State['ParametersExclusive'], Label> & 
       {
         [_ in Label]: {
-          Optional: true 
+          Optional: Value 
           Parameters: State['ParametersExclusive'][_]['Parameters']
         }
       }
@@ -83,7 +84,8 @@ export namespace State {
         [_ in Label]: {
           Optional: State['ParametersExclusive'][_]['Optional']
           Parameters: {
-            [_ in NameExpression]: {
+            // @ts-expect-error - Trust the name expression here...
+            [_ in NameExpression as FlagName.Data.GetCanonicalName<FlagName.Parse<NameExpression>>]: {
               Schema: Type
               NameParsed: FlagName.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>
               NameUnion: FlagName.Data.GetNamesFromParseResult<

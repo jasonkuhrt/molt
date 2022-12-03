@@ -77,7 +77,7 @@ export const change = (current: Normalized, input: Input<{}>): void => {
         // prettier-ignore
         if (
           input.parameters.environment.$default === undefined ||
-          typeof input.parameters.environment.$default !== 'boolean' && input.parameters.environment.$default.enabled === undefined
+          typeof input.parameters.environment.$default !== `boolean` && input.parameters.environment.$default.enabled === undefined
         ) {
           const parameterEnvironmentSpecs = Object.keys(input.parameters.environment).filter((k) => k !== `$default`)
           current.parameters.environment.$default.enabled = parameterEnvironmentSpecs.length === 0

@@ -105,6 +105,13 @@ export const parse = (
     }
 
     if (argsToGroup.length === 0 && !group.optional) {
+      if (group.default) {
+        argsFinal[group.label] = {
+          _tag: group.default.tag,
+          value: group.default.value,
+        }
+        continue
+      }
       errors.push(
         new Errors.ErrorMissingArgumentForMutuallyExclusiveParameters({
           group,
