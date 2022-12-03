@@ -15,12 +15,12 @@ it(`if there is optional param it is shown`, () => {
   expect(output).toMatchSnapshot(`polychrome`)
 })
 
-it(`if parameter has description it is shown`, () => {
-  Command.parameters({ a: s.optional().describe(`Blah blah blah.`) }).parse({ line: [`-h`] })
-  const output = processStdout.mock.lastCall?.[0] as string
-  expect(stripAnsi(output)).toMatchSnapshot(`monochrome`)
-  expect(output).toMatchSnapshot(`polychrome`)
-})
+// it(`if parameter has description it is shown`, () => {
+//   Command.parameters({ a: s.optional().describe(`Blah blah blah.`) }).parse({ line: [`-h`] })
+//   const output = processStdout.mock.lastCall?.[0] as string
+//   expect(stripAnsi(output)).toMatchSnapshot(`monochrome`)
+//   expect(output).toMatchSnapshot(`polychrome`)
+// })
 
 it(`long description wraps within column`, () => {
   Command.parameters({
