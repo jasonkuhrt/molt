@@ -278,7 +278,11 @@ const exclusiveGroups = (
     const header = chalk.gray(
       Text.row([
         { lines: [`┌─` + g.label + ` (mutually exclusive)`], width: widthToDefaultCol },
-        { lines: [g.optional ? `undefined` : labels.required] },
+        {
+          lines: [
+            g.default ? `${g.default.tag}@${g.default.value}` : g.optional ? `undefined` : labels.required,
+          ],
+        },
       ])
     )
     t += header
