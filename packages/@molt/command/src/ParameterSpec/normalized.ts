@@ -53,6 +53,7 @@ const commonFields = {
 export interface Exclusive {
   label: string
   optional: boolean
+  default: null | { tag: string; value: unknown }
   values: Record<string, ParameterExclusive>
 }
 

@@ -23,7 +23,7 @@ export const parse = (inputs: SomeInputs, settings: Settings.Normalized): Normal
   return Object.entries(inputsWithHelp).flatMap(([expression, input]): Normalized[] =>
     Alge.match(input)
       .Basic((_) => [parseBasic(expression, _, settings)])
-      .Exclusive((_) => parseExclusive(expression, _, settings))
+      .Exclusive((_) => parseExclusive(expression, _ as any, settings))
       .done()
   )
 }
@@ -85,6 +85,7 @@ const parseExclusive = (
   const group: ParameterSpec.Exclusive = {
     label,
     optional: input.optional,
+    default: input.default,
     values: {},
   }
 
@@ -113,14 +114,19 @@ const parseExclusive = (
           short: shorts,
         },
       },
-      // See comment/code below.
-      group: { label: ``, optional: true, values: {} },
+      // See comment/code below: (1)
+      group: {
+        label: ``,
+        optional: true,
+        default: null,
+        values: {},
+      },
       typePrimitiveKind: ZodHelpers.ZodPrimitiveToPrimitive[ZodHelpers.getZodPrimitive(_.type)],
     })
   })
 
   /**
-   * Link up the group to each value and vice versa. Cannot do this in the above constructor since
+   * (1) Link up the group to each value and vice versa. Cannot do this in the above constructor since
    * it would create a copy of group for each value.
    */
   values.forEach((_) => {

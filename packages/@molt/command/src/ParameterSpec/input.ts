@@ -36,6 +36,7 @@ export const Input = Alge.data(`ParameterSpecInput`, {
   },
   Exclusive: {
     optional: z.boolean(),
+    default: z.null().or(z.object({ tag: z.string(), value: z.unknown() })),
     values: z.array(
       z.object({
         nameExpression: z.string(),
@@ -51,5 +52,11 @@ export type Input = $Input['*']
 
 export namespace Input {
   export type Basic = $Input['Basic']
-  export type Exclusive = $Input['Exclusive']
+  // https://github.com/colinhacks/zod/issues/1628
+  export type Exclusive = Omit<$Input['Exclusive'], 'default'> & {
+    default: {
+      value: unknown
+      tag: string
+    } | null
+  }
 }
