@@ -16,7 +16,7 @@ export const processBasic = (
   const typeAnalysis = analyzeType(input)
   const parameter = {
     _tag: `Basic`,
-    type: input.type,
+    zodType: input.type,
     description: typeAnalysis.description,
     typePrimitiveKind: typeAnalysis.primitiveKind,
     optionality: typeAnalysis.optionality,
@@ -48,4 +48,5 @@ export const analyzeType = (input: Input.Basic) => {
     primitiveKind,
   }
 }
+
 type DefaultGetter = () => ArgumentValue

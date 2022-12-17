@@ -1,7 +1,7 @@
 import { ZodHelpers } from '../../../lib/zodHelpers/index.js'
-import type { SomeBasicZodType } from '../../types.js'
+import type { SomeBasicType } from '../../types.js'
 
-export const analyzeTypeScalar = (type: SomeBasicZodType) => {
+export const analyzeTypeScalar = (type: SomeBasicType) => {
   let description = type.description ?? null
   let primitiveType = type
 

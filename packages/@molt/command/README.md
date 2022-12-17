@@ -689,11 +689,13 @@ Your users will clearly see that these parameters are mutually exclusive. Here's
 
 ## Architecture
 
-1. Parameter Parser
 1. Settings Parser
+1. Parameter Parser
+   - Use settings to enrich parameter specifications (like environment support)
 1. Argument Parser
-   - Line Argument Parser
-   - Environment Argument Parser
-1. Argument Caster
+   - Accept inputs from difference sources:
+     - Line
+     - Environment
+   - Cast values to primitive types based on parameter specification
 1. Argument Validator
 1. Mistake Reporter

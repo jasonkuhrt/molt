@@ -87,7 +87,8 @@ export const render = (
     },
     typeAndDescription: {
       width: allSpecs.reduce((width, spec) => {
-        const maybeEnum = ZodHelpers.getEnum(spec.type)
+        if (spec._tag === `Union`) return 0 // TODO
+        const maybeEnum = ZodHelpers.getEnum(spec.zodType)
         const typeLength = maybeEnum
           ? Math.max(...typeEnum(maybeEnum).map((_) => stripAnsi(_).length))
           : spec.typePrimitiveKind.length
@@ -378,7 +379,8 @@ const parameterName = (spec: ParameterSpec.Output): Text.Column => {
 }
 
 const parameterTypeAndDescription = (spec: ParameterSpec.Output, columnSpecs: ColumnSpecs): Text.Column => {
-  const maybeZodEnum = ZodHelpers.getEnum(spec.type)
+  if (spec._tag === `Union`) return [`to`, `do`] //todo
+  const maybeZodEnum = ZodHelpers.getEnum(spec.zodType)
   return [
     ...(maybeZodEnum ? typeEnum(maybeZodEnum) : [chalk.green(spec.typePrimitiveKind)]),
     ...Text.column(columnSpecs.typeAndDescription.width, spec.description ?? ``),

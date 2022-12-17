@@ -1,5 +1,5 @@
 import { Errors } from '../Errors/index.js'
-import { groupBy } from '../lib/prelude.js'
+import { dump, groupBy } from '../lib/prelude.js'
 import type { ParameterSpec } from '../ParameterSpec/index.js'
 import { Environment } from './Environment/index.js'
 import { Line } from './Line/index.js'
@@ -20,13 +20,16 @@ export const parse = (
 
   if (lineParseResult.errors.length > 0) errors.push(...lineParseResult.errors)
 
+  // dump({ lineParseResult })
   // dump({ specs })
   // dump({ line })
   // dump({ env })
 
   const specVariants = groupBy(specs, `_tag`)
 
-  for (const spec of specVariants.Basic ?? []) {
+  const specVariantsBasicAndUnion = [...(specVariants.Basic ?? []), ...(specVariants.Union ?? [])]
+
+  for (const spec of specVariantsBasicAndUnion) {
     /**
      * A note about types.
      *
@@ -39,6 +42,7 @@ export const parse = (
      * No matter, we can just ignore the possibility to use arg.spec here anyways.
      */
     const arg = lineParseResult.line[spec.name.canonical] ?? env[spec.name.canonical]
+    // dump({ arg })
 
     if (arg) {
       if (arg.errors.length > 0) {
@@ -55,7 +59,7 @@ export const parse = (
       } else {
         let value: unknown
         try {
-          value = spec.type.parse(arg.value.value)
+          value = spec.zodType.parse(arg.value.value)
         } catch (e) {
           errors.push(new Error(`Invalid value for ${spec.name.canonical}`, { cause: e }))
           argsFinal[spec.name.canonical] = undefined

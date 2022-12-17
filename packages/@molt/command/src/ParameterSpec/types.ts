@@ -17,12 +17,12 @@ export type SomeScalarZodType =
   | z.ZodNumber
   | z.ZodBoolean
 
-export type SomeBasicZodType =
+export type SomeBasicType =
   | SomeScalarZodType
   | z.ZodOptional<z.ZodString | z.ZodBoolean | z.ZodNumber | z.ZodEnum<[string, ...string[]]>>
   | z.ZodDefault<z.ZodString | z.ZodBoolean | z.ZodNumber | z.ZodEnum<[string, ...string[]]>>
 
-export const isUnionType = (type: SomeBasicZodType | SomeUnionType): type is SomeUnionType => {
+export const isUnionType = (type: SomeBasicType | SomeUnionType): type is SomeUnionType => {
   const type_ = stripOptionalAndDefault(type)
   const isUnion = type_._def.typeName === `ZodUnion`
   return isUnion

@@ -32,27 +32,27 @@ export const isOptional = (schema: z.ZodTypeAny) => {
   return false
 }
 
-export const getEnum = (schema: z.ZodTypeAny): null | z.ZodEnum<[string, ...string[]]> => {
-  if (!(`_def` in schema)) throw new Error(`Expected a Zod schema.`)
-  if (!(`typeName` in schema._def)) throw new Error(`Expected a Zod schema.`)
+export const getEnum = (type: z.ZodTypeAny): null | z.ZodEnum<[string, ...string[]]> => {
+  if (!(`_def` in type)) throw new Error(`Expected a Zod schema.`)
+  if (!(`typeName` in type._def)) throw new Error(`Expected a Zod schema.`)
 
-  if (schema instanceof z.ZodNullable) {
-    return getEnum(schema.unwrap() as z.ZodTypeAny)
+  if (type instanceof z.ZodNullable) {
+    return getEnum(type.unwrap() as z.ZodTypeAny)
   }
 
   // eslint-disable-next-line
-  if (schema instanceof z.ZodDefault) {
+  if (type instanceof z.ZodDefault) {
     // eslint-disable-next-line
-    return getEnum(schema._def.innerType)
+    return getEnum(type._def.innerType)
   }
 
   // eslint-disable-next-line
-  if (schema instanceof z.ZodOptional) {
-    return getEnum(schema.unwrap() as z.ZodTypeAny)
+  if (type instanceof z.ZodOptional) {
+    return getEnum(type.unwrap() as z.ZodTypeAny)
   }
 
-  if (schema instanceof z.ZodEnum) {
-    return schema
+  if (type instanceof z.ZodEnum) {
+    return type
   }
 
   return null

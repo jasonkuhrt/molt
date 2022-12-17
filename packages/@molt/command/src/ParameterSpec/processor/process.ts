@@ -1,3 +1,4 @@
+import { dump } from '../../lib/prelude.js'
 import type { Settings } from '../../Settings/index.js'
 import type { Input } from '../input.js'
 import type { Output } from '../output.js'

@@ -63,18 +63,32 @@ export const parseRawValue = (
   spec: ParameterSpec.Output
 ): null | boolean | number | string => {
   return Alge.match(spec)
-    .Union(
-      (spec) =>
-        spec.types
+    .Union((spec) => {
+      /**
+       * For a union we infer the value to be the type of the first variant type that matches.
+       * This means that variant order matters since there are sub/super type relationships.
+       * For example a number is a subset of string type. If there is a string and number variant
+       * we should first check if the value could be a number, than a string.
+       */
+      const variantOrder = [`number`, `boolean`, `string`] as const
+      const types = spec.types.sort(
+        (a, b) => variantOrder.indexOf(a.typePrimitiveKind) - variantOrder.indexOf(b.typePrimitiveKind)
+      )
+      return (
+        types
           .map((_) =>
             Alge.match(_.typePrimitiveKind)
               .string(() => value)
               .boolean(() => parseEnvironmentVariableBoolean(value))
-              .number(() => Number(value))
+              .number(() => {
+                const result = Number(value)
+                return isNaN(result) ? null : result
+              })
               .done()
           )
-          .find((parsedVale) => parsedVale !== null) ?? null
-    )
+          .find((parsedValue) => parsedValue !== null) ?? null
+      )
+    })
     .else((spec) =>
       Alge.match(spec.typePrimitiveKind)
         .string(() => value)

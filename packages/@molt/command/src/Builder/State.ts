@@ -18,7 +18,7 @@ export namespace State {
           [canonicalName: string]: {
             NameParsed: FlagName.Types.FlagNames
             NameUnion: string
-            Schema: ParameterSpec.SomeBasicZodType
+            Schema: ParameterSpec.SomeBasicType
           }
         }
       }
@@ -27,7 +27,7 @@ export namespace State {
       [nameExpression: string]: {
         NameParsed: FlagName.Types.FlagNames
         NameUnion: string
-        Schema: ParameterSpec.SomeBasicZodType
+        Schema: ParameterSpec.SomeBasicType
       }
     }
   }
@@ -43,7 +43,7 @@ export namespace State {
   export type GetUsedNames<State extends Base> = Values<State['Parameters']>['NameUnion']
 
   // prettier-ignore
-  export type AddParameter<State extends Base, NameExpression extends string, Type extends ParameterSpec.SomeBasicZodType> =
+  export type AddParameter<State extends Base, NameExpression extends string, Type extends ParameterSpec.SomeBasicType|ParameterSpec.SomeUnionType> =
     Omit<State, 'Parameters'> & {
       Parameters:  State['Parameters'] & { [_ in NameExpression]: CreateParameter<State,NameExpression,Type> }
     }
@@ -76,7 +76,7 @@ export namespace State {
     State extends Base,
     Label extends string,
     NameExpression extends string,
-    Type extends ParameterSpec.SomeBasicZodType
+    Type extends ParameterSpec.SomeBasicType
   > = {
     Parameters: State['Parameters']
     ParametersExclusive: State['ParametersExclusive'] & 
@@ -99,7 +99,7 @@ export namespace State {
   }
 
   // prettier-ignore
-  type CreateParameter<State extends Base, NameExpression extends string, Type extends ParameterSpec.SomeBasicZodType> = {
+  type CreateParameter<State extends Base, NameExpression extends string, Type extends ParameterSpec.SomeBasicType|ParameterSpec.SomeUnionType> = {
     Schema: Type
     NameParsed: FlagName.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>
     NameUnion: FlagName.Data.GetNamesFromParseResult<FlagName.Parse<NameExpression,{ usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>>

@@ -17,7 +17,7 @@ const create = () => {
   const $$ = {
     addParameterBasicOrUnion: (
       nameExpression: string,
-      type: ParameterSpec.SomeBasicZodType | ParameterSpec.SomeUnionType
+      type: ParameterSpec.SomeBasicType | ParameterSpec.SomeUnionType
     ) => {
       const parameter = ParameterSpec.isUnionType(type)
         ? ({
@@ -65,7 +65,6 @@ const create = () => {
         specs: ParameterSpec.process($.parameterSpecInputs, $.settings),
       }
       const argsResult = Args.parse(specsResult.specs, argInputsLine, argInputsEnvironment)
-      // console.log({ argsResult })
 
       // eslint-disable-next-line
       // @ts-expect-error
@@ -130,8 +129,8 @@ type State = {
 
 type InternalRootBuilder = {
   settings: (newSettings: Settings.Input) => InternalRootBuilder
-  parameters: (parametersObject: Record<string, ParameterSpec.SomeBasicZodType>) => InternalRootBuilder
-  parameter: (nameExpression: string, type: ParameterSpec.SomeBasicZodType) => InternalRootBuilder
+  parameters: (parametersObject: Record<string, ParameterSpec.SomeBasicType>) => InternalRootBuilder
+  parameter: (nameExpression: string, type: ParameterSpec.SomeBasicType) => InternalRootBuilder
   parametersExclusive: (label: string, builderContainer: any) => InternalRootBuilder
   parse: (args: RawArgInputs) => object
 }
