@@ -34,7 +34,7 @@ export const analyzeType = (input: Input.Basic) => {
   // @ts-expect-error todo
   // eslint-disable-next-line
   const defaultGetter = hasDefault ? (input.type._def.defaultValue as DefaultGetter) : null
-  const { description, primitiveKind } = analyzeTypeScalar(ZodHelpers.stripOptionalAndDefault(input.type))
+  const { description, primitiveKind } = analyzeTypeScalar(input.type)
   const optionality = (
     defaultGetter
       ? { _tag: `default`, getValue: () => defaultGetter() }

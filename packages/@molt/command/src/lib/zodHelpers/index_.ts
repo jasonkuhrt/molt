@@ -8,10 +8,10 @@ export const stripOptionalAndDefault = <T extends z.ZodFirstPartySchemaTypes>(
   type: T
 ): Exclude<T, z.ZodOptional<any> | z.ZodDefault<any>> => {
   if (type instanceof z.ZodOptional) {
-    return stripOptionalAndDefault(type)
+    return stripOptionalAndDefault(type._def.innerType)
   }
   if (type instanceof z.ZodDefault) {
-    return stripOptionalAndDefault(type)
+    return stripOptionalAndDefault(type._def.innerType)
   }
   return type as any
 }

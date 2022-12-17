@@ -1,3 +1,4 @@
+import { dump } from '../../lib/prelude.js'
 import type { Settings } from '../../Settings/index.js'
 import type { Input } from '../input.js'
 import type { Output } from '../output.js'
@@ -17,13 +18,16 @@ export const process = (inputs: Record<string, Input>, settings: Settings.Output
         '-h --help': helpParameter,
       }
     : inputs
-  return Object.entries(inputsWithHelp).flatMap(([expression, input]): Output[] =>
+  const outputs = Object.entries(inputsWithHelp).flatMap(([expression, input]): Output[] =>
     Alge.match(input)
       .Basic((_) => [processBasic(expression, _, settings)])
       .Union((_) => [processUnion(expression, _, settings)])
       .Exclusive((_) => processExclusive(expression, _, settings))
       .done()
   )
+
+  // dump({ outputs })
+  return outputs
 }
 
 const helpParameter: Input.Basic = {

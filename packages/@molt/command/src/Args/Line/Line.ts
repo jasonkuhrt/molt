@@ -1,5 +1,6 @@
 import { isNegated, parseRawInput, stripeDashPrefix, stripeNegatePrefixLoose } from '../../helpers.js'
 import type { Index } from '../../lib/prelude.js'
+import { dump } from '../../lib/prelude.js'
 import { ParameterSpec } from '../../ParameterSpec/index.js'
 import type { ArgumentReport } from '../types.js'
 import camelCase from 'lodash.camelcase'
@@ -10,6 +11,7 @@ export const parse = (
   rawLineInputs: RawInputs,
   specs: ParameterSpec.Output[]
 ): { errors: Error[]; line: Index<ArgumentReport> } => {
+  // dump(specs)
   const errors: Error[] = []
 
   const rawLineInputsPrepared = rawLineInputs
@@ -27,7 +29,9 @@ export const parse = (
       if (value.join(``) === ``) return [flag]
       return [flag, value.join(`=`)]
     })
+
   const reports: Index<ArgumentReport> = {}
+
   let current: null | ArgumentReport = null
 
   const finishPendingReport = (pendingReport: ArgumentReport) => {
@@ -102,7 +106,7 @@ export const parse = (
     current = null
   }
 
-  // dump({ flags })
+  // dump({ reports })
   return {
     errors,
     line: reports,
