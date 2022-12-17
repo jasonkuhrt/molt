@@ -32,7 +32,7 @@ export namespace Output {
   export interface Exclusive {
     _tag: 'Exclusive'
     name: Name
-    type: SomeBasicType
+    zodType: SomeBasicType
     typePrimitiveKind: PrimitiveKind
     description: string | null
     environment: Environment

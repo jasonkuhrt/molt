@@ -21,19 +21,19 @@ it(`spec of number|string parses arg as string if non-number given`, () => {
 })
 
 it(`spec of number|boolean parses arg as boolean true if bool flag given`, () => {
-  const args = Command.parameter(`x`, z.union([z.string(), z.number()])).parse({ line: [`-x`] })
+  const args = Command.parameter(`x`, z.union([z.boolean(), z.number()])).parse({ line: [`-x`] })
   expect(typeof args.x).toBe(`boolean`)
   expect(args.x).toBe(true)
 })
 
 it(`spec of number|boolean parses arg as boolean false if negated bool flag given`, () => {
-  const args = Command.parameter(`xee`, z.union([z.string(), z.number()])).parse({ line: [`--no-xee`] })
+  const args = Command.parameter(`xee`, z.union([z.boolean(), z.number()])).parse({ line: [`--no-xee`] })
   expect(typeof args.xee).toBe(`boolean`)
   expect(args.xee).toBe(false)
 })
 
 it(`spec of number|boolean parses arg as boolean false if environment false given`, () => {
-  const args = Command.parameter(`xee`, z.union([z.string(), z.number()])).parse({
+  const args = Command.parameter(`xee`, z.union([z.boolean(), z.number()])).parse({
     environment: { cli_param_xee: `false` },
   })
   expect(typeof args.xee).toBe(`boolean`)
@@ -41,7 +41,7 @@ it(`spec of number|boolean parses arg as boolean false if environment false give
 })
 
 it(`spec of number|boolean parses arg as boolean true if environment true given`, () => {
-  const args = Command.parameter(`xee`, z.union([z.string(), z.number()])).parse({
+  const args = Command.parameter(`xee`, z.union([z.boolean(), z.number()])).parse({
     environment: { cli_param_xee: `true` },
   })
   expect(typeof args.xee).toBe(`boolean`)

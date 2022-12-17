@@ -54,7 +54,7 @@ export const hasName = (spec: Output, name: string): null | NameHit => {
 
 export const isOrHasTypePrimitive = (spec: Output, primitiveKind: PrimitiveKind): boolean => {
   return spec._tag === `Union`
-    ? spec.types.find((_) => _.typePrimitiveKind === primitiveKind) !== null
+    ? spec.types.find((_) => _.typePrimitiveKind === primitiveKind) !== undefined
     : spec.typePrimitiveKind === primitiveKind
 }
 
