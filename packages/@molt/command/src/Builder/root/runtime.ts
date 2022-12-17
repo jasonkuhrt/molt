@@ -7,7 +7,7 @@ import * as ExclusiveBuilder from '../exclusive/constructor.js'
 import type { RootBuilder } from './types.js'
 
 type RuntimeState = {
-  settings: Settings.Normalized
+  settings: Settings.Output
   parameterSpecInputs: ParameterSpec.SomeInputs
 }
 
@@ -32,7 +32,11 @@ const create = () => {
       return chain as any // eslint-disable-line
     },
     parameter: (name, type) => {
-      _.parameterSpecInputs[name] = ParameterSpec.Input.Basic.create({ type })
+      _.parameterSpecInputs[name] = {
+        _tag: `Basic`,
+        type,
+        nameExpression: name,
+      } satisfies ParameterSpec.Input.Basic
       // eslint-disable-next-line
       return chain as any
     },
@@ -48,7 +52,7 @@ const create = () => {
         : getLowerCaseEnvironment()
       // todo handle concept of specs themselves having errors
       const specsResult = {
-        specs: ParameterSpec.parse(_.parameterSpecInputs, _.settings),
+        specs: ParameterSpec.process(_.parameterSpecInputs, _.settings),
       }
       // eslint-disable-next-line
       const argsResult = Args.parse(specsResult.specs, argInputsLine, argInputsEnvironment)

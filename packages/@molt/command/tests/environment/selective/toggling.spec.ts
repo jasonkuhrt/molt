@@ -27,7 +27,7 @@ it(`can change prefix for one parameter`, () => {
   expect(args).toMatchObject({ foo: `foo_env`, bar: `bar_env` })
 })
 
-it(`can change default prefix and prfix for one parameter`, () => {
+it(`can change default prefix and prefix for one parameter`, () => {
   environmentManager.set(`foo`, `foo_env`)
   environmentManager.set(`param_bar`, `bar_env`)
   const args = Command.parameters({

@@ -41,7 +41,7 @@ export const lookupEnvironmentVariableArgument = (
 
 export type RawInputs = Record<string, string | undefined>
 
-export const parse = (environment: RawInputs, specs: ParameterSpec.Normalized[]): Index<ArgumentReport> => {
+export const parse = (environment: RawInputs, specs: ParameterSpec.Output[]): Index<ArgumentReport> => {
   const envars = Object.entries(environment)
     .map(([name, value]) =>
       value === undefined

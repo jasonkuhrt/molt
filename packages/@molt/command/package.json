@@ -46,7 +46,7 @@
     "string-length": "4",
     "strip-ansi": "6",
     "ts-toolbelt": "^9.6.0",
-    "zod": "^3.19.1"
+    "zod": "^3.20.2"
   },
   "devDependencies": {
     "@types/lodash.camelcase": "4.3.7",
@@ -54,9 +54,9 @@
     "conditional-type-checks": "1.0.6",
     "execa": "6.1.0",
     "fast-glob": "3.2.12",
-    "tsd": "0.25.0",
     "fs-jetpack": "5.1.0",
-    "vitest": "0.25.3",
+    "tsd": "0.25.0",
+    "vitest": "0.25.8",
     "vitest-mock-process": "^1.0.4"
   }
 }

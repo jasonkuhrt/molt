@@ -2,6 +2,6 @@
 
 exports[`optional > if two args then error 1`] = `"Arguments given to multiple mutually exclusive parameters: version, bump"`;
 
-exports[`required > if no arg given then error 1`] = `"Missing argument for one of the following paramters: version, bump"`;
+exports[`required > if no arg given then error 1`] = `"Missing argument for one of the following parameters: version, bump"`;
 
 exports[`required > if two args then error 1`] = `"Arguments given to multiple mutually exclusive parameters: version, bump"`;

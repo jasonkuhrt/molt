@@ -18,7 +18,7 @@ export const lowerCaseObjectKeys = (obj: object) =>
   Object.fromEntries(Object.entries(obj).map(([k, v]) => [k.toLowerCase(), v]))
 
 // prettier-ignore
-export const parseRawInput = (name: string, rawValue: string, spec: ParameterSpec.Normalized): Value => {
+export const parseRawInput = (name: string, rawValue: string, spec: ParameterSpec.Output): Value => {
   const parsedValue = parseRawValue(rawValue, spec)
   if (parsedValue === null) throw new Error(`Failed to parse input ${name} with value ${rawValue}. Expected type of ${spec.typePrimitiveKind}.`)
   if (typeof parsedValue === `string`) return { _tag: `string`, value: parsedValue }
@@ -38,7 +38,7 @@ const casesHandled = (value: never): never => {
  * Is the environment variable input negated? Unlike line input the environment can be
  * namespaced so a bit more work is needed to parse out the name pattern.
  */
-export const isEnvarNegated = (name: string, spec: ParameterSpec.Normalized): boolean => {
+export const isEnvarNegated = (name: string, spec: ParameterSpec.Output): boolean => {
   const nameWithNamespaceStripped = stripeNamespace(name, spec)
   // dump({ nameWithNamespaceStripped })
   return negateNamePattern.test(nameWithNamespaceStripped)
@@ -48,7 +48,7 @@ export const isNegated = (name: string): boolean => {
   return negateNamePattern.test(name)
 }
 
-const stripeNamespace = (name: string, spec: ParameterSpec.Normalized): string => {
+const stripeNamespace = (name: string, spec: ParameterSpec.Output): string => {
   for (const namespace of spec.environment?.namespaces ?? []) {
     if (name.startsWith(namespace)) return camelCase(name.slice(namespace.length))
   }
@@ -57,7 +57,7 @@ const stripeNamespace = (name: string, spec: ParameterSpec.Normalized): string =
 
 export const parseRawValue = (
   value: string,
-  spec: ParameterSpec.Normalized
+  spec: ParameterSpec.Output
 ): boolean | number | null | string => {
   return Alge.match(spec.typePrimitiveKind)
     .string(() => value)

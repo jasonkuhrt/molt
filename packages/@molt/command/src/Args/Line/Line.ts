@@ -8,7 +8,7 @@ export type RawInputs = string[]
 
 export const parse = (
   rawLineInputs: RawInputs,
-  specs: ParameterSpec.Normalized[]
+  specs: ParameterSpec.Output[]
 ): { errors: Error[]; line: Index<ArgumentReport> } => {
   const errors: Error[] = []
 

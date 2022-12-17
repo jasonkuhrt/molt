@@ -9,7 +9,7 @@ export { Line } from './Line/index.js'
 export * from './types.js'
 
 export const parse = (
-  specs: ParameterSpec.Normalized[],
+  specs: ParameterSpec.Output[],
   argInputsLine: Line.RawInputs,
   argInputsEnvironment: Environment.RawInputs
 ): { args: Record<string, unknown>; errors: Errors.ErrorMissingArgument[] } => {
@@ -66,9 +66,9 @@ export const parse = (
       continue
     }
 
-    if (spec.default) {
+    if (spec.optionality._tag === `default`) {
       try {
-        argsFinal[spec.name.canonical] = spec.default.get()
+        argsFinal[spec.name.canonical] = spec.optionality.getValue()
       } catch (error) {
         errors.push(new Error(`Failed to get default value for ${spec.name.canonical}`, { cause: error }))
         argsFinal[spec.name.canonical] = undefined
@@ -76,7 +76,7 @@ export const parse = (
       continue
     }
 
-    if (!spec.optional) {
+    if (spec.optionality._tag === `required`) {
       errors.push(new Errors.ErrorMissingArgument({ spec }))
     }
 
@@ -100,30 +100,35 @@ export const parse = (
       .map((_) => lineParseResult.line[_.name.canonical] ?? env[_.name.canonical])
       .filter((_): _ is ArgumentReport => _ !== undefined)
 
-    if (argsToGroup.length === 0 && group.optional) {
-      continue
-    }
-
-    if (argsToGroup.length === 0 && !group.optional) {
-      if (group.default) {
-        argsFinal[group.label] = {
-          _tag: group.default.tag,
-          value: group.default.value,
-        }
+    if (argsToGroup.length === 0) {
+      if (group.optionality._tag === `optional`) {
         continue
       }
+
+      if (group.optionality._tag === `default`) {
+        const defaultValue = group.optionality.getValue()
+        if (defaultValue) {
+          argsFinal[group.label] = {
+            _tag: group.optionality.tag,
+            value: defaultValue,
+          }
+          continue
+        }
+      }
+
       errors.push(
         new Errors.ErrorMissingArgumentForMutuallyExclusiveParameters({
           group,
         })
       )
+
       continue
     }
 
     if (argsToGroup.length > 1) {
       errors.push(
         new Errors.ErrorArgsToMultipleMutuallyExclusiveParameters({
-          offenses: argsToGroup.map((_) => ({ spec: _.spec as ParameterSpec.Normalized.Exclusive, arg: _ })),
+          offenses: argsToGroup.map((_) => ({ spec: _.spec as ParameterSpec.Output.Exclusive, arg: _ })),
         })
       )
       continue
