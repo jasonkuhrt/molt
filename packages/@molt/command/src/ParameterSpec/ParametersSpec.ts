@@ -3,10 +3,7 @@ export * from './output.js'
 export * from './processor/process.js'
 export * from './types.js'
 import { stripeNegatePrefix } from '../helpers.js'
-import type { Input } from './input.js'
-import type { Output } from './output.js'
-
-export type SomeInputs = Record<string, Input>
+import type { Output, PrimitiveKind } from './output.js'
 
 export const findByName = (name: string, specs: Output[]): null | Output => {
   for (const spec of specs) {
@@ -45,13 +42,7 @@ type NameHit =
 export const hasName = (spec: Output, name: string): null | NameHit => {
   const result = parameterSpecHasNameDo(spec, name, false)
 
-  const isOrHasBooleanType =
-    // spec._tag === `Union`
-    //   ? spec.types.find((_) => _.typePrimitiveKind === `boolean`) !== null
-    //   :
-    spec.typePrimitiveKind === `boolean`
-
-  if (isOrHasBooleanType) {
+  if (isOrHasPrimitiveKind(spec, `boolean`)) {
     const nameWithoutNegatePrefix = stripeNegatePrefix(name)
     if (nameWithoutNegatePrefix) {
       return parameterSpecHasNameDo(spec, nameWithoutNegatePrefix, true)
@@ -59,6 +50,12 @@ export const hasName = (spec: Output, name: string): null | NameHit => {
   }
 
   return result
+}
+
+const isOrHasPrimitiveKind = (spec: Output, primitiveKind: PrimitiveKind): boolean => {
+  return spec._tag === `Union`
+    ? spec.types.find((_) => _.typePrimitiveKind === primitiveKind) !== null
+    : spec.typePrimitiveKind === primitiveKind
 }
 
 const parameterSpecHasNameDo = (

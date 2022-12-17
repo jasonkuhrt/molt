@@ -4,6 +4,24 @@ export type ZodPrimitive = 'ZodBoolean' | 'ZodNumber' | 'ZodString' | 'ZodEnum'
 
 export type Primitive = 'boolean' | 'number' | 'string'
 
+export const stripOptionalAndDefault = <T extends z.ZodFirstPartySchemaTypes>(
+  type: T
+): Exclude<T, z.ZodOptional<any> | z.ZodDefault<any>> => {
+  if (type instanceof z.ZodOptional) {
+    return stripOptionalAndDefault(type)
+  }
+  if (type instanceof z.ZodDefault) {
+    return stripOptionalAndDefault(type)
+  }
+  return type as any
+}
+
+export const isUnion = (type: z.ZodFirstPartySchemaTypes) => {
+  const type_ = stripOptionalAndDefault(type)
+  const isUnion = type_._def.typeName === `ZodUnion`
+  return isUnion
+}
+
 export const isOptional = (schema: z.ZodTypeAny) => {
   if (schema instanceof z.ZodOptional) {
     return true

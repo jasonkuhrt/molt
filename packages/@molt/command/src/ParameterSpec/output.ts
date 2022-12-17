@@ -1,14 +1,15 @@
-import type { ZodHelpers } from '../lib/zodHelpers/index.js'
 import type { ArgumentValue, SomeBasicZodType } from './types.js'
 
-export type Output = Output.Exclusive | Output.Basic //| Output.Union
+export type Output = Output.Exclusive | Output.Basic | Output.Union
+
+export type PrimitiveKind = 'boolean' | 'number' | 'string'
 
 export namespace Output {
   export interface Basic {
     _tag: 'Basic'
     name: Name
     type: SomeBasicZodType
-    typePrimitiveKind: ZodHelpers.Primitive
+    typePrimitiveKind: PrimitiveKind
     optionality: BasicOptionality
     description: null | string
     environment: Environment
@@ -19,7 +20,8 @@ export namespace Output {
     name: Name
     types: {
       type: SomeBasicZodType
-      typePrimitiveKind: ZodHelpers.Primitive
+      description: null | string
+      typePrimitiveKind: PrimitiveKind
     }[]
     optionality: BasicOptionality
     description: null | string
@@ -30,7 +32,7 @@ export namespace Output {
     _tag: 'Exclusive'
     name: Name
     type: SomeBasicZodType
-    typePrimitiveKind: ZodHelpers.Primitive
+    typePrimitiveKind: PrimitiveKind
     description: string | null
     environment: Environment
     group: ExclusiveGroup

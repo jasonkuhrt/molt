@@ -4,44 +4,54 @@ import { getLowerCaseEnvironment, lowerCaseObjectKeys } from '../../helpers.js'
 import { ParameterSpec } from '../../ParameterSpec/index.js'
 import { Settings } from '../../Settings/index.js'
 import * as ExclusiveBuilder from '../exclusive/constructor.js'
-import type { RootBuilder } from './types.js'
-
-type RuntimeState = {
-  settings: Settings.Output
-  parameterSpecInputs: ParameterSpec.SomeInputs
-}
+import type { RawArgInputs, RootBuilder } from './types.js'
 
 const create = () => {
-  const _: RuntimeState = {
+  const $: State = {
     settings: {
       ...Settings.getDefaults(getLowerCaseEnvironment()),
     },
     parameterSpecInputs: {},
   }
 
-  const chain: RootBuilder = {
+  const $$ = {
+    addParameterBasicOrUnion: (
+      nameExpression: string,
+      type: ParameterSpec.SomeBasicZodType | ParameterSpec.SomeUnionType
+    ) => {
+      const parameter = ParameterSpec.isUnionType(type)
+        ? ({
+            _tag: `Union`,
+            type,
+            nameExpression: nameExpression,
+          } satisfies ParameterSpec.Input.Union)
+        : ({
+            _tag: `Basic`,
+            type,
+            nameExpression: nameExpression,
+          } satisfies ParameterSpec.Input.Basic)
+      $.parameterSpecInputs[nameExpression] = parameter
+    },
+  }
+
+  const chain: InternalRootBuilder = {
     settings: (newSettings) => {
-      Settings.change(_.settings, newSettings)
-      return chain as any // eslint-disable-line
+      Settings.change($.settings, newSettings)
+      return chain
     },
     parameters: (parametersObject) => {
       Object.entries(parametersObject).forEach(([nameExpression, type]) => {
-        // eslint-disable-next-line
-        chain.parameter(nameExpression as any, type)
+        $$.addParameterBasicOrUnion(nameExpression, type)
       })
-      return chain as any // eslint-disable-line
+      return chain
     },
-    parameter: (name, type) => {
-      _.parameterSpecInputs[name] = {
-        _tag: `Basic`,
-        type,
-        nameExpression: name,
-      } satisfies ParameterSpec.Input.Basic
-      // eslint-disable-next-line
-      return chain as any
+    parameter: (nameExpression, type) => {
+      $$.addParameterBasicOrUnion(nameExpression, type)
+
+      return chain
     },
     parametersExclusive: (label, builderContainer) => {
-      _.parameterSpecInputs[label] = builderContainer(ExclusiveBuilder.create() as any)._.input // eslint-disable-line
+      $.parameterSpecInputs[label] = builderContainer(ExclusiveBuilder.create() as any)._.input // eslint-disable-line
       return chain
     },
     parse: (argInputs) => {
@@ -52,9 +62,8 @@ const create = () => {
         : getLowerCaseEnvironment()
       // todo handle concept of specs themselves having errors
       const specsResult = {
-        specs: ParameterSpec.process(_.parameterSpecInputs, _.settings),
+        specs: ParameterSpec.process($.parameterSpecInputs, $.settings),
       }
-      // eslint-disable-next-line
       const argsResult = Args.parse(specsResult.specs, argInputsLine, argInputsEnvironment)
       // console.log({ argsResult })
 
@@ -63,31 +72,30 @@ const create = () => {
       const askedForHelp = `help` in argsResult.args && argsResult.args.help === true
 
       if (askedForHelp) {
-        process.stdout.write(Help.render(specsResult.specs, _.settings) + `\n`)
+        process.stdout.write(Help.render(specsResult.specs, $.settings) + `\n`)
         if (!testDebuggingNoExit) process.exit(0)
         return undefined as never // When testing, with process.exit mock, we will reach this case
       }
 
       if (argsResult.errors.length > 0) {
-        if (_.settings.helpOnError) {
+        if ($.settings.helpOnError) {
           const message =
             `Cannot run command, you made some mistakes:\n\n` +
             argsResult.errors.map((_) => _.message).join(`\nX `) +
             `\n\nHere are the docs for this command:\n`
           process.stdout.write(message + `\n`)
-          process.stdout.write(Help.render(specsResult.specs, _.settings) + `\n`)
+          process.stdout.write(Help.render(specsResult.specs, $.settings) + `\n`)
         }
-        if (_.settings.onError === `exit` && !testDebuggingNoExit) {
+        if ($.settings.onError === `exit` && !testDebuggingNoExit) {
           process.exit(1)
           return undefined as never // When testing, with process.exit mock, we will reach this case
         }
         if (argsResult.errors.length > 1) throw new AggregateError(argsResult.errors)
-        //eslint-disable-next-line
         else throw argsResult.errors[0]!
       }
 
-      if (_.settings.helpOnNoArguments && Object.values(argsResult.args).length === 0) {
-        process.stdout.write(Help.render(specsResult.specs, _.settings) + `\n`)
+      if ($.settings.helpOnNoArguments && Object.values(argsResult.args).length === 0) {
+        process.stdout.write(Help.render(specsResult.specs, $.settings) + `\n`)
         if (!testDebuggingNoExit) process.exit(0)
         throw new Error(`missing args`) // When testing, with process.exit mock, we will reach this case
       }
@@ -100,10 +108,30 @@ const create = () => {
 }
 
 // prettier-ignore
+// @ts-expect-error internal to external
 export const createViaParametersExclusive: RootBuilder['parametersExclusive'] = (label, builderContainer) => create().parametersExclusive(label, builderContainer)
 
 // prettier-ignore
-export const createViaParameter: RootBuilder['parameter'] = (name, type) => create().parameter(name,type)
+// @ts-expect-error internal to external
+export const createViaParameter: RootBuilder['parameter'] = (name, type) => create().parameter(name, type)
 
 // prettier-ignore
+// @ts-expect-error internal to external
 export const createViaParameters: RootBuilder['parameters'] = (parametersObject) => create().parameters(parametersObject)
+
+//
+// Internal Types
+//
+
+type State = {
+  settings: Settings.Output
+  parameterSpecInputs: Record<string, ParameterSpec.Input>
+}
+
+type InternalRootBuilder = {
+  settings: (newSettings: Settings.Input) => InternalRootBuilder
+  parameters: (parametersObject: Record<string, ParameterSpec.SomeBasicZodType>) => InternalRootBuilder
+  parameter: (nameExpression: string, type: ParameterSpec.SomeBasicZodType) => InternalRootBuilder
+  parametersExclusive: (label: string, builderContainer: any) => InternalRootBuilder
+  parse: (args: RawArgInputs) => object
+}
