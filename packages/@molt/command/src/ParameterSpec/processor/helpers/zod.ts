@@ -22,7 +22,7 @@ export const analyzeBasic = (
   const hasDefault = typeof input.type._def.defaultValue !== `undefined`
   // @ts-expect-error todo
   // eslint-disable-next-line
-  const defaultGetter = hasDefault ? (type._def.defaultValue() as DefaultGetter) : null
+  const defaultGetter = hasDefault ? (input.type._def.defaultValue as DefaultGetter) : null
   const description = input.type.description ?? null
   const primitiveKind = ZodHelpers.ZodPrimitiveToPrimitive[ZodHelpers.getZodPrimitive(input.type)]
 

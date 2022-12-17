@@ -100,24 +100,28 @@ export const parse = (
       .map((_) => lineParseResult.line[_.name.canonical] ?? env[_.name.canonical])
       .filter((_): _ is ArgumentReport => _ !== undefined)
 
-    if (argsToGroup.length === 0 && group.optionality._tag === `default`) {
-      const defaultValue = group.optionality.getValue()
-      if (defaultValue) {
-        argsFinal[group.label] = {
-          _tag: group.optionality.tag,
-          value: defaultValue,
-        }
+    if (argsToGroup.length === 0) {
+      if (group.optionality._tag === `optional`) {
         continue
       }
+
+      if (group.optionality._tag === `default`) {
+        const defaultValue = group.optionality.getValue()
+        if (defaultValue) {
+          argsFinal[group.label] = {
+            _tag: group.optionality.tag,
+            value: defaultValue,
+          }
+          continue
+        }
+      }
+
       errors.push(
         new Errors.ErrorMissingArgumentForMutuallyExclusiveParameters({
           group,
         })
       )
-      continue
-    }
 
-    if (argsToGroup.length === 0 && group.optionality._tag === `optional`) {
       continue
     }
 
