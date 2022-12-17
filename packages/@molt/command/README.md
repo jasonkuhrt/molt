@@ -676,6 +676,7 @@ const args = Command
   .parametersExclusive(`method`, (_) =>
     _.parameter(`v version`, z.string().regex(semverRegex()))
      .parameter(`b bump`, z.enum([`major`, `minor`, `patch`]))
+     .optional()
      .default('bump', 'patch')
   )
 ```
@@ -685,3 +686,14 @@ const args = Command
 Your users will clearly see that these parameters are mutually exclusive. Here's an example from the CLI/script Molt itself uses to publish new releases:
 
 ![doc](../../../assets/example-doc-mx-params.png)
+
+## Architecture
+
+1. Parameter Parser
+1. Settings Parser
+1. Argument Parser
+   - Line Argument Parser
+   - Environment Argument Parser
+1. Argument Caster
+1. Argument Validator
+1. Mistake Reporter

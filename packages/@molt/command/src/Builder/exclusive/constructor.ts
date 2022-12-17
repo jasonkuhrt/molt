@@ -1,28 +1,28 @@
-import { ParameterSpec } from '../../ParameterSpec/index.js'
+import type { ParameterSpec } from '../../ParameterSpec/index.js'
+import type { ArgumentValue } from '../../ParameterSpec/types.js'
 import type { InternalState, SomeBuilderExclusiveInitial } from './types.js'
 
 export const create = (): SomeBuilderExclusiveInitial => {
   const _: InternalState = {
-    // @ts-expect-error https://github.com/colinhacks/zod/issues/1628
-    input: ParameterSpec.Input.Exclusive.create({
-      optional: false,
-      default: null,
-      values: [],
-    }),
+    input: {
+      _tag: `Exclusive`,
+      optionality: { _tag: `required` },
+      parameters: [],
+    } satisfies ParameterSpec.Input.Exclusive,
     typeState: undefined as any, // eslint-disable-line
   }
 
   const chain: SomeBuilderExclusiveInitial = {
     parameter: (nameExpression: string, type) => {
-      _.input.values.push({ nameExpression, type })
+      _.input.parameters.push({ nameExpression, type })
       return chain as any // eslint-disable-line
     },
     optional: () => {
-      _.input.optional = true
+      _.input.optionality = { _tag: `optional` }
       return chain
     },
-    default: (tag: string, value: unknown) => {
-      _.input.default = { tag, value }
+    default: (tag: string, value: ArgumentValue) => {
+      _.input.optionality = { _tag: `default`, tag, value }
       return chain
     },
     _,

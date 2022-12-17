@@ -47,8 +47,8 @@ interface RenderSettings {
 }
 
 export const render = (
-  specs_: ParameterSpec.Normalized[],
-  settings: Settings.Normalized,
+  specs_: ParameterSpec.Output[],
+  settings: Settings.Output,
   _settings?: RenderSettings
 ) => {
   const allSpecs = specs_
@@ -57,11 +57,19 @@ export const render = (
   const basicSpecs = specsByKind.Basic ?? []
   const allSpecsWithoutHelp = allSpecs
     .filter((_) => _.name.canonical !== `help`)
-    .sort((_) => (_._tag === `Exclusive` ? (_.group.optional ? 1 : -1) : _.optional ? 1 : -1))
+    .sort((_) =>
+      _._tag === `Exclusive`
+        ? _.group.optionality._tag === `optional`
+          ? 1
+          : -1
+        : _.optionality._tag === `optional`
+        ? 1
+        : -1
+    )
 
   const basicSpecsWithoutHelp = basicSpecs
     .filter((_) => _.name.canonical !== `help`)
-    .sort((_) => (_.optional ? 1 : -1))
+    .sort((_) => (_.optionality._tag === `optional` ? 1 : -1))
   const isAcceptsAnyEnvironmentArgs = basicSpecs.filter((_) => _.environment?.enabled).length > 0
   const isEnvironmentEnabled =
     Object.values(settings.parameters.environment).filter((_) => _.enabled).length > 0
@@ -184,7 +192,7 @@ export const render = (
   return str
 }
 
-const environmentNote = (specs: ParameterSpec.Normalized[], settings: Settings.Normalized): string[] => {
+const environmentNote = (specs: ParameterSpec.Output[], settings: Settings.Output): string[] => {
   const isHasSpecsWithCustomEnvironmentNamespace =
     specs
       .filter((_) => _.environment?.enabled)
@@ -240,8 +248,8 @@ const environmentNote = (specs: ParameterSpec.Normalized[], settings: Settings.N
 }
 
 const basicParameters = (
-  specs: ParameterSpec.Normalized[],
-  settings: Settings.Normalized,
+  specs: ParameterSpec.Output[],
+  settings: Settings.Output,
   options: {
     columnSpecs: ColumnSpecs
     environment: boolean
@@ -258,8 +266,8 @@ const basicParameters = (
 }
 
 const exclusiveGroups = (
-  groups: ParameterSpec.Exclusive[],
-  settings: Settings.Normalized,
+  groups: ParameterSpec.Output.ExclusiveGroup[],
+  settings: Settings.Output,
   options: {
     columnSpecs: ColumnSpecs
     environment: boolean
@@ -280,9 +288,9 @@ const exclusiveGroups = (
         { lines: [`┌─` + g.label + ` (mutually exclusive)`], width: widthToDefaultCol },
         {
           lines: [
-            g.default
-              ? `${g.default.tag}@${String(g.default.value)}`
-              : g.optional
+            g.optionality._tag === `default`
+              ? `${g.optionality.tag}@${String(g.optionality.getValue())}`
+              : g.optionality._tag === `optional`
               ? `undefined`
               : labels.required,
           ],
@@ -291,7 +299,7 @@ const exclusiveGroups = (
     )
     t += header
     t += Text.line()
-    for (const spec of Object.values(g.values)) {
+    for (const spec of Object.values(g.parameters)) {
       t += Text.indentBlockWith(parameter(spec, settings, options), (_, index) =>
         index === 0 ? chalk.yellow(`◒ `) : chalk.gray(`│ `)
       )
@@ -304,8 +312,8 @@ const exclusiveGroups = (
 }
 
 const parameter = (
-  spec: ParameterSpec.Normalized,
-  settings: Settings.Normalized,
+  spec: ParameterSpec.Output,
+  settings: Settings.Output,
   options: {
     columnSpecs: ColumnSpecs
     isEnvironmentEnabled: boolean
@@ -333,22 +341,26 @@ const parameter = (
   )
 }
 
-const parameterDefault = (width: number, spec: ParameterSpec.Normalized): Text.Column => {
-  if (spec._tag === `Exclusive`) return [chalk.gray(`–`)]
+const parameterDefault = (width: number, spec: ParameterSpec.Output): Text.Column => {
+  if (spec._tag === `Exclusive`) {
+    return [chalk.gray(`–`)]
+  }
 
-  if (spec.optional) {
-    if (spec.default) {
-      try {
-        return [chalk.blue(String(spec.default.get()))]
-      } catch (e) {
-        const error = e instanceof Error ? e : new Error(String(e))
-        return column(width, `Error trying to render this default: ${error.message}`).map((_) =>
-          chalk.bold(chalk.red(_))
-        )
-      }
-    }
+  if (spec.optionality._tag === `optional`) {
     return [chalk.blue(`undefined`)]
   }
+
+  if (spec.optionality._tag === `default`) {
+    try {
+      return [chalk.blue(String(spec.optionality.getValue()))]
+    } catch (e) {
+      const error = e instanceof Error ? e : new Error(String(e))
+      return column(width, `Error trying to render this default: ${error.message}`).map((_) =>
+        chalk.bold(chalk.red(_))
+      )
+    }
+  }
+
   return [labels.required]
 }
 
@@ -356,7 +368,7 @@ const labels = {
   required: chalk.bold(chalk.black(chalk.bgRedBright(` REQUIRED `))),
 }
 
-const parameterName = (spec: ParameterSpec.Normalized): Text.Column => {
+const parameterName = (spec: ParameterSpec.Output): Text.Column => {
   return [
     chalk.green(spec.name.canonical),
     chalk.gray(spec.name.aliases.long.join(`, `)),
@@ -365,10 +377,7 @@ const parameterName = (spec: ParameterSpec.Normalized): Text.Column => {
   ]
 }
 
-const parameterTypeAndDescription = (
-  spec: ParameterSpec.Normalized,
-  columnSpecs: ColumnSpecs
-): Text.Column => {
+const parameterTypeAndDescription = (spec: ParameterSpec.Output, columnSpecs: ColumnSpecs): Text.Column => {
   const maybeZodEnum = ZodHelpers.getEnum(spec.type)
   return [
     ...(maybeZodEnum ? typeEnum(maybeZodEnum) : [chalk.green(spec.typePrimitiveKind)]),
@@ -376,7 +385,7 @@ const parameterTypeAndDescription = (
   ]
 }
 
-const parameterEnvironment = (spec: ParameterSpec.Normalized, settings: Settings.Normalized): Text.Column => {
+const parameterEnvironment = (spec: ParameterSpec.Output, settings: Settings.Output): Text.Column => {
   return spec.environment?.enabled
     ? [
         chalk.blue(Text.chars.check) +

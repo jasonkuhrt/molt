@@ -1,24 +1,14 @@
 export * from './input.js'
-export * from './normalized.js'
-export * from './parse.js'
+export * from './output.js'
+export * from './processor/process.js'
+export * from './types.js'
 import { stripeNegatePrefix } from '../helpers.js'
 import type { Input } from './input.js'
-import type { Normalized } from './normalized.js'
-import type { z } from 'zod'
-
-export type SomeExclusiveZodType = z.ZodString | z.ZodEnum<[string, ...string[]]> | z.ZodNumber | z.ZodBoolean
-
-export type SomeBasicZodType =
-  | z.ZodString
-  | z.ZodEnum<[string, ...string[]]>
-  | z.ZodNumber
-  | z.ZodBoolean
-  | z.ZodOptional<z.ZodString | z.ZodBoolean | z.ZodNumber | z.ZodEnum<[string, ...string[]]>>
-  | z.ZodDefault<z.ZodString | z.ZodBoolean | z.ZodNumber | z.ZodEnum<[string, ...string[]]>>
+import type { Output } from './output.js'
 
 export type SomeInputs = Record<string, Input>
 
-export const findByName = (name: string, specs: Normalized[]): null | Normalized => {
+export const findByName = (name: string, specs: Output[]): null | Output => {
   for (const spec of specs) {
     const result = hasName(spec, name)
     if (result !== null) return spec
@@ -28,7 +18,7 @@ export const findByName = (name: string, specs: Normalized[]): null | Normalized
 /**
  * Get all the names of a parameter in array form.
  */
-export const getNames = (spec: Normalized): [string, ...string[]] => {
+export const getNames = (spec: Output): [string, ...string[]] => {
   return [
     ...spec.name.aliases.long,
     ...spec.name.aliases.short,
@@ -52,10 +42,16 @@ type NameHit =
 /**
  * Is one of the parameter's names the given name?
  */
-export const hasName = (spec: Normalized, name: string): null | NameHit => {
+export const hasName = (spec: Output, name: string): null | NameHit => {
   const result = parameterSpecHasNameDo(spec, name, false)
 
-  if (spec.typePrimitiveKind === `boolean`) {
+  const isOrHasBooleanType =
+    // spec._tag === `Union`
+    //   ? spec.types.find((_) => _.typePrimitiveKind === `boolean`) !== null
+    //   :
+    spec.typePrimitiveKind === `boolean`
+
+  if (isOrHasBooleanType) {
     const nameWithoutNegatePrefix = stripeNegatePrefix(name)
     if (nameWithoutNegatePrefix) {
       return parameterSpecHasNameDo(spec, nameWithoutNegatePrefix, true)
@@ -66,7 +62,7 @@ export const hasName = (spec: Normalized, name: string): null | NameHit => {
 }
 
 const parameterSpecHasNameDo = (
-  spec: Normalized,
+  spec: Output,
   name: string,
   negated: boolean
 ): null | { kind: 'long' | 'longAlias'; negated: boolean } | { kind: 'short' | 'shortAlias' } => {

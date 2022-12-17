@@ -25,7 +25,7 @@ export interface Input<ParametersObject extends State.ParametersObjectBase = {}>
   }
 }
 
-export interface Normalized {
+export interface Output {
   description?: string | undefined
   help: boolean
   helpOnNoArguments: boolean
@@ -54,7 +54,7 @@ interface SettingInputEnvironmentParameter {
 }
 
 // eslint-disable-next-line
-export const change = (current: Normalized, input: Input<{}>): void => {
+export const change = (current: Output, input: Input<{}>): void => {
   current.onError = input.onError ?? current.onError
 
   current.description = input.description ?? current.description
@@ -135,7 +135,7 @@ const isEnvironmentEnabled = (lowercaseEnv: NodeJS.ProcessEnv) => {
       true
 }
 
-export const getDefaults = (lowercaseEnv: NodeJS.ProcessEnv): Normalized => {
+export const getDefaults = (lowercaseEnv: NodeJS.ProcessEnv): Output => {
   return {
     help: true,
     helpOnNoArguments: true,

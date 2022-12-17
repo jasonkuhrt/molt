@@ -10,22 +10,24 @@ export class ErrorMissingFlagArgument extends Error {
 }
 
 export class ErrorMissingArgument extends Error {
-  constructor(params: { spec: ParameterSpec.Normalized }) {
+  constructor(params: { spec: ParameterSpec.Output }) {
     const message = `Missing argument for flag "${params.spec.name.canonical}".`
     super(message)
   }
 }
 
 export class ErrorMissingArgumentForMutuallyExclusiveParameters extends Error {
-  constructor(params: { group: ParameterSpec.Exclusive }) {
-    const message = `Missing argument for one of the following paramters: ${Object.values(params.group.values)
+  constructor(params: { group: ParameterSpec.Output.ExclusiveGroup }) {
+    const message = `Missing argument for one of the following parameters: ${Object.values(
+      params.group.parameters
+    )
       .map((_) => _.name.canonical)
       .join(`, `)}`
     super(message)
   }
 }
 export class ErrorArgsToMultipleMutuallyExclusiveParameters extends Error {
-  constructor(params: { offenses: { spec: ParameterSpec.Normalized.Exclusive; arg: Args.Argument }[] }) {
+  constructor(params: { offenses: { spec: ParameterSpec.Output.Exclusive; arg: Args.Argument }[] }) {
     const message = `Arguments given to multiple mutually exclusive parameters: ${params.offenses
       .map((_) => _.spec.name.canonical)
       .join(`, `)}`
