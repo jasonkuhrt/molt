@@ -42,7 +42,7 @@ type NameHit =
 export const hasName = (spec: Output, name: string): null | NameHit => {
   const result = parameterSpecHasNameDo(spec, name, false)
 
-  if (isOrHasPrimitiveKind(spec, `boolean`)) {
+  if (isOrHasTypePrimitive(spec, `boolean`)) {
     const nameWithoutNegatePrefix = stripeNegatePrefix(name)
     if (nameWithoutNegatePrefix) {
       return parameterSpecHasNameDo(spec, nameWithoutNegatePrefix, true)
@@ -52,7 +52,7 @@ export const hasName = (spec: Output, name: string): null | NameHit => {
   return result
 }
 
-const isOrHasPrimitiveKind = (spec: Output, primitiveKind: PrimitiveKind): boolean => {
+export const isOrHasTypePrimitive = (spec: Output, primitiveKind: PrimitiveKind): boolean => {
   return spec._tag === `Union`
     ? spec.types.find((_) => _.typePrimitiveKind === primitiveKind) !== null
     : spec.typePrimitiveKind === primitiveKind
