@@ -47,3 +47,12 @@ it(`spec of number|boolean parses arg as boolean true if environment true given`
   expect(typeof args.xee).toBe(`boolean`)
   expect(args.xee).toBe(true)
 })
+
+it(`can use the .or method api sugar of zod`, () => {
+  const args = Command.parameter(`xee`, z.boolean().or(z.number())).parse({
+    environment: { cli_param_xee: `true` },
+  })
+  expectType<boolean | number>(args.xee)
+  expect(typeof args.xee).toBe(`boolean`)
+  expect(args.xee).toBe(true)
+})
