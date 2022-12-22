@@ -1,6 +1,6 @@
 # molt
 
-A set of packages related to building CLIs. Alpha maturity. Each package has its own docs.
+A set of packages related to building CLIs. Each package has its own docs.
 
 | 📛  | Package                                                                 | Description                                                                | Use Case                                                                                              | Alternatives                                                                                                       |
 | --- | ----------------------------------------------------------------------- | -------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
