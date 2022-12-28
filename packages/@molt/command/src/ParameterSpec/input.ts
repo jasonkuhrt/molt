@@ -1,12 +1,12 @@
-import type { ArgumentValue, SomeBasicZodType, SomeExclusiveZodType, SomeUnionZodType } from './types.js'
+import type { ArgumentValue, SomeBasicType, SomeExclusiveZodType, SomeUnionType } from './types.js'
 
-export type Input = Input.Basic | Input.Exclusive // | Input.Union
+export type Input = Input.Basic | Input.Exclusive | Input.Union
 
 export namespace Input {
   export interface Basic {
     _tag: 'Basic'
     nameExpression: string
-    type: SomeBasicZodType
+    type: SomeBasicType
   }
 
   export interface Exclusive {
@@ -26,6 +26,6 @@ export namespace Input {
     _tag: 'Union'
     description?: string
     nameExpression: string
-    type: SomeUnionZodType
+    type: SomeUnionType
   }
 }

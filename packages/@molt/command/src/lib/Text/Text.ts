@@ -2,6 +2,15 @@ import snakeCase from 'lodash.snakecase'
 import stringLength from 'string-length'
 import stripAnsi from 'strip-ansi'
 
+export const borders = {
+  vertical: `│`,
+  horizontal: `─`,
+  leftTop: `┌`,
+  leftBottom: `└`,
+  rightTop: `┐`,
+  rightBottom: `┘`,
+}
+
 export type Line = string
 
 export type Column = Line[]
@@ -108,6 +117,7 @@ export const chars = {
   check: `✓`,
   newline,
   space,
+  pipe: `|`,
 }
 
 export const indentBlock = (text: string, symbol = `  `): string => {

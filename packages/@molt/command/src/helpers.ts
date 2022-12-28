@@ -20,7 +20,10 @@ export const lowerCaseObjectKeys = (obj: object) =>
 // prettier-ignore
 export const parseRawInput = (name: string, rawValue: string, spec: ParameterSpec.Output): Value => {
   const parsedValue = parseRawValue(rawValue, spec)
-  if (parsedValue === null) throw new Error(`Failed to parse input ${name} with value ${rawValue}. Expected type of ${spec.typePrimitiveKind}.`)
+  if (parsedValue === null) {
+    const expectedTypes = Alge.match(spec).Union((spec) => spec.types.map(_=>_.typePrimitiveKind).join(` | `)).else(spec => spec.typePrimitiveKind)
+    throw new Error(`Failed to parse input ${name} with value ${rawValue}. Expected type of ${expectedTypes}.`)
+  }
   if (typeof parsedValue === `string`) return { _tag: `string`, value: parsedValue }
   if (typeof parsedValue === `number`) return { _tag: `number`, value: parsedValue }
   if (typeof parsedValue === `boolean`){
@@ -58,12 +61,41 @@ const stripeNamespace = (name: string, spec: ParameterSpec.Output): string => {
 export const parseRawValue = (
   value: string,
   spec: ParameterSpec.Output
-): boolean | number | null | string => {
-  return Alge.match(spec.typePrimitiveKind)
-    .string(() => value)
-    .boolean(() => parseEnvironmentVariableBoolean(value))
-    .number(() => Number(value))
-    .done()
+): null | boolean | number | string => {
+  return Alge.match(spec)
+    .Union((spec) => {
+      /**
+       * For a union we infer the value to be the type of the first variant type that matches.
+       * This means that variant order matters since there are sub/super type relationships.
+       * For example a number is a subset of string type. If there is a string and number variant
+       * we should first check if the value could be a number, than a string.
+       */
+      const variantOrder = [`number`, `boolean`, `string`] as const
+      const types = spec.types.sort(
+        (a, b) => variantOrder.indexOf(a.typePrimitiveKind) - variantOrder.indexOf(b.typePrimitiveKind)
+      )
+      return (
+        types
+          .map((_) =>
+            Alge.match(_.typePrimitiveKind)
+              .string(() => value)
+              .boolean(() => parseEnvironmentVariableBoolean(value))
+              .number(() => {
+                const result = Number(value)
+                return isNaN(result) ? null : result
+              })
+              .done()
+          )
+          .find((parsedValue) => parsedValue !== null) ?? null
+      )
+    })
+    .else((spec) =>
+      Alge.match(spec.typePrimitiveKind)
+        .string(() => value)
+        .boolean(() => parseEnvironmentVariableBoolean(value))
+        .number(() => Number(value))
+        .done()
+    )
 }
 
 export const environmentVariableBooleanLookup = {

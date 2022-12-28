@@ -1,9 +1,11 @@
 import type { Settings } from '../../../index.js'
 import type { Input } from '../../input.js'
 import type { Output } from '../../output.js'
+import type { ArgumentValue } from '../../types.js'
+import { getUnionScalar } from '../../types.js'
 import { processEnvironment } from '../helpers/environment.js'
 import { processName } from '../helpers/name.js'
-import { analyzeUnion } from '../helpers/zod.js'
+import { analyzeTypeScalar } from '../helpers/type.js'
 
 export const processUnion = (
   nameExpression: string,
@@ -11,19 +13,50 @@ export const processUnion = (
   settings: Settings.Output
 ): Output.Union => {
   const name = processName(nameExpression)
-  const zodAnalysis = analyzeUnion(input)
   const environment = processEnvironment(settings, name)
+  const typeAnalysis = analyzeType(input)
   const parameter: Output.Union = {
     _tag: `Union`,
     name,
-    description: input.description ?? null,
-    optionality: zodAnalysis.defaultGetter
-      ? { _tag: `default`, getValue: () => zodAnalysis.defaultGetter!() }
-      : zodAnalysis.isOptional
-      ? { _tag: `optional` }
-      : { _tag: `required` },
     environment,
-    types: zodAnalysis.types,
+    zodType: input.type,
+    description: typeAnalysis.description,
+    optionality: typeAnalysis.optionality,
+    types: typeAnalysis.types,
   }
   return parameter
 }
+
+const analyzeType = (input: Input.Union) => {
+  const isOptional = input.type._def.typeName === `ZodOptional`
+  const hasDefault = input.type._def.typeName === `ZodDefault`
+  // console.log(input.type, hasDefault)
+  // @ts-expect-error todo
+  // eslint-disable-next-line
+  const defaultGetter = hasDefault ? (input.type._def.defaultValue as DefaultGetter) : null
+  const union = getUnionScalar(input.type)
+  const description = union.description ?? null
+  const types = union._def.options.map((_) => {
+    const typeAnalysis = analyzeTypeScalar(_)
+    return {
+      type: _,
+      description: typeAnalysis.description,
+      typePrimitiveKind: typeAnalysis.primitiveKind,
+    }
+  })
+  const optionality = (
+    defaultGetter
+      ? { _tag: `default`, getValue: () => defaultGetter() }
+      : isOptional
+      ? { _tag: `optional` }
+      : { _tag: `required` }
+  ) satisfies Output.Union['optionality']
+
+  return {
+    optionality,
+    description,
+    types,
+  }
+}
+
+type DefaultGetter = () => ArgumentValue

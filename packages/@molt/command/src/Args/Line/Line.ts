@@ -10,6 +10,7 @@ export const parse = (
   rawLineInputs: RawInputs,
   specs: ParameterSpec.Output[]
 ): { errors: Error[]; line: Index<ArgumentReport> } => {
+  // dump(specs)
   const errors: Error[] = []
 
   const rawLineInputsPrepared = rawLineInputs
@@ -27,13 +28,35 @@ export const parse = (
       if (value.join(``) === ``) return [flag]
       return [flag, value.join(`=`)]
     })
+
   const reports: Index<ArgumentReport> = {}
+
   let current: null | ArgumentReport = null
+
+  const finishPendingReport = (pendingReport: ArgumentReport) => {
+    if (pendingReport.value === PENDING_VALUE) {
+      /**
+       * We have gotten something like this: --foo --bar.
+       * We are parsing "foo". Its spec could be a union containing a boolean or just a straight up boolean, or something else.
+       * If union with boolean or boolean then we interpret foo argument as being a boolean.
+       * Otherwise it is an error.
+       */
+      if (ParameterSpec.isOrHasTypePrimitive(pendingReport.spec, `boolean`)) {
+        pendingReport.value = {
+          value: true,
+          _tag: `boolean`,
+          negated: isNegated(camelCase(pendingReport.source.name)),
+        }
+      } else {
+        pendingReport.errors.push(new Error(`Missing argument`))
+      }
+    }
+  }
 
   for (const rawLineInput of rawLineInputsPrepared) {
     if (isFlag(rawLineInput)) {
-      if (current && current.value === PENDING_VALUE) {
-        current.errors.push(new Error(`Missing argument`))
+      if (current) {
+        finishPendingReport(current)
         current = null
       }
 
@@ -48,55 +71,41 @@ export const parse = (
 
       const existing = reports[spec.name.canonical]
       if (existing) {
-        // TODO
+        // TODO The argument is already present, we should report an error? Or just ignore? Handle once we support multiple values (arrays).
         continue
       }
 
-      if (spec.typePrimitiveKind === `boolean`) {
-        current = {
-          spec,
-          errors: [],
-          value: {
-            value: true,
-            _tag: `boolean`,
-            negated: isNegated(flagNameNoDashPrefixCamel),
-          },
-          duplicates: [],
-          source: {
-            _tag: `line`,
-            name: flagNameNoDashPrefix,
-          },
-        }
-      } else {
-        current = {
-          spec,
-          errors: [],
-          // eslint-disable-next-line
-          value: PENDING_VALUE,
-          duplicates: [],
-          source: {
-            _tag: `line`,
-            name: flagNameNoDashPrefix,
-          },
-        }
+      current = {
+        spec,
+        errors: [],
+        value: PENDING_VALUE, // eslint-disable-line
+        duplicates: [],
+        source: {
+          _tag: `line`,
+          name: flagNameNoDashPrefix,
+        },
       }
-      reports[spec.name.canonical] = current
-      continue
-    }
 
-    if (current) {
+      reports[spec.name.canonical] = current
+
+      continue
+    } else if (current) {
       // TODO catch error and put into errors array
       current.value = parseRawInput(current.spec.name.canonical, rawLineInput, current.spec)
+      current = null
+      continue
+    } else {
+      // TODO We got an argument without a flag, we should report an error? Or just ignore?
     }
   }
 
   // dump({ current })
-  if (current && current.value === PENDING_VALUE) {
-    current.errors.push(new Error(`Missing argument`))
+  if (current) {
+    finishPendingReport(current)
     current = null
   }
 
-  // dump({ flags })
+  // dump({ reports })
   return {
     errors,
     line: reports,

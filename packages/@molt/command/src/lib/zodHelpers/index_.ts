@@ -4,6 +4,24 @@ export type ZodPrimitive = 'ZodBoolean' | 'ZodNumber' | 'ZodString' | 'ZodEnum'
 
 export type Primitive = 'boolean' | 'number' | 'string'
 
+export const stripOptionalAndDefault = <T extends z.ZodFirstPartySchemaTypes>(
+  type: T
+): Exclude<T, z.ZodOptional<any> | z.ZodDefault<any>> => {
+  if (type instanceof z.ZodOptional) {
+    return stripOptionalAndDefault(type._def.innerType)
+  }
+  if (type instanceof z.ZodDefault) {
+    return stripOptionalAndDefault(type._def.innerType)
+  }
+  return type as any
+}
+
+export const isUnion = (type: z.ZodFirstPartySchemaTypes) => {
+  const type_ = stripOptionalAndDefault(type)
+  const isUnion = type_._def.typeName === `ZodUnion`
+  return isUnion
+}
+
 export const isOptional = (schema: z.ZodTypeAny) => {
   if (schema instanceof z.ZodOptional) {
     return true
@@ -14,27 +32,27 @@ export const isOptional = (schema: z.ZodTypeAny) => {
   return false
 }
 
-export const getEnum = (schema: z.ZodTypeAny): null | z.ZodEnum<[string, ...string[]]> => {
-  if (!(`_def` in schema)) throw new Error(`Expected a Zod schema.`)
-  if (!(`typeName` in schema._def)) throw new Error(`Expected a Zod schema.`)
+export const getEnum = (type: z.ZodTypeAny): null | z.ZodEnum<[string, ...string[]]> => {
+  if (!(`_def` in type)) throw new Error(`Expected a Zod schema.`)
+  if (!(`typeName` in type._def)) throw new Error(`Expected a Zod schema.`)
 
-  if (schema instanceof z.ZodNullable) {
-    return getEnum(schema.unwrap() as z.ZodTypeAny)
+  if (type instanceof z.ZodNullable) {
+    return getEnum(type.unwrap() as z.ZodTypeAny)
   }
 
   // eslint-disable-next-line
-  if (schema instanceof z.ZodDefault) {
+  if (type instanceof z.ZodDefault) {
     // eslint-disable-next-line
-    return getEnum(schema._def.innerType)
+    return getEnum(type._def.innerType)
   }
 
   // eslint-disable-next-line
-  if (schema instanceof z.ZodOptional) {
-    return getEnum(schema.unwrap() as z.ZodTypeAny)
+  if (type instanceof z.ZodOptional) {
+    return getEnum(type.unwrap() as z.ZodTypeAny)
   }
 
-  if (schema instanceof z.ZodEnum) {
-    return schema
+  if (type instanceof z.ZodEnum) {
+    return type
   }
 
   return null

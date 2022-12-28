@@ -1,9 +1,9 @@
 import type { Settings } from '../../../index.js'
-import { ZodHelpers } from '../../../lib/zodHelpers/index.js'
 import type { Input } from '../../input.js'
 import type { Output } from '../../output.js'
 import { processEnvironment } from '../helpers/environment.js'
 import { processName } from '../helpers/name.js'
+import { analyzeTypeScalar } from '../helpers/type.js'
 import { Alge } from 'alge'
 
 export const processExclusive = (
@@ -14,15 +14,16 @@ export const processExclusive = (
   const parameters = input.parameters.map((_) => {
     const name = processName(_.nameExpression)
     const environment = processEnvironment(settings, name)
+    const typeAnalysis = analyzeTypeScalar(_.type)
     return {
       _tag: `Exclusive`,
-      description: _.type.description ?? null,
-      type: _.type,
+      description: typeAnalysis.description,
+      typePrimitiveKind: typeAnalysis.primitiveKind,
+      zodType: _.type,
       environment,
       name,
       // See comment/code below: (1)
       group: null as any, // eslint-disable-line
-      typePrimitiveKind: ZodHelpers.ZodPrimitiveToPrimitive[ZodHelpers.getZodPrimitive(_.type)],
     } satisfies Output.Exclusive
   })
 

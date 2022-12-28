@@ -22,6 +22,13 @@ const args = Command.parameters({
       `kilomanjara`,
     ])
     .optional(),
+  'i install': z
+    .union([
+      z.boolean().describe(`Use the system-detected package manager.`),
+      z.enum([`yarn`, `npm`, `pnpm`]).describe(`Force use of a specific package manager.`),
+    ])
+    .describe(`Run dependency install after setup.`)
+    .default(false),
   filePath: z.string().describe(`Path to the file to convert.`),
   to: z.enum([`json`, `yaml`, `toml`]).describe(`Format to convert to.`),
   from: z
