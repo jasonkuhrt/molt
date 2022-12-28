@@ -441,14 +441,14 @@ args.force === true
   )
   ```
 
-  Then help is rendered something like like so:
+  Then help is rendered something like so:
 
   ```
   PARAMETERS
 
     Name    Type/Description                              Default
 
-    xee     ┌─union                                       false
+    xee     ┌─union                                       REQUIRED
             │ Blah blah blah overview.
             │
             ◒ string
