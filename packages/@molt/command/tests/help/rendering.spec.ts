@@ -212,14 +212,98 @@ describe(`exclusive`, () => {
   })
 })
 
-// describe(`union parameter`, () => {
-//   it.only(`shows pipe when no description is given for anything`, () => {
-//     Command.parameter(`b bar`, z.union([z.string(), z.number()]))
-//       .settings({ onOutput })
-//       .parse({
-//         line: [`-h`],
-//       })
-//     expect(stripAnsi(output)).toMatchSnapshot(`monochrome`)
-//     expect(output).toMatchSnapshot(`polychrome`)
-//   })
-// })
+describe(`union parameter`, () => {
+  describe(`condensed pipe style`, () => {
+    it(`used when no descriptions given for anything`, () => {
+      Command.parameter(`b bar`, z.union([z.string(), z.number()]))
+        .settings({ onOutput })
+        .parse({
+          line: [`-h`],
+        })
+      expect(stripAnsi(output)).toMatchSnapshot(`monochrome`)
+      expect(output).toMatchSnapshot(`polychrome`)
+    })
+    it(`used when only overall description given`, () => {
+      Command.parameter(`b bar`, z.union([z.string(), z.number()]).describe(`Blah blah blah.`))
+        .settings({ onOutput })
+        .parse({
+          line: [`-h`],
+        })
+      expect(stripAnsi(output)).toMatchSnapshot(`monochrome`)
+      expect(output).toMatchSnapshot(`polychrome`)
+    })
+  })
+  describe(`verbose style`, () => {
+    it(`shows member on each line if each has description`, () => {
+      Command.parameter(
+        `b bar`,
+        z.union([
+          z.string().describe(`Blah blah blah string.`),
+          z.number().describe(`Blah blah blah number.`),
+        ])
+      )
+        .settings({ onOutput })
+        .parse({
+          line: [`-h`],
+        })
+      expect(stripAnsi(output)).toMatchSnapshot(`monochrome`)
+      expect(output).toMatchSnapshot(`polychrome`)
+    })
+    it(`shows member on each line if at least one has description`, () => {
+      Command.parameter(`b bar`, z.union([z.string(), z.number().describe(`Blah blah blah number.`)]))
+        .settings({ onOutput })
+        .parse({
+          line: [`-h`],
+        })
+      expect(stripAnsi(output)).toMatchSnapshot(`monochrome`)
+      expect(output).toMatchSnapshot(`polychrome`)
+    })
+    it(`shows overall description above all members when members also have descriptions`, () => {
+      Command.parameter(
+        `b bar`,
+        z
+          .union([
+            z.string().describe(`Blah blah blah string.`),
+            z.number().describe(`Blah blah blah number.`),
+          ])
+          .describe(`Blah blah blah overall.`)
+      )
+        .settings({ onOutput })
+        .parse({
+          line: [`-h`],
+        })
+      expect(stripAnsi(output)).toMatchSnapshot(`monochrome`)
+      expect(output).toMatchSnapshot(`polychrome`)
+    })
+  })
+  it(`shows default when overall has a default`, () => {
+    Command.parameter(
+      `b bar`,
+      z
+        .union([z.string().describe(`Blah blah blah string.`), z.number().describe(`Blah blah blah number.`)])
+        .default(1)
+        .describe(`Blah blah blah overall.`)
+    )
+      .settings({ onOutput })
+      .parse({
+        line: [`-h`],
+      })
+    expect(stripAnsi(output)).toMatchSnapshot(`monochrome`)
+    expect(output).toMatchSnapshot(`polychrome`)
+  })
+  it(`shows default as undefined when overall optional`, () => {
+    Command.parameter(
+      `b bar`,
+      z
+        .union([z.string().describe(`Blah blah blah string.`), z.number().describe(`Blah blah blah number.`)])
+        .optional()
+        .describe(`Blah blah blah overall.`)
+    )
+      .settings({ onOutput })
+      .parse({
+        line: [`-h`],
+      })
+    expect(stripAnsi(output)).toMatchSnapshot(`monochrome`)
+    expect(output).toMatchSnapshot(`polychrome`)
+  })
+})

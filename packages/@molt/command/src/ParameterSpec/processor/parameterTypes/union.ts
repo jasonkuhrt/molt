@@ -30,11 +30,12 @@ export const processUnion = (
 const analyzeType = (input: Input.Union) => {
   const isOptional = input.type._def.typeName === `ZodOptional`
   const hasDefault = input.type._def.typeName === `ZodDefault`
+  // console.log(input.type, hasDefault)
   // @ts-expect-error todo
   // eslint-disable-next-line
-  const defaultGetter = hasDefault ? (type._def.defaultValue() as DefaultGetter) : null
-  const description = input.type.description ?? null
+  const defaultGetter = hasDefault ? (input.type._def.defaultValue as DefaultGetter) : null
   const union = getUnionScalar(input.type)
+  const description = union.description ?? null
   const types = union._def.options.map((_) => {
     const typeAnalysis = analyzeTypeScalar(_)
     return {
