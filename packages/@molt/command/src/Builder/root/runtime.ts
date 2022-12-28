@@ -71,7 +71,7 @@ const create = () => {
       const askedForHelp = `help` in argsResult.args && argsResult.args.help === true
 
       if (askedForHelp) {
-        process.stdout.write(Help.render(specsResult.specs, $.settings) + `\n`)
+        $.settings.onOutput(Help.render(specsResult.specs, $.settings) + `\n`)
         if (!testDebuggingNoExit) process.exit(0)
         return undefined as never // When testing, with process.exit mock, we will reach this case
       }
@@ -82,8 +82,8 @@ const create = () => {
             `Cannot run command, you made some mistakes:\n\n` +
             argsResult.errors.map((_) => _.message).join(`\nX `) +
             `\n\nHere are the docs for this command:\n`
-          process.stdout.write(message + `\n`)
-          process.stdout.write(Help.render(specsResult.specs, $.settings) + `\n`)
+          $.settings.onOutput(message + `\n`)
+          $.settings.onOutput(Help.render(specsResult.specs, $.settings) + `\n`)
         }
         if ($.settings.onError === `exit` && !testDebuggingNoExit) {
           process.exit(1)
@@ -94,7 +94,7 @@ const create = () => {
       }
 
       if ($.settings.helpOnNoArguments && Object.values(argsResult.args).length === 0) {
-        process.stdout.write(Help.render(specsResult.specs, $.settings) + `\n`)
+        $.settings.onOutput(Help.render(specsResult.specs, $.settings) + `\n`)
         if (!testDebuggingNoExit) process.exit(0)
         throw new Error(`missing args`) // When testing, with process.exit mock, we will reach this case
       }

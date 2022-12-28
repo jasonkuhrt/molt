@@ -13,6 +13,7 @@ export interface Input<ParametersObject extends State.ParametersObjectBase = {}>
   helpOnNoArguments?: boolean
   helpOnError?: boolean
   onError?: OnErrorReaction
+  onOutput?: (output: string, defaultHandler: (output: string) => void) => void
   parameters?: {
     // prettier-ignore
     environment?:
@@ -31,6 +32,7 @@ export interface Output {
   helpOnNoArguments: boolean
   helpOnError: boolean
   onError: OnErrorReaction
+  onOutput: (output: string) => void
   parameters: {
     environment: Record<string, SettingNormalizedEnvironmentParameter> & {
       $default: SettingNormalizedEnvironmentParameterDefault
@@ -62,6 +64,12 @@ export const change = (current: Output, input: Input<{}>): void => {
   current.helpOnNoArguments = input.helpOnNoArguments ?? current.helpOnNoArguments
 
   current.helpOnError = input.helpOnError ?? current.helpOnError
+
+  current.onOutput = input.onOutput
+    ? (_) => {
+        input.onOutput!(_, process.stdout.write.bind(process.stdout))
+      }
+    : current.onOutput
 
   if (input.parameters !== undefined) {
     if (input.help) {
@@ -141,6 +149,7 @@ export const getDefaults = (lowercaseEnv: NodeJS.ProcessEnv): Output => {
     helpOnNoArguments: true,
     helpOnError: true,
     onError: `exit`,
+    onOutput: (_) => process.stdout.write(_),
     parameters: {
       environment: {
         $default: {

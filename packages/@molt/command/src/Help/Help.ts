@@ -87,11 +87,19 @@ export const render = (
     },
     typeAndDescription: {
       width: allSpecs.reduce((width, spec) => {
-        if (spec._tag === `Union`) return 0 // TODO
-        const maybeEnum = ZodHelpers.getEnum(spec.zodType)
-        const typeLength = maybeEnum
-          ? Math.max(...typeEnum(maybeEnum).map((_) => stripAnsi(_).length))
-          : spec.typePrimitiveKind.length
+        let typeLength = 0
+        if (spec._tag === `Union`) {
+          if (!spec.description && spec.types.filter((_) => _.description !== null).length === 0) {
+            typeLength = spec.types.map((_) => _.typePrimitiveKind).join(` | `).length
+          } else {
+            return 0
+          }
+        } else {
+          const maybeEnum = ZodHelpers.getEnum(spec.zodType)
+          typeLength = maybeEnum
+            ? Math.max(...typeEnum(maybeEnum).map((_) => stripAnsi(_).length))
+            : spec.typePrimitiveKind.length
+        }
         const descriptionLength = (spec.description ?? ``).length
         const contentWidth = Math.max(
           width,
@@ -379,7 +387,10 @@ const parameterName = (spec: ParameterSpec.Output): Text.Column => {
 }
 
 const parameterTypeAndDescription = (spec: ParameterSpec.Output, columnSpecs: ColumnSpecs): Text.Column => {
-  if (spec._tag === `Union`) return [`to`, `do`] //todo
+  if (spec._tag === `Union`) {
+    const types = spec.types.map((_) => _.typePrimitiveKind).join(` | `)
+    return [types, ...Text.column(columnSpecs.typeAndDescription.width, spec.description ?? ``)]
+  }
   const maybeZodEnum = ZodHelpers.getEnum(spec.zodType)
   return [
     ...(maybeZodEnum ? typeEnum(maybeZodEnum) : [chalk.green(spec.typePrimitiveKind)]),
