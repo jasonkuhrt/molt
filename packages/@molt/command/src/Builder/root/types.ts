@@ -8,7 +8,6 @@ import type {
 } from '../exclusive/types.js'
 // eslint-disable-next-line
 import { State } from '../State.js'
-import type { z } from 'zod'
 
 // prettier-ignore
 export interface RootBuilder<State extends State.Base = State.BaseEmpty> {

@@ -426,6 +426,7 @@ const parameterTypeAndDescription = (spec: ParameterSpec.Output, columnSpecs: Co
         return [
           unionMemberIcon +
             ` ` +
+            // eslint-disable-next-line
             (maybeZodEnum ? typeEnum(_.type as any).join(` | `) : colors.positive(_.typePrimitiveKind)),
           _.description ? colors.dim(Text.borders.vertical) + ` ` + _.description : ``,
           colors.dim(Text.borders.vertical) + ` `,

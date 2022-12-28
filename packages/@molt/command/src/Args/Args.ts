@@ -1,5 +1,5 @@
 import { Errors } from '../Errors/index.js'
-import { dump, groupBy } from '../lib/prelude.js'
+import { groupBy } from '../lib/prelude.js'
 import type { ParameterSpec } from '../ParameterSpec/index.js'
 import { Environment } from './Environment/index.js'
 import { Line } from './Line/index.js'
