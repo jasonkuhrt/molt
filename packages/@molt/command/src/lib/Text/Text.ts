@@ -139,6 +139,7 @@ export const visualStringTakeWords = (string: string, size: number): { taken: st
   const words = splitWords(string)
   let taken = ``
 
+  // eslint-disable-next-line no-constant-condition
   while (true) {
     // There are no words (empty string)
     if (words.length === 0) {
