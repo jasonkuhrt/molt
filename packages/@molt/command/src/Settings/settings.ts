@@ -55,8 +55,13 @@ interface SettingInputEnvironmentParameter {
   prefix?: boolean | string | string[]
 }
 
+interface Environment {
+  cli_settings_read_arguments_from_environment?: string | undefined
+  [name: string]: string | undefined
+}
+
 // eslint-disable-next-line
-export const change = (current: Output, input: Input<{}>): void => {
+export const change = (current: Output, input: Input<{}>, environment: Environment): void => {
   current.onError = input.onError ?? current.onError
 
   current.description = input.description ?? current.description
@@ -75,49 +80,58 @@ export const change = (current: Output, input: Input<{}>): void => {
     if (input.help) {
       current.help = input.help
     }
-    if (input.parameters.environment !== undefined) {
-      // Handle environment
-      if (typeof input.parameters.environment === `boolean`) {
-        current.parameters.environment.$default.enabled = input.parameters.environment
-      } else {
-        // As soon as the settings begin to specify explicit parameter settings
-        // AND there is NO explicit default toggle setting, then we disable all the rest by default.
-        // prettier-ignore
-        if (
-          input.parameters.environment.$default === undefined ||
-          typeof input.parameters.environment.$default !== `boolean` && input.parameters.environment.$default.enabled === undefined
-        ) {
-          const parameterEnvironmentSpecs = Object.keys(input.parameters.environment).filter((k) => k !== `$default`)
-          current.parameters.environment.$default.enabled = parameterEnvironmentSpecs.length === 0
-        }
 
-        for (const [parameterName, spec] of Object.entries(input.parameters.environment)) {
-          let spec_ = current.parameters.environment[parameterName]
-          if (!spec_) {
-            spec_ = {}
-            current.parameters.environment[parameterName] = spec_
+    // Handle environment
+    if (input.parameters.environment !== undefined) {
+      const explicitGlobalToggle = environment.cli_settings_read_arguments_from_environment
+        ? parseEnvironmentVariableBooleanOrThrow(environment.cli_settings_read_arguments_from_environment)
+        : null
+
+      if (explicitGlobalToggle === false) {
+        current.parameters.environment.$default.enabled = false
+      } else {
+        if (typeof input.parameters.environment === `boolean`) {
+          current.parameters.environment.$default.enabled = input.parameters.environment
+        } else {
+          // As soon as the settings begin to specify explicit parameter settings
+          // AND there is NO explicit default toggle setting, then we disable all the rest by default.
+          // prettier-ignore
+          if (
+            input.parameters.environment.$default === undefined ||
+            typeof input.parameters.environment.$default !== `boolean` && input.parameters.environment.$default.enabled === undefined
+          ) {
+            const parameterEnvironmentSpecs = Object.keys(input.parameters.environment).filter((k) => k !== `$default`)
+            current.parameters.environment.$default.enabled = parameterEnvironmentSpecs.length === 0
           }
-          if (typeof spec === `boolean`) {
-            spec_.enabled = spec
-          } else {
-            // Handle enabled
-            if (parameterName === `$default`) {
-              if (spec.enabled !== undefined) {
-                spec_.enabled = spec.enabled
-              }
-            } else {
-              spec_.enabled = spec.enabled ?? true
+
+          for (const [parameterName, spec] of Object.entries(input.parameters.environment)) {
+            let spec_ = current.parameters.environment[parameterName]
+            if (!spec_) {
+              spec_ = {}
+              current.parameters.environment[parameterName] = spec_
             }
-            // Handle prefix
-            if (spec.prefix !== undefined) {
-              if (spec.prefix === false) {
-                spec_.prefix = []
-              } else if (spec.prefix === true) {
-                spec_.prefix = defaultParameterNamePrefixes
-              } else if (typeof spec.prefix === `string`) {
-                spec_.prefix = [snakeCase(spec.prefix).toLowerCase()]
+            if (typeof spec === `boolean`) {
+              spec_.enabled = spec
+            } else {
+              // Handle enabled
+              if (parameterName === `$default`) {
+                if (spec.enabled !== undefined) {
+                  spec_.enabled = spec.enabled
+                }
               } else {
-                spec_.prefix = spec.prefix.map((prefix) => snakeCase(prefix).toLowerCase())
+                spec_.enabled = spec.enabled ?? true
+              }
+              // Handle prefix
+              if (spec.prefix !== undefined) {
+                if (spec.prefix === false) {
+                  spec_.prefix = []
+                } else if (spec.prefix === true) {
+                  spec_.prefix = defaultParameterNamePrefixes
+                } else if (typeof spec.prefix === `string`) {
+                  spec_.prefix = [snakeCase(spec.prefix).toLowerCase()]
+                } else {
+                  spec_.prefix = spec.prefix.map((prefix) => snakeCase(prefix).toLowerCase())
+                }
               }
             }
           }

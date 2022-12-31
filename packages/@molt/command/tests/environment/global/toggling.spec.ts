@@ -1,9 +1,12 @@
 import { Command } from '../../../src/index.js'
-import { stdout } from '../../_/mocks.js'
-import { environmentManager } from '../__helpers__.js'
+import { createState, environmentManager } from '../__helpers__.js'
 import { expect } from 'vitest'
 import { it } from 'vitest'
 import { z } from 'zod'
+
+const output = createState<string>({
+  value: (values) => values.join(``),
+})
 
 it(`is enabled by default`, () => {
   environmentManager.set(`cli_parameter_foo`, `bar`)
@@ -38,10 +41,18 @@ it(`can be disabled by environment`, () => {
   expect(args).toMatchObject({ foo: `foo_default` })
 })
 it(`environment supersedes settings`, () => {
-  environmentManager.set(`ClI_settings_READ_arguments_FROM_ENVIRONMENT`, `false`)
-  environmentManager.set(`cli_foo`, `bar`)
-  Command.parameters({ '--foo': z.string() })
-    .settings({ parameters: { environment: true }, helpOnNoArguments: false })
-    .parse({ line: [] })
-  expect(stdout.mock.calls).toMatchSnapshot()
+  expect(() =>
+    Command.parameters({ '--foo': z.string() })
+      .settings({
+        onOutput: output.set,
+        parameters: { environment: true },
+        helpOnNoArguments: false,
+        onError: `throw`,
+      })
+      .parse({
+        line: [],
+        environment: { ClI_settings_READ_arguments_FROM_ENVIRONMENT: `false`, cli_param_foo: `bar` },
+      })
+  ).toThrowErrorMatchingSnapshot()
+  expect(output.value).toMatchSnapshot()
 })
