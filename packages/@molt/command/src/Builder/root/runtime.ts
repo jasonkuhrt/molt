@@ -8,9 +8,8 @@ import type { RawArgInputs, RootBuilder } from './types.js'
 
 const create = () => {
   const $: State = {
-    settings: {
-      ...Settings.getDefaults(getLowerCaseEnvironment()),
-    },
+    newSettingsBuffer: [],
+    settings: null,
     parameterSpecInputs: {},
   }
 
@@ -36,7 +35,7 @@ const create = () => {
 
   const chain: InternalRootBuilder = {
     settings: (newSettings) => {
-      Settings.change($.settings, newSettings)
+      $.newSettingsBuffer.push(newSettings)
       return chain
     },
     parameters: (parametersObject) => {
@@ -60,6 +59,13 @@ const create = () => {
       const argInputsEnvironment = argInputs?.environment
         ? lowerCaseObjectKeys(argInputs.environment)
         : getLowerCaseEnvironment()
+      // Resolve settings
+      $.settings = {
+        ...Settings.getDefaults(argInputsEnvironment),
+      }
+      $.newSettingsBuffer.forEach((newSettings) =>
+        Settings.change($.settings!, newSettings, argInputsEnvironment)
+      )
       // todo handle concept of specs themselves having errors
       const specsResult = {
         specs: ParameterSpec.process($.parameterSpecInputs, $.settings),
@@ -123,7 +129,8 @@ export const createViaParameters: RootBuilder['parameters'] = (parametersObject)
 //
 
 type State = {
-  settings: Settings.Output
+  settings: null | Settings.Output
+  newSettingsBuffer: Settings.Input[]
   parameterSpecInputs: Record<string, ParameterSpec.Input>
 }
 

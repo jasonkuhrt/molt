@@ -274,7 +274,7 @@ const environmentNote = (specs: ParameterSpec.Output[], settings: Settings.Outpu
         : colors.positive(Text.toEnvarNameCase(_.name.canonical))
     )
     .map((_) => `${_}="..."`)
-    .reduce((_, example) => _ + `\n  ${Text.chars.arrowR} ${example}`, ``)}.`
+    .reduce((_, example) => _ + `\n  ${Text.chars.arrowRight} ${example}`, ``)}.`
 
   return Text.column(76, content)
 }

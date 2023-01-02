@@ -1,3 +1,4 @@
+import { Text } from './index.js'
 import snakeCase from 'lodash.snakecase'
 import stringLength from 'string-length'
 import stripAnsi from 'strip-ansi'
@@ -78,39 +79,24 @@ export const row = (
 
 export const toEnvarNameCase = (name: string) => snakeCase(name).toUpperCase()
 
-export const visualStringTake = (string: string, size: number): string => {
-  let taken = string.slice(0, size)
-  let i = 0
-  while (stringLength(taken) < size) {
-    if (taken.length === string.length) break
-    i++
-    taken = string.slice(0, size + i)
-  }
-  return taken
-}
-
 export const column = (width: number, text: string): string[] => {
-  const lines = []
-  let textToConsume = text
-  while (textToConsume.length > 0) {
-    const textConsumed = visualStringTake(textToConsume, width)
-    const textLines = textConsumed.split(newline)
-    if (textLines.length === 1) {
-      // eslint-disable-next-line
-      lines.push(textLines[0]!)
-      textToConsume = textToConsume.slice(textConsumed.length)
-    } else {
-      // eslint-disable-next-line
-      const lastTextLine = textLines.pop()!
-      textToConsume = textToConsume.slice(textConsumed.length - lastTextLine.length)
+  const lines: string[] = text.split(`\n`)
+  const linesFitted = lines.flatMap((text) => {
+    const lines = []
+    let textToConsume = text
+    while (textToConsume.length > 0) {
+      const result = visualStringTakeWords(textToConsume, width)
+      const textLines = result.taken.replace(/\n$/, ``).split(newline)
       lines.push(...textLines)
+      textToConsume = result.remaining
     }
-  }
-  return lines
+    return lines
+  })
+  return linesFitted
 }
 
 export const chars = {
-  arrowR: `→`,
+  arrowRight: `→`,
   lineH: `─`,
   lineHBold: `━`,
   x: `✕`,
@@ -137,3 +123,85 @@ export const indentColumnWith = (column: Column, indenter: (line: Line, index: n
 }
 
 export const defaultColumnSeparator = chars.space.repeat(3)
+
+export const visualStringTake = (string: string, size: number): string => {
+  let taken = string.slice(0, size)
+  let i = 0
+  while (stringLength(taken) < size) {
+    if (taken.length === string.length) break
+    i++
+    taken = string.slice(0, size + i)
+  }
+  return taken
+}
+
+export const visualStringTakeWords = (string: string, size: number): { taken: string; remaining: string } => {
+  const words = splitWords(string)
+  let taken = ``
+
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    // There are no words (empty string)
+    if (words.length === 0) {
+      break
+    }
+    const word = String(words[0])
+
+    // single word is too long for asked take
+    if (stringLength(word) > size) {
+      // TODO hyphen the word?
+      words.shift()
+      taken += String(word)
+      continue
+    }
+
+    // Cannot take any more, taking another word would exceed limit:
+    if (stringLength(taken + ` ` + word) > size) {
+      break
+    }
+
+    words.shift()
+    taken += (taken.length ? ` ` : ``) + word
+  }
+
+  const remaining = joinWords(words)
+
+  const result = {
+    taken,
+    remaining,
+  }
+
+  return result
+}
+
+const joinWords = (words: string[]): string => {
+  return words.reduce((string, word, i) => {
+    return i === 0 ? word : string + (string[string.length - 1] === Text.chars.newline ? `` : ` `) + word
+  }, ``)
+}
+
+const splitWords = (string: string): string[] => {
+  const words = []
+  let currentWord = ``
+  let currentWordReady = false
+  for (const char of string.split(``)) {
+    if (char === Text.chars.space && currentWordReady) {
+      words.push(currentWord)
+      // If the next word is on a new line then do not disregard the leading space
+      currentWord = currentWord[currentWord.length - 1] === Text.chars.newline ? ` ` : ``
+      currentWordReady = false
+      continue
+    }
+
+    if (char !== Text.chars.space) {
+      currentWordReady = true
+    }
+
+    currentWord += char
+  }
+
+  if (currentWord.length > 0) {
+    words.push(currentWord)
+  }
+  return words
+}

@@ -12,7 +12,7 @@ export const zodPassthrough = <T>() => z.any().transform((_) => _ as T)
 
 export type Values<T> = T[keyof T]
 
-export const getLowerCaseEnvironment = () => lowerCaseObjectKeys(process.env)
+export const getLowerCaseEnvironment = (): NodeJS.ProcessEnv => lowerCaseObjectKeys(process.env)
 
 export const lowerCaseObjectKeys = (obj: object) =>
   Object.fromEntries(Object.entries(obj).map(([k, v]) => [k.toLowerCase(), v]))

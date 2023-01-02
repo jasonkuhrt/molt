@@ -1,5 +1,28 @@
 import { beforeEach } from 'vitest'
 
+export const createState = <X, Value = string>(params?: {
+  value?: (values: X[]) => Value
+}): { set: (value: X) => X[]; values: X[]; value: Value } => {
+  let values: X[] = []
+
+  beforeEach(() => {
+    values = []
+  })
+
+  return {
+    get values(): X[] {
+      return values
+    },
+    get value(): Value {
+      return params?.value?.(values) ?? (values.join(``) as Value)
+    },
+    set: (newValue: X): X[] => {
+      values.push(newValue)
+      return values
+    },
+  }
+}
+
 const createEnvironmentManager = () => {
   let changes: Record<string, string | undefined> = {}
 

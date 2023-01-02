@@ -10,11 +10,11 @@ PARAMETERS
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  (1) Parameters can be passed arguments via environment variables. Command line a             
-      rguments take precedence. Environment variable names are snake cased version             
-      s of the parameter name (or its aliases), case insensitive. They must be pre             
-      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
-        → CLI_PARAMETER_FOO=\\"...\\".                                                             
+  (1) Parameters can be passed arguments via environment variables. Command line                     
+      arguments take precedence. Environment variable names are snake cased                          
+      versions of the parameter name (or its aliases), case insensitive. They must                   
+      be prefixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
+        → CLI_PARAMETER_FOO=\\"...\\".                                                                   
 "
 `;
 
@@ -28,11 +28,11 @@ PARAMETERS
   
 [2m[90m  NOTES[39m[22m
 [2m[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m[22m
-[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m[22m
-[2m[90m      rguments take precedence. Environment variable names are snake cased version             [39m[22m
-[2m[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m[22m
-[2m[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
-[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mFOO[39m[90m=\\"...\\".                                                             [39m[22m
+[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line                     [39m[22m
+[2m[90m      arguments take precedence. Environment variable names are snake cased                          [39m[22m
+[2m[90m      versions of the parameter name (or its aliases), case insensitive. They must                   [39m[22m
+[2m[90m      be prefixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
+[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mFOO[39m[90m=\\"...\\".                                                                   [39m[22m
 "
 `;
 
@@ -46,11 +46,11 @@ PARAMETERS
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  (1) Parameters can be passed arguments via environment variables. Command line a             
-      rguments take precedence. Environment variable names are snake cased version             
-      s of the parameter name (or its aliases), case insensitive. They must be pre             
-      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
-        → CLI_PARAMETER_FOO=\\"...\\".                                                             
+  (1) Parameters can be passed arguments via environment variables. Command line                     
+      arguments take precedence. Environment variable names are snake cased                          
+      versions of the parameter name (or its aliases), case insensitive. They must                   
+      be prefixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
+        → CLI_PARAMETER_FOO=\\"...\\".                                                                   
 "
 `;
 
@@ -64,11 +64,11 @@ PARAMETERS
   
 [2m[90m  NOTES[39m[22m
 [2m[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m[22m
-[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m[22m
-[2m[90m      rguments take precedence. Environment variable names are snake cased version             [39m[22m
-[2m[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m[22m
-[2m[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
-[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mFOO[39m[90m=\\"...\\".                                                             [39m[22m
+[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line                     [39m[22m
+[2m[90m      arguments take precedence. Environment variable names are snake cased                          [39m[22m
+[2m[90m      versions of the parameter name (or its aliases), case insensitive. They must                   [39m[22m
+[2m[90m      be prefixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
+[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mFOO[39m[90m=\\"...\\".                                                                   [39m[22m
 "
 `;
 
@@ -83,11 +83,11 @@ PARAMETERS
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  (1) Parameters can be passed arguments via environment variables. Command line a             
-      rguments take precedence. Environment variable names are snake cased version             
-      s of the parameter name (or its aliases), case insensitive. They must be pre             
-      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
-        → CLI_PARAMETER_FOO=\\"...\\".                                                             
+  (1) Parameters can be passed arguments via environment variables. Command line                     
+      arguments take precedence. Environment variable names are snake cased                          
+      versions of the parameter name (or its aliases), case insensitive. They must                   
+      be prefixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
+        → CLI_PARAMETER_FOO=\\"...\\".                                                                   
 "
 `;
 
@@ -102,11 +102,11 @@ PARAMETERS
   
 [2m[90m  NOTES[39m[22m
 [2m[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m[22m
-[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m[22m
-[2m[90m      rguments take precedence. Environment variable names are snake cased version             [39m[22m
-[2m[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m[22m
-[2m[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
-[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mFOO[39m[90m=\\"...\\".                                                             [39m[22m
+[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line                     [39m[22m
+[2m[90m      arguments take precedence. Environment variable names are snake cased                          [39m[22m
+[2m[90m      versions of the parameter name (or its aliases), case insensitive. They must                   [39m[22m
+[2m[90m      be prefixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
+[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mFOO[39m[90m=\\"...\\".                                                                   [39m[22m
 "
 `;
 
@@ -120,11 +120,11 @@ PARAMETERS
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  (1) Parameters can be passed arguments via environment variables. Command line a             
-      rguments take precedence. Environment variable names are snake cased version             
-      s of the parameter name (or its aliases), case insensitive. They must be pre             
-      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
-        → CLI_PARAMETER_FOO=\\"...\\".                                                             
+  (1) Parameters can be passed arguments via environment variables. Command line                     
+      arguments take precedence. Environment variable names are snake cased                          
+      versions of the parameter name (or its aliases), case insensitive. They must                   
+      be prefixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
+        → CLI_PARAMETER_FOO=\\"...\\".                                                                   
 "
 `;
 
@@ -138,11 +138,11 @@ PARAMETERS
   
 [2m[90m  NOTES[39m[22m
 [2m[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m[22m
-[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m[22m
-[2m[90m      rguments take precedence. Environment variable names are snake cased version             [39m[22m
-[2m[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m[22m
-[2m[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
-[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mFOO[39m[90m=\\"...\\".                                                             [39m[22m
+[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line                     [39m[22m
+[2m[90m      arguments take precedence. Environment variable names are snake cased                          [39m[22m
+[2m[90m      versions of the parameter name (or its aliases), case insensitive. They must                   [39m[22m
+[2m[90m      be prefixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
+[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mFOO[39m[90m=\\"...\\".                                                                   [39m[22m
 "
 `;
 
@@ -160,12 +160,12 @@ PARAMETERS
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  (1) Parameters can be passed arguments via environment variables. Command line a             
-      rguments take precedence. Environment variable names are snake cased version             
-      s of the parameter name (or its aliases), case insensitive. They must be pre             
-      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
-        → CLI_PARAMETER_FOO=\\"...\\"                                                              
-        → CLI_PARAMETER_BAR=\\"...\\".                                                             
+  (1) Parameters can be passed arguments via environment variables. Command line                     
+      arguments take precedence. Environment variable names are snake cased                          
+      versions of the parameter name (or its aliases), case insensitive. They must                   
+      be prefixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
+        → CLI_PARAMETER_FOO=\\"...\\"                                                                    
+        → CLI_PARAMETER_BAR=\\"...\\".                                                                   
 "
 `;
 
@@ -183,12 +183,12 @@ PARAMETERS
   
 [2m[90m  NOTES[39m[22m
 [2m[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m[22m
-[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m[22m
-[2m[90m      rguments take precedence. Environment variable names are snake cased version             [39m[22m
-[2m[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m[22m
-[2m[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
-[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mFOO[39m[90m=\\"...\\"                                                              [39m[22m
-[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mBAR[39m[90m=\\"...\\".                                                             [39m[22m
+[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line                     [39m[22m
+[2m[90m      arguments take precedence. Environment variable names are snake cased                          [39m[22m
+[2m[90m      versions of the parameter name (or its aliases), case insensitive. They must                   [39m[22m
+[2m[90m      be prefixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
+[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mFOO[39m[90m=\\"...\\"                                                                    [39m[22m
+[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mBAR[39m[90m=\\"...\\".                                                                   [39m[22m
 "
 `;
 
@@ -204,13 +204,13 @@ PARAMETERS
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  (1) Parameters can be passed arguments via environment variables. Command line a                    
-      rguments take precedence. Environment variable names are snake cased version                    
-      s of the parameter name (or its aliases), case insensitive. By default they                     
-      must be prefixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive), thoug                    
-      h some parameters deviate (shown in docs). Examples:                                            
-        → CLI_PARAMETER_BAR=\\"...\\"                                                                     
-        → MOO_FOO=\\"...\\".                                                                              
+  (1) Parameters can be passed arguments via environment variables. Command line               
+      arguments take precedence. Environment variable names are snake cased                    
+      versions of the parameter name (or its aliases), case insensitive. By                    
+      default they must be prefixed with CLI_PARAMETER_ or CLI_PARAM_ (case                    
+      insensitive), though some parameters deviate (shown in docs). Examples:                  
+        → CLI_PARAMETER_BAR=\\"...\\"                                                              
+        → MOO_FOO=\\"...\\".                                                                       
 "
 `;
 
@@ -226,13 +226,13 @@ PARAMETERS
   
 [2m[90m  NOTES[39m[22m
 [2m[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m[22m
-[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line a                    [39m[22m
-[2m[90m      rguments take precedence. Environment variable names are snake cased version                    [39m[22m
-[2m[90m      s of the parameter name (or its aliases), case insensitive. By default they                     [39m[22m
-[2m[90m      must be prefixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive), thoug                    [39m[22m
-[2m[90m      h some parameters deviate (shown in docs). Examples:                                            [39m[22m
-[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mBAR[39m[90m=\\"...\\"                                                                     [39m[22m
-[2m[90m        → [34mMOO_[39m[90m[32mFOO[39m[90m=\\"...\\".                                                                              [39m[22m
+[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line               [39m[22m
+[2m[90m      arguments take precedence. Environment variable names are snake cased                    [39m[22m
+[2m[90m      versions of the parameter name (or its aliases), case insensitive. By                    [39m[22m
+[2m[90m      default they must be prefixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case                    [39m[22m
+[2m[90m      insensitive), though some parameters deviate (shown in docs). Examples:                  [39m[22m
+[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mBAR[39m[90m=\\"...\\"                                                              [39m[22m
+[2m[90m        → [34mMOO_[39m[90m[32mFOO[39m[90m=\\"...\\".                                                                       [39m[22m
 "
 `;
 
@@ -248,13 +248,13 @@ PARAMETERS
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  (1) Parameters can be passed arguments via environment variables. Command line a                    
-      rguments take precedence. Environment variable names are snake cased version                    
-      s of the parameter name (or its aliases), case insensitive. By default they                     
-      must be prefixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive), thoug                    
-      h some parameters deviate (shown in docs). Examples:                                            
-        → CLI_PARAMETER_BAR=\\"...\\"                                                                     
-        → MOO_FOO=\\"...\\".                                                                              
+  (1) Parameters can be passed arguments via environment variables. Command line               
+      arguments take precedence. Environment variable names are snake cased                    
+      versions of the parameter name (or its aliases), case insensitive. By                    
+      default they must be prefixed with CLI_PARAMETER_ or CLI_PARAM_ (case                    
+      insensitive), though some parameters deviate (shown in docs). Examples:                  
+        → CLI_PARAMETER_BAR=\\"...\\"                                                              
+        → MOO_FOO=\\"...\\".                                                                       
 "
 `;
 
@@ -270,13 +270,13 @@ PARAMETERS
   
 [2m[90m  NOTES[39m[22m
 [2m[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m[22m
-[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line a                    [39m[22m
-[2m[90m      rguments take precedence. Environment variable names are snake cased version                    [39m[22m
-[2m[90m      s of the parameter name (or its aliases), case insensitive. By default they                     [39m[22m
-[2m[90m      must be prefixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive), thoug                    [39m[22m
-[2m[90m      h some parameters deviate (shown in docs). Examples:                                            [39m[22m
-[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mBAR[39m[90m=\\"...\\"                                                                     [39m[22m
-[2m[90m        → [34mMOO_[39m[90m[32mFOO[39m[90m=\\"...\\".                                                                              [39m[22m
+[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line               [39m[22m
+[2m[90m      arguments take precedence. Environment variable names are snake cased                    [39m[22m
+[2m[90m      versions of the parameter name (or its aliases), case insensitive. By                    [39m[22m
+[2m[90m      default they must be prefixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case                    [39m[22m
+[2m[90m      insensitive), though some parameters deviate (shown in docs). Examples:                  [39m[22m
+[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mBAR[39m[90m=\\"...\\"                                                              [39m[22m
+[2m[90m        → [34mMOO_[39m[90m[32mFOO[39m[90m=\\"...\\".                                                                       [39m[22m
 "
 `;
 
@@ -292,12 +292,12 @@ PARAMETERS
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  (1) Parameters can be passed arguments via environment variables. Command line a             
-      rguments take precedence. Environment variable names are snake cased version             
-      s of the parameter name (or its aliases), case insensitive. They must be pre             
-      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
-        → CLI_PARAMETER_BAR=\\"...\\"                                                              
-        → FOO=\\"...\\".                                                                           
+  (1) Parameters can be passed arguments via environment variables. Command line                     
+      arguments take precedence. Environment variable names are snake cased                          
+      versions of the parameter name (or its aliases), case insensitive. They must                   
+      be prefixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
+        → CLI_PARAMETER_BAR=\\"...\\"                                                                    
+        → FOO=\\"...\\".                                                                                 
 "
 `;
 
@@ -313,12 +313,12 @@ PARAMETERS
   
 [2m[90m  NOTES[39m[22m
 [2m[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m[22m
-[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m[22m
-[2m[90m      rguments take precedence. Environment variable names are snake cased version             [39m[22m
-[2m[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m[22m
-[2m[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
-[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mBAR[39m[90m=\\"...\\"                                                              [39m[22m
-[2m[90m        → [32mFOO[39m[90m=\\"...\\".                                                                           [39m[22m
+[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line                     [39m[22m
+[2m[90m      arguments take precedence. Environment variable names are snake cased                          [39m[22m
+[2m[90m      versions of the parameter name (or its aliases), case insensitive. They must                   [39m[22m
+[2m[90m      be prefixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
+[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mBAR[39m[90m=\\"...\\"                                                                    [39m[22m
+[2m[90m        → [32mFOO[39m[90m=\\"...\\".                                                                                 [39m[22m
 "
 `;
 
@@ -334,11 +334,11 @@ PARAMETERS
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  (1) Parameters can be passed arguments via environment variables. Command line a             
-      rguments take precedence. Environment variable names are snake cased version             
-      s of the parameter name (or its aliases), case insensitive. They must be pre             
-      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
-        → CLI_PARAMETER_BAR=\\"...\\".                                                             
+  (1) Parameters can be passed arguments via environment variables. Command line                     
+      arguments take precedence. Environment variable names are snake cased                          
+      versions of the parameter name (or its aliases), case insensitive. They must                   
+      be prefixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
+        → CLI_PARAMETER_BAR=\\"...\\".                                                                   
 "
 `;
 
@@ -354,11 +354,11 @@ PARAMETERS
   
 [2m[90m  NOTES[39m[22m
 [2m[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m[22m
-[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m[22m
-[2m[90m      rguments take precedence. Environment variable names are snake cased version             [39m[22m
-[2m[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m[22m
-[2m[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
-[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mBAR[39m[90m=\\"...\\".                                                             [39m[22m
+[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line                     [39m[22m
+[2m[90m      arguments take precedence. Environment variable names are snake cased                          [39m[22m
+[2m[90m      versions of the parameter name (or its aliases), case insensitive. They must                   [39m[22m
+[2m[90m      be prefixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
+[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mBAR[39m[90m=\\"...\\".                                                                   [39m[22m
 "
 `;
 
@@ -396,11 +396,11 @@ PARAMETERS
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  (1) Parameters can be passed arguments via environment variables. Command line a             
-      rguments take precedence. Environment variable names are snake cased version             
-      s of the parameter name (or its aliases), case insensitive. They must be pre             
-      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
-        → CLI_PARAMETER_FOO=\\"...\\".                                                             
+  (1) Parameters can be passed arguments via environment variables. Command line                     
+      arguments take precedence. Environment variable names are snake cased                          
+      versions of the parameter name (or its aliases), case insensitive. They must                   
+      be prefixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
+        → CLI_PARAMETER_FOO=\\"...\\".                                                                   
 "
 `;
 
@@ -414,11 +414,11 @@ PARAMETERS
   
 [2m[90m  NOTES[39m[22m
 [2m[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m[22m
-[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m[22m
-[2m[90m      rguments take precedence. Environment variable names are snake cased version             [39m[22m
-[2m[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m[22m
-[2m[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
-[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mFOO[39m[90m=\\"...\\".                                                             [39m[22m
+[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line                     [39m[22m
+[2m[90m      arguments take precedence. Environment variable names are snake cased                          [39m[22m
+[2m[90m      versions of the parameter name (or its aliases), case insensitive. They must                   [39m[22m
+[2m[90m      be prefixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
+[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mFOO[39m[90m=\\"...\\".                                                                   [39m[22m
 "
 `;
 
@@ -437,12 +437,12 @@ PARAMETERS
 
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  (1) Parameters can be passed arguments via environment variables. Command line a             
-      rguments take precedence. Environment variable names are snake cased version             
-      s of the parameter name (or its aliases), case insensitive. They must be pre             
-      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
-        → CLI_PARAMETER_BAZ=\\"...\\"                                                              
-        → CLI_PARAMETER_BAR=\\"...\\".                                                             
+  (1) Parameters can be passed arguments via environment variables. Command line                     
+      arguments take precedence. Environment variable names are snake cased                          
+      versions of the parameter name (or its aliases), case insensitive. They must                   
+      be prefixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
+        → CLI_PARAMETER_BAZ=\\"...\\"                                                                    
+        → CLI_PARAMETER_BAR=\\"...\\".                                                                   
 "
 `;
 
@@ -461,12 +461,12 @@ PARAMETERS
 
 [2m[90m  NOTES[39m[22m
 [2m[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m[22m
-[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m[22m
-[2m[90m      rguments take precedence. Environment variable names are snake cased version             [39m[22m
-[2m[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m[22m
-[2m[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
-[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mBAZ[39m[90m=\\"...\\"                                                              [39m[22m
-[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mBAR[39m[90m=\\"...\\".                                                             [39m[22m
+[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line                     [39m[22m
+[2m[90m      arguments take precedence. Environment variable names are snake cased                          [39m[22m
+[2m[90m      versions of the parameter name (or its aliases), case insensitive. They must                   [39m[22m
+[2m[90m      be prefixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
+[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mBAZ[39m[90m=\\"...\\"                                                                    [39m[22m
+[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mBAR[39m[90m=\\"...\\".                                                                   [39m[22m
 "
 `;
 
@@ -485,12 +485,12 @@ PARAMETERS
 
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  (1) Parameters can be passed arguments via environment variables. Command line a             
-      rguments take precedence. Environment variable names are snake cased version             
-      s of the parameter name (or its aliases), case insensitive. They must be pre             
-      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
-        → CLI_PARAMETER_BAR=\\"...\\"                                                              
-        → CLI_PARAMETER_BAZ=\\"...\\".                                                             
+  (1) Parameters can be passed arguments via environment variables. Command line                     
+      arguments take precedence. Environment variable names are snake cased                          
+      versions of the parameter name (or its aliases), case insensitive. They must                   
+      be prefixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
+        → CLI_PARAMETER_BAR=\\"...\\"                                                                    
+        → CLI_PARAMETER_BAZ=\\"...\\".                                                                   
 "
 `;
 
@@ -509,12 +509,12 @@ PARAMETERS
 
 [2m[90m  NOTES[39m[22m
 [2m[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m[22m
-[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m[22m
-[2m[90m      rguments take precedence. Environment variable names are snake cased version             [39m[22m
-[2m[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m[22m
-[2m[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
-[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mBAR[39m[90m=\\"...\\"                                                              [39m[22m
-[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mBAZ[39m[90m=\\"...\\".                                                             [39m[22m
+[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line                     [39m[22m
+[2m[90m      arguments take precedence. Environment variable names are snake cased                          [39m[22m
+[2m[90m      versions of the parameter name (or its aliases), case insensitive. They must                   [39m[22m
+[2m[90m      be prefixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
+[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mBAR[39m[90m=\\"...\\"                                                                    [39m[22m
+[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mBAZ[39m[90m=\\"...\\".                                                                   [39m[22m
 "
 `;
 
@@ -528,11 +528,11 @@ PARAMETERS
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  (1) Parameters can be passed arguments via environment variables. Command line a             
-      rguments take precedence. Environment variable names are snake cased version             
-      s of the parameter name (or its aliases), case insensitive. They must be pre             
-      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
-        → CLI_PARAMETER_FOO=\\"...\\".                                                             
+  (1) Parameters can be passed arguments via environment variables. Command line                     
+      arguments take precedence. Environment variable names are snake cased                          
+      versions of the parameter name (or its aliases), case insensitive. They must                   
+      be prefixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
+        → CLI_PARAMETER_FOO=\\"...\\".                                                                   
 "
 `;
 
@@ -546,11 +546,11 @@ PARAMETERS
   
 [2m[90m  NOTES[39m[22m
 [2m[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m[22m
-[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m[22m
-[2m[90m      rguments take precedence. Environment variable names are snake cased version             [39m[22m
-[2m[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m[22m
-[2m[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
-[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mFOO[39m[90m=\\"...\\".                                                             [39m[22m
+[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line                     [39m[22m
+[2m[90m      arguments take precedence. Environment variable names are snake cased                          [39m[22m
+[2m[90m      versions of the parameter name (or its aliases), case insensitive. They must                   [39m[22m
+[2m[90m      be prefixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
+[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mFOO[39m[90m=\\"...\\".                                                                   [39m[22m
 "
 `;
 
@@ -565,11 +565,11 @@ PARAMETERS
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  (1) Parameters can be passed arguments via environment variables. Command line a             
-      rguments take precedence. Environment variable names are snake cased version             
-      s of the parameter name (or its aliases), case insensitive. They must be pre             
-      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
-        → CLI_PARAMETER_A=\\"...\\".                                                               
+  (1) Parameters can be passed arguments via environment variables. Command line                     
+      arguments take precedence. Environment variable names are snake cased                          
+      versions of the parameter name (or its aliases), case insensitive. They must                   
+      be prefixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
+        → CLI_PARAMETER_A=\\"...\\".                                                                     
 "
 `;
 
@@ -584,11 +584,11 @@ PARAMETERS
   
 [2m[90m  NOTES[39m[22m
 [2m[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m[22m
-[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m[22m
-[2m[90m      rguments take precedence. Environment variable names are snake cased version             [39m[22m
-[2m[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m[22m
-[2m[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
-[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mA[39m[90m=\\"...\\".                                                               [39m[22m
+[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line                     [39m[22m
+[2m[90m      arguments take precedence. Environment variable names are snake cased                          [39m[22m
+[2m[90m      versions of the parameter name (or its aliases), case insensitive. They must                   [39m[22m
+[2m[90m      be prefixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
+[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mA[39m[90m=\\"...\\".                                                                     [39m[22m
 "
 `;
 
@@ -602,11 +602,11 @@ PARAMETERS
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  (1) Parameters can be passed arguments via environment variables. Command line a             
-      rguments take precedence. Environment variable names are snake cased version             
-      s of the parameter name (or its aliases), case insensitive. They must be pre             
-      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
-        → CLI_PARAMETER_FOO=\\"...\\".                                                             
+  (1) Parameters can be passed arguments via environment variables. Command line                     
+      arguments take precedence. Environment variable names are snake cased                          
+      versions of the parameter name (or its aliases), case insensitive. They must                   
+      be prefixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
+        → CLI_PARAMETER_FOO=\\"...\\".                                                                   
 "
 `;
 
@@ -620,11 +620,11 @@ PARAMETERS
   
 [2m[90m  NOTES[39m[22m
 [2m[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m[22m
-[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m[22m
-[2m[90m      rguments take precedence. Environment variable names are snake cased version             [39m[22m
-[2m[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m[22m
-[2m[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
-[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mFOO[39m[90m=\\"...\\".                                                             [39m[22m
+[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line                     [39m[22m
+[2m[90m      arguments take precedence. Environment variable names are snake cased                          [39m[22m
+[2m[90m      versions of the parameter name (or its aliases), case insensitive. They must                   [39m[22m
+[2m[90m      be prefixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
+[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mFOO[39m[90m=\\"...\\".                                                                   [39m[22m
 "
 `;
 
@@ -632,18 +632,18 @@ exports[`if there is an error trying to get default then a nice message is shown
 "
 PARAMETERS
 
-  Name   Type         Default                     Environment (1)                         
+  Name   Type         Default                  Environment (1)                         
   
-  foo    string       Error trying to render th   ✓          
-                      is default: whoops                     
+  foo    string       Error trying to render   ✓          
+                      this default: whoops                
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  (1) Parameters can be passed arguments via environment variables. Command line a             
-      rguments take precedence. Environment variable names are snake cased version             
-      s of the parameter name (or its aliases), case insensitive. They must be pre             
-      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
-        → CLI_PARAMETER_FOO=\\"...\\".                                                             
+  (1) Parameters can be passed arguments via environment variables. Command line                     
+      arguments take precedence. Environment variable names are snake cased                          
+      versions of the parameter name (or its aliases), case insensitive. They must                   
+      be prefixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
+        → CLI_PARAMETER_FOO=\\"...\\".                                                                   
 "
 `;
 
@@ -651,18 +651,18 @@ exports[`if there is an error trying to get default then a nice message is shown
 "
 PARAMETERS
 
-  Name   Type         Default                     Environment (1)                         
+  Name   Type         Default                  Environment (1)                         
   
-  foo    string       Error trying to render th   ✓          
-                      is default: whoops                     
+  foo    string       Error trying to render   ✓          
+                      this default: whoops                
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  (1) Parameters can be passed arguments via environment variables. Command line a             
-      rguments take precedence. Environment variable names are snake cased version             
-      s of the parameter name (or its aliases), case insensitive. They must be pre             
-      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
-        → CLI_PARAMETER_FOO=\\"...\\".                                                             
+  (1) Parameters can be passed arguments via environment variables. Command line                     
+      arguments take precedence. Environment variable names are snake cased                          
+      versions of the parameter name (or its aliases), case insensitive. They must                   
+      be prefixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
+        → CLI_PARAMETER_FOO=\\"...\\".                                                                   
 "
 `;
 
@@ -670,18 +670,18 @@ exports[`if there is an error trying to get default then a nice message is shown
 "
 PARAMETERS
 
-  [4m[90mName[39m[24m   [4m[90mType[39m[24m         [4m[90mDefault[39m[24m                     [4m[90mEnvironment (1)[39m[24m                         
+  [4m[90mName[39m[24m   [4m[90mType[39m[24m         [4m[90mDefault[39m[24m                  [4m[90mEnvironment (1)[39m[24m                         
   
-  [32mfoo[39m    [32mstring[39m       [1m[31mError trying to render th[39m[22m   [34m✓[39m          
-                      [1m[31mis default: whoops[39m[22m                     
+  [32mfoo[39m    [32mstring[39m       [1m[31mError trying to render[39m[22m   [34m✓[39m          
+                      [1m[31mthis default: whoops[39m[22m                
   
 [2m[90m  NOTES[39m[22m
 [2m[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m[22m
-[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m[22m
-[2m[90m      rguments take precedence. Environment variable names are snake cased version             [39m[22m
-[2m[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m[22m
-[2m[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
-[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mFOO[39m[90m=\\"...\\".                                                             [39m[22m
+[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line                     [39m[22m
+[2m[90m      arguments take precedence. Environment variable names are snake cased                          [39m[22m
+[2m[90m      versions of the parameter name (or its aliases), case insensitive. They must                   [39m[22m
+[2m[90m      be prefixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
+[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mFOO[39m[90m=\\"...\\".                                                                   [39m[22m
 "
 `;
 
@@ -689,18 +689,18 @@ exports[`if there is an error trying to get default then a nice message is shown
 "
 PARAMETERS
 
-  [4m[90mName[39m[24m   [4m[90mType[39m[24m         [4m[90mDefault[39m[24m                     [4m[90mEnvironment (1)[39m[24m                         
+  [4m[90mName[39m[24m   [4m[90mType[39m[24m         [4m[90mDefault[39m[24m                  [4m[90mEnvironment (1)[39m[24m                         
   
-  [32mfoo[39m    [32mstring[39m       [1m[31mError trying to render th[39m[22m   [34m✓[39m          
-                      [1m[31mis default: whoops[39m[22m                     
+  [32mfoo[39m    [32mstring[39m       [1m[31mError trying to render[39m[22m   [34m✓[39m          
+                      [1m[31mthis default: whoops[39m[22m                
   
 [2m[90m  NOTES[39m[22m
 [2m[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m[22m
-[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m[22m
-[2m[90m      rguments take precedence. Environment variable names are snake cased version             [39m[22m
-[2m[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m[22m
-[2m[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
-[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mFOO[39m[90m=\\"...\\".                                                             [39m[22m
+[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line                     [39m[22m
+[2m[90m      arguments take precedence. Environment variable names are snake cased                          [39m[22m
+[2m[90m      versions of the parameter name (or its aliases), case insensitive. They must                   [39m[22m
+[2m[90m      be prefixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
+[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mFOO[39m[90m=\\"...\\".                                                                   [39m[22m
 "
 `;
 
@@ -715,11 +715,11 @@ PARAMETERS
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  (1) Parameters can be passed arguments via environment variables. Command line a             
-      rguments take precedence. Environment variable names are snake cased version             
-      s of the parameter name (or its aliases), case insensitive. They must be pre             
-      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
-        → CLI_PARAMETER_A=\\"...\\".                                                               
+  (1) Parameters can be passed arguments via environment variables. Command line                     
+      arguments take precedence. Environment variable names are snake cased                          
+      versions of the parameter name (or its aliases), case insensitive. They must                   
+      be prefixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
+        → CLI_PARAMETER_A=\\"...\\".                                                                     
 "
 `;
 
@@ -734,11 +734,11 @@ PARAMETERS
   
 [2m[90m  NOTES[39m[22m
 [2m[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m[22m
-[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m[22m
-[2m[90m      rguments take precedence. Environment variable names are snake cased version             [39m[22m
-[2m[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m[22m
-[2m[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
-[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mA[39m[90m=\\"...\\".                                                               [39m[22m
+[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line                     [39m[22m
+[2m[90m      arguments take precedence. Environment variable names are snake cased                          [39m[22m
+[2m[90m      versions of the parameter name (or its aliases), case insensitive. They must                   [39m[22m
+[2m[90m      be prefixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
+[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mA[39m[90m=\\"...\\".                                                                     [39m[22m
 "
 `;
 
@@ -749,16 +749,16 @@ PARAMETERS
   Name   Type/Description                              Default     Environment (1)                         
   
   a      string                                        undefined   ✓          
-  a      Blah blah blah. Blah blah blah. Blah bla                             
-         h blah.                                                              
+  a      Blah blah blah. Blah blah blah. Blah                                 
+         blah blah.                                                           
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  (1) Parameters can be passed arguments via environment variables. Command line a             
-      rguments take precedence. Environment variable names are snake cased version             
-      s of the parameter name (or its aliases), case insensitive. They must be pre             
-      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
-        → CLI_PARAMETER_A=\\"...\\".                                                               
+  (1) Parameters can be passed arguments via environment variables. Command line                     
+      arguments take precedence. Environment variable names are snake cased                          
+      versions of the parameter name (or its aliases), case insensitive. They must                   
+      be prefixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
+        → CLI_PARAMETER_A=\\"...\\".                                                                     
 "
 `;
 
@@ -769,16 +769,16 @@ PARAMETERS
   [4m[90mName[39m[24m   [4m[90mType/Description[39m[24m                              [4m[90mDefault[39m[24m     [4m[90mEnvironment (1)[39m[24m                         
   
   [32ma[39m      [32mstring[39m                                        [34mundefined[39m   [34m✓[39m          
-  [2m[90ma[39m[22m      Blah blah blah. Blah blah blah. Blah bla                             
-         h blah.                                                              
+  [2m[90ma[39m[22m      Blah blah blah. Blah blah blah. Blah                                 
+         blah blah.                                                           
   
 [2m[90m  NOTES[39m[22m
 [2m[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m[22m
-[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m[22m
-[2m[90m      rguments take precedence. Environment variable names are snake cased version             [39m[22m
-[2m[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m[22m
-[2m[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
-[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mA[39m[90m=\\"...\\".                                                               [39m[22m
+[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line                     [39m[22m
+[2m[90m      arguments take precedence. Environment variable names are snake cased                          [39m[22m
+[2m[90m      versions of the parameter name (or its aliases), case insensitive. They must                   [39m[22m
+[2m[90m      be prefixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
+[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mA[39m[90m=\\"...\\".                                                                     [39m[22m
 "
 `;
 
@@ -793,11 +793,11 @@ PARAMETERS
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  (1) Parameters can be passed arguments via environment variables. Command line a             
-      rguments take precedence. Environment variable names are snake cased version             
-      s of the parameter name (or its aliases), case insensitive. They must be pre             
-      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
-        → CLI_PARAMETER_BAR=\\"...\\".                                                             
+  (1) Parameters can be passed arguments via environment variables. Command line                     
+      arguments take precedence. Environment variable names are snake cased                          
+      versions of the parameter name (or its aliases), case insensitive. They must                   
+      be prefixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
+        → CLI_PARAMETER_BAR=\\"...\\".                                                                   
 "
 `;
 
@@ -812,11 +812,11 @@ PARAMETERS
   
 [2m[90m  NOTES[39m[22m
 [2m[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m[22m
-[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m[22m
-[2m[90m      rguments take precedence. Environment variable names are snake cased version             [39m[22m
-[2m[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m[22m
-[2m[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
-[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mBAR[39m[90m=\\"...\\".                                                             [39m[22m
+[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line                     [39m[22m
+[2m[90m      arguments take precedence. Environment variable names are snake cased                          [39m[22m
+[2m[90m      versions of the parameter name (or its aliases), case insensitive. They must                   [39m[22m
+[2m[90m      be prefixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
+[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mBAR[39m[90m=\\"...\\".                                                                   [39m[22m
 "
 `;
 
@@ -831,11 +831,11 @@ PARAMETERS
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  (1) Parameters can be passed arguments via environment variables. Command line a             
-      rguments take precedence. Environment variable names are snake cased version             
-      s of the parameter name (or its aliases), case insensitive. They must be pre             
-      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
-        → CLI_PARAMETER_BAR=\\"...\\".                                                             
+  (1) Parameters can be passed arguments via environment variables. Command line                     
+      arguments take precedence. Environment variable names are snake cased                          
+      versions of the parameter name (or its aliases), case insensitive. They must                   
+      be prefixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
+        → CLI_PARAMETER_BAR=\\"...\\".                                                                   
 "
 `;
 
@@ -850,11 +850,11 @@ PARAMETERS
   
 [2m[90m  NOTES[39m[22m
 [2m[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m[22m
-[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m[22m
-[2m[90m      rguments take precedence. Environment variable names are snake cased version             [39m[22m
-[2m[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m[22m
-[2m[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
-[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mBAR[39m[90m=\\"...\\".                                                             [39m[22m
+[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line                     [39m[22m
+[2m[90m      arguments take precedence. Environment variable names are snake cased                          [39m[22m
+[2m[90m      versions of the parameter name (or its aliases), case insensitive. They must                   [39m[22m
+[2m[90m      be prefixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
+[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mBAR[39m[90m=\\"...\\".                                                                   [39m[22m
 "
 `;
 
@@ -874,11 +874,11 @@ PARAMETERS
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  (1) Parameters can be passed arguments via environment variables. Command line a             
-      rguments take precedence. Environment variable names are snake cased version             
-      s of the parameter name (or its aliases), case insensitive. They must be pre             
-      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
-        → CLI_PARAMETER_BAR=\\"...\\".                                                             
+  (1) Parameters can be passed arguments via environment variables. Command line                     
+      arguments take precedence. Environment variable names are snake cased                          
+      versions of the parameter name (or its aliases), case insensitive. They must                   
+      be prefixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
+        → CLI_PARAMETER_BAR=\\"...\\".                                                                   
 "
 `;
 
@@ -898,11 +898,11 @@ PARAMETERS
   
 [2m[90m  NOTES[39m[22m
 [2m[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m[22m
-[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m[22m
-[2m[90m      rguments take precedence. Environment variable names are snake cased version             [39m[22m
-[2m[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m[22m
-[2m[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
-[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mBAR[39m[90m=\\"...\\".                                                             [39m[22m
+[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line                     [39m[22m
+[2m[90m      arguments take precedence. Environment variable names are snake cased                          [39m[22m
+[2m[90m      versions of the parameter name (or its aliases), case insensitive. They must                   [39m[22m
+[2m[90m      be prefixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
+[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mBAR[39m[90m=\\"...\\".                                                                   [39m[22m
 "
 `;
 
@@ -922,11 +922,11 @@ PARAMETERS
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  (1) Parameters can be passed arguments via environment variables. Command line a             
-      rguments take precedence. Environment variable names are snake cased version             
-      s of the parameter name (or its aliases), case insensitive. They must be pre             
-      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
-        → CLI_PARAMETER_BAR=\\"...\\".                                                             
+  (1) Parameters can be passed arguments via environment variables. Command line                     
+      arguments take precedence. Environment variable names are snake cased                          
+      versions of the parameter name (or its aliases), case insensitive. They must                   
+      be prefixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
+        → CLI_PARAMETER_BAR=\\"...\\".                                                                   
 "
 `;
 
@@ -946,11 +946,11 @@ PARAMETERS
   
 [2m[90m  NOTES[39m[22m
 [2m[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m[22m
-[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m[22m
-[2m[90m      rguments take precedence. Environment variable names are snake cased version             [39m[22m
-[2m[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m[22m
-[2m[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
-[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mBAR[39m[90m=\\"...\\".                                                             [39m[22m
+[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line                     [39m[22m
+[2m[90m      arguments take precedence. Environment variable names are snake cased                          [39m[22m
+[2m[90m      versions of the parameter name (or its aliases), case insensitive. They must                   [39m[22m
+[2m[90m      be prefixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
+[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mBAR[39m[90m=\\"...\\".                                                                   [39m[22m
 "
 `;
 
@@ -969,11 +969,11 @@ PARAMETERS
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  (1) Parameters can be passed arguments via environment variables. Command line a             
-      rguments take precedence. Environment variable names are snake cased version             
-      s of the parameter name (or its aliases), case insensitive. They must be pre             
-      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
-        → CLI_PARAMETER_BAR=\\"...\\".                                                             
+  (1) Parameters can be passed arguments via environment variables. Command line                     
+      arguments take precedence. Environment variable names are snake cased                          
+      versions of the parameter name (or its aliases), case insensitive. They must                   
+      be prefixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
+        → CLI_PARAMETER_BAR=\\"...\\".                                                                   
 "
 `;
 
@@ -992,11 +992,11 @@ PARAMETERS
   
 [2m[90m  NOTES[39m[22m
 [2m[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m[22m
-[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m[22m
-[2m[90m      rguments take precedence. Environment variable names are snake cased version             [39m[22m
-[2m[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m[22m
-[2m[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
-[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mBAR[39m[90m=\\"...\\".                                                             [39m[22m
+[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line                     [39m[22m
+[2m[90m      arguments take precedence. Environment variable names are snake cased                          [39m[22m
+[2m[90m      versions of the parameter name (or its aliases), case insensitive. They must                   [39m[22m
+[2m[90m      be prefixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
+[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mBAR[39m[90m=\\"...\\".                                                                   [39m[22m
 "
 `;
 
@@ -1016,11 +1016,11 @@ PARAMETERS
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  (1) Parameters can be passed arguments via environment variables. Command line a             
-      rguments take precedence. Environment variable names are snake cased version             
-      s of the parameter name (or its aliases), case insensitive. They must be pre             
-      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
-        → CLI_PARAMETER_BAR=\\"...\\".                                                             
+  (1) Parameters can be passed arguments via environment variables. Command line                     
+      arguments take precedence. Environment variable names are snake cased                          
+      versions of the parameter name (or its aliases), case insensitive. They must                   
+      be prefixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
+        → CLI_PARAMETER_BAR=\\"...\\".                                                                   
 "
 `;
 
@@ -1040,11 +1040,11 @@ PARAMETERS
   
 [2m[90m  NOTES[39m[22m
 [2m[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m[22m
-[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m[22m
-[2m[90m      rguments take precedence. Environment variable names are snake cased version             [39m[22m
-[2m[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m[22m
-[2m[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
-[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mBAR[39m[90m=\\"...\\".                                                             [39m[22m
+[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line                     [39m[22m
+[2m[90m      arguments take precedence. Environment variable names are snake cased                          [39m[22m
+[2m[90m      versions of the parameter name (or its aliases), case insensitive. They must                   [39m[22m
+[2m[90m      be prefixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
+[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mBAR[39m[90m=\\"...\\".                                                                   [39m[22m
 "
 `;
 
@@ -1066,11 +1066,11 @@ PARAMETERS
   
   NOTES
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  (1) Parameters can be passed arguments via environment variables. Command line a             
-      rguments take precedence. Environment variable names are snake cased version             
-      s of the parameter name (or its aliases), case insensitive. They must be pre             
-      fixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
-        → CLI_PARAMETER_BAR=\\"...\\".                                                             
+  (1) Parameters can be passed arguments via environment variables. Command line                     
+      arguments take precedence. Environment variable names are snake cased                          
+      versions of the parameter name (or its aliases), case insensitive. They must                   
+      be prefixed with CLI_PARAMETER_ or CLI_PARAM_ (case insensitive). Examples:                    
+        → CLI_PARAMETER_BAR=\\"...\\".                                                                   
 "
 `;
 
@@ -1092,10 +1092,10 @@ PARAMETERS
   
 [2m[90m  NOTES[39m[22m
 [2m[90m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m[22m
-[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line a             [39m[22m
-[2m[90m      rguments take precedence. Environment variable names are snake cased version             [39m[22m
-[2m[90m      s of the parameter name (or its aliases), case insensitive. They must be pre             [39m[22m
-[2m[90m      fixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
-[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mBAR[39m[90m=\\"...\\".                                                             [39m[22m
+[2m[90m  (1) Parameters can be passed arguments via environment variables. Command line                     [39m[22m
+[2m[90m      arguments take precedence. Environment variable names are snake cased                          [39m[22m
+[2m[90m      versions of the parameter name (or its aliases), case insensitive. They must                   [39m[22m
+[2m[90m      be prefixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples:                    [39m[22m
+[2m[90m        → [34mCLI_PARAMETER_[39m[90m[32mBAR[39m[90m=\\"...\\".                                                                   [39m[22m
 "
 `;
