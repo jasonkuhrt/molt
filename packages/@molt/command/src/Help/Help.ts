@@ -318,7 +318,9 @@ const exclusiveGroups = (
     const header = Text.row([
       {
         lines: [
-          colors.dim(Text.borders.leftTop + Text.borders.horizontal + g.label + ` (mutually exclusive)`),
+          colors.dim(
+            Text.chars.borders.leftTop + Text.chars.borders.horizontal + g.label + ` (mutually exclusive)`
+          ),
         ],
         width: widthToDefaultCol,
       },
@@ -337,11 +339,11 @@ const exclusiveGroups = (
     t += Text.line()
     for (const spec of Object.values(g.parameters)) {
       t += Text.indentBlockWith(parameter(spec, settings, options), (_, index) =>
-        index === 0 ? colors.accent(`◒ `) : colors.dim(`${Text.borders.vertical} `)
+        index === 0 ? colors.accent(`◒ `) : colors.dim(`${Text.chars.borders.vertical} `)
       )
       t += Text.line()
     }
-    t += colors.dim(Text.borders.leftBottom + Text.borders.horizontal)
+    t += colors.dim(Text.chars.borders.leftBottom + Text.chars.borders.horizontal)
     t += Text.line()
   }
   return t
@@ -428,19 +430,19 @@ const parameterTypeAndDescription = (spec: ParameterSpec.Output, columnSpecs: Co
             ` ` +
             // eslint-disable-next-line
             (maybeZodEnum ? typeEnum(_.type as any).join(` | `) : colors.positive(_.typePrimitiveKind)),
-          _.description ? colors.dim(Text.borders.vertical) + ` ` + _.description : ``,
-          colors.dim(Text.borders.vertical) + ` `,
+          _.description ? colors.dim(Text.chars.borders.vertical) + ` ` + _.description : ``,
+          colors.dim(Text.chars.borders.vertical) + ` `,
         ]
       })
       types.pop() // We don't want a trailing empty line
-      const desc = spec.description ? colors.dim(Text.borders.vertical) + ` ` + spec.description : ``
-      const descSpacer = desc ? `${colors.dim(Text.borders.vertical)} ` : ``
+      const desc = spec.description ? colors.dim(Text.chars.borders.vertical) + ` ` + spec.description : ``
+      const descSpacer = desc ? `${colors.dim(Text.chars.borders.vertical)} ` : ``
       const typesWithHeaderAndFooter = [
-        colors.dim(Text.borders.leftTop + Text.borders.horizontal + `union`),
+        colors.dim(Text.chars.borders.leftTop + Text.chars.borders.horizontal + `union`),
         desc,
         descSpacer,
         ...types,
-        colors.dim(Text.borders.leftBottom + Text.borders.horizontal),
+        colors.dim(Text.chars.borders.leftBottom + Text.chars.borders.horizontal),
       ]
       return typesWithHeaderAndFooter
     } else {

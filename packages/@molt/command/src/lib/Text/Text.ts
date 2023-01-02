@@ -3,15 +3,6 @@ import snakeCase from 'lodash.snakecase'
 import stringLength from 'string-length'
 import stripAnsi from 'strip-ansi'
 
-export const borders = {
-  vertical: `│`,
-  horizontal: `─`,
-  leftTop: `┌`,
-  leftBottom: `└`,
-  rightTop: `┐`,
-  rightBottom: `┘`,
-}
-
 export type Line = string
 
 export type Column = Line[]
@@ -97,6 +88,14 @@ export const column = (width: number, text: string): string[] => {
 
 export const chars = {
   arrowRight: `→`,
+  borders: {
+    vertical: `│`,
+    horizontal: `─`,
+    leftTop: `┌`,
+    leftBottom: `└`,
+    rightTop: `┐`,
+    rightBottom: `┘`,
+  },
   lineH: `─`,
   lineHBold: `━`,
   x: `✕`,
