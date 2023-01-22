@@ -1,10 +1,11 @@
 import { groupBy } from '../lib/prelude.js'
 import { Text } from '../lib/Text/index.js'
-import { column } from '../lib/Text/Text.js'
+import { lines } from '../lib/Text/Text.js'
 import { ZodHelpers } from '../lib/zodHelpers/index.js'
 import type { ParameterSpec } from '../ParameterSpec/index.js'
 import type { Settings } from '../Settings/index.js'
 import { chalk } from '../singletons/chalk.js'
+import { Alge } from 'alge'
 import camelCase from 'lodash.camelcase'
 import snakeCase from 'lodash.snakecase'
 import stringLength from 'string-length'
@@ -81,6 +82,8 @@ export const render = (
     .filter((_) => _.name.canonical !== `help`)
     .sort((_) => (_.optionality._tag === `optional` ? 1 : -1))
   const isAcceptsAnyEnvironmentArgs = basicAndUnionSpecs.filter((_) => _.environment?.enabled).length > 0
+  const isAcceptsAnyMutuallyExclusiveParameters =
+    (specsByKind.Exclusive && specsByKind.Exclusive.length > 0) || false
   const isEnvironmentEnabled =
     Object.values(settings.parameters.environment).filter((_) => _.enabled).length > 0
 
@@ -90,6 +93,23 @@ export const render = (
     default: `Default`,
     environment: isEnvironmentEnabled ? `Environment (1)` : null,
   }
+
+  const minimumColumnWidthForDefault = columnTitles.default.length
+  const columnWidthForEnvironment = 40
+  const mutuallyExclusiveGroups = Object.values(
+    specsByKind.Exclusive?.reduce((groups, parameter) => {
+      groups[parameter.group.label] = parameter.group
+      return groups
+    }, {} as Record<string, ParameterSpec.Output.ExclusiveGroup>) ?? {}
+  )
+  const maxWidthOfDefaultColumnForExclusive = mutuallyExclusiveGroups.reduce((max, group) => {
+    const defaultColumnContent = Alge.match(group.optionality)
+      .required(() => ` required `)
+      .default((group) => `default@${group.getValue().toString()}`)
+      .optional(() => ` optional `)
+      .done()
+    return Math.max(max, stringLength(defaultColumnContent))
+  }, 0)
 
   const columnSpecs: ColumnSpecs = {
     name: {
@@ -130,17 +150,23 @@ export const render = (
       }, 0),
     },
     default: {
-      width: Math.min(
-        25,
+      width: Math.max(
+        maxWidthOfDefaultColumnForExclusive,
+        minimumColumnWidthForDefault,
         basicAndUnionSpecs.reduce(
-          (width, spec) => Math.max(width, ...parameterDefault(25, spec).map((_) => stringLength(_))),
+          (currentMax, spec) =>
+            Math.max(
+              currentMax,
+              spec.optionality._tag === `required` ? ` required `.length : 0,
+              ...parameterDefault(25, spec).map((_) => stringLength(_))
+            ),
           0
         )
       ),
       separator: Text.chars.space.repeat(6),
     },
     environment: {
-      width: 40,
+      width: columnWidthForEnvironment,
     },
   }
 
@@ -206,14 +232,38 @@ export const render = (
    * Render Notes
    */
 
+  const noteRows = []
+
   if (isAcceptsAnyEnvironmentArgs) {
+    noteRows.push(
+      Text.row([
+        Text.col({ lines: [`(1) `] }),
+        Text.col({ separator: ``, lines: environmentNote(allSpecsWithoutHelp, settings) }),
+      ])
+    )
+  }
+
+  if (isAcceptsAnyMutuallyExclusiveParameters) {
+    noteRows.push(
+      Text.row([
+        Text.col({ lines: [`(2) `] }),
+        Text.col({
+          separator: ``,
+          width: 80,
+          lines: Text.lines(
+            76,
+            `This is a set of mutually exclusive parameters. Only one can be provided at a time. If more than one is provided, execution will fail with an input error.`
+          ),
+        }),
+      ])
+    )
+  }
+
+  if (noteRows.length > 0) {
     let notes = ``
     notes += `NOTES\n`
     notes += `${Text.chars.lineHBold.repeat(80)}\n`
-    notes += Text.row([
-      { lines: [`(1) `] },
-      { separator: ``, lines: environmentNote(allSpecsWithoutHelp, settings) },
-    ])
+    notes += noteRows.join(Text.chars.newline)
     str += colors.dim(Text.indentBlock(notes))
   }
 
@@ -276,7 +326,7 @@ const environmentNote = (specs: ParameterSpec.Output[], settings: Settings.Outpu
     .map((_) => `${_}="..."`)
     .reduce((_, example) => _ + `\n  ${Text.chars.arrowRight} ${example}`, ``)}.`
 
-  return Text.column(76, content)
+  return Text.lines(76, content)
 }
 
 const basicAndUnionParameters = (
@@ -307,6 +357,7 @@ const exclusiveGroups = (
   }
 ) => {
   let t = ``
+
   for (const g of groups) {
     t += Text.line()
     const widthToDefaultCol =
@@ -317,11 +368,7 @@ const exclusiveGroups = (
       `  `.length
     const header = Text.row([
       {
-        lines: [
-          colors.dim(
-            Text.chars.borders.leftTop + Text.chars.borders.horizontal + g.label + ` (mutually exclusive)`
-          ),
-        ],
+        lines: [colors.dim(Text.chars.borders.leftTop + Text.chars.borders.horizontal + g.label + ` (2)`)],
         width: widthToDefaultCol,
       },
       {
@@ -336,15 +383,15 @@ const exclusiveGroups = (
     ])
 
     t += header
-    t += Text.line()
+    t += Text.chars.newline
     for (const spec of Object.values(g.parameters)) {
       t += Text.indentBlockWith(parameter(spec, settings, options), (_, index) =>
         index === 0 ? colors.accent(`◒ `) : colors.dim(`${Text.chars.borders.vertical} `)
       )
-      t += Text.line()
+      t += Text.chars.newline
     }
     t += colors.dim(Text.chars.borders.leftBottom + Text.chars.borders.horizontal)
-    t += Text.line()
+    t += Text.chars.newline
   }
   return t
 }
@@ -393,7 +440,7 @@ const parameterDefault = (width: number, spec: ParameterSpec.Output): Text.Colum
       return [colors.secondary(String(spec.optionality.getValue()))]
     } catch (e) {
       const error = e instanceof Error ? e : new Error(String(e))
-      return column(width, `Error trying to render this default: ${error.message}`).map((_) =>
+      return lines(width, `Error trying to render this default: ${error.message}`).map((_) =>
         chalk.bold(colors.alert(_))
       )
     }
@@ -447,14 +494,14 @@ const parameterTypeAndDescription = (spec: ParameterSpec.Output, columnSpecs: Co
       return typesWithHeaderAndFooter
     } else {
       const types = spec.types.map((_) => _.typePrimitiveKind).join(` | `)
-      return [types, ...Text.column(columnSpecs.typeAndDescription.width, spec.description ?? ``)]
+      return [types, ...Text.lines(columnSpecs.typeAndDescription.width, spec.description ?? ``)]
     }
   }
 
   const maybeZodEnum = ZodHelpers.getEnum(spec.zodType)
   return [
     ...(maybeZodEnum ? typeEnum(maybeZodEnum) : [colors.positive(spec.typePrimitiveKind)]),
-    ...Text.column(columnSpecs.typeAndDescription.width, spec.description ?? ``),
+    ...Text.lines(columnSpecs.typeAndDescription.width, spec.description ?? ``),
   ]
 }
 

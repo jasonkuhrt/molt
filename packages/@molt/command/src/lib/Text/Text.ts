@@ -11,13 +11,14 @@ export type Row = Column[]
 
 export const line = (text = ``): string => `${text}\n`
 
-export const space = ` `
-
-export const newline = `\n`
-
 export const span = (alignContent: 'left' | 'right', width: number, content: string): string => {
   const contentWidth = stripAnsi(content).length
-  return pad(alignContent === `left` ? `right` : `left`, Math.max(0, width - contentWidth), space, content)
+  return pad(
+    alignContent === `left` ? `right` : `left`,
+    Math.max(0, width - contentWidth),
+    chars.space,
+    content
+  )
 }
 
 export const pad = (side: 'left' | 'right', size: number, char: string, text: string): string => {
@@ -35,13 +36,17 @@ export const joinListEnglish = (list: string[]): string => {
   return `${list.slice(0, list.length - 1).join(`, `)} or ${list[list.length - 1] as string}`
 }
 
-export const row = (
-  columns: {
-    lines: string[]
-    width?: number | undefined
-    separator?: string | undefined
-  }[]
-): string => {
+interface ColSpec {
+  lines: string[]
+  width?: number | undefined
+  separator?: string | undefined
+}
+
+export const col = (params: ColSpec): ColSpec => {
+  return params
+}
+
+export const row = (columns: ColSpec[]): string => {
   const columnsSized = columns.map((_) => {
     return {
       lines: _.lines,
@@ -65,19 +70,19 @@ export const row = (
     lines.push(line)
     currentLine++
   }
-  return lines.join(newline)
+  return lines.join(chars.newline)
 }
 
 export const toEnvarNameCase = (name: string) => snakeCase(name).toUpperCase()
 
-export const column = (width: number, text: string): string[] => {
+export const lines = (width: number, text: string): string[] => {
   const lines: string[] = text.split(`\n`)
   const linesFitted = lines.flatMap((text) => {
     const lines = []
     let textToConsume = text
     while (textToConsume.length > 0) {
       const result = visualStringTakeWords(textToConsume, width)
-      const textLines = result.taken.replace(/\n$/, ``).split(newline)
+      const textLines = result.taken.replace(/\n$/, ``).split(chars.newline)
       lines.push(...textLines)
       textToConsume = result.remaining
     }
@@ -100,8 +105,8 @@ export const chars = {
   lineHBold: `━`,
   x: `✕`,
   check: `✓`,
-  newline,
-  space,
+  newline: `\n`,
+  space: ` `,
   pipe: `|`,
 }
 

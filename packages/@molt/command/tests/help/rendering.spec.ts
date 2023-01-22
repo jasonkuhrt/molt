@@ -210,6 +210,32 @@ describe(`exclusive`, () => {
       expect(output.value).toMatchSnapshot(`polychrome`)
     })
   })
+  describe(`default with long value`, () => {
+    it(`shows the group default`, () => {
+      Command.parametersExclusive(`foo`, (_) =>
+        _.parameter(`b bar`, s).parameter(`z baz`, s).default(`bar`, `bar_defaulttttttttttttttttttttt`)
+      )
+        .settings({ onOutput })
+        .parse({
+          line: [`-h`],
+        })
+      expect(stripAnsi(output.value)).toMatchSnapshot(`monochrome`)
+      expect(output.value).toMatchSnapshot(`polychrome`)
+    })
+  })
+  describe(`with environment disabled`, () => {
+    it(`shows the group default`, () => {
+      Command.parametersExclusive(`foo`, (_) =>
+        _.parameter(`b bar`, s).parameter(`z baz`, s).default(`bar`, `bar_default`)
+      )
+        .settings({ onOutput, parameters: { environment: false } })
+        .parse({
+          line: [`-h`],
+        })
+      expect(stripAnsi(output.value)).toMatchSnapshot(`monochrome`)
+      expect(output.value).toMatchSnapshot(`polychrome`)
+    })
+  })
 })
 
 describe(`union parameter`, () => {
