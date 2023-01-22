@@ -1,6 +1,6 @@
 {
   "name": "@molt/command",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Type-safe CLI command definition and execution.",
   "type": "module",
   "scripts": {
