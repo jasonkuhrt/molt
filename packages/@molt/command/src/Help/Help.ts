@@ -11,6 +11,7 @@ import snakeCase from 'lodash.snakecase'
 import stringLength from 'string-length'
 import stripAnsi from 'strip-ansi'
 import type { z } from 'zod'
+import { l } from 'vitest/dist/index-5aad25c1.js'
 
 const colors = {
   dim: (text: string) => chalk.dim(chalk.grey(text)),
@@ -102,172 +103,72 @@ export const render = (
       return groups
     }, {} as Record<string, ParameterSpec.Output.ExclusiveGroup>) ?? {}
   )
-  const maxWidthOfDefaultColumnForExclusive = mutuallyExclusiveGroups.reduce((max, group) => {
-    const defaultColumnContent = Alge.match(group.optionality)
-      .required(() => ` required `)
-      .default((group) => `default@${group.getValue().toString()}`)
-      .optional(() => ` optional `)
-      .done()
-    return Math.max(max, stringLength(defaultColumnContent))
-  }, 0)
 
-  const columnSpecs: ColumnSpecs = {
-    name: {
-      width: allSpecs.reduce((width, spec) => Math.max(width, spec.name.canonical.length), 0),
-    },
-    typeAndDescription: {
-      width: allSpecs.reduce((width, spec) => {
-        let typeLength = 0
-        let descriptionLength = 0
-        if (spec._tag === `Union`) {
-          const isOneOrMoreMembersWithDescription = spec.types.some((_) => _.description !== null)
-          if (isOneOrMoreMembersWithDescription) {
-            descriptionLength = Math.max(
-              ...spec.types.map((_) => (_.description ?? ``).length),
-              (spec.description ?? ``).length
-            )
-            // const descriptionLength = (spec.description ?? ``).length
-            typeLength = Math.max(...spec.types.map((_) => _.typePrimitiveKind.length))
-            // return Math.max(...typeLengths, descriptionLength)
-          } else {
-            descriptionLength = (spec.description ?? ``).length
-            typeLength = spec.types.map((_) => _.typePrimitiveKind).join(` | `).length
-          }
-        } else {
-          descriptionLength = (spec.description ?? ``).length
-          const maybeEnum = ZodHelpers.getEnum(spec.zodType)
-          typeLength = maybeEnum
-            ? Math.max(...typeEnum(maybeEnum).map((_) => stripAnsi(_).length))
-            : spec.typePrimitiveKind.length
-        }
-        const contentWidth = Math.max(
-          width,
-          typeLength,
-          descriptionLength,
-          columnTitles.typeDescription.length
-        )
-        return Math.min(40, contentWidth)
-      }, 0),
-    },
-    default: {
-      width: Math.max(
-        maxWidthOfDefaultColumnForExclusive,
-        minimumColumnWidthForDefault,
-        basicAndUnionSpecs.reduce(
-          (currentMax, spec) =>
-            Math.max(
-              currentMax,
-              spec.optionality._tag === `required` ? ` required `.length : 0,
-              ...parameterDefault(25, spec).map((_) => stringLength(_))
-            ),
-          0
-        )
-      ),
-      separator: Text.chars.space.repeat(6),
-    },
-    environment: {
-      width: columnWidthForEnvironment,
-    },
-  }
-
-  let str = Text.line()
-
-  /**
-   * Render header
-   */
-
-  str += title(`PARAMETERS`)
-  str += Text.line()
-  str += Text.indentBlock(
-    Text.row([
-      { lines: [chalk.underline.gray(columnTitles.name)], ...columnSpecs.name },
-      { lines: [chalk.underline.gray(columnTitles.typeDescription)], ...columnSpecs.typeAndDescription },
-      { lines: [chalk.underline.gray(columnTitles.default)], ...columnSpecs.default },
-      ...(isEnvironmentEnabled
-        ? [
-            {
-              lines: [
-                chalk.underline.gray(columnTitles.environment!), // eslint-disable-line
-                // /*, chalk.gray.dim(`prefix: CLI_PARAM_* | CLI_PARAMETER_*`) */,
-              ],
-              ...columnSpecs.environment,
-            },
-          ]
-        : []),
-    ])
-  )
-  str += Text.line()
-
-  /**
-   * Render basic & union parameters
-   */
-
-  if (basicAndUnionSpecsWithoutHelp.length > 0) {
-    str += Text.indentBlock(
-      basicAndUnionParameters(basicAndUnionSpecsWithoutHelp, settings, {
-        columnSpecs,
-        environment: isAcceptsAnyEnvironmentArgs,
-        isEnvironmentEnabled,
-      })
-    )
-  }
-
-  /**
-   * Render exclusive parameters
-   */
-
-  const groups = Object.values(groupBy(specsByKind.Exclusive ?? [], (_) => _.group.label)).map(
+  const mexGroups = Object.values(groupBy(specsByKind.Exclusive ?? [], (_) => _.group.label)).map(
     (_) => _[0]!.group // eslint-disable-line
   )
-  if (groups.length > 0) {
-    str += exclusiveGroups(groups, settings, {
-      columnSpecs,
-      environment: isAcceptsAnyEnvironmentArgs,
-      isEnvironmentEnabled,
-    })
-  }
-  str += Text.line()
 
-  /**
-   * Render Notes
-   */
-
-  const noteRows = []
-
-  if (isAcceptsAnyEnvironmentArgs) {
-    noteRows.push(
-      Text.row([
-        Text.col({ lines: [`(1) `] }),
-        Text.col({ separator: ``, lines: environmentNote(allSpecsWithoutHelp, settings) }),
-      ])
-    )
-  }
-
-  if (isAcceptsAnyMutuallyExclusiveParameters) {
-    noteRows.push(
-      Text.row([
-        Text.col({ lines: [`(2) `] }),
-        Text.col({
-          separator: ``,
-          width: 80,
-          lines: Text.lines(
-            76,
-            `This is a set of mutually exclusive parameters. Only one can be provided at a time. If more than one is provided, execution will fail with an input error.`
+  return Tex({ width: 80 })
+    .bloc({ padding: { top: 1, bottom: 1 } }, title(`PARAMETERS`))
+    .bloc({ padding: { left: 2 } }, () => [
+      Tex.table()
+        .header(() =>
+          Tex.tableHeader()
+            .col(columnTitles.name)
+            .col(columnTitles.typeDescription)
+            .col(columnTitles.default)
+            .col(columnTitles.environment)
+        )
+        .data([
+          ...basicAndUnionSpecsWithoutHelp.map((spec) =>
+            Tex.row()
+              .col(parameterName(spec))
+              .col(parameterTypeAndDescription(spec))
+              .col(parameterDefault(spec))
+              .col(isEnvironmentEnabled ? parameterEnvironment(spec) : null)
           ),
-        }),
-      ])
-    )
-  }
+          ...mexGroups.map((mexGroup) =>
+            Tex.rowGroup({
+              border: {
+                left: (info) => {
+                  info.sectionLineNumber // 0
+                  info.sectionKind // 'header' | 'row' | 'footer'
+                },
+              },
+            })
+              .header((h) => h.col(mexGroup.label, { span: 2 }).col('...default...', { span: 2 }))
+              .data(
+                Object.values(mexGroup.parameters).map((spec) =>
+                  Tex.row()
+                    .col(parameterName(spec))
+                    .col(parameterTypeAndDescription(spec))
+                    .col(parameterDefault(spec))
+                    .col(parameterEnvironment(spec), { if: isEnvironmentEnabled })
+                )
+              )
+          ),
+        ]),
+      Tex.bloc(() => {
+        const items = []
 
-  if (noteRows.length > 0) {
-    let notes = ``
-    notes += `NOTES\n`
-    notes += `${Text.chars.lineHBold.repeat(80)}\n`
-    notes += noteRows.join(Text.chars.newline)
-    str += colors.dim(Text.indentBlock(notes))
-  }
+        if (isAcceptsAnyEnvironmentArgs) {
+          item.push(environmentNote(allSpecsWithoutHelp, settings))
+        }
 
-  return str
+        if (isAcceptsAnyMutuallyExclusiveParameters) {
+          item.push(
+            `This is a set of mutually exclusive parameters. Only one can be provided at a time. If more than one is provided, execution will fail with an input error.`
+          )
+        }
+
+        if (items.length === 0) {
+          return null
+        }
+
+        return Tex.bloc({ border: { bottom: '_' }, width: '100%' }, 'NOTES').list(items)
+      }),
+    ])
+    .render()
 }
 
 const environmentNote = (specs: ParameterSpec.Output[], settings: Settings.Output): string[] => {
