@@ -11,7 +11,6 @@ import snakeCase from 'lodash.snakecase'
 import stringLength from 'string-length'
 import stripAnsi from 'strip-ansi'
 import type { z } from 'zod'
-import { l } from 'vitest/dist/index-5aad25c1.js'
 
 const colors = {
   dim: (text: string) => chalk.dim(chalk.grey(text)),
@@ -136,7 +135,7 @@ export const render = (
                 },
               },
             })
-              .header((h) => h.col(mexGroup.label, { span: 2 }).col('...default...', { span: 2 }))
+              .header((h) => h.col(mexGroup.label, { span: 2 }).col(`...default...`, { span: 2 }))
               .data(
                 Object.values(mexGroup.parameters).map((spec) =>
                   Tex.row()
@@ -165,7 +164,7 @@ export const render = (
           return null
         }
 
-        return Tex.bloc({ border: { bottom: '_' }, width: '100%' }, 'NOTES').list(items)
+        return Tex.bloc({ border: { bottom: `_` }, width: `100%` }, `NOTES`).list(items)
       }),
     ])
     .render()
