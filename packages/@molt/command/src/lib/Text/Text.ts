@@ -88,6 +88,7 @@ export const lines = (width: number, text: string): string[] => {
     }
     return lines
   })
+
   return linesFitted
 }
 
@@ -156,11 +157,12 @@ export const visualStringTakeWords = (string: string, size: number): { taken: st
       // TODO hyphen the word?
       words.shift()
       taken += String(word)
-      continue
+      break
     }
 
     // Cannot take any more, taking another word would exceed limit:
-    if (stringLength(taken + ` ` + word) > size) {
+    const nextString = taken ? `${taken} ${word}` : word
+    if (stringLength(nextString) > size) {
       break
     }
 
