@@ -1,0 +1,63 @@
+// Vitest Snapshot v1
+
+exports[`block > border > bottom 1`] = `
+"foo
+---"
+`;
+
+exports[`block > border > left 1`] = `"|foo"`;
+
+exports[`block > border > right 1`] = `
+"foo|                   
+alpha                  |
+bravo bravo            |
+charlie charlie charlie|"
+`;
+
+exports[`block > border > top 1`] = `
+"---
+foo"
+`;
+
+exports[`block > builder > can render a line 1`] = `"foo"`;
+
+exports[`block > builder > can render nothing via null 1`] = `""`;
+
+exports[`block > can render a line 1`] = `"foo"`;
+
+exports[`block > can render nothing via null 1`] = `""`;
+
+exports[`block > can render two lines 1`] = `
+"foo
+bar"
+`;
+
+exports[`block > padding > bottom 1`] = `
+"foo
+
+"
+`;
+
+exports[`block > padding > left 1`] = `"  foo"`;
+
+exports[`block > padding > left multi line 1`] = `
+"  foo
+  bar
+  qux"
+`;
+
+exports[`block > padding > top 1`] = `
+"
+
+foo"
+`;
+
+exports[`block > width > % > 100% 1`] = `
+"foo bar
+----------------------------------------------------------------------------------------------------
+foo                                                                                                 "
+`;
+
+exports[`table > can have headers 1`] = `"alpha | bravo"`;
+
+exports[`text > can render text 1`] = `"foo"`;

@@ -121,6 +121,14 @@ export const indentBlock = (text: string, symbol = `  `): string => {
   return indentColumn(text.split(chars.newline), symbol).join(chars.newline)
 }
 
+export const fromLines = (column: Column): string => {
+  return column.join(chars.newline)
+}
+
+export const toLines = (text: string): Column => {
+  return text.split(chars.newline)
+}
+
 export const indentColumn = (column: Column, symbol = `  `): Column => {
   return column.map((line) => symbol + line)
 }

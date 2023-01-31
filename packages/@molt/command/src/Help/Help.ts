@@ -1,4 +1,5 @@
 import { groupBy } from '../lib/prelude.js'
+import { Tex } from '../lib/Tex/index.js'
 import { Text } from '../lib/Text/index.js'
 import { lines } from '../lib/Text/Text.js'
 import { ZodHelpers } from '../lib/zodHelpers/index.js'
@@ -107,67 +108,71 @@ export const render = (
     (_) => _[0]!.group // eslint-disable-line
   )
 
-  return Tex({ width: 80 })
-    .bloc({ padding: { top: 1, bottom: 1 } }, title(`PARAMETERS`))
-    .bloc({ padding: { left: 2 } }, () => [
-      Tex.table()
-        .header(() =>
-          Tex.tableHeader()
-            .col(columnTitles.name)
-            .col(columnTitles.typeDescription)
-            .col(columnTitles.default)
-            .col(columnTitles.environment)
-        )
-        .data([
-          ...basicAndUnionSpecsWithoutHelp.map((spec) =>
-            Tex.row()
-              .col(parameterName(spec))
-              .col(parameterTypeAndDescription(spec))
-              .col(parameterDefault(spec))
-              .col(isEnvironmentEnabled ? parameterEnvironment(spec) : null)
-          ),
-          ...mexGroups.map((mexGroup) =>
-            Tex.rowGroup({
-              border: {
-                left: (info) => {
-                  info.sectionLineNumber // 0
-                  info.sectionKind // 'header' | 'row' | 'footer'
-                },
-              },
-            })
-              .header((h) => h.col(mexGroup.label, { span: 2 }).col(`...default...`, { span: 2 }))
-              .data(
-                Object.values(mexGroup.parameters).map((spec) =>
-                  Tex.row()
-                    .col(parameterName(spec))
-                    .col(parameterTypeAndDescription(spec))
-                    .col(parameterDefault(spec))
-                    .col(parameterEnvironment(spec), { if: isEnvironmentEnabled })
-                )
-              )
-          ),
-        ]),
-      Tex.bloc(() => {
-        const items = []
-
-        if (isAcceptsAnyEnvironmentArgs) {
-          item.push(environmentNote(allSpecsWithoutHelp, settings))
-        }
-
-        if (isAcceptsAnyMutuallyExclusiveParameters) {
-          item.push(
-            `This is a set of mutually exclusive parameters. Only one can be provided at a time. If more than one is provided, execution will fail with an input error.`
+  const output = Tex({ maxWidth: 80 })
+    .block({ padding: { top: 1, bottom: 1 } }, title(`PARAMETERS`))
+    .block(
+      ($) =>
+        $.set({ padding: { left: 2 } })
+          .table(($) =>
+            $.headers([
+              columnTitles.name,
+              columnTitles.typeDescription,
+              columnTitles.default,
+              ...(columnTitles.environment ? [columnTitles.environment] : []),
+            ])
           )
-        }
+          .block(($) => {
+            const items = []
 
-        if (items.length === 0) {
-          return null
-        }
+            if (isAcceptsAnyEnvironmentArgs) {
+              items.push(environmentNote(allSpecsWithoutHelp, settings))
+            }
 
-        return Tex.bloc({ border: { bottom: `_` }, width: `100%` }, `NOTES`).list(items)
-      }),
-    ])
+            if (isAcceptsAnyMutuallyExclusiveParameters) {
+              items.push(
+                `This is a set of mutually exclusive parameters. Only one can be provided at a time. If more than one is provided, execution will fail with an input error.`
+              )
+            }
+
+            if (items.length === 0) {
+              return null
+            }
+
+            return $.block({ border: { bottom: `_` }, width: `100%` }, `NOTES`) //.list(items)
+          })
+      // .data([
+      //   ...basicAndUnionSpecsWithoutHelp.map((spec) =>
+      //     Tex.row()
+      //       .col(parameterName(spec))
+      //       .col(parameterTypeAndDescription(spec))
+      //       .col(parameterDefault(spec))
+      //       .col(isEnvironmentEnabled ? parameterEnvironment(spec) : null)
+      //   ),
+      //   ...mexGroups.map((mexGroup) =>
+      //     Tex.rowGroup({
+      //       border: {
+      //         left: (info) => {
+      //           info.sectionLineNumber // 0
+      //           info.sectionKind // 'header' | 'row' | 'footer'
+      //         },
+      //       },
+      //     })
+      //       .header((h) => h.col(mexGroup.label, { span: 2 }).col(`...default...`, { span: 2 }))
+      //       .data(
+      //         Object.values(mexGroup.parameters).map((spec) =>
+      //           Tex.row()
+      //             .col(parameterName(spec))
+      //             .col(parameterTypeAndDescription(spec))
+      //             .col(parameterDefault(spec))
+      //             .col(parameterEnvironment(spec), { if: isEnvironmentEnabled })
+      //         )
+      //       )
+      //   ),
+      // ]),
+    )
     .render()
+
+  return output
 }
 
 const environmentNote = (specs: ParameterSpec.Output[], settings: Settings.Output): string[] => {
