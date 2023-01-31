@@ -109,22 +109,21 @@ export const render = (
   const output = Tex.Tex({ maxWidth: 80 })
     .block({ padding: { top: 1, bottom: 1 } }, title(`PARAMETERS`))
     .block(
-      ($) =>
-        $.set({ padding: { left: 2 } })
-          .table(($) =>
-            $.headers([
-              columnTitles.name,
-              columnTitles.typeDescription,
-              columnTitles.default,
-              ...(columnTitles.environment ? [columnTitles.environment] : []),
-            ]).rows(
-              ...basicAndUnionSpecsWithoutHelp.map((spec) => [
-                new Tex.Block(Text.fromLines(parameterName(spec))),
-                new Tex.Block(Text.fromLines(parameterTypeAndDescription(spec))),
-                new Tex.Block(Text.fromLines(parameterDefault(spec))),
-                // ...(isEnvironmentEnabled ? [new Tex.Block(parameterEnvironment(spec,settings))] : []),
-              ])
-            )
+      (__) =>
+        __.set({ padding: { left: 2 } })
+          .table((__) =>
+            __.header(columnTitles.name)
+              .header(columnTitles.typeDescription)
+              .header(columnTitles.default)
+              .header(columnTitles.environment)
+              .rows(
+                ...basicAndUnionSpecsWithoutHelp.map((spec) => [
+                  new Tex.Block(Text.fromLines(parameterName(spec))),
+                  new Tex.Block(Text.fromLines(parameterTypeAndDescription(spec))),
+                  new Tex.Block(Text.fromLines(parameterDefault(spec))),
+                  // ...(isEnvironmentEnabled ? [new Tex.Block(parameterEnvironment(spec,settings))] : []),
+                ])
+              )
           )
           .block(($) => {
             const items = []

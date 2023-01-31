@@ -22,6 +22,7 @@ interface TableBuilder {
   row(...cells: Block[]): TableBuilder
   rows(...rows: Block[][]): TableBuilder
   headers(headers: string[]): TableBuilder
+  header(header: null | string): TableBuilder
 }
 
 interface RootBuilder extends BlockBuilder<RootBuilder> {
@@ -109,6 +110,12 @@ const createTableBuilder = (): TableBuilder => {
     },
     headers: (headers) => {
       parentNode.headers = headers
+      return builder
+    },
+    header: (header) => {
+      if (header !== null) {
+        parentNode.headers.push(header)
+      }
       return builder
     },
   }
