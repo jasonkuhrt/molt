@@ -1,15 +1,21 @@
+import { invertTable } from '../../helpers.js'
 import { Text } from '../Text/index.js'
-import console from 'console'
+import stringLength from 'string-length'
 
 interface RenderContext {
   maxWidth: number
 }
 
-abstract class Node {
+interface Shape {
+  intrinsicWidth: number
+  desiredWidth: number | null
+}
+
+export abstract class Node {
   abstract render(context: RenderContext): { shape: Shape; value: string }
 }
 
-class Leaf extends Node {
+export class Leaf extends Node {
   value: string
   constructor(value: string) {
     super()
@@ -28,19 +34,49 @@ class Leaf extends Node {
   }
 }
 
-interface Shape {
-  intrinsicWidth: number
-  desiredWidth: number | null
+export class Table extends Node {
+  rows: Block[][]
+  constructor(rows?: Block[][]) {
+    super()
+    this.rows = rows ?? []
+  }
+  addRow(row: Block[]) {
+    this.rows.push(row)
+  }
+  render(context: RenderContext) {
+    const graphics = {
+      columnDividerHorizontal: ` ${Text.chars.pipe} `,
+    }
+    const rows = this.rows.map((r) =>
+      r.map((c) => {
+        return c.render(context).value
+      })
+    )
+    const intrinsicColWidths = invertTable(rows).map((c) => Math.max(...c.map(stringLength)))
+    const rowsSized = rows.map((r) =>
+      r.map((c, i) => Text.padWithin(`right`, intrinsicColWidths[i] ?? 0, ` `, c))
+    )
+    const rowsJoined = rowsSized.map((r) => r.join(graphics.columnDividerHorizontal))
+    const str = rowsJoined.join(Text.chars.newline)
+
+    return {
+      shape: {
+        intrinsicWidth: 0,
+        desiredWidth: 0,
+      },
+      value: str,
+    }
+  }
 }
 
-interface BlockParameters {
+export interface BlockParameters {
   maxWidth?: number
   padding?: {
     left?: number
   }
 }
 
-class Block extends Node {
+export class Block extends Node {
   children: Node[]
   parameters: BlockParameters
   constructor(parameters: BlockParameters, node: Node)
@@ -49,10 +85,11 @@ class Block extends Node {
   constructor(nodes: Node[])
   constructor(node: Node)
   constructor(text: string)
-  constructor(...args: [string | Node | Node[]] | [BlockParameters, string | Node | Node[]]) {
+  constructor()
+  constructor(...args: [] | [string | Node | Node[]] | [BlockParameters, string | Node | Node[]]) {
     super()
-    const parameters = args.length === 1 ? {} : args[0]
-    const children = args.length === 1 ? args[0] : args[1]
+    const parameters = args.length === 1 || args.length === 0 ? {} : args[0]
+    const children = args.length === 0 ? [] : args.length === 1 ? args[0] : args[1]
 
     this.parameters = parameters
 
@@ -63,6 +100,12 @@ class Block extends Node {
     } else {
       this.children = [children]
     }
+  }
+  addChild(node: Node) {
+    this.children.push(node)
+  }
+  setParameters(parameters: BlockParameters) {
+    this.parameters = parameters
   }
   render(context: RenderContext) {
     const maxWidth =
@@ -91,63 +134,3 @@ class Block extends Node {
     }
   }
 }
-
-function block(parameters: BlockParameters, nodes: Node): Block
-function block(parameters: BlockParameters, nodes: Node[]): Block
-function block(parameters: BlockParameters, text: string): Block
-function block(text: string): Block
-function block(nodes: Node[]): Block
-function block(...args: [string | Node | Node[]] | [BlockParameters, string | Node | Node[]]): Block {
-  // @ts-expect-error
-  return new Block(...args)
-}
-
-const render = (node: Node): string => {
-  return node.render({
-    maxWidth: Infinity,
-  }).value
-}
-
-// testing
-console.clear()
-console.log(`---------------------------------------------------------------------------------------------`)
-
-console.log(render(new Leaf(`hello world`)))
-console.log(`---------------------------------------------------------------------------------------------`)
-
-console.log(render(block(`hello world`)))
-console.log(`---------------------------------------------------------------------------------------------`)
-
-console.log(render(block([block(`a`), block(`b`)])))
-console.log(`---------------------------------------------------------------------------------------------`)
-
-console.log(render(block({ maxWidth: 5 }, `hello world`)))
-console.log(`---------------------------------------------------------------------------------------------`)
-
-console.log(
-  render(
-    block(
-      { maxWidth: 10 },
-      block([
-        block(`adkf slkf saljf sdl`),
-        block({ maxWidth: 5, padding: { left: 2 } }, `badkdooidsf dfoi dsfo dspd spdsp df`),
-      ])
-    )
-  )
-)
-
-console.log(`---------------------------------------------------------------------------------------------`)
-console.log(
-  render(
-    block({ maxWidth: 80 }, block([block(`PARAMETERS`), block({ padding: { left: 2 } }, [block(`Notes`)])]))
-  )
-)
-
-// console.log(`---------------------------------------------------------------------------------------------`)
-// console.log(
-//   Tex({ maxWidth: 80 }).block(($) =>
-//     $.block(`PARAMETERS`)
-//       .table()
-//       .block({ padding: { left: 2 } }.block(`Notes`))
-//   )
-// )

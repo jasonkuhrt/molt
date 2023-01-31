@@ -21,6 +21,12 @@ export const span = (alignContent: 'left' | 'right', width: number, content: str
   )
 }
 
+export const padWithin = (side: 'left' | 'right', size: number, char: string, text: string): string => {
+  const padSize = size - stringLength(text)
+  if (padSize <= 0) return text
+  return pad(side, padSize, char, text)
+}
+
 export const pad = (side: 'left' | 'right', size: number, char: string, text: string): string => {
   return side === `left` ? char.repeat(size) + text : text + char.repeat(size)
 }
@@ -109,7 +115,7 @@ export const chars = {
   newline: `\n`,
   space: ` `,
   pipe: `|`,
-}
+} as const
 
 export const indentBlock = (text: string, symbol = `  `): string => {
   return indentColumn(text.split(chars.newline), symbol).join(chars.newline)
