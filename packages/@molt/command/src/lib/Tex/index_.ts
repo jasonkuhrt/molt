@@ -1,6 +1,7 @@
 import { invertTable } from '../../helpers.js'
 import { Text } from '../Text/index.js'
 import stringLength from 'string-length'
+export { createRootBuilder as Tex } from './chain.js'
 
 interface RenderContext {
   maxWidth: number

@@ -1,2 +1,1 @@
-export { createRootBuilder as Tex } from './chain.js'
-export * from './index_.js'
+export * as Tex from './index_.js'

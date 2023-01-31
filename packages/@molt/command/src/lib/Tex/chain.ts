@@ -20,6 +20,7 @@ interface BlockBuilder<Chain = null> {
 
 interface TableBuilder {
   row(...cells: Block[]): TableBuilder
+  rows(...rows: Block[][]): TableBuilder
   headers(headers: string[]): TableBuilder
 }
 
@@ -100,6 +101,10 @@ const createTableBuilder = (): TableBuilder => {
   const builder: TableBuilder = {
     row: (...cells) => {
       parentNode.rows.push(cells)
+      return builder
+    },
+    rows: (...rows) => {
+      parentNode.rows.push(...rows)
       return builder
     },
     headers: (headers) => {

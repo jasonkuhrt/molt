@@ -106,7 +106,7 @@ export const render = (
     (_) => _[0]!.group // eslint-disable-line
   )
 
-  const output = Tex({ maxWidth: 80 })
+  const output = Tex.Tex({ maxWidth: 80 })
     .block({ padding: { top: 1, bottom: 1 } }, title(`PARAMETERS`))
     .block(
       ($) =>
@@ -117,7 +117,14 @@ export const render = (
               columnTitles.typeDescription,
               columnTitles.default,
               ...(columnTitles.environment ? [columnTitles.environment] : []),
-            ])
+            ]).rows(
+              ...basicAndUnionSpecsWithoutHelp.map((spec) => [
+                new Tex.Block(Text.fromLines(parameterName(spec))),
+                new Tex.Block(Text.fromLines(parameterTypeAndDescription(spec))),
+                new Tex.Block(Text.fromLines(parameterDefault(spec))),
+                // ...(isEnvironmentEnabled ? [new Tex.Block(parameterEnvironment(spec,settings))] : []),
+              ])
+            )
           )
           .block(($) => {
             const items = []
@@ -314,11 +321,11 @@ const parameter = (
         ...options.columnSpecs.name,
       },
       {
-        lines: parameterTypeAndDescription(spec, options.columnSpecs),
+        lines: parameterTypeAndDescription(spec),
         ...options.columnSpecs.typeAndDescription,
       },
       {
-        lines: parameterDefault(options.columnSpecs.default.width, spec),
+        lines: parameterDefault(spec),
         ...options.columnSpecs.default,
       },
       ...(options.isEnvironmentEnabled ? [{ lines: parameterEnvironment(spec, settings) }] : []),
@@ -329,7 +336,7 @@ const parameter = (
   )
 }
 
-const parameterDefault = (width: number, spec: ParameterSpec.Output): Text.Column => {
+const parameterDefault = (spec: ParameterSpec.Output): Text.Column => {
   if (spec._tag === `Exclusive`) {
     return [colors.dim(`–`)]
   }
@@ -343,9 +350,7 @@ const parameterDefault = (width: number, spec: ParameterSpec.Output): Text.Colum
       return [colors.secondary(String(spec.optionality.getValue()))]
     } catch (e) {
       const error = e instanceof Error ? e : new Error(String(e))
-      return lines(width, `Error trying to render this default: ${error.message}`).map((_) =>
-        chalk.bold(colors.alert(_))
-      )
+      return [chalk.bold(colors.alert(`Error trying to render this default: ${error.message}`))]
     }
   }
 
@@ -368,7 +373,7 @@ const parameterName = (spec: ParameterSpec.Output): Text.Column => {
   ]
 }
 
-const parameterTypeAndDescription = (spec: ParameterSpec.Output, columnSpecs: ColumnSpecs): Text.Column => {
+const parameterTypeAndDescription = (spec: ParameterSpec.Output): Text.Column => {
   if (spec._tag === `Union`) {
     const unionMemberIcon = colors.accent(`◒`)
     const isOneOrMoreMembersWithDescription = spec.types.some((_) => _.description !== null)
@@ -397,14 +402,14 @@ const parameterTypeAndDescription = (spec: ParameterSpec.Output, columnSpecs: Co
       return typesWithHeaderAndFooter
     } else {
       const types = spec.types.map((_) => _.typePrimitiveKind).join(` | `)
-      return [types, ...Text.lines(columnSpecs.typeAndDescription.width, spec.description ?? ``)]
+      return [types, spec.description ?? ``]
     }
   }
 
   const maybeZodEnum = ZodHelpers.getEnum(spec.zodType)
   return [
     ...(maybeZodEnum ? typeEnum(maybeZodEnum) : [colors.positive(spec.typePrimitiveKind)]),
-    ...Text.lines(columnSpecs.typeAndDescription.width, spec.description ?? ``),
+    spec.description ?? ``,
   ]
 }
 
