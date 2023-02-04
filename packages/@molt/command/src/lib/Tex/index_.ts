@@ -1,6 +1,6 @@
 import { invertTable } from '../../helpers.js'
 import { Text } from '../Text/index.js'
-import stringLength from 'string-length'
+export type { BlockBuilder, RootBuilder, TableBuilder } from './chain.js'
 export { createRootBuilder as Tex } from './chain.js'
 
 interface RenderContext {
@@ -30,7 +30,7 @@ export class Leaf extends Node {
   // }
   render(context: RenderContext) {
     const value = Text.lines(context.maxWidth, this.value).join(Text.chars.newline)
-    const intrinsicWidth = stringLength(value)
+    const intrinsicWidth = Text.getLength(value)
     return {
       shape: {
         intrinsicWidth,
@@ -41,30 +41,63 @@ export class Leaf extends Node {
   }
 }
 
+export interface TableParameters {
+  separators?: {
+    row?: string
+    column?: string
+  }
+}
+
 export class Table extends Node {
   rows: Block[][]
   headers: string[]
+  parameters: TableParameters
   constructor(rows?: Block[][]) {
     super()
     this.rows = rows ?? []
     this.headers = []
+    this.parameters = {}
+  }
+  setParameters(parameters: TableParameters) {
+    this.parameters = parameters
   }
   render(context: RenderContext) {
-    const graphics = {
-      columnDividerHorizontal: ` ${Text.chars.pipe} `,
+    const separators = {
+      column: this.parameters.separators?.column ?? ` ${Text.chars.pipe} `,
+      row: (width: number) =>
+        `${Text.chars.newline}${(this.parameters.separators?.row ?? `-`).repeat(width)}${Text.chars.newline}`,
     }
-    const rows = this.rows.map((r) =>
-      r.map((c) => {
-        return c.render(context).value
+    const rows = this.rows.map((row) =>
+      row.map((cell) => {
+        return cell.render(context).value
       })
     )
     const rowsAndHeaders = this.headers.length > 0 ? [this.headers, ...rows] : rows
-    const intrinsicColWidths = invertTable(rowsAndHeaders).map((c) => Math.max(...c.map(stringLength)))
-    const rowsSized = rowsAndHeaders.map((r) =>
-      r.map((c, i) => Text.padWithin(`right`, intrinsicColWidths[i] ?? 0, ` `, c))
+    // console.log({ rowsAndHeaders })
+    const maxWidthOfEachColumn = invertTable(rowsAndHeaders).map((col) =>
+      Math.max(...col.flatMap(Text.toLines).map(Text.getLength))
     )
-    const rowsJoined = rowsSized.map((r) => r.join(graphics.columnDividerHorizontal))
-    const value = rowsJoined.join(Text.chars.newline)
+    const rowsWithCellWidthsNormalized = rowsAndHeaders.map((row) => {
+      const maxNumberOfLinesAmongColumns = Math.max(...row.map(Text.toLines).map((lines) => lines.length))
+      // console.log(maxNumberOfLinesAmongColumns)
+      const row_ = row.map((col) => {
+        const numberOfLines = Text.toLines(col).length
+        if (numberOfLines < maxNumberOfLinesAmongColumns) {
+          return col + Text.chars.newline.repeat(maxNumberOfLinesAmongColumns - numberOfLines)
+        }
+        return col
+      })
+      const row__ = row_.map((col, i) =>
+        Text.mapLines(col, (line) => Text.padWithin(`right`, maxWidthOfEachColumn[i] ?? 0, ` `, line))
+      )
+      return row__
+    })
+    // console.log({ rowsWithCellWidthsNormalized })
+    const rowsWithCellsJoined = rowsWithCellWidthsNormalized.map((r) =>
+      Text.joinColumns(r.map(Text.toLines), separators.column)
+    )
+    const width = Math.max(...rowsWithCellsJoined.flatMap(Text.toLines).map(Text.getLength))
+    const value = rowsWithCellsJoined.join(separators.row(width))
 
     return {
       shape: {

@@ -2,130 +2,137 @@ import { Tex } from '../../../src/lib/Tex/index.js'
 import { describe, expect, it } from 'vitest'
 
 describe(`text`, () => {
-  it(`can render text`, () => {
-    expect(Tex().text(`foo`).render()).toMatchSnapshot()
-  })
+  $(`can render text`, Tex.Tex().text(`foo`))
 })
 
 describe(`block`, () => {
   describe(`width`, () => {
     describe(`%`, () => {
-      it(`100%`, () => {
-        expect(
-          Tex({ maxWidth: 100 })
-            .block(`foo bar`)
-            .block({ border: { top: `-` }, width: `100%` }, `foo`)
-            .render()
-        ).toMatchSnapshot()
-      })
+      $(
+        `100%`,
+        Tex.Tex({ maxWidth: 100 })
+          .block(`foo bar`)
+          .block({ border: { top: `-` }, width: `100%` }, `foo`)
+      )
     })
   })
-  it(`can render a line`, () => {
-    expect(Tex().block(`foo`).render()).toMatchSnapshot()
-  })
+  $(`can render a line`, Tex.Tex().block(`foo`))
   describe(`border`, () => {
-    it(`top`, () => {
-      expect(
-        Tex()
-          .block({ border: { top: `-` } }, `foo`)
-          .render()
-      ).toMatchSnapshot()
-    })
-    it(`right`, () => {
-      expect(
-        Tex()
-          .block({ border: { right: `|` } }, `foo`)
-          .block(($) => {
-            return $.set({ border: { right: `|` } })
-              .block(`alpha`)
-              .block(`bravo bravo`)
-              .block(`charlie charlie charlie`)
-          })
-          .render()
-      ).toMatchSnapshot()
-    })
-    it(`bottom`, () => {
-      expect(
-        Tex()
-          .block({ border: { bottom: `-` } }, `foo`)
-          .render()
-      ).toMatchSnapshot()
-    })
-    it(`left`, () => {
-      expect(
-        Tex()
-          .block({ border: { left: `|` } }, `foo`)
-          .render()
-      ).toMatchSnapshot()
-    })
+    $(`top`, Tex.Tex().block({ border: { top: `-` } }, `foo`))
+    $(
+      `right`,
+      Tex.Tex()
+        .block({ border: { right: `|` } }, `foo`)
+        .block(($) =>
+          $.set({ border: { right: `|` } })
+            .block(`alpha`)
+            .block(`bravo bravo`)
+            .block(`charlie charlie charlie`)
+        )
+    )
+    $(`bottom`, Tex.Tex().block({ border: { bottom: `-` } }, `foo`))
+    $(`left`, Tex.Tex().block({ border: { left: `|` } }, `foo`))
   })
 
-  it(`can render nothing via null`, () => {
-    expect(Tex().block(null).render()).toMatchSnapshot()
-  })
+  $(`can render nothing via null`, Tex.Tex().block(null))
 
-  it(`can render two lines`, () => {
-    expect(Tex().block(`foo`).block(`bar`).render()).toMatchSnapshot()
-  })
+  $(`can render two lines`, Tex.Tex().block(`foo`).block(`bar`))
   describe(`builder`, () => {
-    it(`can render a line`, () => {
-      expect(
-        Tex()
-          .block(($) => $.text(`foo`))
-          .render()
-      ).toMatchSnapshot()
-    })
-    it(`can render nothing via null`, () => {
-      expect(
-        Tex()
-          .block(() => null)
-          .render()
-      ).toMatchSnapshot()
-    })
+    $(
+      `can render a line`,
+      Tex.Tex().block(($) => $.text(`foo`))
+    )
+    $(
+      `can render nothing via null`,
+      Tex.Tex().block(() => null)
+    )
   })
   describe(`padding`, () => {
-    it(`top`, () => {
-      expect(
-        Tex()
-          .block({ padding: { top: 2 } }, `foo`)
-          .render()
-      ).toMatchSnapshot()
-    })
-    it(`bottom`, () => {
-      expect(
-        Tex()
-          .block({ padding: { bottom: 2 } }, `foo`)
-          .render()
-      ).toMatchSnapshot()
-    })
-    it(`left`, () => {
-      expect(
-        Tex()
-          .block(($) => $.set({ padding: { left: 2 } }).text(`foo`))
-          .render()
-      ).toMatchSnapshot()
-    })
-    it(`left multi line`, () => {
-      expect(
-        Tex()
-          .block(($) =>
-            $.set({ padding: { left: 2 } })
-              .block(`foo`)
-              .block(`bar`)
-              .block(`qux`)
-          )
-          .render()
-      ).toMatchSnapshot()
-    })
+    $(`top`, Tex.Tex().block({ padding: { top: 2 } }, `foo`))
+    $(`bottom`, Tex.Tex().block({ padding: { bottom: 2 } }, `foo`))
+    $(
+      `left`,
+      Tex.Tex().block(($) => $.set({ padding: { left: 2 } }).text(`foo`))
+    )
+    $(
+      `left multi line`,
+      Tex.Tex().block(($) =>
+        $.set({ padding: { left: 2 } })
+          .block(`foo`)
+          .block(`bar`)
+          .block(`qux`)
+      )
+    )
   })
 })
 
 describe(`table`, () => {
-  it(`can have headers`, () => {
-    expect(
-      Tex()
-        .table(($) => $.headers([`alpha`, `bravo`]))
-        .render()
-    ).toMatchSnapshot()
+  $(
+    `can have headers`,
+    Tex.Tex().table(($) => $.headers([`alpha`, `bravo`]))
+  )
+  $(
+    `can have a row`,
+    Tex.Tex().table(($) => $.headers([`alpha`, `bravo`]).row(`a`, `b`))
+  )
+  $(
+    `if a row has columns exceeding the headers they render with empty header cells`,
+    Tex.Tex().table(($) => $.headers([`alpha`, `bravo`]).row(`a`, `b`, `c`))
+  )
+  $(
+    `if headers have columns exceeding the given data they are rendered with empty column cells`,
+    Tex.Tex().table(($) => $.headers([`alpha`, `bravo`, `charlie`]).row(`a`, `b`))
+  )
+  $(
+    `data column width equals widest cell`,
+    Tex.Tex().table(($) =>
+      $.headers([`alpha`, `bravo`, `charlieeeeeeeeeeeeeeeeeee`, `delta`])
+        .row(`a1`, `b1`, `c1`, `d1`)
+        .row(`a222222222222222`, `b2`, `c2`, `d2`)
+        .row(`a3`, `b333333333333333333`, `c3`, `d3`)
+    )
+  )
+  $(
+    `data column width equals widest cell (multi-line)`,
+    Tex.Tex().table(($) =>
+      $.headers([`alpha`, `bravo`, `charlieeeeeeeeeeeeeeeeeee`, `delta`])
+        .row(`a1`, `b1`, `c1`, `d1`)
+        .row(`a222222222222222\na2`, `b2`, `c2`, `d2`)
+        .row(`a3`, `b333333333333333333`, `c3`, `d3`)
+    )
+  )
+  $(
+    `cell text is vertically aligned top`,
+    Tex.Tex().table(($) => $.row(`alpha\napple\nankle`, `beta\nbanana`))
+  )
+  describe(`set`, () => {
+    $(
+      `custom row separator`,
+      Tex.Tex().table(($) =>
+        $.set({ separators: { row: ` ` } })
+          .headers([`alpha`, `bravo`, `charlie`])
+          .row(`a`, `b`)
+      )
+    )
+    $(
+      `custom vertical separator`,
+      Tex.Tex().table(($) =>
+        $.set({ separators: { column: ` ` } })
+          .headers([`alpha`, `bravo`, `charlie`])
+          .row(`a`, `b`)
+      )
+    )
   })
 })
+
+const $ = (description: string, value: Tex.RootBuilder) => {
+  it(description, () => {
+    expect(value.render()).toMatchSnapshot()
+  })
+}
+
+$.only = (description: string, value: Tex.RootBuilder) => {
+  it.only(description, () => {
+    expect(value.render()).toMatchSnapshot()
+  })
+}

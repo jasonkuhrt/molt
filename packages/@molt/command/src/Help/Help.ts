@@ -112,7 +112,8 @@ export const render = (
       (__) =>
         __.set({ padding: { left: 2 } })
           .table((__) =>
-            __.header(columnTitles.name)
+            __.set({ separators: { column: ` `, row: ` ` } })
+              .header(columnTitles.name)
               .header(columnTitles.typeDescription)
               .header(columnTitles.default)
               .header(columnTitles.environment)

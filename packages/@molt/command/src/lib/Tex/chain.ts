@@ -1,10 +1,9 @@
-import { parameters } from '../../index_.js'
-import type { BlockParameters, Node } from './index_.js'
+import type { BlockParameters, Node, TableParameters } from './index_.js'
 import { Leaf, Table } from './index_.js'
 import { Block } from './index_.js'
 
 // prettier-ignore
-interface BlockBuilder<Chain = null> {
+export interface BlockBuilder<Chain = null> {
   // block(parameters: BlockParameters, builder: ($: BuilderBase) => BuilderBase)  : Chain extends null ? BuilderBase : Chain
   block(builder: ($: BlockBuilder) => null|BlockBuilder)                        : Chain extends null ? BlockBuilder : Chain
   block(text: string|null)                                                      : Chain extends null ? BlockBuilder : Chain
@@ -18,14 +17,15 @@ interface BlockBuilder<Chain = null> {
   set(parameters: BlockParameters)                                              : Chain extends null ? BlockBuilder : Chain
 }
 
-interface TableBuilder {
-  row(...cells: Block[]): TableBuilder
+export interface TableBuilder {
+  set(parameters: TableParameters): TableBuilder
+  row(...cells: (Block | string)[]): TableBuilder
   rows(...rows: Block[][]): TableBuilder
   headers(headers: string[]): TableBuilder
   header(header: null | string): TableBuilder
 }
 
-interface RootBuilder extends BlockBuilder<RootBuilder> {
+export interface RootBuilder extends BlockBuilder<RootBuilder> {
   render(): string
 }
 
@@ -100,8 +100,13 @@ const createBlockBuilder = (params?: { getSuperChain: () => any }): BlockBuilder
 const createTableBuilder = (): TableBuilder => {
   const parentNode = new Table()
   const builder: TableBuilder = {
+    set: (parameters) => {
+      parentNode.setParameters(parameters)
+      return builder
+    },
     row: (...cells) => {
-      parentNode.rows.push(cells)
+      const cellsNormalized = cells.map((_) => (typeof _ === `string` ? new Block(new Leaf(_)) : _))
+      parentNode.rows.push(cellsNormalized)
       return builder
     },
     rows: (...rows) => {

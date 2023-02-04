@@ -11,6 +11,22 @@ export type Row = Column[]
 
 export const line = (text = ``): string => `${text}\n`
 
+export const getLength = stringLength
+
+export const mapLines = (text: string, fn: (line: string) => string): string => {
+  return fromLines(toLines(text).map(fn))
+}
+
+export const joinColumns = (row: Row, separator: string): string => {
+  const maxLineCountAmongColumns = Math.max(...row.map((_) => _.length))
+  const linesSpanningColumns = []
+  for (let lineNumber = 0; lineNumber < maxLineCountAmongColumns; lineNumber++) {
+    const line = row.map((col) => col[lineNumber] ?? ``).join(separator)
+    linesSpanningColumns.push(line)
+  }
+  return linesSpanningColumns.join(chars.newline)
+}
+
 export const span = (alignContent: 'left' | 'right', width: number, content: string): string => {
   const contentWidth = stripAnsi(content).length
   return pad(

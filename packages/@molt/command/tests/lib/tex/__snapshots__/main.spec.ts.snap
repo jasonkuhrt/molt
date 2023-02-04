@@ -58,6 +58,63 @@ exports[`block > width > % > 100% 1`] = `
 foo                                                                                                 "
 `;
 
+exports[`table > can have a row 1`] = `
+"alpha | bravo
+-------------
+a     | b    "
+`;
+
 exports[`table > can have headers 1`] = `"alpha | bravo"`;
+
+exports[`table > cell text is vertically aligned top 1`] = `
+"alpha | beta  
+apple | banana
+ankle |       "
+`;
+
+exports[`table > data column width equals widest cell (multi-line) 1`] = `
+"alpha            | bravo               | charlieeeeeeeeeeeeeeeeeee | delta
+--------------------------------------------------------------------------
+a1               | b1                  | c1                        | d1   
+--------------------------------------------------------------------------
+a222222222222222 | b2                  | c2                        | d2   
+a2               |                     |                           |      
+--------------------------------------------------------------------------
+a3               | b333333333333333333 | c3                        | d3   "
+`;
+
+exports[`table > data column width equals widest cell 1`] = `
+"alpha            | bravo               | charlieeeeeeeeeeeeeeeeeee | delta
+--------------------------------------------------------------------------
+a1               | b1                  | c1                        | d1   
+--------------------------------------------------------------------------
+a222222222222222 | b2                  | c2                        | d2   
+--------------------------------------------------------------------------
+a3               | b333333333333333333 | c3                        | d3   "
+`;
+
+exports[`table > if a row has columns exceeding the headers they render with empty header cells 1`] = `
+"alpha | bravo
+-----------------
+a     | b     | c"
+`;
+
+exports[`table > if headers have columns exceeding the given data they are rendered with empty column cells 1`] = `
+"alpha | bravo | charlie
+-----------------------
+a     | b    "
+`;
+
+exports[`table > set > custom row separator 1`] = `
+"alpha | bravo | charlie
+                       
+a     | b    "
+`;
+
+exports[`table > set > custom vertical separator 1`] = `
+"alpha bravo charlie
+-------------------
+a     b    "
+`;
 
 exports[`text > can render text 1`] = `"foo"`;
