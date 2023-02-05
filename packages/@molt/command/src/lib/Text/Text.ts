@@ -17,21 +17,26 @@ export const mapLines = (text: string, fn: (line: string) => string): string => 
   return fromLines(toLines(text).map(fn))
 }
 
-export const joinColumns = (row: Row, separator: string): string => {
-  const maxLineCountAmongColumns = Math.max(...row.map((_) => _.length))
+export const joinColumns = (cols: Row, separator: string): string => {
+  const maxLineCountAmongColumns = Math.max(...cols.map((_) => _.length))
   const linesSpanningColumns = []
+  const colWidths = cols.map((col) => {
+    return Math.max(...col.map(getLength))
+  })
   for (let lineNumber = 0; lineNumber < maxLineCountAmongColumns; lineNumber++) {
-    const line = row.map((col) => col[lineNumber] ?? ``).join(separator)
+    const targetLinesAcrossColumns = cols.map((col) => col[lineNumber] ?? ``)
+    const line = targetLinesAcrossColumns
+      .map((line, i) => span(`left`, colWidths[i] ?? 0, line))
+      .join(separator)
     linesSpanningColumns.push(line)
   }
-  return linesSpanningColumns.join(chars.newline)
+  return fromLines(linesSpanningColumns)
 }
 
 export const span = (alignContent: 'left' | 'right', width: number, content: string): string => {
-  const contentWidth = stripAnsi(content).length
   return pad(
     alignContent === `left` ? `right` : `left`,
-    Math.max(0, width - contentWidth),
+    Math.max(0, width - getLength(content)),
     chars.space,
     content
   )

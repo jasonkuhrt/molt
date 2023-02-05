@@ -1,5 +1,6 @@
 import { groupBy } from '../lib/prelude.js'
 import { Tex } from '../lib/Tex/index.js'
+import { Block } from '../lib/Tex/nodes.js'
 import { Text } from '../lib/Text/index.js'
 import { lines } from '../lib/Text/Text.js'
 import { ZodHelpers } from '../lib/zodHelpers/index.js'
@@ -9,6 +10,7 @@ import { chalk } from '../singletons/chalk.js'
 import camelCase from 'lodash.camelcase'
 import snakeCase from 'lodash.snakecase'
 import stripAnsi from 'strip-ansi'
+import { i } from 'vitest/dist/types-71ccd11d.js'
 import type { z } from 'zod'
 
 const colors = {
@@ -106,7 +108,7 @@ export const render = (
     (_) => _[0]!.group // eslint-disable-line
   )
 
-  const output = Tex.Tex({ maxWidth: 80 })
+  const output = Tex.Tex({ maxWidth: 80, padding: { bottom: 5, top: 5 } })
     .block({ padding: { top: 1, bottom: 1 } }, title(`PARAMETERS`))
     .block(
       (__) =>
@@ -143,7 +145,14 @@ export const render = (
               return null
             }
 
-            return $.block({ border: { bottom: `_` }, width: `100%` }, `NOTES`) //.list(items)
+            return $.block({ padding: { top: 2 }, border: { bottom: `━` }, width: `100%` }, `NOTES`).list(
+              {
+                bullet: {
+                  graphic: (index) => `(${index + 1})`,
+                },
+              },
+              items
+            )
           })
       // .data([
       //   ...basicAndUnionSpecsWithoutHelp.map((spec) =>
@@ -180,7 +189,7 @@ export const render = (
   return output
 }
 
-const environmentNote = (specs: ParameterSpec.Output[], settings: Settings.Output): string[] => {
+const environmentNote = (specs: ParameterSpec.Output[], settings: Settings.Output) => {
   const isHasSpecsWithCustomEnvironmentNamespace =
     specs
       .filter((_) => _.environment?.enabled)
@@ -221,7 +230,9 @@ const environmentNote = (specs: ParameterSpec.Output[], settings: Settings.Outpu
       : `There is no prefix.`
   }
 
-  content += `Examples:${specs
+  content += `Examples:`
+
+  const examples = specs
     .filter((_) => _.environment?.enabled)
     .slice(0, 3)
     .map((_) =>
@@ -234,9 +245,18 @@ const environmentNote = (specs: ParameterSpec.Output[], settings: Settings.Outpu
         : colors.positive(Text.toEnvarNameCase(_.name.canonical))
     )
     .map((_) => `${_}="..."`)
-    .reduce((_, example) => _ + `\n  ${Text.chars.arrowRight} ${example}`, ``)}.`
 
-  return Text.lines(76, content)
+  // .reduce((_, example) => _ + `\n  ${Text.chars.arrowRight} ${example}`, ``)
+
+  return new Tex.Block().addChild(new Tex.Leaf(content)).addChild(
+    new Block().setParameters({ padding: { left: 2 } }).addChild(
+      new Tex.List(examples).setParameters({
+        bullet: {
+          graphic: Text.chars.arrowRight,
+        },
+      })
+    )
+  )
 }
 
 const basicAndUnionParameters = (

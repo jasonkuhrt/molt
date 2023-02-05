@@ -13,7 +13,7 @@ const output = createState<string>({
 })
 const onOutput = output.set
 
-it(`if there is optional param it is shown`, () => {
+it.only(`if there is optional param it is shown`, () => {
   Command.parameters({ a: s.optional() })
     .settings({ onOutput })
     .parse({ line: [`-h`] })

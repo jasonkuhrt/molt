@@ -66,6 +66,27 @@ describe(`block`, () => {
   })
 })
 
+describe(`list`, () => {
+  $(`can render items`, Tex.Tex().list([`foo`, `bar`]))
+  $(`can render multi-line items`, Tex.Tex().list([`foo`, `bar\nbaz\nqux`, `zod`]))
+  $(`can have custom bullet`, Tex.Tex().list({ bullet: { graphic: `-` } }, [`foo`, `zod`]))
+  $(
+    `can have custom bullet function`,
+    Tex.Tex().list({ bullet: { graphic: (i) => `(${i})` } }, [`foo`, `zod`])
+  )
+  $(
+    `the gutter of bullets is left aligned by default`,
+    Tex.Tex().list({ bullet: { graphic: (i) => String(i) } }, `abcdefghijklmnopqrstuvwxyz`.split(``))
+  )
+  $(
+    `the gutter of bullets can be right aligned`,
+    Tex.Tex().list(
+      { bullet: { graphic: (i) => String(i), align: { horizontal: `right` } } },
+      `abcdefghijklmnopqrstuvwxyz`.split(``)
+    )
+  )
+})
+
 describe(`table`, () => {
   $(
     `can have headers`,
