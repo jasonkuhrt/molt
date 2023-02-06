@@ -88,10 +88,27 @@ describe(`list`, () => {
 })
 
 describe(`table`, () => {
-  $(
-    `can have headers`,
-    Tex.Tex().table(($) => $.headers([`alpha`, `bravo`]))
-  )
+  describe(`headers`, () => {
+    $(
+      `can be passed as an array`,
+      Tex.Tex().table(($) => $.headers([`alpha`, `bravo`]))
+    )
+    $(
+      `if exceed column count of the actual given data they are rendered with empty column cells`,
+      Tex.Tex().table(($) => $.headers([`alpha`, `bravo`, `charlie`]).row(`a`, `b`))
+    )
+    $(
+      `can be a block`,
+      Tex.Tex().block(($) =>
+        $.table(($) =>
+          $.header(new Tex.Block({ padding: { right: 10 } }, `alpha`))
+            .header(new Tex.Block({ border: { bottom: `~` } }, `bravo`))
+            .row(`a`, `b`)
+        )
+      )
+    )
+  })
+
   $(
     `can have a row`,
     Tex.Tex().table(($) => $.headers([`alpha`, `bravo`]).row(`a`, `b`))
@@ -100,10 +117,7 @@ describe(`table`, () => {
     `if a row has columns exceeding the headers they render with empty header cells`,
     Tex.Tex().table(($) => $.headers([`alpha`, `bravo`]).row(`a`, `b`, `c`))
   )
-  $(
-    `if headers have columns exceeding the given data they are rendered with empty column cells`,
-    Tex.Tex().table(($) => $.headers([`alpha`, `bravo`, `charlie`]).row(`a`, `b`))
-  )
+
   $(
     `data column width equals widest cell`,
     Tex.Tex().table(($) =>

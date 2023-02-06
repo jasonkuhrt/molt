@@ -145,8 +145,6 @@ exports[`table > can have a row 1`] = `
 a     | b    "
 `;
 
-exports[`table > can have headers 1`] = `"alpha | bravo"`;
-
 exports[`table > cell text is vertically aligned top 1`] = `
 "alpha | beta  
 apple | banana
@@ -174,16 +172,25 @@ a222222222222222 | b2                  | c2                        | d2
 a3               | b333333333333333333 | c3                        | d3   "
 `;
 
+exports[`table > headers > can be a block 1`] = `
+"alpha           | bravo
+                | ~~~~~
+-----------------------
+a               | b    "
+`;
+
+exports[`table > headers > can be passed as an array 1`] = `"alpha | bravo"`;
+
+exports[`table > headers > if exceed column count of the actual given data they are rendered with empty column cells 1`] = `
+"alpha | bravo | charlie
+-----------------------
+a     | b    "
+`;
+
 exports[`table > if a row has columns exceeding the headers they render with empty header cells 1`] = `
 "alpha | bravo
 -----------------
 a     | b     | c"
-`;
-
-exports[`table > if headers have columns exceeding the given data they are rendered with empty column cells 1`] = `
-"alpha | bravo | charlie
------------------------
-a     | b    "
 `;
 
 exports[`table > set > custom row separator 1`] = `

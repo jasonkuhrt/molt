@@ -3,6 +3,7 @@ import { Text } from '../Text/index.js'
 
 interface RenderContext {
   maxWidth: number
+  color?: undefined | ((text: string) => string)
 }
 
 interface Shape {
@@ -12,38 +13,26 @@ interface Shape {
 
 export abstract class Node {
   abstract render(context: RenderContext): { shape: Shape; value: string }
-  // abstract setParameters(parameters: object): void
 }
 
 export class Leaf extends Node {
   value: string
-  // parameters: object
   constructor(value: string) {
     super()
     this.value = value
-    // this.parameters = {}
   }
-  // setParameters(parameters: object): void {
-  //   this.parameters = parameters
-  // }
   render(context: RenderContext) {
     const lines = Text.lines(context.maxWidth, this.value)
     const value = lines.join(Text.chars.newline)
     const intrinsicWidth = Math.max(...lines.map(Text.getLength))
+    const valueColored = context.color ? context.color(value) : value
     return {
       shape: {
         intrinsicWidth,
         desiredWidth: null,
       },
-      value: value,
+      value: valueColored,
     }
-  }
-}
-
-export interface TableParameters {
-  separators?: {
-    row?: string
-    column?: string
   }
 }
 
@@ -90,7 +79,7 @@ export class List extends Node {
     const value = items
       .map((_, index) => {
         return Text.joinColumns(
-          [[Text.span(bullet.align.horizontal, gutterWidth, bullets[index]!)], Text.toLines(_)],
+          [[Text.minSpan(bullet.align.horizontal, gutterWidth, bullets[index]!)], Text.toLines(_)],
           ` `
         )
       })
@@ -106,9 +95,16 @@ export class List extends Node {
   }
 }
 
+export interface TableParameters {
+  separators?: {
+    row?: string
+    column?: string
+  }
+}
+
 export class Table extends Node {
   rows: Block[][]
-  headers: string[]
+  headers: Block[]
   parameters: TableParameters
   constructor(rows?: Block[][]) {
     super()
@@ -131,7 +127,8 @@ export class Table extends Node {
         return cell.render(context).value
       })
     )
-    const rowsAndHeaders = this.headers.length > 0 ? [this.headers, ...rows] : rows
+    const headers = this.headers.map((cell) => cell.render(context).value)
+    const rowsAndHeaders = this.headers.length > 0 ? [headers, ...rows] : rows
     // console.log({ rowsAndHeaders })
     const maxWidthOfEachColumn = invertTable(rowsAndHeaders).map((col) =>
       Math.max(...col.flatMap(Text.toLines).map(Text.getLength))
@@ -169,8 +166,10 @@ export class Table extends Node {
 }
 
 export interface BlockParameters {
+  minWidth?: number
   maxWidth?: number
   width?: `${number}%`
+  color?: (text: string) => string
   border?: {
     top?: string
     left?: string
@@ -181,6 +180,7 @@ export interface BlockParameters {
     top?: number
     left?: number
     bottom?: number
+    right?: number
   }
 }
 
@@ -218,6 +218,7 @@ export class Block extends Node {
     return this
   }
   render(context: RenderContext) {
+    const color = this.parameters.color ?? ((text: string) => text)
     const widthOwn =
       typeof this.parameters.width === `number`
         ? { type: `absolute` as const, value: this.parameters.width }
@@ -239,24 +240,23 @@ export class Block extends Node {
 
     let renderings: string[] = []
     for (const child of this.children) {
-      // console.log({ intrinsicWidth })
-      const rendered = child.render({ maxWidth: maxWidthResolved })
-      // console.log(`block child rendered`, { rendered })
-      // console.log(
-      //   intrinsicWidth,
-      //   rendered.shape.intrinsicWidth,
-      //   Math.max(intrinsicWidth, rendered.shape.intrinsicWidth)
-      // )
+      const rendered = child.render({
+        maxWidth: maxWidthResolved,
+        color: this.parameters.color,
+      })
+      // TODO minWidth should be passed down to children?
+      if (this.parameters.minWidth !== undefined) {
+        rendered.value = Text.mapLines(rendered.value, (_) =>
+          Text.minSpan(`left`, this.parameters.minWidth!, _)
+        )
+      }
       intrinsicWidth = Math.max(intrinsicWidth, rendered.shape.intrinsicWidth)
       renderings.push(rendered.value)
     }
-    // console.log(`block children rendered`, { renderings })
 
     const width = widthOwnResolved === null ? intrinsicWidth : maxWidthResolved
-    // console.log({ width })
     // each line must span the width of the box
-    // console.log(`block`, { widthOwnResolved, intrinsicWidth, maxWidthResolved })
-    renderings = renderings.map((_) => Text.span(`left`, width, _))
+    renderings = renderings.map((_) => Text.minSpan(`left`, width, _))
 
     const joined = renderings.join(Text.chars.newline)
 
@@ -271,6 +271,11 @@ export class Block extends Node {
     value = this.parameters.padding?.bottom
       ? value + Text.chars.newline.repeat(this.parameters.padding.bottom)
       : value
+    value = this.parameters.padding?.right
+      ? Text.fromLines(
+          Text.toLines(value).map((_) => _ + Text.chars.space.repeat(this.parameters.padding!.right!))
+        )
+      : value
 
     value = this.parameters.border?.top
       ? this.parameters.border.top.repeat(width) + Text.chars.newline + value
@@ -284,7 +289,8 @@ export class Block extends Node {
     value = this.parameters.border?.right
       ? Text.fromLines(Text.toLines(value).map((_) => _ + this.parameters.border!.right!))
       : value
-    // console.log(`block value`, { value })
+
+    value = color(value)
 
     return {
       shape: {

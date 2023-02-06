@@ -1,3 +1,4 @@
+import { Text } from '../Text/index.js'
 import type { BlockParameters, ListParameters, Node, TableParameters } from './index_.js'
 import { List } from './index_.js'
 import { Leaf, Table } from './index_.js'
@@ -26,8 +27,8 @@ export interface TableBuilder {
   set(parameters: TableParameters): TableBuilder
   row(...cells: (Block | string)[]): TableBuilder
   rows(...rows: Block[][]): TableBuilder
-  headers(headers: string[]): TableBuilder
-  header(header: null | string): TableBuilder
+  headers(headers: (string | Block)[]): TableBuilder
+  header(header: null | string | Block): TableBuilder
 }
 
 export interface ListBuilder {
@@ -67,7 +68,7 @@ const createBlockBuilder = (params?: { getSuperChain: () => any }): BlockBuilder
           node = new Block(new Leaf(content))
         } else {
           const result = content(createRootBuilder())
-          node = result === null ? result : (result as any as BuilderInternal<Block>)._.node
+          node = result === null ? null : (result as any as BuilderInternal<Block>)._.node
         }
 
         if (node) {
@@ -168,12 +169,12 @@ const createTableBuilder = (): TableBuilder => {
       return $
     },
     headers: (headers) => {
-      parentNode.headers = headers
+      parentNode.headers = headers.map((_) => (_ instanceof Block ? _ : new Block(new Leaf(_))))
       return $
     },
     header: (header) => {
       if (header !== null) {
-        parentNode.headers.push(header)
+        parentNode.headers.push(header instanceof Block ? header : new Block(new Leaf(header)))
       }
       return $
     },
@@ -193,7 +194,9 @@ export const createRootBuilder = (parameters?: BlockParameters): RootBuilder => 
     const builderInternal = builder as any as BuilderInternal<Block>
     const node = builderInternal._.node
     const block = new Block(parameters ?? {}, node)
-    return block.render({ maxWidth: parameters?.maxWidth ?? process.stdout.columns ?? 100 }).value
+    const value = block.render({ maxWidth: parameters?.maxWidth ?? process.stdout.columns ?? 100 }).value
+    const value2 = Text.mapLines(value, (_) => _.replace(/\s+$/, ``))
+    return value2
   }
 
   return builder

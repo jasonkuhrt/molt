@@ -26,14 +26,14 @@ export const joinColumns = (cols: Row, separator: string): string => {
   for (let lineNumber = 0; lineNumber < maxLineCountAmongColumns; lineNumber++) {
     const targetLinesAcrossColumns = cols.map((col) => col[lineNumber] ?? ``)
     const line = targetLinesAcrossColumns
-      .map((line, i) => span(`left`, colWidths[i] ?? 0, line))
+      .map((line, i) => minSpan(`left`, colWidths[i] ?? 0, line))
       .join(separator)
     linesSpanningColumns.push(line)
   }
   return fromLines(linesSpanningColumns)
 }
 
-export const span = (alignContent: 'left' | 'right', width: number, content: string): string => {
+export const minSpan = (alignContent: 'left' | 'right', width: number, content: string): string => {
   return pad(
     alignContent === `left` ? `right` : `left`,
     Math.max(0, width - getLength(content)),
@@ -87,7 +87,7 @@ export const row = (columns: ColSpec[]): string => {
   while (currentLine < lineCount) {
     const line = columnsSized
       .map((col) => ({
-        content: span(`left`, col.width, col.lines[currentLine] ?? ``),
+        content: minSpan(`left`, col.width, col.lines[currentLine] ?? ``),
         separator: col.separator,
       }))
       .reduce(

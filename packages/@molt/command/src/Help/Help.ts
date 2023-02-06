@@ -2,18 +2,16 @@ import { groupBy } from '../lib/prelude.js'
 import { Tex } from '../lib/Tex/index.js'
 import { Block } from '../lib/Tex/nodes.js'
 import { Text } from '../lib/Text/index.js'
-import { lines } from '../lib/Text/Text.js'
 import { ZodHelpers } from '../lib/zodHelpers/index.js'
 import type { ParameterSpec } from '../ParameterSpec/index.js'
 import type { Settings } from '../Settings/index.js'
 import { chalk } from '../singletons/chalk.js'
 import camelCase from 'lodash.camelcase'
 import snakeCase from 'lodash.snakecase'
-import stripAnsi from 'strip-ansi'
-import { i } from 'vitest/dist/types-71ccd11d.js'
 import type { z } from 'zod'
 
 const colors = {
+  mute: (text: string) => chalk.grey(text),
   dim: (text: string) => chalk.dim(chalk.grey(text)),
   accent: (text: string) => chalk.yellow(text),
   alert: (text: string) => chalk.red(text),
@@ -108,23 +106,40 @@ export const render = (
     (_) => _[0]!.group // eslint-disable-line
   )
 
-  const output = Tex.Tex({ maxWidth: 80, padding: { bottom: 5, top: 5 } })
+  const output = Tex.Tex({ maxWidth: 82, padding: { bottom: 0, top: 0 } })
     .block({ padding: { top: 1, bottom: 1 } }, title(`PARAMETERS`))
     .block(
       (__) =>
         __.set({ padding: { left: 2 } })
           .table((__) =>
             __.set({ separators: { column: ` `, row: ` ` } })
-              .header(columnTitles.name)
-              .header(columnTitles.typeDescription)
-              .header(columnTitles.default)
-              .header(columnTitles.environment)
+              .header(
+                new Tex.Block({ padding: { right: 2 } }, chalk.underline(colors.mute(columnTitles.name)))
+              )
+              .header(
+                new Tex.Block(
+                  {
+                    minWidth: 8,
+                    padding: { right: 5 },
+                  },
+                  chalk.underline(colors.mute(columnTitles.typeDescription))
+                )
+              )
+              .header(
+                new Tex.Block({ padding: { right: 4 } }, chalk.underline(colors.mute(columnTitles.default)))
+              )
+              .header(
+                columnTitles.environment ? chalk.underline(colors.mute(columnTitles.environment)) : null
+              )
               .rows(
                 ...basicAndUnionSpecsWithoutHelp.map((spec) => [
                   new Tex.Block(Text.fromLines(parameterName(spec))),
-                  new Tex.Block(Text.fromLines(parameterTypeAndDescription(spec))),
-                  new Tex.Block(Text.fromLines(parameterDefault(spec))),
-                  // ...(isEnvironmentEnabled ? [new Tex.Block(parameterEnvironment(spec,settings))] : []),
+                  new Tex.Block(
+                    { maxWidth: 40, padding: { right: 9 } },
+                    Text.fromLines(parameterTypeAndDescription(spec))
+                  ),
+                  new Tex.Block({ maxWidth: 24 }, Text.fromLines(parameterDefault(spec))),
+                  ...(isEnvironmentEnabled ? [new Tex.Block(parameterEnvironment(spec, settings))] : []),
                 ])
               )
           )
@@ -145,14 +160,16 @@ export const render = (
               return null
             }
 
-            return $.block({ padding: { top: 2 }, border: { bottom: `━` }, width: `100%` }, `NOTES`).list(
-              {
-                bullet: {
-                  graphic: (index) => `(${index + 1})`,
+            return $.set({ color: colors.dim })
+              .block({ padding: { top: 1 }, border: { bottom: `━` }, width: `100%` }, `NOTES`)
+              .list(
+                {
+                  bullet: {
+                    graphic: (index) => `(${index + 1})`,
+                  },
                 },
-              },
-              items
-            )
+                items
+              )
           })
       // .data([
       //   ...basicAndUnionSpecsWithoutHelp.map((spec) =>
@@ -277,54 +294,54 @@ const basicAndUnionParameters = (
   return t
 }
 
-const exclusiveGroups = (
-  groups: ParameterSpec.Output.ExclusiveGroup[],
-  settings: Settings.Output,
-  options: {
-    columnSpecs: ColumnSpecs
-    environment: boolean
-    isEnvironmentEnabled: boolean
-  }
-) => {
-  let t = ``
+// const exclusiveGroups = (
+//   groups: ParameterSpec.Output.ExclusiveGroup[],
+//   settings: Settings.Output,
+//   options: {
+//     columnSpecs: ColumnSpecs
+//     environment: boolean
+//     isEnvironmentEnabled: boolean
+//   }
+// ) => {
+//   let t = ``
 
-  for (const g of groups) {
-    t += Text.line()
-    const widthToDefaultCol =
-      (options.columnSpecs.name.separator?.length ?? Text.defaultColumnSeparator.length) +
-      options.columnSpecs.name.width +
-      (options.columnSpecs.typeAndDescription.separator?.length ?? Text.defaultColumnSeparator.length) +
-      options.columnSpecs.typeAndDescription.width +
-      `  `.length
-    const header = Text.row([
-      {
-        lines: [colors.dim(Text.chars.borders.leftTop + Text.chars.borders.horizontal + g.label + ` (2)`)],
-        width: widthToDefaultCol,
-      },
-      {
-        lines: [
-          g.optionality._tag === `default`
-            ? `${g.optionality.tag}@${String(g.optionality.getValue())}`
-            : g.optionality._tag === `optional`
-            ? `undefined`
-            : labels.required,
-        ],
-      },
-    ])
+//   for (const g of groups) {
+//     t += Text.line()
+//     const widthToDefaultCol =
+//       (options.columnSpecs.name.separator?.length ?? Text.defaultColumnSeparator.length) +
+//       options.columnSpecs.name.width +
+//       (options.columnSpecs.typeAndDescription.separator?.length ?? Text.defaultColumnSeparator.length) +
+//       options.columnSpecs.typeAndDescription.width +
+//       `  `.length
+//     const header = Text.row([
+//       {
+//         lines: [colors.dim(Text.chars.borders.leftTop + Text.chars.borders.horizontal + g.label + ` (2)`)],
+//         width: widthToDefaultCol,
+//       },
+//       {
+//         lines: [
+//           g.optionality._tag === `default`
+//             ? `${g.optionality.tag}@${String(g.optionality.getValue())}`
+//             : g.optionality._tag === `optional`
+//             ? `undefined`
+//             : labels.required,
+//         ],
+//       },
+//     ])
 
-    t += header
-    t += Text.chars.newline
-    for (const spec of Object.values(g.parameters)) {
-      t += Text.indentBlockWith(parameter(spec, settings, options), (_, index) =>
-        index === 0 ? colors.accent(`◒ `) : colors.dim(`${Text.chars.borders.vertical} `)
-      )
-      t += Text.chars.newline
-    }
-    t += colors.dim(Text.chars.borders.leftBottom + Text.chars.borders.horizontal)
-    t += Text.chars.newline
-  }
-  return t
-}
+//     t += header
+//     t += Text.chars.newline
+//     for (const spec of Object.values(g.parameters)) {
+//       t += Text.indentBlockWith(parameter(spec, settings, options), (_, index) =>
+//         index === 0 ? colors.accent(`◒ `) : colors.dim(`${Text.chars.borders.vertical} `)
+//       )
+//       t += Text.chars.newline
+//     }
+//     t += colors.dim(Text.chars.borders.leftBottom + Text.chars.borders.horizontal)
+//     t += Text.chars.newline
+//   }
+//   return t
+// }
 
 const parameter = (
   spec: ParameterSpec.Output,
@@ -333,27 +350,13 @@ const parameter = (
     columnSpecs: ColumnSpecs
     isEnvironmentEnabled: boolean
   }
-): string => {
-  return Text.row(
-    [
-      {
-        lines: parameterName(spec),
-        ...options.columnSpecs.name,
-      },
-      {
-        lines: parameterTypeAndDescription(spec),
-        ...options.columnSpecs.typeAndDescription,
-      },
-      {
-        lines: parameterDefault(spec),
-        ...options.columnSpecs.default,
-      },
-      ...(options.isEnvironmentEnabled ? [{ lines: parameterEnvironment(spec, settings) }] : []),
-    ].map((_) => ({
-      ..._,
-      lines: _.lines.filter((_): _ is string => _ !== null && stripAnsi(_) !== ``),
-    }))
-  )
+) => {
+  return [
+    parameterName(spec),
+    parameterTypeAndDescription(spec),
+    parameterDefault(spec),
+    ...(options.isEnvironmentEnabled ? [parameterEnvironment(spec, settings)] : []),
+  ]
 }
 
 const parameterDefault = (spec: ParameterSpec.Output): Text.Column => {
@@ -433,26 +436,24 @@ const parameterTypeAndDescription = (spec: ParameterSpec.Output): Text.Column =>
   ]
 }
 
-const parameterEnvironment = (spec: ParameterSpec.Output, settings: Settings.Output): Text.Column => {
+const parameterEnvironment = (spec: ParameterSpec.Output, settings: Settings.Output) => {
   return spec.environment?.enabled
-    ? [
-        colors.secondary(Text.chars.check) +
-          (spec.environment.enabled && spec.environment.namespaces.length === 0
-            ? ` ` + colors.dim(Text.toEnvarNameCase(spec.name.canonical))
-            : spec.environment.enabled &&
-              spec.environment.namespaces.filter(
-                // TODO settings normalized should store prefix in camel case
-                (_) => !settings.parameters.environment.$default.prefix.includes(snakeCase(_))
-              ).length > 0
-            ? ` ` +
-              colors.dim(
-                spec.environment.namespaces
-                  .map((_) => `${Text.toEnvarNameCase(_)}_${Text.toEnvarNameCase(spec.name.canonical)}`)
-                  .join(` ${Text.chars.pipe} `)
-              )
-            : ``),
-      ]
-    : [colors.dim(Text.chars.x)]
+    ? colors.secondary(Text.chars.check) +
+        (spec.environment.enabled && spec.environment.namespaces.length === 0
+          ? ` ` + colors.dim(Text.toEnvarNameCase(spec.name.canonical))
+          : spec.environment.enabled &&
+            spec.environment.namespaces.filter(
+              // TODO settings normalized should store prefix in camel case
+              (_) => !settings.parameters.environment.$default.prefix.includes(snakeCase(_))
+            ).length > 0
+          ? ` ` +
+            colors.dim(
+              spec.environment.namespaces
+                .map((_) => `${Text.toEnvarNameCase(_)}_${Text.toEnvarNameCase(spec.name.canonical)}`)
+                .join(` ${Text.chars.pipe} `)
+            )
+          : ``)
+    : colors.dim(Text.chars.x)
 }
 
 /**
