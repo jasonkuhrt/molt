@@ -87,6 +87,18 @@ export const render = (
   //   (_) => _[0]!.group // eslint-disable-line
   // )
 
+  const noteItems: (Tex.Block | string)[] = []
+
+  if (isAcceptsAnyEnvironmentArgs) {
+    noteItems.push(environmentNote(allSpecsWithoutHelp, settings))
+  }
+
+  if (isAcceptsAnyMutuallyExclusiveParameters) {
+    noteItems.push(
+      `This is a set of mutually exclusive parameters. Only one can be provided at a time. If more than one is provided, execution will fail with an input error.`
+    )
+  }
+
   const output = Tex.Tex({ maxWidth: 82, padding: { bottom: 0, top: 0 } })
     .block({ padding: { top: 1, bottom: 1 } }, title(`PARAMETERS`))
     .block(
@@ -116,22 +128,9 @@ export const render = (
               )
           )
           .block(($) => {
-            const items = []
-
-            if (isAcceptsAnyEnvironmentArgs) {
-              items.push(environmentNote(allSpecsWithoutHelp, settings))
-            }
-
-            if (isAcceptsAnyMutuallyExclusiveParameters) {
-              items.push(
-                `This is a set of mutually exclusive parameters. Only one can be provided at a time. If more than one is provided, execution will fail with an input error.`
-              )
-            }
-
-            if (items.length === 0) {
+            if (noteItems.length === 0) {
               return null
             }
-
             return $.set({ color: colors.dim })
               .block({ padding: { top: 1 }, border: { bottom: `━` }, width: `100%` }, `NOTES`)
               .list(
@@ -140,7 +139,7 @@ export const render = (
                     graphic: (index) => `(${index + 1})`,
                   },
                 },
-                items
+                noteItems
               )
           })
       // .data([
