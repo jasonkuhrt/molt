@@ -29,7 +29,15 @@ export interface TableBuilder {
   row(...cells: (BlockBuilder | RootBuilder | Block | string)[]): TableBuilder
   rows(...rows: (BlockBuilder | RootBuilder | Block | string)[][]): TableBuilder
   headers(headers: (string | Block)[]): TableBuilder
-  header(header: null | string | Block): TableBuilder
+  // header(header: null | string | Block): TableBuilder
+  header: BlockMethod<TableBuilder>
+}
+
+interface BlockMethod<Chain> {
+  (builder: ($: BlockBuilder) => null | BlockBuilder): Chain
+  (children: (string | null | RootBuilder | BlockBuilder | Block)[]): Chain
+  (children: string | null | RootBuilder | BlockBuilder | Block): Chain
+  (parameters: BlockParameters, children: Block | BlockBuilder | RootBuilder | string | null): Chain
 }
 
 export interface ListBuilder {
@@ -49,47 +57,61 @@ interface BuilderInternal<N = Node> {
   }
 }
 
+type BlockImplementor = ($: BlockBuilder) => null | BlockBuilder
+
+type blockMethodArgs =
+  | [BlockParameters, Block | string | null | BlockBuilder | RootBuilder]
+  | [Block | string | null | BlockBuilder | RootBuilder]
+  | [(Block | string | null | BlockBuilder | RootBuilder)[]]
+  | [BlockImplementor]
+
+const resolveBlockMethodArgs = (
+  args: blockMethodArgs
+): { parameters: BlockParameters | null; child: Block | null } => {
+  const parameters = args.length === 1 ? null : args[0]
+  const childrenInput = args.length === 1 ? args[0] : args[1]
+  let child: null | Block | BlockImplementor = null
+  if (childrenInput) {
+    if (typeof childrenInput === `string`) {
+      child = new Block(new Leaf(childrenInput))
+    } else if (typeof childrenInput === `function`) {
+      child = childrenInput
+      const result = childrenInput(createRootBuilder())
+      child = result === null ? result : (result as any as BuilderInternal<Block>)._.node
+    } else if (Array.isArray(childrenInput)) {
+      child = new Block(
+        childrenInput
+          .filter((_): _ is Block | string | BlockBuilder | RootBuilder => _ !== null)
+          .map((_) =>
+            _ instanceof Block
+              ? _
+              : typeof _ === `string`
+              ? new Leaf(_)
+              : (_ as any as BuilderInternal<Block>)._.node
+          )
+      )
+    } else if (childrenInput instanceof Block) {
+      child = childrenInput
+    } else {
+      child = (childrenInput as any as BuilderInternal<Block>)._.node
+    }
+  }
+  return { parameters, child }
+}
+
 const createBlockBuilder = (params?: { getSuperChain: () => any }): BlockBuilder => {
   const parentNode = new Block()
   // let parentParameters: = parameters ?? {}
 
   const $: BlockBuilder = {
-    block: (
-      ...args:
-        | [BlockParameters, string | null | BlockBuilder | RootBuilder]
-        | [string | null | BlockBuilder | RootBuilder]
-        | [(string | null | BlockBuilder | RootBuilder)[]]
-        // | [BlockParameters, ($: BuilderBase) => BuilderBase]
-        | [($: BlockBuilder) => null | BlockBuilder]
-    ) => {
-      const parameters = args.length === 1 ? null : args[0]
-      const content = args.length === 1 ? args[0] : args[1]
-      if (content) {
-        let node: null | Block
-        if (typeof content === `string`) {
-          node = new Block(new Leaf(content))
-        } else if (typeof content === `function`) {
-          const result = content(createRootBuilder())
-          node = result === null ? null : (result as any as BuilderInternal<Block>)._.node
-        } else if (Array.isArray(content)) {
-          node = new Block(
-            content
-              .filter((_): _ is string | BlockBuilder | RootBuilder => _ !== null)
-              .map((_) => (typeof _ === `string` ? new Leaf(_) : (_ as any as BuilderInternal<Block>)._.node))
-          )
-        } else {
-          node = (content as any as BuilderInternal<Block>)._.node
+    block: (...args: blockMethodArgs) => {
+      const input = resolveBlockMethodArgs(args)
+      if (input.child) {
+        if (input.parameters) {
+          input.child.setParameters(input.parameters)
         }
-
-        if (node) {
-          if (parameters) {
-            node.setParameters(parameters)
-          }
-
-          parentNode.addChild(node)
-        }
+        parentNode.addChild(input.child)
       }
-
       return params?.getSuperChain() ?? $
     },
     set: (parameters: BlockParameters) => {
@@ -197,9 +219,13 @@ const createTableBuilder = (): TableBuilder => {
       parentNode.headers = headers.map((_) => (_ instanceof Block ? _ : new Block(new Leaf(_))))
       return $
     },
-    header: (header) => {
-      if (header !== null) {
-        parentNode.headers.push(header instanceof Block ? header : new Block(new Leaf(header)))
+    header: (...args: blockMethodArgs) => {
+      const input = resolveBlockMethodArgs(args)
+      if (input.child) {
+        if (input.parameters) {
+          input.child.setParameters(input.parameters)
+        }
+        parentNode.headers.push(input.child)
       }
       return $
     },
@@ -220,6 +246,7 @@ export const createRootBuilder = (parameters?: BlockParameters): RootBuilder => 
     const node = builderInternal._.node
     const block = new Block(parameters ?? {}, node)
     const value = block.render({ maxWidth: parameters?.maxWidth ?? process.stdout.columns ?? 100 }).value
+    // TODO - do not remove trailing whitespace?
     const value2 = Text.mapLines(value, (_) => _.replace(/\s+$/, ``))
     return value2
   }

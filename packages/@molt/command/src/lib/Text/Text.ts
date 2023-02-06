@@ -1,7 +1,6 @@
 import { Text } from './index.js'
 import snakeCase from 'lodash.snakecase'
 import stringLength from 'string-length'
-import stripAnsi from 'strip-ansi'
 
 export type Line = string
 

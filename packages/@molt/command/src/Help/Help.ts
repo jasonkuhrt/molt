@@ -94,21 +94,15 @@ export const render = (
         __.set({ padding: { left: 2 } })
           .table((__) =>
             __.set({ separators: { column: ` `, row: ` ` } })
+              .header({ padding: { right: 2 } }, chalk.underline(colors.mute(columnTitles.name)))
               .header(
-                new Tex.Block({ padding: { right: 2 } }, chalk.underline(colors.mute(columnTitles.name)))
+                {
+                  minWidth: 8,
+                  padding: { right: 5 },
+                },
+                chalk.underline(colors.mute(columnTitles.typeDescription))
               )
-              .header(
-                new Tex.Block(
-                  {
-                    minWidth: 8,
-                    padding: { right: 5 },
-                  },
-                  chalk.underline(colors.mute(columnTitles.typeDescription))
-                )
-              )
-              .header(
-                new Tex.Block({ padding: { right: 4 } }, chalk.underline(colors.mute(columnTitles.default)))
-              )
+              .header({ padding: { right: 4 } }, chalk.underline(colors.mute(columnTitles.default)))
               .header(
                 columnTitles.environment ? chalk.underline(colors.mute(columnTitles.environment)) : null
               )
