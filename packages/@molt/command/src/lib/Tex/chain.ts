@@ -8,8 +8,9 @@ import { Block } from './index_.js'
 export interface BlockBuilder<Chain = null> {
   // block(parameters: BlockParameters, builder: ($: BuilderBase) => BuilderBase)  : Chain extends null ? BuilderBase : Chain
   block(builder: ($: BlockBuilder) => null|BlockBuilder)                        : Chain extends null ? BlockBuilder : Chain
-  block(text: string|null)                                                      : Chain extends null ? BlockBuilder : Chain
-  block(parameters: BlockParameters, text: string|null)                         : Chain extends null ? BlockBuilder : Chain
+  block(children: (string|null|RootBuilder|BlockBuilder)[])                           : Chain extends null ? BlockBuilder : Chain
+  block(children: string|null|RootBuilder|BlockBuilder)                               : Chain extends null ? BlockBuilder : Chain
+  block(parameters: BlockParameters, children: BlockBuilder|RootBuilder|string|null)                         : Chain extends null ? BlockBuilder : Chain
 
   table(rows: Block[][])                                                        : Chain extends null ? BlockBuilder : Chain
   table(builder: ($: TableBuilder) => null|TableBuilder)                        : Chain extends null ? BlockBuilder : Chain
@@ -25,8 +26,8 @@ export interface BlockBuilder<Chain = null> {
 
 export interface TableBuilder {
   set(parameters: TableParameters): TableBuilder
-  row(...cells: (Block | string)[]): TableBuilder
-  rows(...rows: Block[][]): TableBuilder
+  row(...cells: (BlockBuilder | RootBuilder | Block | string)[]): TableBuilder
+  rows(...rows: (BlockBuilder | RootBuilder | Block | string)[][]): TableBuilder
   headers(headers: (string | Block)[]): TableBuilder
   header(header: null | string | Block): TableBuilder
 }
@@ -55,8 +56,9 @@ const createBlockBuilder = (params?: { getSuperChain: () => any }): BlockBuilder
   const $: BlockBuilder = {
     block: (
       ...args:
-        | [BlockParameters, string | null]
-        | [string | null]
+        | [BlockParameters, string | null | BlockBuilder | RootBuilder]
+        | [string | null | BlockBuilder | RootBuilder]
+        | [(string | null | BlockBuilder | RootBuilder)[]]
         // | [BlockParameters, ($: BuilderBase) => BuilderBase]
         | [($: BlockBuilder) => null | BlockBuilder]
     ) => {
@@ -66,9 +68,17 @@ const createBlockBuilder = (params?: { getSuperChain: () => any }): BlockBuilder
         let node: null | Block
         if (typeof content === `string`) {
           node = new Block(new Leaf(content))
-        } else {
+        } else if (typeof content === `function`) {
           const result = content(createRootBuilder())
           node = result === null ? null : (result as any as BuilderInternal<Block>)._.node
+        } else if (Array.isArray(content)) {
+          node = new Block(
+            content
+              .filter((_): _ is string | BlockBuilder | RootBuilder => _ !== null)
+              .map((_) => (typeof _ === `string` ? new Leaf(_) : (_ as any as BuilderInternal<Block>)._.node))
+          )
+        } else {
+          node = (content as any as BuilderInternal<Block>)._.node
         }
 
         if (node) {
@@ -160,12 +170,27 @@ const createTableBuilder = (): TableBuilder => {
       return $
     },
     row: (...cells) => {
-      const cellsNormalized = cells.map((_) => (typeof _ === `string` ? new Block(new Leaf(_)) : _))
+      const cellsNormalized = cells.map((cell) =>
+        typeof cell === `string`
+          ? new Block(new Leaf(cell))
+          : cell instanceof Block
+          ? cell
+          : (cell as any as BuilderInternal<Block>)._.node
+      )
       parentNode.rows.push(cellsNormalized)
       return $
     },
     rows: (...rows) => {
-      parentNode.rows.push(...rows)
+      const rowsNormalized = rows.map((cells) =>
+        cells.map((cell) =>
+          typeof cell === `string`
+            ? new Block(new Leaf(cell))
+            : cell instanceof Block
+            ? cell
+            : (cell as any as BuilderInternal<Block>)._.node
+        )
+      )
+      parentNode.rows.push(...rowsNormalized)
       return $
     },
     headers: (headers) => {

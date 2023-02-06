@@ -23,25 +23,6 @@ const colors = {
 
 type SomeEnumType = z.ZodEnum<[string, ...string[]]>
 
-interface ColumnSpecs {
-  name: {
-    width: number
-    separator?: string
-  }
-  typeAndDescription: {
-    width: number
-    separator?: string
-  }
-  default: {
-    width: number
-    separator?: string
-  }
-  environment: {
-    width: number
-    separator?: string
-  }
-}
-
 // TODO use
 interface RenderSettings {
   /**
@@ -93,18 +74,18 @@ export const render = (
     environment: isEnvironmentEnabled ? `Environment (1)` : null,
   }
 
-  const minimumColumnWidthForDefault = columnTitles.default.length
-  const columnWidthForEnvironment = 40
-  const mutuallyExclusiveGroups = Object.values(
-    specsByKind.Exclusive?.reduce((groups, parameter) => {
-      groups[parameter.group.label] = parameter.group
-      return groups
-    }, {} as Record<string, ParameterSpec.Output.ExclusiveGroup>) ?? {}
-  )
+  // const minimumColumnWidthForDefault = columnTitles.default.length
+  // const columnWidthForEnvironment = 40
+  // const mutuallyExclusiveGroups = Object.values(
+  //   specsByKind.Exclusive?.reduce((groups, parameter) => {
+  //     groups[parameter.group.label] = parameter.group
+  //     return groups
+  //   }, {} as Record<string, ParameterSpec.Output.ExclusiveGroup>) ?? {}
+  // )
 
-  const mexGroups = Object.values(groupBy(specsByKind.Exclusive ?? [], (_) => _.group.label)).map(
-    (_) => _[0]!.group // eslint-disable-line
-  )
+  // const mexGroups = Object.values(groupBy(specsByKind.Exclusive ?? [], (_) => _.group.label)).map(
+  //   (_) => _[0]!.group // eslint-disable-line
+  // )
 
   const output = Tex.Tex({ maxWidth: 82, padding: { bottom: 0, top: 0 } })
     .block({ padding: { top: 1, bottom: 1 } }, title(`PARAMETERS`))
@@ -133,13 +114,10 @@ export const render = (
               )
               .rows(
                 ...basicAndUnionSpecsWithoutHelp.map((spec) => [
-                  new Tex.Block(Text.fromLines(parameterName(spec))),
-                  new Tex.Block(
-                    { maxWidth: 40, padding: { right: 9 } },
-                    Text.fromLines(parameterTypeAndDescription(spec))
-                  ),
-                  new Tex.Block({ maxWidth: 24 }, Text.fromLines(parameterDefault(spec))),
-                  ...(isEnvironmentEnabled ? [new Tex.Block(parameterEnvironment(spec, settings))] : []),
+                  parameterName(spec),
+                  Tex.Tex().block({ maxWidth: 40, padding: { right: 9 } }, parameterTypeAndDescription(spec)),
+                  Tex.Tex().block({ maxWidth: 24 }, parameterDefault(spec)),
+                  ...(isEnvironmentEnabled ? [parameterEnvironment(spec, settings)] : []),
                 ])
               )
           )
@@ -263,8 +241,6 @@ const environmentNote = (specs: ParameterSpec.Output[], settings: Settings.Outpu
     )
     .map((_) => `${_}="..."`)
 
-  // .reduce((_, example) => _ + `\n  ${Text.chars.arrowRight} ${example}`, ``)
-
   return new Tex.Block().addChild(new Tex.Leaf(content)).addChild(
     new Block().setParameters({ padding: { left: 2 } }).addChild(
       new Tex.List(examples).setParameters({
@@ -276,23 +252,23 @@ const environmentNote = (specs: ParameterSpec.Output[], settings: Settings.Outpu
   )
 }
 
-const basicAndUnionParameters = (
-  specs: ParameterSpec.Output[],
-  settings: Settings.Output,
-  options: {
-    columnSpecs: ColumnSpecs
-    environment: boolean
-    isEnvironmentEnabled: boolean
-  }
-) => {
-  let t = ``
-  for (const spec of specs) {
-    t += Text.line()
-    t += parameter(spec, settings, options)
-    t += Text.line()
-  }
-  return t
-}
+// const basicAndUnionParameters = (
+//   specs: ParameterSpec.Output[],
+//   settings: Settings.Output,
+//   options: {
+//     columnSpecs: ColumnSpecs
+//     environment: boolean
+//     isEnvironmentEnabled: boolean
+//   }
+// ) => {
+//   let t = ``
+//   for (const spec of specs) {
+//     t += Text.line()
+//     t += parameter(spec, settings, options)
+//     t += Text.line()
+//   }
+//   return t
+// }
 
 // const exclusiveGroups = (
 //   groups: ParameterSpec.Output.ExclusiveGroup[],
@@ -343,97 +319,98 @@ const basicAndUnionParameters = (
 //   return t
 // }
 
-const parameter = (
-  spec: ParameterSpec.Output,
-  settings: Settings.Output,
-  options: {
-    columnSpecs: ColumnSpecs
-    isEnvironmentEnabled: boolean
-  }
-) => {
-  return [
-    parameterName(spec),
-    parameterTypeAndDescription(spec),
-    parameterDefault(spec),
-    ...(options.isEnvironmentEnabled ? [parameterEnvironment(spec, settings)] : []),
-  ]
-}
+// const parameter = (
+//   spec: ParameterSpec.Output,
+//   settings: Settings.Output,
+//   options: {
+//     columnSpecs: ColumnSpecs
+//     isEnvironmentEnabled: boolean
+//   }
+// ) => {
+//   return [
+//     parameterName(spec),
+//     parameterTypeAndDescription(spec),
+//     parameterDefault(spec),
+//     ...(options.isEnvironmentEnabled ? [parameterEnvironment(spec, settings)] : []),
+//   ]
+// }
 
-const parameterDefault = (spec: ParameterSpec.Output): Text.Column => {
+const parameterDefault = (spec: ParameterSpec.Output) => {
   if (spec._tag === `Exclusive`) {
-    return [colors.dim(`–`)]
+    return colors.dim(`–`)
   }
 
   if (spec.optionality._tag === `optional`) {
-    return [colors.secondary(`undefined`)]
+    return colors.secondary(`undefined`)
   }
 
   if (spec.optionality._tag === `default`) {
     try {
-      return [colors.secondary(String(spec.optionality.getValue()))]
+      return colors.secondary(String(spec.optionality.getValue()))
     } catch (e) {
       const error = e instanceof Error ? e : new Error(String(e))
-      return [chalk.bold(colors.alert(`Error trying to render this default: ${error.message}`))]
+      return chalk.bold(colors.alert(`Error trying to render this default: ${error.message}`))
     }
   }
 
-  return [labels.required]
+  return labels.required
 }
 
 const labels = {
   required: chalk.bold(chalk.black(colors.alertBoldBg(` REQUIRED `))),
 }
 
-const parameterName = (spec: ParameterSpec.Output): Text.Column => {
-  return [
+const parameterName = (spec: ParameterSpec.Output) => {
+  const isRequired =
     ((spec._tag === `Basic` || spec._tag === `Union`) && spec.optionality._tag === `required`) ||
     (spec._tag === `Exclusive` && spec.group.optionality._tag === `required`)
-      ? colors.positiveBold(spec.name.canonical)
-      : colors.positive(spec.name.canonical),
-    colors.dim(spec.name.aliases.long.join(`, `)),
-    colors.dim(spec.name.short ?? ``),
-    colors.dim(spec.name.aliases.long.join(`, `)),
-  ]
+
+  return Tex.Tex()
+    .block(isRequired ? colors.positiveBold(spec.name.canonical) : colors.positive(spec.name.canonical))
+    .block(colors.dim(spec.name.aliases.long.join(`, `)) || null)
+    .block(colors.dim(spec.name.short ?? ``) || null)
+    .block(colors.dim(spec.name.aliases.long.join(`, `)) || null)
 }
 
-const parameterTypeAndDescription = (spec: ParameterSpec.Output): Text.Column => {
+const parameterTypeAndDescription = (spec: ParameterSpec.Output) => {
   if (spec._tag === `Union`) {
     const unionMemberIcon = colors.accent(`◒`)
     const isOneOrMoreMembersWithDescription = spec.types.some((_) => _.description !== null)
     if (isOneOrMoreMembersWithDescription) {
       const types = spec.types.flatMap((_) => {
         const maybeZodEnum = ZodHelpers.getEnum(_.type)
-        return [
-          unionMemberIcon +
-            ` ` +
-            // eslint-disable-next-line
-            (maybeZodEnum ? typeEnum(_.type as any).join(` | `) : colors.positive(_.typePrimitiveKind)),
-          _.description ? colors.dim(Text.chars.borders.vertical) + ` ` + _.description : ``,
-          colors.dim(Text.chars.borders.vertical) + ` `,
-        ]
+        return Tex.Tex()
+          .block(
+            unionMemberIcon +
+              ` ` +
+              // eslint-disable-next-line
+              (maybeZodEnum ? typeEnum(_.type as any) : colors.positive(_.typePrimitiveKind))
+          )
+          .block(_.description ? colors.dim(Text.chars.borders.vertical) + ` ` + _.description : null)
+          .block(colors.dim(Text.chars.borders.vertical) + ` `)
       })
       types.pop() // We don't want a trailing empty line
       const desc = spec.description ? colors.dim(Text.chars.borders.vertical) + ` ` + spec.description : ``
       const descSpacer = desc ? `${colors.dim(Text.chars.borders.vertical)} ` : ``
-      const typesWithHeaderAndFooter = [
-        colors.dim(Text.chars.borders.leftTop + Text.chars.borders.horizontal + `union`),
-        desc,
-        descSpacer,
-        ...types,
-        colors.dim(Text.chars.borders.leftBottom + Text.chars.borders.horizontal),
-      ]
+      const typesWithHeaderAndFooter = Tex.Tex()
+        .block(colors.dim(Text.chars.borders.leftTop + Text.chars.borders.horizontal + `union`))
+        .block(desc)
+        .block(descSpacer)
+        .block(types)
+        .block(colors.dim(Text.chars.borders.leftBottom + Text.chars.borders.horizontal))
       return typesWithHeaderAndFooter
     } else {
       const types = spec.types.map((_) => _.typePrimitiveKind).join(` | `)
-      return [types, spec.description ?? ``]
+      return Tex.Tex()
+        .block(types)
+        .block(spec.description ?? null)
     }
   }
 
   const maybeZodEnum = ZodHelpers.getEnum(spec.zodType)
-  return [
-    ...(maybeZodEnum ? typeEnum(maybeZodEnum) : [colors.positive(spec.typePrimitiveKind)]),
-    spec.description ?? ``,
-  ]
+  return Tex.Tex()
+    .block(maybeZodEnum ? typeEnum(maybeZodEnum) : colors.positive(spec.typePrimitiveKind))
+    .block(spec.description ?? null)
 }
 
 const parameterEnvironment = (spec: ParameterSpec.Output, settings: Settings.Output) => {
@@ -459,46 +436,13 @@ const parameterEnvironment = (spec: ParameterSpec.Output, settings: Settings.Out
 /**
  * Render an enum type into a column.
  */
-const typeEnum = (schema: SomeEnumType): Text.Column => {
+const typeEnum = (schema: SomeEnumType) => {
   const separator = colors.accent(` ${Text.chars.pipe} `)
   const members = Object.values(schema.Values)
-  const lines = columnFitEnumDoc(30, members).map((line) =>
-    line.map((member) => colors.positive(member)).join(separator)
-  )
+  const lines = members.map((member) => colors.positive(member)).join(separator)
 
   // eslint-disable-next-line
-  return members.length > 1 ? lines : [`${lines[0]!} ${colors.dim(`(enum)`)}`]
-}
-
-/**
- * Split an enum type across lines in accordance with fitting into a column width.
- * The members are not flattened but kept as an array of members, hence the nested array
- * data structure.
- */
-const columnFitEnumDoc = (width: number, members: string[]): string[][] => {
-  const separator = ` ${Text.chars.pipe} `
-  const lines: string[][] = []
-  let currentLine: string[] = []
-
-  for (const member of members) {
-    const currentLineWidth = currentLine.reduce(
-      (length, member, index) =>
-        index === 0 ? length + member.length : length + member.length + separator.length,
-      0
-    )
-    if (currentLineWidth > width && currentLine.length != 0) {
-      lines.push(currentLine)
-      currentLine = []
-    } else {
-      currentLine.push(member)
-    }
-  }
-
-  if (currentLine.length > 0) {
-    lines.push(currentLine)
-  }
-
-  return lines
+  return members.length > 1 ? lines : `${lines} ${colors.dim(`(enum)`)}`
 }
 
 const title = (string: string) => {
