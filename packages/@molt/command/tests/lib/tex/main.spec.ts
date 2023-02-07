@@ -109,14 +109,34 @@ describe(`table`, () => {
     )
   })
 
-  $(
-    `can have a row`,
-    Tex.Tex().table(($) => $.headers([`alpha`, `bravo`]).row(`a`, `b`))
-  )
-  $(
-    `if a row has columns exceeding the headers they render with empty header cells`,
-    Tex.Tex().table(($) => $.headers([`alpha`, `bravo`]).row(`a`, `b`, `c`))
-  )
+  describe(`row`, () => {
+    $(
+      `can have a row`,
+      Tex.Tex().table(($) => $.headers([`alpha`, `bravo`]).row(`a`, `b`))
+    )
+    $(
+      `if a row has columns exceeding the headers they render with empty header cells`,
+      Tex.Tex().table(($) => $.headers([`alpha`, `bravo`]).row(`a`, `b`, `c`))
+    )
+    $(
+      `null is not rendered`,
+      Tex.Tex().table(($) => $.row(`a1`, `b1`).row(null).row(`a3`, `b3`))
+    )
+    $(
+      `null cell is not rendered`,
+      Tex.Tex().table(($) => $.row(`a1`, `b1`).row(`a2`, null, `c2`))
+    )
+  })
+  describe(`rows`, () => {
+    $(
+      `pure null rows are not rendered`,
+      Tex.Tex().table(($) => $.rows([`a1`, `b1`]).rows(null).rows([`a3`, `b3`]))
+    )
+    $(
+      `null rows are not rendered`,
+      Tex.Tex().table(($) => $.rows([`a1`, `b1`], null, [`a3`, `b3`]))
+    )
+  })
 
   $(
     `data column width equals widest cell`,
@@ -140,6 +160,7 @@ describe(`table`, () => {
     `cell text is vertically aligned top`,
     Tex.Tex().table(($) => $.row(`alpha\napple\nankle`, `beta\nbanana`))
   )
+
   describe(`set`, () => {
     $(
       `custom row separator`,

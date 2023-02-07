@@ -19,15 +19,6 @@ export interface BlockBuilder<Chain = null> {
   set(parameters: BlockParameters)                                              : Chain extends null ? BlockBuilder : Chain
 }
 
-export interface TableBuilder {
-  set(parameters: TableParameters): TableBuilder
-  row(...cells: (BlockBuilder | RootBuilder | Block | string | null)[]): TableBuilder
-  rows(...rows: (BlockBuilder | RootBuilder | Block | string | null)[][]): TableBuilder
-  headers(headers: (string | Block)[]): TableBuilder
-  // header(header: null | string | Block): TableBuilder
-  header: BlockMethod<TableBuilder>
-}
-
 interface BlockMethod<Chain> {
   (builder: ($: BlockBuilder) => null | BlockBuilder): Chain
   (children: (string | null | RootBuilder | BlockBuilder | Block)[]): Chain
@@ -35,6 +26,15 @@ interface BlockMethod<Chain> {
   (parameters: BlockParameters, child: Block | BlockBuilder | RootBuilder | string | null): Chain
   (parameters: BlockParameters, children: (Block | BlockBuilder | RootBuilder | string | null)[]): Chain
 }
+
+type blockMethodArgs =
+  | [BlockParameters, Block | string | null | BlockBuilder | RootBuilder]
+  | [BlockParameters, (Block | string | null | BlockBuilder | RootBuilder)[]]
+  | [Block | string | null | BlockBuilder | RootBuilder]
+  | [(Block | string | null | BlockBuilder | RootBuilder)[]]
+  | [BlockImplementor]
+
+type BlockImplementor = ($: BlockBuilder) => null | BlockBuilder
 
 export interface ListBuilder {
   set(parameters: ListParameters): ListBuilder
@@ -49,18 +49,8 @@ export interface RootBuilder extends BlockBuilder<RootBuilder> {
 interface BuilderInternal<N = Node> {
   _: {
     node: N
-    // parameters: BlockParameters
   }
 }
-
-type BlockImplementor = ($: BlockBuilder) => null | BlockBuilder
-
-type blockMethodArgs =
-  | [BlockParameters, Block | string | null | BlockBuilder | RootBuilder]
-  | [BlockParameters, (Block | string | null | BlockBuilder | RootBuilder)[]]
-  | [Block | string | null | BlockBuilder | RootBuilder]
-  | [(Block | string | null | BlockBuilder | RootBuilder)[]]
-  | [BlockImplementor]
 
 const resolveBlockMethodArgs = (
   args: blockMethodArgs
@@ -76,21 +66,23 @@ const resolveBlockMethodArgs = (
     } else if (typeof childrenInput === `function`) {
       child = childrenInput
       const result = childrenInput(createRootBuilder())
-      child = result === null ? result : (result as any as BuilderInternal<Block>)._.node
+      child = result === null ? result : toInternalBuilder(result)._.node
     } else if (Array.isArray(childrenInput)) {
       child = new Block(
         childrenInput
-          .filter((_): _ is Block | string | BlockBuilder | RootBuilder => _ !== null)
           .map((_) =>
-            _ instanceof Block
+            _ === null
+              ? null
+              : _ instanceof Block
               ? _
               : typeof _ === `string`
               ? new Leaf(_)
-              : (_ as any as BuilderInternal<Block>)._.node
+              : toInternalBuilder(_)?._.node ?? null
           )
+          .filter((_): _ is Block => _ !== null)
       )
     } else {
-      child = (childrenInput as any as BuilderInternal<Block>)._.node
+      child = toInternalBuilder(childrenInput)._.node
     }
   }
   return { parameters, child }
@@ -118,9 +110,11 @@ const createBlockBuilder = (params?: { getSuperChain: () => any }): BlockBuilder
     table: (rows) => {
       const node =
         typeof rows === `function`
-          ? (rows(createTableBuilder()) as any as BuilderInternal<Table>)._.node
+          ? toInternalBuilder(rows(createTableBuilder()))?._.node ?? null
           : new Table(rows)
-      parentNode.addChild(node)
+      if (node) {
+        parentNode.addChild(node)
+      }
       return params?.getSuperChain() ?? $
     },
     list: (
@@ -132,11 +126,13 @@ const createBlockBuilder = (params?: { getSuperChain: () => any }): BlockBuilder
       const nodeishes = args.length === 1 ? args[0] : args[1]
       const node =
         typeof nodeishes === `function`
-          ? (nodeishes(createListBuilder()) as any as BuilderInternal<List>)._.node
+          ? toInternalBuilder(nodeishes(createListBuilder()))?._.node ?? null
           : new List(nodeishes.map((_) => (typeof _ === `string` ? new Block(new Leaf(_)) : _)))
-      parentNode.addChild(node)
-      if (parameters) {
-        node.setParameters(parameters)
+      if (node) {
+        parentNode.addChild(node)
+        if (parameters) {
+          node.setParameters(parameters)
+        }
       }
       return params?.getSuperChain() ?? $
     },
@@ -147,7 +143,7 @@ const createBlockBuilder = (params?: { getSuperChain: () => any }): BlockBuilder
   }
 
   // Define Internal Methods
-  const builderInternal = $ as any as BuilderInternal<Block>
+  const builderInternal = toInternalBuilder($)
   builderInternal._ = {
     node: parentNode,
   }
@@ -174,11 +170,18 @@ export const createListBuilder = (): ListBuilder => {
     },
   }
   // Define Internal Methods
-  const builderInternal = $ as any as BuilderInternal
-  builderInternal._ = {
+  toInternalBuilder($)._ = {
     node: parentNode,
   }
   return $
+}
+
+export interface TableBuilder {
+  set(parameters: TableParameters): TableBuilder
+  row(...cells: (BlockBuilder | RootBuilder | Block | string | null)[]): TableBuilder
+  rows(...rows: (null | (BlockBuilder | RootBuilder | Block | string | null)[])[]): TableBuilder
+  headers(headers: (string | Block)[]): TableBuilder
+  header: BlockMethod<TableBuilder>
 }
 
 const createTableBuilder = (): TableBuilder => {
@@ -196,24 +199,31 @@ const createTableBuilder = (): TableBuilder => {
             ? new Block(new Leaf(cell))
             : cell instanceof Block
             ? cell
-            : (cell as any as BuilderInternal<Block>)._.node
+            : toInternalBuilder(cell)._.node
         )
-      parentNode.rows.push(cellsNormalized)
+      if (cellsNormalized.length > 0) {
+        parentNode.rows.push(cellsNormalized)
+      }
       return $
     },
     rows: (...rows) => {
-      const rowsNormalized = rows.map((cells) =>
-        cells
-          .filter((cell): cell is string | BlockBuilder | Block | RootBuilder => cell !== null)
-          .map((cell) =>
-            typeof cell === `string`
-              ? new Block(new Leaf(cell))
-              : cell instanceof Block
-              ? cell
-              : toInternalBuilder<any>(cell)._.node
-          )
-      )
-      parentNode.rows.push(...rowsNormalized)
+      const rowsNormalized = rows
+        .filter((_): _ is (string | BlockBuilder<null> | Block | RootBuilder | null)[] => _ !== null)
+        .map((cells) =>
+          cells
+            .filter((cell): cell is string | BlockBuilder | Block | RootBuilder => cell !== null)
+            .map((cell) =>
+              typeof cell === `string`
+                ? new Block(new Leaf(cell))
+                : cell instanceof Block
+                ? cell
+                : toInternalBuilder(cell)._.node
+            )
+        )
+
+      if (rowsNormalized.length > 0) {
+        parentNode.rows.push(...rowsNormalized)
+      }
       return $
     },
     headers: (headers) => {
@@ -232,8 +242,7 @@ const createTableBuilder = (): TableBuilder => {
     },
   }
   // Define Internal Methods
-  const builderInternal = $ as any as BuilderInternal
-  builderInternal._ = {
+  toInternalBuilder($)._ = {
     node: parentNode,
   }
   return $
@@ -241,7 +250,7 @@ const createTableBuilder = (): TableBuilder => {
 
 export const createRootBuilder = (parameters?: BlockParameters): RootBuilder => {
   const builder = createBlockBuilder({ getSuperChain: () => builder }) as RootBuilder
-  const builderInternal = builder as any as BuilderInternal<Block>
+  const builderInternal = toInternalBuilder(builder)
   builderInternal._.node.setParameters({
     maxWidth: process.stdout.columns,
     ...parameters,
@@ -270,6 +279,11 @@ export const block = (...args: blockMethodArgs) => {
   return input.child
 }
 
-const toInternalBuilder = <T>(builder: BlockBuilder<T>): BuilderInternal<T> => {
-  return builder as any
-}
+// prettier-ignore
+const toInternalBuilder = <Builder extends BlockBuilder<null>|TableBuilder|ListBuilder|null>(builder: Builder):
+  Builder extends null               ? null                   :
+  Builder extends BlockBuilder<null> ? BuilderInternal<Block> :
+  Builder extends TableBuilder       ? BuilderInternal<Table> :
+  Builder extends ListBuilder        ? BuilderInternal<List>  :
+                                       never => 
+  builder as any
