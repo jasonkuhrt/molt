@@ -1,7 +1,5 @@
-import { Text } from './index.js'
 import snakeCase from 'lodash.snakecase'
 import stringLength from 'string-length'
-import stripAnsi from 'strip-ansi'
 
 export type Line = string
 
@@ -11,14 +9,41 @@ export type Row = Column[]
 
 export const line = (text = ``): string => `${text}\n`
 
-export const span = (alignContent: 'left' | 'right', width: number, content: string): string => {
-  const contentWidth = stripAnsi(content).length
+export const getLength = stringLength
+
+export const mapLines = (text: string, fn: (line: string, index: number) => string): string => {
+  return fromLines(toLines(text).map(fn))
+}
+
+export const joinColumns = (cols: Row, separator: string): string => {
+  const maxLineCountAmongColumns = Math.max(...cols.map((_) => _.length))
+  const linesSpanningColumns = []
+  const colWidths = cols.map((col) => {
+    return Math.max(...col.map(getLength))
+  })
+  for (let lineNumber = 0; lineNumber < maxLineCountAmongColumns; lineNumber++) {
+    const targetLinesAcrossColumns = cols.map((col) => col[lineNumber] ?? ``)
+    const line = targetLinesAcrossColumns
+      .map((line, i) => minSpan(`left`, colWidths[i] ?? 0, line))
+      .join(separator)
+    linesSpanningColumns.push(line)
+  }
+  return fromLines(linesSpanningColumns)
+}
+
+export const minSpan = (alignContent: 'left' | 'right', width: number, content: string): string => {
   return pad(
     alignContent === `left` ? `right` : `left`,
-    Math.max(0, width - contentWidth),
+    Math.max(0, width - getLength(content)),
     chars.space,
     content
   )
+}
+
+export const padWithin = (side: 'left' | 'right', size: number, char: string, text: string): string => {
+  const padSize = size - stringLength(text)
+  if (padSize <= 0) return text
+  return pad(side, padSize, char, text)
 }
 
 export const pad = (side: 'left' | 'right', size: number, char: string, text: string): string => {
@@ -60,7 +85,7 @@ export const row = (columns: ColSpec[]): string => {
   while (currentLine < lineCount) {
     const line = columnsSized
       .map((col) => ({
-        content: span(`left`, col.width, col.lines[currentLine] ?? ``),
+        content: minSpan(`left`, col.width, col.lines[currentLine] ?? ``),
         separator: col.separator,
       }))
       .reduce(
@@ -88,6 +113,7 @@ export const lines = (width: number, text: string): string[] => {
     }
     return lines
   })
+
   return linesFitted
 }
 
@@ -108,14 +134,28 @@ export const chars = {
   newline: `\n`,
   space: ` `,
   pipe: `|`,
-}
+} as const
 
 export const indentBlock = (text: string, symbol = `  `): string => {
   return indentColumn(text.split(chars.newline), symbol).join(chars.newline)
 }
 
-export const indentColumn = (column: Column, symbol = `  `): Column => {
-  return column.map((line) => symbol + line)
+export const fromLines = (column: Column): string => {
+  return column.join(chars.newline)
+}
+
+export const toLines = (text: string): Column => {
+  return text.split(chars.newline)
+}
+
+export const indentColumn = (
+  column: Column,
+  symbolOrSymbolMaker: string | ((lineNumber: number) => string) = ` `
+): Column => {
+  return column.map(
+    (line, index) =>
+      (typeof symbolOrSymbolMaker === `string` ? symbolOrSymbolMaker : symbolOrSymbolMaker(index)) + line
+  )
 }
 
 export const indentBlockWith = (text: string, indenter: (line: Line, index: number) => Line): string => {
@@ -139,6 +179,20 @@ export const visualStringTake = (string: string, size: number): string => {
   return taken
 }
 
+export const maxWidth = (string: string): number => {
+  return Math.max(...toLines(string).map(getLength))
+}
+
+export const measure = (string: string) => {
+  const lines = toLines(string)
+  const maxWidth = Math.max(...lines.map(getLength))
+  const height = lines.length
+  return {
+    height,
+    maxWidth,
+  }
+}
+
 export const visualStringTakeWords = (string: string, size: number): { taken: string; remaining: string } => {
   const words = splitWords(string)
   let taken = ``
@@ -156,11 +210,12 @@ export const visualStringTakeWords = (string: string, size: number): { taken: st
       // TODO hyphen the word?
       words.shift()
       taken += String(word)
-      continue
+      break
     }
 
     // Cannot take any more, taking another word would exceed limit:
-    if (stringLength(taken + ` ` + word) > size) {
+    const nextString = taken ? `${taken} ${word}` : word
+    if (stringLength(nextString) > size) {
       break
     }
 
@@ -180,7 +235,7 @@ export const visualStringTakeWords = (string: string, size: number): { taken: st
 
 const joinWords = (words: string[]): string => {
   return words.reduce((string, word, i) => {
-    return i === 0 ? word : string + (string[string.length - 1] === Text.chars.newline ? `` : ` `) + word
+    return i === 0 ? word : string + (string[string.length - 1] === chars.newline ? `` : ` `) + word
   }, ``)
 }
 
@@ -189,15 +244,15 @@ const splitWords = (string: string): string[] => {
   let currentWord = ``
   let currentWordReady = false
   for (const char of string.split(``)) {
-    if (char === Text.chars.space && currentWordReady) {
+    if (char === chars.space && currentWordReady) {
       words.push(currentWord)
       // If the next word is on a new line then do not disregard the leading space
-      currentWord = currentWord[currentWord.length - 1] === Text.chars.newline ? ` ` : ``
+      currentWord = currentWord[currentWord.length - 1] === chars.newline ? ` ` : ``
       currentWordReady = false
       continue
     }
 
-    if (char !== Text.chars.space) {
+    if (char !== chars.space) {
       currentWordReady = true
     }
 

@@ -1,0 +1,208 @@
+// Vitest Snapshot v1
+
+exports[`block > border > bottom 1`] = `
+"foo
+---"
+`;
+
+exports[`block > border > left 1`] = `"|foo"`;
+
+exports[`block > border > right 1`] = `
+"foo|                    
+alpha                  |
+bravo bravo            |
+charlie charlie charlie|"
+`;
+
+exports[`block > border > top 1`] = `
+"---
+foo"
+`;
+
+exports[`block > builder > can render a line 1`] = `"foo"`;
+
+exports[`block > builder > can render nothing via null 1`] = `""`;
+
+exports[`block > can render a line 1`] = `"foo"`;
+
+exports[`block > can render nothing via null 1`] = `""`;
+
+exports[`block > can render two lines 1`] = `
+"foo
+bar"
+`;
+
+exports[`block > padding > bottom 1`] = `
+"foo
+
+"
+`;
+
+exports[`block > padding > left 1`] = `"  foo"`;
+
+exports[`block > padding > left multi line 1`] = `
+"  foo
+  bar
+  qux"
+`;
+
+exports[`block > padding > top 1`] = `
+"
+
+foo"
+`;
+
+exports[`block > width > % > 100% 1`] = `
+"foo bar                                                                                             
+----------------------------------------------------------------------------------------------------
+foo                                                                                                 "
+`;
+
+exports[`list > can have custom bullet 1`] = `
+"- foo
+- zod"
+`;
+
+exports[`list > can have custom bullet function 1`] = `
+"(0) foo
+(1) zod"
+`;
+
+exports[`list > can render items 1`] = `
+"* foo
+* bar"
+`;
+
+exports[`list > can render multi-line items 1`] = `
+"* foo
+* bar
+  baz
+  qux
+* zod"
+`;
+
+exports[`list > the gutter of bullets can be right aligned 1`] = `
+" 0 a
+ 1 b
+ 2 c
+ 3 d
+ 4 e
+ 5 f
+ 6 g
+ 7 h
+ 8 i
+ 9 j
+10 k
+11 l
+12 m
+13 n
+14 o
+15 p
+16 q
+17 r
+18 s
+19 t
+20 u
+21 v
+22 w
+23 x
+24 y
+25 z"
+`;
+
+exports[`list > the gutter of bullets is left aligned by default 1`] = `
+"0  a
+1  b
+2  c
+3  d
+4  e
+5  f
+6  g
+7  h
+8  i
+9  j
+10 k
+11 l
+12 m
+13 n
+14 o
+15 p
+16 q
+17 r
+18 s
+19 t
+20 u
+21 v
+22 w
+23 x
+24 y
+25 z"
+`;
+
+exports[`table > can have a row 1`] = `
+"alpha | bravo
+-------------
+a     | b    "
+`;
+
+exports[`table > cell text is vertically aligned top 1`] = `
+"alpha | beta  
+apple | banana
+ankle |       "
+`;
+
+exports[`table > data column width equals widest cell (multi-line) 1`] = `
+"alpha            | bravo               | charlieeeeeeeeeeeeeeeeeee | delta
+--------------------------------------------------------------------------
+a1               | b1                  | c1                        | d1   
+--------------------------------------------------------------------------
+a222222222222222 | b2                  | c2                        | d2   
+a2               |                     |                           |      
+--------------------------------------------------------------------------
+a3               | b333333333333333333 | c3                        | d3   "
+`;
+
+exports[`table > data column width equals widest cell 1`] = `
+"alpha            | bravo               | charlieeeeeeeeeeeeeeeeeee | delta
+--------------------------------------------------------------------------
+a1               | b1                  | c1                        | d1   
+--------------------------------------------------------------------------
+a222222222222222 | b2                  | c2                        | d2   
+--------------------------------------------------------------------------
+a3               | b333333333333333333 | c3                        | d3   "
+`;
+
+exports[`table > headers > can be a block 1`] = `
+"alpha           | bravo
+                | ~~~~~
+-----------------------
+a               | b    "
+`;
+
+exports[`table > headers > can be passed as an array 1`] = `"alpha | bravo"`;
+
+exports[`table > headers > if exceed column count of the actual given data they are rendered with empty column cells 1`] = `
+"alpha | bravo | charlie
+-----------------------
+a     | b    "
+`;
+
+exports[`table > if a row has columns exceeding the headers they render with empty header cells 1`] = `
+"alpha | bravo
+-----------------
+a     | b     | c"
+`;
+
+exports[`table > set > custom row separator 1`] = `
+"alpha | bravo | charlie
+                       
+a     | b    "
+`;
+
+exports[`table > set > custom vertical separator 1`] = `
+"alpha bravo charlie
+-------------------
+a     b    "
+`;
+
+exports[`text > can render text 1`] = `"foo"`;

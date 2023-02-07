@@ -39,6 +39,7 @@
     "fast-glob": "3.2.12",
     "fs-jetpack": "5.1.0",
     "markdown-toc": "^1.2.0",
+    "nodemon": "^2.0.20",
     "prettier": "2.8.1",
     "semver": "^7.3.8",
     "semver-regex": "4.0.5",
