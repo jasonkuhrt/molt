@@ -2,12 +2,21 @@ import { invertTable } from '../../helpers.js'
 import { Text } from '../Text/index.js'
 
 interface RenderContext {
-  maxWidth: number
+  maxWidth?: undefined | number
+  height?: undefined | number
   color?: undefined | ((text: string) => string)
+  phase?: undefined | 'inner' | 'outer'
+  index: {
+    total: number
+    isLast: boolean
+    isFirst: boolean
+    position: number
+  }
 }
 
 interface Shape {
   intrinsicWidth: number
+  intrinsicHeight: number
   desiredWidth: number | null
 }
 
@@ -22,13 +31,15 @@ export class Leaf extends Node {
     this.value = value
   }
   render(context: RenderContext) {
-    const lines = Text.lines(context.maxWidth, this.value)
+    const lines = Text.lines(context.maxWidth ?? 1000, this.value)
     const value = lines.join(Text.chars.newline)
     const intrinsicWidth = Math.max(...lines.map(Text.getLength))
+    const intrinsicHeight = lines.length
     const valueColored = context.color ? context.color(value) : value
     return {
       shape: {
         intrinsicWidth,
+        intrinsicHeight,
         desiredWidth: null,
       },
       value: valueColored,
@@ -73,7 +84,7 @@ export class List extends Node {
     const gutterWidthWithSpacing = gutterWidth + 1
     const context_ = {
       ...context,
-      maxWidth: context.maxWidth - gutterWidthWithSpacing,
+      maxWidth: (context.maxWidth ?? 1000) - gutterWidthWithSpacing,
     }
     const items = this.items.map((item) => item.render(context_).value)
     const value = items
@@ -84,10 +95,13 @@ export class List extends Node {
         )
       })
       .join(Text.chars.newline)
-    const intrinsicWidth = Math.max(...items.flatMap(Text.toLines).map(Text.getLength))
+    const lines = items.flatMap(Text.toLines)
+    const intrinsicWidth = Math.max(...lines.map(Text.getLength))
+    const intrinsicHeight = lines.length
     return {
       shape: {
         intrinsicWidth,
+        intrinsicHeight,
         desiredWidth: null,
       },
       value: value,
@@ -97,7 +111,7 @@ export class List extends Node {
 
 export interface TableParameters {
   separators?: {
-    row?: string
+    row?: string | null
     column?: string
   }
 }
@@ -119,23 +133,57 @@ export class Table extends Node {
   render(context: RenderContext) {
     const separators = {
       column: this.parameters.separators?.column ?? ` ${Text.chars.pipe} `,
-      row: (width: number) =>
-        `${Text.chars.newline}${(this.parameters.separators?.row ?? `-`).repeat(width)}${Text.chars.newline}`,
+      row: (width: number) => {
+        const separator =
+          this.parameters.separators?.row === undefined ? `-` : this.parameters.separators?.row
+        if (separator === null) {
+          return Text.chars.newline
+        }
+        return `${Text.chars.newline}${separator.repeat(width)}${Text.chars.newline}`
+      },
     }
-    const rows = this.rows.map((row) =>
-      row.map((cell) => {
-        return cell.render(context).value
+    const rows = this.rows.map((row) => {
+      const total = row.length
+      const rowsInner = row.map((cell, index) => {
+        const r1 = cell.render({
+          phase: `inner`,
+          color: context.color,
+          maxWidth: context.maxWidth,
+          height: context.height,
+          index: {
+            total,
+            isFirst: index === 0,
+            isLast: index === total - 1,
+            position: index,
+          },
+        })
+        return r1
       })
-    )
+      const maxCellHeight = Math.max(...rowsInner.map((_) => _.shape.intrinsicHeight))
+      const rowsOuter = row.map((cell, index) => {
+        const r2 = cell.render({
+          phase: `outer`,
+          color: context.color,
+          maxWidth: context.maxWidth,
+          height: maxCellHeight,
+          index: {
+            total,
+            isFirst: index === 0,
+            isLast: index === total - 1,
+            position: index,
+          },
+        })
+        return r2
+      })
+      return rowsOuter.map((_) => _.value)
+    })
     const headers = this.headers.map((cell) => cell.render(context).value)
     const rowsAndHeaders = this.headers.length > 0 ? [headers, ...rows] : rows
-    // console.log({ rowsAndHeaders })
     const maxWidthOfEachColumn = invertTable(rowsAndHeaders).map((col) =>
       Math.max(...col.flatMap(Text.toLines).map(Text.getLength))
     )
     const rowsWithCellWidthsNormalized = rowsAndHeaders.map((row) => {
       const maxNumberOfLinesAmongColumns = Math.max(...row.map(Text.toLines).map((lines) => lines.length))
-      // console.log(maxNumberOfLinesAmongColumns)
       const row_ = row.map((col) => {
         const numberOfLines = Text.toLines(col).length
         if (numberOfLines < maxNumberOfLinesAmongColumns) {
@@ -148,7 +196,6 @@ export class Table extends Node {
       )
       return row__
     })
-    // console.log({ rowsWithCellWidthsNormalized })
     const rowsWithCellsJoined = rowsWithCellWidthsNormalized.map((r) =>
       Text.joinColumns(r.map(Text.toLines), separators.column)
     )
@@ -158,6 +205,7 @@ export class Table extends Node {
     return {
       shape: {
         intrinsicWidth: 0,
+        intrinsicHeight: 0,
         desiredWidth: 0,
       },
       value: value,
@@ -171,12 +219,20 @@ export interface BlockParameters {
   width?: `${number}%`
   color?: (text: string) => string
   border?: {
-    top?: string
-    left?: string
-    bottom?: string
-    right?: string
+    top?: string | ((columnNumber: number) => string)
+    left?: string | ((lineNumber: number) => string)
+    bottom?: string | ((columnNumber: number) => string)
+    right?: string | ((lineNumber: number) => string)
   }
   padding?: {
+    top?: number
+    topBetween?: number
+    left?: number
+    bottom?: number
+    bottomBetween?: number
+    right?: number
+  }
+  margin?: {
     top?: number
     left?: number
     bottom?: number
@@ -187,6 +243,18 @@ export interface BlockParameters {
 export class Block extends Node {
   children: Node[]
   parameters: BlockParameters
+  renderings: {
+    inner: {
+      width: number
+      height: number
+      result: string
+    } | null
+    outer: {
+      width: number
+      height: number
+      result: string
+    } | null
+  }
   constructor(parameters: BlockParameters, node: Node)
   constructor(parameters: BlockParameters, nodes: Node[])
   constructor(parameters: BlockParameters, text: string)
@@ -208,6 +276,10 @@ export class Block extends Node {
     } else {
       this.children = [children]
     }
+    this.renderings = {
+      inner: null,
+      outer: null,
+    }
   }
   addChild(node: Node) {
     this.children.push(node)
@@ -218,86 +290,185 @@ export class Block extends Node {
     return this
   }
   render(context: RenderContext) {
-    const color = this.parameters.color ?? ((text: string) => text)
-    const widthOwn =
-      typeof this.parameters.width === `number`
-        ? { type: `absolute` as const, value: this.parameters.width }
-        : typeof this.parameters.width === `string`
-        ? this.parameters.width.match(/(\d+)%/)
-          ? { type: `percentage` as const, value: parseInt(this.parameters.width.match(/(\d+)%/)![1]!) / 100 }
+    if (context.phase === `inner` || !context.phase) {
+      const widthOwn =
+        typeof this.parameters.width === `number`
+          ? { type: `absolute` as const, value: this.parameters.width }
+          : typeof this.parameters.width === `string`
+          ? this.parameters.width.match(/(\d+)%/)
+            ? {
+                type: `percentage` as const,
+                value: parseInt(this.parameters.width.match(/(\d+)%/)![1]!) / 100,
+              }
+            : null
           : null
+      const widthOwnResolved = widthOwn
+        ? widthOwn.type === `absolute`
+          ? widthOwn.value
+          : widthOwn.value * (context.maxWidth ?? 1000)
         : null
-    const widthOwnResolved = widthOwn
-      ? widthOwn.type === `absolute`
-        ? widthOwn.value
-        : widthOwn.value * context.maxWidth
-      : null
-    const maxWidthOwn = this.parameters.maxWidth ?? Infinity
-    const paddingLeftOwn = this.parameters.padding?.left ?? 0
-    const maxWidthResolved =
-      Math.min(widthOwnResolved ?? Infinity, maxWidthOwn, context.maxWidth) - paddingLeftOwn
-    let intrinsicWidth = 0
+      const maxWidthOwn = this.parameters.maxWidth ?? Infinity
+      const paddingLeftOwn = this.parameters.padding?.left ?? 0
+      const maxWidthResolved =
+        Math.min(widthOwnResolved ?? Infinity, maxWidthOwn, context.maxWidth ?? 1000) - paddingLeftOwn
+      let intrinsicWidth = 0
 
-    let renderings: string[] = []
-    for (const child of this.children) {
-      const rendered = child.render({
-        maxWidth: maxWidthResolved,
-        color: this.parameters.color,
-      })
-      // TODO minWidth should be passed down to children?
-      if (this.parameters.minWidth !== undefined) {
-        rendered.value = Text.mapLines(rendered.value, (_) =>
-          Text.minSpan(`left`, this.parameters.minWidth!, _)
-        )
+      let renderings: string[] = []
+      let index = 0
+      for (const child of this.children) {
+        const rendered = child.render({
+          maxWidth: maxWidthResolved,
+          height: context.height,
+          color: this.parameters.color,
+          index: {
+            total: this.children.length,
+            isFirst: index === 0,
+            isLast: index === this.children.length - 1,
+            position: index,
+          },
+        })
+
+        // TODO minWidth should be passed down to children?
+        if (this.parameters.minWidth !== undefined) {
+          rendered.value = Text.mapLines(rendered.value, (_) =>
+            Text.minSpan(`left`, this.parameters.minWidth!, _)
+          )
+        }
+        intrinsicWidth = Math.max(intrinsicWidth, rendered.shape.intrinsicWidth)
+        renderings.push(rendered.value)
+        index++
       }
-      intrinsicWidth = Math.max(intrinsicWidth, rendered.shape.intrinsicWidth)
-      renderings.push(rendered.value)
+
+      const width = widthOwnResolved === null ? intrinsicWidth : maxWidthResolved
+      // each line must span the width of the box
+      renderings = renderings.map((_) => Text.minSpan(`left`, width, _))
+
+      const joined = renderings.join(Text.chars.newline)
+
+      let value = joined
+
+      value =
+        this.parameters.padding?.topBetween && !context.index.isFirst
+          ? Text.chars.newline.repeat(this.parameters.padding.topBetween) + value
+          : value
+      value = this.parameters.padding?.top
+        ? Text.chars.newline.repeat(this.parameters.padding.top) + value
+        : value
+      value = this.parameters.padding?.left
+        ? Text.indentBlock(value, Text.chars.space.repeat(this.parameters.padding.left))
+        : value
+      value = this.parameters.padding?.bottom
+        ? value + Text.chars.newline.repeat(this.parameters.padding.bottom)
+        : value
+      value =
+        this.parameters.padding?.bottomBetween && !context.index.isLast
+          ? value + Text.chars.newline.repeat(this.parameters.padding.bottomBetween)
+          : value
+      value = this.parameters.padding?.right
+        ? Text.fromLines(
+            Text.toLines(value).map((_) => _ + Text.chars.space.repeat(this.parameters.padding!.right!))
+          )
+        : value
+
+      const intrinsicHeight = Text.toLines(value).length
+
+      this.renderings.inner = {
+        result: value,
+        width,
+        height: intrinsicHeight,
+      }
+
+      if (context.phase) {
+        return {
+          shape: {
+            intrinsicWidth,
+            intrinsicHeight,
+            desiredWidth: 0,
+          },
+          value,
+        }
+      }
     }
 
-    const width = widthOwnResolved === null ? intrinsicWidth : maxWidthResolved
-    // each line must span the width of the box
-    renderings = renderings.map((_) => Text.minSpan(`left`, width, _))
+    if (context.phase === `outer` || !context.phase) {
+      const { width } = this.renderings.inner!
+      const height = context.height ?? this.renderings.inner!.height
+      let value = this.renderings.inner!.result
+      const lineIndexes = [...Array(height).keys()]
+      const widthIndexes = [...Array(width).keys()]
 
-    const joined = renderings.join(Text.chars.newline)
+      const borderTop = this.parameters.border?.top
+        ? typeof this.parameters.border.top === `string`
+          ? this.parameters.border.top.repeat(width)
+          : widthIndexes.map(this.parameters.border.top).join(``)
+        : null
 
-    let value = joined
+      const borderBottom = this.parameters.border?.bottom
+        ? typeof this.parameters.border?.bottom === `string`
+          ? this.parameters.border.bottom.repeat(width)
+          : widthIndexes.map(this.parameters.border.bottom).join(``)
+        : null
 
-    value = this.parameters.padding?.top
-      ? Text.chars.newline.repeat(this.parameters.padding.top) + value
-      : value
-    value = this.parameters.padding?.left
-      ? Text.indentBlock(value, Text.chars.space.repeat(this.parameters.padding.left))
-      : value
-    value = this.parameters.padding?.bottom
-      ? value + Text.chars.newline.repeat(this.parameters.padding.bottom)
-      : value
-    value = this.parameters.padding?.right
-      ? Text.fromLines(
-          Text.toLines(value).map((_) => _ + Text.chars.space.repeat(this.parameters.padding!.right!))
-        )
-      : value
+      const lines = Text.toLines(value)
+      const linesWithBorders = []
+      for (const index of lineIndexes) {
+        let line = lines[index] ?? ` `.repeat(width)
 
-    value = this.parameters.border?.top
-      ? this.parameters.border.top.repeat(width) + Text.chars.newline + value
-      : value
-    value = this.parameters.border?.left
-      ? Text.fromLines(Text.indentColumn(Text.toLines(value), this.parameters.border.left))
-      : value
-    value = this.parameters.border?.bottom
-      ? value + Text.chars.newline + this.parameters.border.bottom.repeat(width)
-      : value
-    value = this.parameters.border?.right
-      ? Text.fromLines(Text.toLines(value).map((_) => _ + this.parameters.border!.right!))
-      : value
+        if (this.parameters.border?.left) {
+          const spec = this.parameters.border.left
+          const symbol = typeof spec === `string` ? spec : spec(index)
+          line = symbol + line
+        }
+        if (this.parameters.border?.right) {
+          const spec = this.parameters.border.right
+          const symbol = typeof spec === `string` ? spec : spec(index)
+          line = line + symbol
+        }
+        linesWithBorders.push(line)
+      }
+      const linesRendered = [borderTop, linesWithBorders.join(Text.chars.newline), borderBottom]
+        .filter(Boolean)
+        .join(Text.chars.newline)
 
-    value = color(value)
+      value = linesRendered
 
-    return {
-      shape: {
-        intrinsicWidth,
-        desiredWidth: 0,
-      },
-      value,
+      //todo
+      // value = this.parameters.margin?.top
+      //   ? Text.chars.newline.repeat(this.parameters.margin.top) + value
+      //   : value
+      // value = this.parameters.margin?.left
+      //   ? Text.indentBlock(value, Text.chars.space.repeat(this.parameters.margin.left))
+      //   : value
+      // value = this.parameters.margin?.bottom
+      //   ? value + Text.chars.newline.repeat(this.parameters.margin.bottom)
+      //   : value
+      // value = this.parameters.margin?.right
+      //   ? Text.fromLines(
+      //       Text.toLines(value).map((_) => _ + Text.chars.space.repeat(this.parameters.margin!.right!))
+      //     )
+      //   : value
+
+      const color = this.parameters.color ?? ((text: string) => text)
+      value = color(value)
+
+      const { maxWidth: intrinsicWidth, height: intrinsicHeight } = Text.measure(value)
+
+      this.renderings.outer = {
+        result: value,
+        width: intrinsicWidth,
+        height: intrinsicHeight,
+      }
+
+      return {
+        shape: {
+          intrinsicWidth,
+          intrinsicHeight,
+          desiredWidth: 0,
+        },
+        value,
+      }
     }
+
+    throw new Error(`Invalid phase`)
   }
 }

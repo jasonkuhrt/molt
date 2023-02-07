@@ -6,17 +6,13 @@ import { Block } from './index_.js'
 
 // prettier-ignore
 export interface BlockBuilder<Chain = null> {
-  // block(parameters: BlockParameters, builder: ($: BuilderBase) => BuilderBase)  : Chain extends null ? BuilderBase : Chain
-  block(builder: ($: BlockBuilder) => null|BlockBuilder)                        : Chain extends null ? BlockBuilder : Chain
-  block(children: (string|null|RootBuilder|BlockBuilder)[])                           : Chain extends null ? BlockBuilder : Chain
-  block(children: string|null|RootBuilder|BlockBuilder)                               : Chain extends null ? BlockBuilder : Chain
-  block(parameters: BlockParameters, children: BlockBuilder|RootBuilder|string|null)                         : Chain extends null ? BlockBuilder : Chain
+  block: BlockMethod<Chain extends null ? BlockBuilder : Chain>
 
   table(rows: Block[][])                                                        : Chain extends null ? BlockBuilder : Chain
   table(builder: ($: TableBuilder) => null|TableBuilder)                        : Chain extends null ? BlockBuilder : Chain
 
-  list(parameters: ListParameters, nodeishes: (string|Block)[])                                                 : Chain extends null ? BlockBuilder : Chain
-  list(nodeishes: (string|Block)[])                                                 : Chain extends null ? BlockBuilder : Chain
+  list(parameters: ListParameters, nodeishes: (string|Block)[])                 : Chain extends null ? BlockBuilder : Chain
+  list(nodeishes: (string|Block)[])                                             : Chain extends null ? BlockBuilder : Chain
   list(builder: ($: ListBuilder) => null|ListBuilder)                           : Chain extends null ? BlockBuilder : Chain
   
   text(text: string)                                                            : Chain extends null ? BlockBuilder : Chain
@@ -26,8 +22,8 @@ export interface BlockBuilder<Chain = null> {
 
 export interface TableBuilder {
   set(parameters: TableParameters): TableBuilder
-  row(...cells: (BlockBuilder | RootBuilder | Block | string)[]): TableBuilder
-  rows(...rows: (BlockBuilder | RootBuilder | Block | string)[][]): TableBuilder
+  row(...cells: (BlockBuilder | RootBuilder | Block | string | null)[]): TableBuilder
+  rows(...rows: (BlockBuilder | RootBuilder | Block | string | null)[][]): TableBuilder
   headers(headers: (string | Block)[]): TableBuilder
   // header(header: null | string | Block): TableBuilder
   header: BlockMethod<TableBuilder>
@@ -36,8 +32,9 @@ export interface TableBuilder {
 interface BlockMethod<Chain> {
   (builder: ($: BlockBuilder) => null | BlockBuilder): Chain
   (children: (string | null | RootBuilder | BlockBuilder | Block)[]): Chain
-  (children: string | null | RootBuilder | BlockBuilder | Block): Chain
-  (parameters: BlockParameters, children: Block | BlockBuilder | RootBuilder | string | null): Chain
+  (child: string | null | RootBuilder | BlockBuilder | Block): Chain
+  (parameters: BlockParameters, child: Block | BlockBuilder | RootBuilder | string | null): Chain
+  (parameters: BlockParameters, children: (Block | BlockBuilder | RootBuilder | string | null)[]): Chain
 }
 
 export interface ListBuilder {
@@ -61,6 +58,7 @@ type BlockImplementor = ($: BlockBuilder) => null | BlockBuilder
 
 type blockMethodArgs =
   | [BlockParameters, Block | string | null | BlockBuilder | RootBuilder]
+  | [BlockParameters, (Block | string | null | BlockBuilder | RootBuilder)[]]
   | [Block | string | null | BlockBuilder | RootBuilder]
   | [(Block | string | null | BlockBuilder | RootBuilder)[]]
   | [BlockImplementor]
@@ -74,6 +72,8 @@ const resolveBlockMethodArgs = (
   if (childrenInput) {
     if (typeof childrenInput === `string`) {
       child = new Block(new Leaf(childrenInput))
+    } else if (childrenInput instanceof Block) {
+      child = childrenInput
     } else if (typeof childrenInput === `function`) {
       child = childrenInput
       const result = childrenInput(createRootBuilder())
@@ -90,8 +90,6 @@ const resolveBlockMethodArgs = (
               : (_ as any as BuilderInternal<Block>)._.node
           )
       )
-    } else if (childrenInput instanceof Block) {
-      child = childrenInput
     } else {
       child = (childrenInput as any as BuilderInternal<Block>)._.node
     }
@@ -192,25 +190,29 @@ const createTableBuilder = (): TableBuilder => {
       return $
     },
     row: (...cells) => {
-      const cellsNormalized = cells.map((cell) =>
-        typeof cell === `string`
-          ? new Block(new Leaf(cell))
-          : cell instanceof Block
-          ? cell
-          : (cell as any as BuilderInternal<Block>)._.node
-      )
-      parentNode.rows.push(cellsNormalized)
-      return $
-    },
-    rows: (...rows) => {
-      const rowsNormalized = rows.map((cells) =>
-        cells.map((cell) =>
+      const cellsNormalized = cells
+        .filter((cell): cell is string | RootBuilder | BlockBuilder<null> | Block => cell !== null)
+        .map((cell) =>
           typeof cell === `string`
             ? new Block(new Leaf(cell))
             : cell instanceof Block
             ? cell
             : (cell as any as BuilderInternal<Block>)._.node
         )
+      parentNode.rows.push(cellsNormalized)
+      return $
+    },
+    rows: (...rows) => {
+      const rowsNormalized = rows.map((cells) =>
+        cells
+          .filter((cell): cell is string | BlockBuilder | Block | RootBuilder => cell !== null)
+          .map((cell) =>
+            typeof cell === `string`
+              ? new Block(new Leaf(cell))
+              : cell instanceof Block
+              ? cell
+              : toInternalBuilder<any>(cell)._.node
+          )
       )
       parentNode.rows.push(...rowsNormalized)
       return $
@@ -240,16 +242,35 @@ const createTableBuilder = (): TableBuilder => {
 
 export const createRootBuilder = (parameters?: BlockParameters): RootBuilder => {
   const builder = createBlockBuilder({ getSuperChain: () => builder }) as RootBuilder
+  const builderInternal = builder as any as BuilderInternal<Block>
+  builderInternal._.node.setParameters({
+    maxWidth: process.stdout.columns,
+    ...parameters,
+  })
 
   builder.render = () => {
-    const builderInternal = builder as any as BuilderInternal<Block>
-    const node = builderInternal._.node
-    const block = new Block(parameters ?? {}, node)
-    const value = block.render({ maxWidth: parameters?.maxWidth ?? process.stdout.columns ?? 100 }).value
-    // TODO - do not remove trailing whitespace?
-    const value2 = Text.mapLines(value, (_) => _.replace(/\s+$/, ``))
-    return value2
+    const result = builderInternal._.node.render({
+      index: {
+        isFirst: true,
+        isLast: true,
+        position: 0,
+        total: 1,
+      },
+    })
+    return result.value
   }
 
   return builder
+}
+
+export const block = (...args: blockMethodArgs) => {
+  const input = resolveBlockMethodArgs(args)
+  if (input.child && input.parameters) {
+    input.child.setParameters(input.parameters)
+  }
+  return input.child
+}
+
+const toInternalBuilder = <T>(builder: BlockBuilder<T>): BuilderInternal<T> => {
+  return builder as any
 }

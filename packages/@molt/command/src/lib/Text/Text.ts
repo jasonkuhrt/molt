@@ -1,4 +1,3 @@
-import { Text } from './index.js'
 import snakeCase from 'lodash.snakecase'
 import stringLength from 'string-length'
 
@@ -12,7 +11,7 @@ export const line = (text = ``): string => `${text}\n`
 
 export const getLength = stringLength
 
-export const mapLines = (text: string, fn: (line: string) => string): string => {
+export const mapLines = (text: string, fn: (line: string, index: number) => string): string => {
   return fromLines(toLines(text).map(fn))
 }
 
@@ -149,8 +148,14 @@ export const toLines = (text: string): Column => {
   return text.split(chars.newline)
 }
 
-export const indentColumn = (column: Column, symbol = `  `): Column => {
-  return column.map((line) => symbol + line)
+export const indentColumn = (
+  column: Column,
+  symbolOrSymbolMaker: string | ((lineNumber: number) => string) = ` `
+): Column => {
+  return column.map(
+    (line, index) =>
+      (typeof symbolOrSymbolMaker === `string` ? symbolOrSymbolMaker : symbolOrSymbolMaker(index)) + line
+  )
 }
 
 export const indentBlockWith = (text: string, indenter: (line: Line, index: number) => Line): string => {
@@ -172,6 +177,20 @@ export const visualStringTake = (string: string, size: number): string => {
     taken = string.slice(0, size + i)
   }
   return taken
+}
+
+export const maxWidth = (string: string): number => {
+  return Math.max(...toLines(string).map(getLength))
+}
+
+export const measure = (string: string) => {
+  const lines = toLines(string)
+  const maxWidth = Math.max(...lines.map(getLength))
+  const height = lines.length
+  return {
+    height,
+    maxWidth,
+  }
 }
 
 export const visualStringTakeWords = (string: string, size: number): { taken: string; remaining: string } => {
@@ -216,7 +235,7 @@ export const visualStringTakeWords = (string: string, size: number): { taken: st
 
 const joinWords = (words: string[]): string => {
   return words.reduce((string, word, i) => {
-    return i === 0 ? word : string + (string[string.length - 1] === Text.chars.newline ? `` : ` `) + word
+    return i === 0 ? word : string + (string[string.length - 1] === chars.newline ? `` : ` `) + word
   }, ``)
 }
 
@@ -225,15 +244,15 @@ const splitWords = (string: string): string[] => {
   let currentWord = ``
   let currentWordReady = false
   for (const char of string.split(``)) {
-    if (char === Text.chars.space && currentWordReady) {
+    if (char === chars.space && currentWordReady) {
       words.push(currentWord)
       // If the next word is on a new line then do not disregard the leading space
-      currentWord = currentWord[currentWord.length - 1] === Text.chars.newline ? ` ` : ``
+      currentWord = currentWord[currentWord.length - 1] === chars.newline ? ` ` : ``
       currentWordReady = false
       continue
     }
 
-    if (char !== Text.chars.space) {
+    if (char !== chars.space) {
       currentWordReady = true
     }
 

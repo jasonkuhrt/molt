@@ -11,11 +11,10 @@ Here are the docs for this command:
 
 
 PARAMETERS
-
-  [4m[90mName[39m[24m   [4m[90mType[39m[24m         [4m[90mDefault[39m[24m   
-  
-  [1m[32mfoo[39m[22m    [32mstring[39m       [1m[30m[101m REQUIRED [49m[39m[22m
-  
-
+                            
+  [4m[90mName[39m[24m     [4m[90mType[39m[24m              [4m[90mDefault[39m[24m    
+                                        
+  [1m[32mfoo[39m[22m      [32mstring[39m            [1m[30m[101m REQUIRED [49m[39m[22m 
+                                        
 "
 `;
