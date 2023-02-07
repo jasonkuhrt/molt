@@ -1,4 +1,3 @@
-import { Text } from '../Text/index.js'
 import type { BlockParameters, ListParameters, Node, TableParameters } from './index_.js'
 import { List } from './index_.js'
 import { Leaf, Table } from './index_.js'

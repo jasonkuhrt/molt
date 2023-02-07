@@ -1,4 +1,4 @@
-import { dump, groupBy } from '../lib/prelude.js'
+import { groupBy } from '../lib/prelude.js'
 import { Tex } from '../lib/Tex/index.js'
 import { Block } from '../lib/Tex/nodes.js'
 import { Text } from '../lib/Text/index.js'
@@ -169,10 +169,8 @@ const environmentNote = (specs: ParameterSpec.Output[], settings: Settings.Outpu
       .filter((_) => _.environment?.enabled)
       .filter(
         (_) =>
-          // eslint-disable-next-line
-          _.environment!.namespaces.filter(
-            (_) => settings.parameters.environment.$default.prefix.map(camelCase).includes(_)
-            // eslint-disable-next-line
+          _.environment!.namespaces.filter((_) =>
+            settings.parameters.environment.$default.prefix.map(camelCase).includes(_)
           ).length !== _.environment!.namespaces.length
       ).length > 0
 
@@ -210,10 +208,8 @@ const environmentNote = (specs: ParameterSpec.Output[], settings: Settings.Outpu
     .filter((_) => _.environment?.enabled)
     .slice(0, 3)
     .map((_) =>
-      // eslint-disable-next-line
       _.environment!.namespaces.length > 0
-        ? // eslint-disable-next-line
-          `${colors.secondary(Text.toEnvarNameCase(_.environment?.namespaces[0]!) + `_`)}${colors.positive(
+        ? `${colors.secondary(Text.toEnvarNameCase(_.environment!.namespaces[0]!) + `_`)}${colors.positive(
             Text.toEnvarNameCase(_.name.canonical)
           )}`
         : colors.positive(Text.toEnvarNameCase(_.name.canonical))
@@ -297,7 +293,6 @@ const parameterTypeAndDescription = (spec: ParameterSpec.Output) => {
             border: {
               left: (index) => `${index === 0 ? unionMemberIcon : colors.dim(Text.chars.borders.vertical)} `,
             },
-            // padding: { bottom: 1 },
           })
             .block(maybeZodEnum ? typeEnum(_.type as any) : colors.positive(_.typePrimitiveKind))
             .block(_.description)
