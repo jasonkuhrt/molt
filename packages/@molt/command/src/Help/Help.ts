@@ -1,6 +1,5 @@
 import { groupBy } from '../lib/prelude.js'
 import { Tex } from '../lib/Tex/index.js'
-import { Block } from '../lib/Tex/nodes.js'
 import { Text } from '../lib/Text/index.js'
 import { ZodHelpers } from '../lib/zodHelpers/index.js'
 import type { ParameterSpec } from '../ParameterSpec/index.js'
