@@ -219,6 +219,7 @@ export interface BlockParameters {
   width?: `${number}%`
   color?: (text: string) => string
   border?: {
+    corners?: string
     top?: string | ((columnNumber: number) => string)
     left?: string | ((lineNumber: number) => string)
     bottom?: string | ((columnNumber: number) => string)
@@ -427,16 +428,21 @@ export class Block extends Node {
         ? Text.measure(Text.fromLines(linesWithBorders))
         : { height: this.renderings.inner!.height, maxWidth: this.renderings.inner!.width }
       const widthIndexes = [...Array(selfMeasure.maxWidth).keys()]
-      const width = selfMeasure.maxWidth
+      const corners = this.parameters.border?.corners ?? ``
+      const width = selfMeasure.maxWidth - Text.getLength(corners) * 2
       const borderTop = this.parameters.border?.top
-        ? typeof this.parameters.border.top === `string`
-          ? this.parameters.border.top.repeat(width)
-          : widthIndexes.map(this.parameters.border.top).join(``)
+        ? corners +
+          (typeof this.parameters.border.top === `string`
+            ? this.parameters.border.top.repeat(width)
+            : widthIndexes.map(this.parameters.border.top).join(``)) +
+          corners
         : null
       const borderBottom = this.parameters.border?.bottom
-        ? typeof this.parameters.border?.bottom === `string`
-          ? this.parameters.border.bottom.repeat(width)
-          : widthIndexes.map(this.parameters.border.bottom).join(``)
+        ? corners +
+          (typeof this.parameters.border?.bottom === `string`
+            ? this.parameters.border.bottom.repeat(width)
+            : widthIndexes.map(this.parameters.border.bottom).join(``)) +
+          corners
         : null
       const linesRendered = [borderTop, linesWithBorders.join(Text.chars.newline), borderBottom]
         .filter(Boolean)

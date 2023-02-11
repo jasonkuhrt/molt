@@ -78,6 +78,25 @@ describe(`block`, () => {
         )
       )
     )
+    describe(`corners`, () => {
+      $(`top`, Tex.Tex().block({ border: { corners: `o`, bottom: `-` } }, `foo`))
+      $(`right`, Tex.Tex().block({ border: { corners: `o`, right: `|` } }, `foo`))
+      $(`bottom`, Tex.Tex().block({ border: { corners: `o`, bottom: `-` } }, `foo`))
+      $(`left`, Tex.Tex().block({ border: { corners: `o`, left: `|` } }, `foo`))
+      $(
+        `all`,
+        Tex.Tex().block({ border: { corners: `o`, top: `-`, right: `|`, bottom: `-`, left: `|` } }, `foo`)
+      )
+      $(
+        `all-nested`,
+        Tex.Tex().block(($) =>
+          $.set({ border: { corners: `o`, right: `|`, left: `|`, top: `-`, bottom: `-` } }).block(
+            { border: { corners: `o`, right: `|`, left: `|`, top: `-`, bottom: `-` } },
+            `abc`
+          )
+        )
+      )
+    })
   })
 })
 

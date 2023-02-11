@@ -29,6 +29,34 @@ exports[`block > border > bottom-right 1`] = `
 ----"
 `;
 
+exports[`block > border > corners > all 1`] = `
+"o---o
+|foo|
+o---o"
+`;
+
+exports[`block > border > corners > all-nested 1`] = `
+"o-----o
+|o---o|
+||abc||
+|o---o|
+o-----o"
+`;
+
+exports[`block > border > corners > bottom 1`] = `
+"foo
+o-o"
+`;
+
+exports[`block > border > corners > left 1`] = `"|foo"`;
+
+exports[`block > border > corners > right 1`] = `"foo|"`;
+
+exports[`block > border > corners > top 1`] = `
+"foo
+o-o"
+`;
+
 exports[`block > border > left 1`] = `"|foo"`;
 
 exports[`block > border > right 1`] = `
