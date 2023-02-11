@@ -78,7 +78,7 @@ export const render = (
     (_) => _[0]!.group // eslint-disable-line
   )
 
-  const noteItems: (Tex.Block | string)[] = []
+  const noteItems: (Tex.Block | string | null)[] = []
 
   if (isAcceptsAnyEnvironmentArgs) {
     noteItems.push(environmentNote(allSpecsWithoutHelp, settings))
@@ -92,71 +92,69 @@ export const render = (
 
   const output = Tex.Tex({ maxWidth: 82, padding: { bottom: 0, top: 0 } })
     .block({ padding: { top: 1, bottom: 1 } }, title(`PARAMETERS`))
-    .block((__) =>
-      __.set({ padding: { left: 2 } })
-        .table((__) =>
-          __.set({ separators: { column: `   `, row: null } })
-            .header({ padding: { right: 2, bottom: 1 } }, chalk.underline(colors.mute(columnTitles.name)))
-            .header(
-              {
-                minWidth: 8,
-                padding: { right: 5 },
-              },
-              chalk.underline(colors.mute(columnTitles.typeDescription))
-            )
-            .header({ padding: { right: 4 } }, chalk.underline(colors.mute(columnTitles.default)))
-            .header(columnTitles.environment ? chalk.underline(colors.mute(columnTitles.environment)) : null)
-            .rows(
-              ...[
-                ...basicAndUnionSpecsWithoutHelp.map((spec) => [
-                  parameterName(spec),
-                  Tex.block({ maxWidth: 40, padding: { right: 9 } }, parameterTypeAndDescription(spec)),
-                  Tex.block({ maxWidth: 24 }, parameterDefault(spec)),
-                  ...(isEnvironmentEnabled ? [parameterEnvironment(spec, settings)] : []),
-                ]),
-                ...mexGroups.flatMap((mexGroup) => {
-                  const default_ =
-                    mexGroup.optionality._tag === `default`
-                      ? `${mexGroup.optionality.tag}@${String(mexGroup.optionality.getValue())}`
-                      : mexGroup.optionality._tag === `optional`
-                      ? `undefined`
-                      : labels.required
-                  return [
-                    [
-                      Tex.block(
-                        { border: { left: colors.dim(`┌`) } },
-                        colors.dim(`─${mexGroup.label} ${`(2)`}`)
-                      ),
-                      ``,
-                      default_,
-                    ],
-                    ...Object.values(mexGroup.parameters).map((spec) => [
-                      parameterName(spec),
-                      parameterTypeAndDescription(spec),
-                      parameterDefault(spec),
-                      ...(isEnvironmentEnabled ? [parameterEnvironment(spec, settings)] : []),
-                    ]),
-                    [Tex.block({ border: { left: colors.dim(`└`) } }, colors.dim(`─`))],
-                  ]
-                }),
-              ]
-            )
+    .block({ padding: { left: 2 } }, (__) =>
+      __.table({ separators: { column: `   `, row: null } }, (__) =>
+        __.header({ padding: { right: 2, bottom: 1 } }, chalk.underline(colors.mute(columnTitles.name)))
+          .header(
+            {
+              minWidth: 8,
+              padding: { right: 5 },
+            },
+            chalk.underline(colors.mute(columnTitles.typeDescription))
+          )
+          .header({ padding: { right: 4 } }, chalk.underline(colors.mute(columnTitles.default)))
+          .header(columnTitles.environment ? chalk.underline(colors.mute(columnTitles.environment)) : null)
+          .rows(
+            ...[
+              ...basicAndUnionSpecsWithoutHelp.map((spec) => [
+                parameterName(spec),
+                Tex.block(
+                  { maxWidth: 40, padding: { right: 9, bottom: 1 } },
+                  parameterTypeAndDescription(spec)
+                ),
+                Tex.block({ maxWidth: 24 }, parameterDefault(spec)),
+                ...(isEnvironmentEnabled ? [parameterEnvironment(spec, settings)] : []),
+              ]),
+              ...mexGroups.flatMap((mexGroup) => {
+                const default_ =
+                  mexGroup.optionality._tag === `default`
+                    ? `${mexGroup.optionality.tag}@${String(mexGroup.optionality.getValue())}`
+                    : mexGroup.optionality._tag === `optional`
+                    ? `undefined`
+                    : labels.required
+                return [
+                  [
+                    Tex.block(
+                      { border: { left: colors.dim(`┌`) } },
+                      colors.dim(`─${mexGroup.label} ${`(2)`}`)
+                    ),
+                    ``,
+                    default_,
+                  ],
+                  ...Object.values(mexGroup.parameters).map((spec) => [
+                    parameterName(spec),
+                    parameterTypeAndDescription(spec),
+                    parameterDefault(spec),
+                    ...(isEnvironmentEnabled ? [parameterEnvironment(spec, settings)] : []),
+                  ]),
+                  [Tex.block({ border: { left: colors.dim(`└`) } }, colors.dim(`─`))],
+                ]
+              }),
+            ]
+          )
+      ).block({ color: colors.dim }, ($) => {
+        if (noteItems.length === 0) {
+          return null
+        }
+        return $.block({ padding: { top: 1 }, border: { bottom: `━` }, width: `100%` }, `NOTES`).list(
+          {
+            bullet: {
+              graphic: (index) => `(${index + 1})`,
+            },
+          },
+          noteItems
         )
-        .block(($) => {
-          if (noteItems.length === 0) {
-            return null
-          }
-          return $.set({ color: colors.dim })
-            .block({ padding: { top: 1 }, border: { bottom: `━` }, width: `100%` }, `NOTES`)
-            .list(
-              {
-                bullet: {
-                  graphic: (index) => `(${index + 1})`,
-                },
-              },
-              noteItems
-            )
-        })
+      })
     )
     .render()
 
@@ -216,13 +214,18 @@ const environmentNote = (specs: ParameterSpec.Output[], settings: Settings.Outpu
     )
     .map((_) => `${_}="..."`)
 
-  return new Tex.Block().addChild(new Tex.Leaf(content)).addChild(
-    new Block().setParameters({ padding: { left: 2 } }).addChild(
-      new Tex.List(examples).setParameters({
-        bullet: {
-          graphic: Text.chars.arrowRight,
+  return Tex.block(($) =>
+    $.text(content).block({ padding: { left: 2 } }, ($) =>
+      $.list(
+        {
+          // TODO
+          // padding: { left: 2 },
+          bullet: {
+            graphic: Text.chars.arrowRight,
+          },
         },
-      })
+        examples
+      )
     )
   )
 }
@@ -271,9 +274,8 @@ const parameterName = (spec: ParameterSpec.Output) => {
           },
         }
 
-  return Tex.block(($) =>
-    $.set(parameters)
-      .block(isRequired ? colors.positiveBold(spec.name.canonical) : colors.positive(spec.name.canonical))
+  return Tex.block(parameters, (__) =>
+    __.block(isRequired ? colors.positiveBold(spec.name.canonical) : colors.positive(spec.name.canonical))
       .block(colors.dim(spec.name.aliases.long.join(`, `)) || null)
       .block(colors.dim(spec.name.short ?? ``) || null)
       .block(colors.dim(spec.name.aliases.long.join(`, `)) || null)
@@ -287,15 +289,17 @@ const parameterTypeAndDescription = (spec: ParameterSpec.Output) => {
     if (isOneOrMoreMembersWithDescription) {
       const types = spec.types.flatMap((_) => {
         const maybeZodEnum = ZodHelpers.getEnum(_.type)
-        return Tex.block((__) =>
-          __.set({
+        return Tex.block(
+          {
             padding: { bottomBetween: 1 },
             border: {
               left: (index) => `${index === 0 ? unionMemberIcon : colors.dim(Text.chars.borders.vertical)} `,
             },
-          })
-            .block(maybeZodEnum ? typeEnum(_.type as any) : colors.positive(_.typePrimitiveKind))
-            .block(_.description)
+          },
+          (__) =>
+            __.block(maybeZodEnum ? typeEnum(_.type as any) : colors.positive(_.typePrimitiveKind)).block(
+              _.description
+            )
         )
       })
       return Tex.block((__) =>
@@ -305,24 +309,19 @@ const parameterTypeAndDescription = (spec: ParameterSpec.Output) => {
             spec.description
           )
           .block(types)
-          .block(
-            { padding: { bottom: 1 } },
-            colors.dim(Text.chars.borders.leftBottom + Text.chars.borders.horizontal)
-          )
+          .block(colors.dim(Text.chars.borders.leftBottom + Text.chars.borders.horizontal))
       )
     } else {
       const types = spec.types.map((_) => _.typePrimitiveKind).join(` | `)
-      return Tex.Tex()
-        .block(types)
-        .block(spec.description ?? null)
+      return Tex.block(($) => $.block(types).block(spec.description ?? null))
     }
   }
 
   const maybeZodEnum = ZodHelpers.getEnum(spec.zodType)
-  return Tex.Tex().block(($) =>
-    $.set({ padding: { bottom: spec._tag === `Exclusive` ? 0 : 1 } })
-      .block(maybeZodEnum ? typeEnum(maybeZodEnum) : colors.positive(spec.typePrimitiveKind))
-      .block(spec.description ?? null)
+  return Tex.block({ padding: { bottom: spec._tag === `Exclusive` ? 0 : 1 } }, ($) =>
+    $.block(maybeZodEnum ? typeEnum(maybeZodEnum) : colors.positive(spec.typePrimitiveKind)).block(
+      spec.description ?? null
+    )
   )
 }
 

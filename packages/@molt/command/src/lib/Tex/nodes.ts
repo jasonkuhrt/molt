@@ -59,10 +59,10 @@ export interface ListParameters {
 export class List extends Node {
   items: Block[]
   parameters: ListParameters
-  constructor(items?: (string | Block)[]) {
+  constructor(items?: (string | Block | null)[]) {
     const items_ = items?.map((_) => (typeof _ === `string` ? new Block(new Leaf(_)) : _)) ?? []
     super()
-    this.items = items_
+    this.items = items_.filter((_): _ is Block => _ !== null)
     this.parameters = {}
   }
   setParameters(parameters: ListParameters) {

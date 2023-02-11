@@ -98,10 +98,31 @@ describe(`block`, () => {
       )
     })
   })
+  describe(`set`, () => {
+    it(`can be at method or builder level`, () => {
+      const a = Tex.Tex()
+        .block(($) =>
+          $.set({ border: { corners: `o`, right: `|`, left: `|`, top: `-`, bottom: `-` } }).block(
+            { border: { corners: `o`, right: `|`, left: `|`, top: `-`, bottom: `-` } },
+            `abc`
+          )
+        )
+        .render()
+      const b = Tex.Tex()
+        .block({ border: { corners: `o`, right: `|`, left: `|`, top: `-`, bottom: `-` } }, ($) =>
+          $.block({ border: { corners: `o`, right: `|`, left: `|`, top: `-`, bottom: `-` } }, `abc`)
+        )
+        .render()
+      expect(a).toEqual(b)
+    })
+  })
 })
 
 describe(`list`, () => {
   $(`can render items`, Tex.Tex().list([`foo`, `bar`]))
+  it(`null items are ignored`, () => {
+    expect(Tex.Tex().list([`foo`, null, `bar`]).render()).toEqual(Tex.Tex().list([`foo`, `bar`]).render())
+  })
   $(`can render multi-line items`, Tex.Tex().list([`foo`, `bar\nbaz\nqux`, `zod`]))
   $(`can have custom bullet`, Tex.Tex().list({ bullet: { graphic: `-` } }, [`foo`, `zod`]))
   $(

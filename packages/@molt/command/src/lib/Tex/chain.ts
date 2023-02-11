@@ -3,43 +3,52 @@ import { List } from './index_.js'
 import { Leaf, Table } from './index_.js'
 import { Block } from './index_.js'
 
+type NodeImplementor<B extends Builder> = ($: B) => null | B
+
 // prettier-ignore
 export interface BlockBuilder<Chain = null> {
   block: BlockMethod<Chain extends null ? BlockBuilder : Chain>
-
-  table(rows: Block[][])                                                        : Chain extends null ? BlockBuilder : Chain
-  table(builder: ($: TableBuilder) => null|TableBuilder)                        : Chain extends null ? BlockBuilder : Chain
-
-  list(parameters: ListParameters, nodeishes: (string|Block)[])                 : Chain extends null ? BlockBuilder : Chain
-  list(nodeishes: (string|Block)[])                                             : Chain extends null ? BlockBuilder : Chain
-  list(builder: ($: ListBuilder) => null|ListBuilder)                           : Chain extends null ? BlockBuilder : Chain
-  
+  table: TableMethod<Chain extends null ? BlockBuilder : Chain>
+  list: ListMethod<Chain extends null ? BlockBuilder : Chain>
   text(text: string)                                                            : Chain extends null ? BlockBuilder : Chain
-
   set(parameters: BlockParameters)                                              : Chain extends null ? BlockBuilder : Chain
 }
 
+// prettier-ignore
 interface BlockMethod<Chain> {
-  (builder: ($: BlockBuilder) => null | BlockBuilder): Chain
-  (children: (string | null | RootBuilder | BlockBuilder | Block)[]): Chain
-  (child: string | null | RootBuilder | BlockBuilder | Block): Chain
-  (parameters: BlockParameters, child: Block | BlockBuilder | RootBuilder | string | null): Chain
-  (parameters: BlockParameters, children: (Block | BlockBuilder | RootBuilder | string | null)[]): Chain
+  (builder: ($: BlockBuilder) => null | BlockBuilder)                                                 : Chain
+  (children: (string | null | RootBuilder | BlockBuilder | Block)[])                                  : Chain
+  (child: string | null | RootBuilder | BlockBuilder | Block)                                         : Chain
+  (parameters: BlockParameters, child: Block | BlockBuilder | RootBuilder | string | null)            : Chain
+  (parameters: BlockParameters, children: (Block | BlockBuilder | RootBuilder | string | null)[])     : Chain
+  (parameters: BlockParameters, builder: ($: BlockBuilder) => null | BlockBuilder)                    : Chain
 }
 
-type blockMethodArgs =
+type BlockMethodArgs =
   | [BlockParameters, Block | string | null | BlockBuilder | RootBuilder]
   | [BlockParameters, (Block | string | null | BlockBuilder | RootBuilder)[]]
   | [Block | string | null | BlockBuilder | RootBuilder]
   | [(Block | string | null | BlockBuilder | RootBuilder)[]]
-  | [BlockImplementor]
+  | [NodeImplementor<BlockBuilder>]
+  | [BlockParameters, NodeImplementor<BlockBuilder>]
 
-type BlockImplementor = ($: BlockBuilder) => null | BlockBuilder
+// prettier-ignore
+interface ListMethod<Chain> {
+  (parameters: ListParameters, nodeishes: (string|Block|null)[])            : Chain
+  (nodeishes: (string|Block|null)[])                                        : Chain
+  (builder: NodeImplementor<ListBuilder>)                                   : Chain
+}
 
+type ListArgs =
+  | [parameters: ListParameters, nodeishes: (string | Block | null)[]]
+  | [nodeishes: (string | Block | null)[]]
+  | [NodeImplementor<ListBuilder>]
+
+// prettier-ignore
 export interface ListBuilder {
-  set(parameters: ListParameters): ListBuilder
-  item(node: Block | string): ListBuilder
-  items(...nodes: Block[]): ListBuilder
+  set(parameters: ListParameters)   : ListBuilder
+  item(node: Block | string)        : ListBuilder
+  items(...nodes: Block[])          : ListBuilder
 }
 
 export interface RootBuilder extends BlockBuilder<RootBuilder> {
@@ -52,12 +61,37 @@ interface BuilderInternal<N = Node> {
   }
 }
 
+// prettier-ignore
+interface TableMethod<Chain> {
+  (rows: Block[][])                                                      : Chain
+  (builder: NodeImplementor<TableBuilder>)                               : Chain
+  (parameters: TableParameters, builder: NodeImplementor<TableBuilder>)  : Chain
+}
+
+type TableMethodArgs =
+  | [Block[][]]
+  | [TableParameters, NodeImplementor<TableBuilder>]
+  | [NodeImplementor<TableBuilder>]
+
+const resolveTableMethodArgs = (
+  args: TableMethodArgs
+): { parameters: TableParameters | null; child: null | Table } => {
+  const childrenInput = args.length === 1 ? args[0] : args[1]
+  const parameters = args.length === 1 ? null : args[0]
+  const child =
+    typeof childrenInput === `function`
+      ? toInternalBuilder(childrenInput(createTableBuilder()))?._.node ?? null
+      : new Table(childrenInput)
+
+  return { parameters, child }
+}
+
 const resolveBlockMethodArgs = (
-  args: blockMethodArgs
+  args: BlockMethodArgs
 ): { parameters: BlockParameters | null; child: Block | null } => {
   const parameters = args.length === 1 ? null : args[0]
   const childrenInput = args.length === 1 ? args[0] : args[1]
-  let child: null | Block | BlockImplementor = null
+  let child: null | Block | NodeImplementor<BlockBuilder> = null
   if (childrenInput) {
     if (typeof childrenInput === `string`) {
       child = new Block(new Leaf(childrenInput))
@@ -93,7 +127,7 @@ const createBlockBuilder = (params?: { getSuperChain: () => any }): BlockBuilder
   // let parentParameters: = parameters ?? {}
 
   const $: BlockBuilder = {
-    block: (...args: blockMethodArgs) => {
+    block: (...args: BlockMethodArgs) => {
       const input = resolveBlockMethodArgs(args)
       if (input.child) {
         if (input.parameters) {
@@ -107,27 +141,25 @@ const createBlockBuilder = (params?: { getSuperChain: () => any }): BlockBuilder
       parentNode.setParameters(parameters)
       return params?.getSuperChain() ?? $
     },
-    table: (rows) => {
-      const node =
-        typeof rows === `function`
-          ? toInternalBuilder(rows(createTableBuilder()))?._.node ?? null
-          : new Table(rows)
-      if (node) {
-        parentNode.addChild(node)
+    table: (...args: TableMethodArgs) => {
+      const input = resolveTableMethodArgs(args)
+      if (input.child) {
+        if (input.parameters) {
+          input.child.setParameters(input.parameters)
+        }
+        parentNode.addChild(input.child)
       }
       return params?.getSuperChain() ?? $
     },
-    list: (
-      ...args:
-        | [nodeishes: (string | Block)[] | (($: ListBuilder) => null | ListBuilder)]
-        | [parameters: ListParameters, nodeishes: (string | Block)[]]
-    ) => {
+    list: (...args: ListArgs) => {
       const parameters = args.length === 1 ? null : args[0]
       const nodeishes = args.length === 1 ? args[0] : args[1]
       const node =
         typeof nodeishes === `function`
           ? toInternalBuilder(nodeishes(createListBuilder()))?._.node ?? null
-          : new List(nodeishes.map((_) => (typeof _ === `string` ? new Block(new Leaf(_)) : _)))
+          : new List(
+              nodeishes.map((_) => (typeof _ === `string` ? (_ === null ? null : new Block(new Leaf(_))) : _))
+            )
       if (node) {
         parentNode.addChild(node)
         if (parameters) {
@@ -230,7 +262,7 @@ const createTableBuilder = (): TableBuilder => {
       parentNode.headers = headers.map((_) => (_ instanceof Block ? _ : new Block(new Leaf(_))))
       return $
     },
-    header: (...args: blockMethodArgs) => {
+    header: (...args: BlockMethodArgs) => {
       const input = resolveBlockMethodArgs(args)
       if (input.child) {
         if (input.parameters) {
@@ -275,7 +307,7 @@ export const render = (builder: Builder): string => {
   return result.value
 }
 
-export const block = (...args: blockMethodArgs) => {
+export const block = (...args: BlockMethodArgs) => {
   const input = resolveBlockMethodArgs(args)
   if (input.child && input.parameters) {
     input.child.setParameters(input.parameters)
