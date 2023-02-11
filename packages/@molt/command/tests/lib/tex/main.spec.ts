@@ -16,23 +16,8 @@ describe(`block`, () => {
       )
     })
   })
+
   $(`can render a line`, Tex.Tex().block(`foo`))
-  describe(`border`, () => {
-    $(`top`, Tex.Tex().block({ border: { top: `-` } }, `foo`))
-    $(
-      `right`,
-      Tex.Tex()
-        .block({ border: { right: `|` } }, `foo`)
-        .block(($) =>
-          $.set({ border: { right: `|` } })
-            .block(`alpha`)
-            .block(`bravo bravo`)
-            .block(`charlie charlie charlie`)
-        )
-    )
-    $(`bottom`, Tex.Tex().block({ border: { bottom: `-` } }, `foo`))
-    $(`left`, Tex.Tex().block({ border: { left: `|` } }, `foo`))
-  })
 
   $(`can render nothing via null`, Tex.Tex().block(null))
 
@@ -64,6 +49,36 @@ describe(`block`, () => {
       )
     )
   })
+  describe(`border`, () => {
+    $(`top`, Tex.Tex().block({ border: { top: `-` } }, `foo`))
+    $(
+      `right`,
+      Tex.Tex()
+        .block({ border: { right: `|` } }, `foo`)
+        .block(($) =>
+          $.set({ border: { right: `|` } })
+            .block(`alpha`)
+            .block(`bravo bravo`)
+            .block(`charlie charlie charlie`)
+        )
+    )
+    $(`bottom`, Tex.Tex().block({ border: { bottom: `-` } }, `foo`))
+    $(`left`, Tex.Tex().block({ border: { left: `|` } }, `foo`))
+    $(`top-left`, Tex.Tex().block({ border: { left: `|`, top: `-` } }, `abc`))
+    $(`top-right`, Tex.Tex().block({ border: { right: `|`, top: `-` } }, `abc`))
+    $(`bottom-left`, Tex.Tex().block({ border: { left: `|`, bottom: `-` } }, `abc`))
+    $(`bottom-right`, Tex.Tex().block({ border: { right: `|`, bottom: `-` } }, `abc`))
+    $(`all`, Tex.Tex().block({ border: { right: `|`, left: `|`, top: `-`, bottom: `-` } }, `abc`))
+    $(
+      `all-nested`,
+      Tex.Tex().block(($) =>
+        $.set({ border: { right: `|`, left: `|`, top: `-`, bottom: `-` } }).block(
+          { border: { right: `|`, left: `|`, top: `-`, bottom: `-` } },
+          `abc`
+        )
+      )
+    )
+  })
 })
 
 describe(`list`, () => {
@@ -86,7 +101,6 @@ describe(`list`, () => {
     )
   )
 })
-
 describe(`table`, () => {
   describe(`headers`, () => {
     $(
@@ -181,14 +195,14 @@ describe(`table`, () => {
   })
 })
 
-const $ = (description: string, value: Tex.RootBuilder) => {
+const $ = (description: string, builder: Tex.Builder | null) => {
   it(description, () => {
-    expect(value.render()).toMatchSnapshot()
+    expect(builder && Tex.render(builder)).toMatchSnapshot()
   })
 }
 
-$.only = (description: string, value: Tex.RootBuilder) => {
+$.only = (description: string, builder: Tex.Builder | null) => {
   it.only(description, () => {
-    expect(value.render()).toMatchSnapshot()
+    expect(builder && Tex.render(builder)).toMatchSnapshot()
   })
 }

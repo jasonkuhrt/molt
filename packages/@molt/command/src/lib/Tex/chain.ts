@@ -256,19 +256,23 @@ export const createRootBuilder = (parameters?: BlockParameters): RootBuilder => 
     ...parameters,
   })
 
-  builder.render = () => {
-    const result = builderInternal._.node.render({
-      index: {
-        isFirst: true,
-        isLast: true,
-        position: 0,
-        total: 1,
-      },
-    })
-    return result.value
-  }
+  builder.render = () => render(builder)
 
   return builder
+}
+
+export type Builder = RootBuilder | BlockBuilder | TableBuilder | ListBuilder
+
+export const render = (builder: Builder): string => {
+  const result = toInternalBuilder(builder)._.node.render({
+    index: {
+      isFirst: true,
+      isLast: true,
+      position: 0,
+      total: 1,
+    },
+  })
+  return result.value
 }
 
 export const block = (...args: blockMethodArgs) => {

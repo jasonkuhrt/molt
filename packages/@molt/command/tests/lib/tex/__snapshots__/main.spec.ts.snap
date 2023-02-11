@@ -1,8 +1,32 @@
 // Vitest Snapshot v1
 
+exports[`block > border > all 1`] = `
+"-----
+|abc|
+-----"
+`;
+
+exports[`block > border > all-nested 1`] = `
+"-------
+|-----|
+||abc||
+|-----|
+-------"
+`;
+
 exports[`block > border > bottom 1`] = `
 "foo
 ---"
+`;
+
+exports[`block > border > bottom-left 1`] = `
+"|abc
+----"
+`;
+
+exports[`block > border > bottom-right 1`] = `
+"abc|
+----"
 `;
 
 exports[`block > border > left 1`] = `"|foo"`;
@@ -17,6 +41,16 @@ charlie charlie charlie|"
 exports[`block > border > top 1`] = `
 "---
 foo"
+`;
+
+exports[`block > border > top-left 1`] = `
+"----
+|abc"
+`;
+
+exports[`block > border > top-right 1`] = `
+"----
+abc|"
 `;
 
 exports[`block > builder > can render a line 1`] = `"foo"`;

@@ -391,28 +391,14 @@ export class Block extends Node {
     }
 
     if (context.phase === `outer` || !context.phase) {
-      const { width } = this.renderings.inner!
       const height = context.height ?? this.renderings.inner!.height
       let value = this.renderings.inner!.result
       const lineIndexes = [...Array(height).keys()]
-      const widthIndexes = [...Array(width).keys()]
-
-      const borderTop = this.parameters.border?.top
-        ? typeof this.parameters.border.top === `string`
-          ? this.parameters.border.top.repeat(width)
-          : widthIndexes.map(this.parameters.border.top).join(``)
-        : null
-
-      const borderBottom = this.parameters.border?.bottom
-        ? typeof this.parameters.border?.bottom === `string`
-          ? this.parameters.border.bottom.repeat(width)
-          : widthIndexes.map(this.parameters.border.bottom).join(``)
-        : null
 
       const lines = Text.toLines(value)
-      const linesWithBorders = []
+      const linesWithBorders: string[] = []
       for (const index of lineIndexes) {
-        let line = lines[index] ?? ` `.repeat(width)
+        let line = lines[index] ?? ` `.repeat(this.renderings.inner!.width)
 
         if (this.parameters.border?.left) {
           const spec = this.parameters.border.left
@@ -426,6 +412,32 @@ export class Block extends Node {
         }
         linesWithBorders.push(line)
       }
+
+      /**
+       * The horizontal borders (top, bottom) span to the corners of the box.
+       *
+       * If left/right borders have been added that will affect the width of these
+       * horizontal borders.
+       *
+       * TODO in the future we should have granular corner control. Then, this
+       * current behavior can become the default.
+       */
+      const hadVerticalBorders = this.parameters.border?.left || this.parameters.border?.right
+      const selfMeasure = hadVerticalBorders
+        ? Text.measure(Text.fromLines(linesWithBorders))
+        : { height: this.renderings.inner!.height, maxWidth: this.renderings.inner!.width }
+      const widthIndexes = [...Array(selfMeasure.maxWidth).keys()]
+      const width = selfMeasure.maxWidth
+      const borderTop = this.parameters.border?.top
+        ? typeof this.parameters.border.top === `string`
+          ? this.parameters.border.top.repeat(width)
+          : widthIndexes.map(this.parameters.border.top).join(``)
+        : null
+      const borderBottom = this.parameters.border?.bottom
+        ? typeof this.parameters.border?.bottom === `string`
+          ? this.parameters.border.bottom.repeat(width)
+          : widthIndexes.map(this.parameters.border.bottom).join(``)
+        : null
       const linesRendered = [borderTop, linesWithBorders.join(Text.chars.newline), borderBottom]
         .filter(Boolean)
         .join(Text.chars.newline)
