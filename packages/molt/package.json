@@ -34,7 +34,7 @@
     "zod": "^3.19.1"
   },
   "devDependencies": {
-    "execa": "6.1.0",
+    "execa": "7.0.0",
     "fast-glob": "3.2.12",
     "fs-jetpack": "5.1.0"
   }
