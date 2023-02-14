@@ -90,6 +90,13 @@ export const render = (
   }
 
   const output = Tex.Tex({ maxWidth: 82, padding: { bottom: 0, top: 0 } })
+    .block(($) => {
+      if (!settings.description) return null
+      return $.block({ padding: { top: 1, bottom: 1 } }, `ABOUT`).block(
+        { padding: { left: 2 } },
+        settings.description
+      )
+    })
     .block({ padding: { top: 1, bottom: 1 } }, title(`PARAMETERS`))
     .block({ padding: { left: 2 } }, (__) =>
       __.table({ separators: { column: `   `, row: null } }, (__) =>

@@ -34,6 +34,12 @@ const create = () => {
   }
 
   const chain: InternalRootBuilder = {
+    description: (description) => {
+      $.newSettingsBuffer.push({
+        description,
+      })
+      return chain
+    },
     settings: (newSettings) => {
       $.newSettingsBuffer.push(newSettings)
       return chain
@@ -114,15 +120,19 @@ const create = () => {
 
 // prettier-ignore
 // @ts-expect-error internal to external
-export const createViaParametersExclusive: RootBuilder['parametersExclusive'] = (label, builderContainer) => create().parametersExclusive(label, builderContainer)
+export const createViaParametersExclusive: RootBuilder['parametersExclusive'] = (...args) => create().parametersExclusive(...args)
 
 // prettier-ignore
 // @ts-expect-error internal to external
-export const createViaParameter: RootBuilder['parameter'] = (name, type) => create().parameter(name, type)
+export const createViaParameter: RootBuilder['parameter'] = (...args) => create().parameter(...args)
 
 // prettier-ignore
 // @ts-expect-error internal to external
-export const createViaParameters: RootBuilder['parameters'] = (parametersObject) => create().parameters(parametersObject)
+export const createViaDescription: RootBuilder['description'] = (...args) => create().description(...args)
+
+// prettier-ignore
+// @ts-expect-error internal to external
+export const createViaParameters: RootBuilder['parameters'] = (...args) => create().parameters(...args)
 
 //
 // Internal Types
@@ -135,6 +145,7 @@ type State = {
 }
 
 type InternalRootBuilder = {
+  description: (description: string) => InternalRootBuilder
   settings: (newSettings: Settings.Input) => InternalRootBuilder
   parameters: (parametersObject: Record<string, ParameterSpec.SomeBasicType>) => InternalRootBuilder
   parameter: (nameExpression: string, type: ParameterSpec.SomeBasicType) => InternalRootBuilder

@@ -1,3 +1,4 @@
+import type { RootBuilder } from '../../src/Builder/root/types.js'
 import { Command } from '../../src/index.js'
 import { s } from '../_/helpers.js'
 import { createState } from '../environment/__helpers__.js'
@@ -11,7 +12,29 @@ mockProcessExit()
 const output = createState<string>({
   value: (values) => values.join(``),
 })
+
 const onOutput = output.set
+
+const $ = (description: string, builder: RootBuilder<any>) => {
+  it(description, () => {
+    builder.settings({ onOutput }).parse({ line: [`-h`] })
+    expect(stripAnsi(output.value)).toMatchSnapshot(`monochrome`)
+    expect(output.value).toMatchSnapshot(`polychrome`)
+  })
+}
+
+$.only = (description: string, builder: RootBuilder<any>) => {
+  it.only(description, () => {
+    builder.settings({ onOutput }).parse({ line: [`-h`] })
+    expect(stripAnsi(output.value)).toMatchSnapshot(`monochrome`)
+    expect(output.value).toMatchSnapshot(`polychrome`)
+  })
+}
+
+$(
+  `if command has description it is shown`,
+  Command.description(`Blah blah blah`).parameters({ foo: s.optional() })
+)
 
 it(`if there is optional param it is shown`, () => {
   Command.parameters({ a: s.optional() })

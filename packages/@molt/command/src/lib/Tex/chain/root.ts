@@ -1,4 +1,4 @@
-import type { BlockParameters } from '../nodes.js'
+import type { BlockParameters } from '../nodes/block.js'
 import type { BlockBuilder } from './block.js'
 import { createBlockBuilder } from './block.js'
 import type { Builder } from './helpers.js'

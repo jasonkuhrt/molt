@@ -11,6 +11,7 @@ import { State } from '../State.js'
 
 // prettier-ignore
 export interface RootBuilder<State extends State.Base = State.BaseEmpty> {
+  description:         (description:string) => RootBuilder<State>
   parameter:           <NameExpression extends string, Schema extends ParameterSpec.SomeBasicType|ParameterSpec.SomeUnionType>(name:State.ValidateNameExpression<State,NameExpression>, schema:Schema) => RootBuilder<State.AddParameter<State,NameExpression,Schema>>
   parameters:          <ParametersObject extends Record<string,ParameterSpec.SomeBasicType|ParameterSpec.SomeUnionType>>(schema:ParametersObject) => RootBuilder<State.AddParametersObject<State,ParametersObject>>
   parametersExclusive: <Label extends string, BuilderExclusive extends SomeBuilderExclusive>(label:Label, ExclusiveBuilderContainer: (builder:BuilderExclusiveInitial<State,Label>) => BuilderExclusive) => RootBuilder<BuilderExclusive['_']['typeState']>
