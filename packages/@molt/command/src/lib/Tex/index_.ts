@@ -1,3 +1,6 @@
-export type { BlockBuilder, Builder, RootBuilder, TableBuilder } from './chain.js'
-export { block, render, createRootBuilder as Tex } from './chain.js'
+export { block, BlockBuilder } from './chain/block.js'
+export { Builder } from './chain/helpers.js'
+export type { RootBuilder } from './chain/root.js'
+export { render, createRootBuilder as Tex } from './chain/root.js'
+export type { TableBuilder } from './chain/table.js'
 export * from './nodes.js'
