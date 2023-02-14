@@ -209,17 +209,14 @@ const environmentNote = (specs: ParameterSpec.Output[], settings: Settings.Outpu
     .map((_) => `${_}="..."`)
 
   return Tex.block(($) =>
-    $.text(content).block({ padding: { left: 2 } }, ($) =>
-      $.list(
-        {
-          // TODO
-          // padding: { left: 2 },
-          bullet: {
-            graphic: Text.chars.arrowRight,
-          },
+    $.text(content).list(
+      {
+        padding: { left: 2 },
+        bullet: {
+          graphic: Text.chars.arrowRight,
         },
-        examples
-      )
+      },
+      examples
     )
   )
 }

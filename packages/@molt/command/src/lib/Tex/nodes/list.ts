@@ -1,8 +1,20 @@
 import { Text } from '../../Text/index.js'
+import type { BlockParameters } from './block.js'
 import { Block } from './block.js'
 import type { RenderContext } from './helpers.js'
+import { applyPadding } from './helpers.js'
 import { Leaf } from './leaf.js'
 import { Node } from './node.js'
+
+export interface ListParameters {
+  padding?: BlockParameters['padding']
+  bullet?: {
+    graphic?: string | ((index: number) => string)
+    align?: {
+      horizontal?: 'left' | 'right'
+    }
+  }
+}
 
 export class List extends Node {
   items: Block[]
@@ -35,7 +47,7 @@ export class List extends Node {
       maxWidth: (context.maxWidth ?? 1000) - gutterWidthWithSpacing,
     }
     const items = this.items.map((item) => item.render(context_).value)
-    const value = items
+    let value = items
       .map((_, index) => {
         return Text.joinColumns(
           [[Text.minSpan(bullet.align.horizontal, gutterWidth, bullets[index]!)], Text.toLines(_)],
@@ -43,6 +55,11 @@ export class List extends Node {
         )
       })
       .join(Text.chars.newline)
+
+    if (this.parameters.padding) {
+      value = applyPadding(value, this.parameters.padding, context)
+    }
+
     const lines = items.flatMap(Text.toLines)
     const intrinsicWidth = Math.max(...lines.map(Text.getLength))
     const intrinsicHeight = lines.length
@@ -53,15 +70,6 @@ export class List extends Node {
         desiredWidth: null,
       },
       value: value,
-    }
-  }
-}
-
-export interface ListParameters {
-  bullet?: {
-    graphic?: string | ((index: number) => string)
-    align?: {
-      horizontal?: 'left' | 'right'
     }
   }
 }

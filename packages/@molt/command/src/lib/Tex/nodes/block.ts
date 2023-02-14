@@ -1,5 +1,6 @@
 import { Text } from '../../Text/index.js'
 import type { RenderContext } from './helpers.js'
+import { applyPadding } from './helpers.js'
 import { Leaf } from './leaf.js'
 import { Node } from './node.js'
 
@@ -138,28 +139,9 @@ export class Block extends Node {
 
       let value = joined
 
-      value =
-        this.parameters.padding?.topBetween && !context.index.isFirst
-          ? Text.chars.newline.repeat(this.parameters.padding.topBetween) + value
-          : value
-      value = this.parameters.padding?.top
-        ? Text.chars.newline.repeat(this.parameters.padding.top) + value
-        : value
-      value = this.parameters.padding?.left
-        ? Text.indentBlock(value, Text.chars.space.repeat(this.parameters.padding.left))
-        : value
-      value = this.parameters.padding?.bottom
-        ? value + Text.chars.newline.repeat(this.parameters.padding.bottom)
-        : value
-      value =
-        this.parameters.padding?.bottomBetween && !context.index.isLast
-          ? value + Text.chars.newline.repeat(this.parameters.padding.bottomBetween)
-          : value
-      value = this.parameters.padding?.right
-        ? Text.fromLines(
-            Text.toLines(value).map((_) => _ + Text.chars.space.repeat(this.parameters.padding!.right!))
-          )
-        : value
+      if (this.parameters.padding) {
+        value = applyPadding(value, this.parameters.padding, context)
+      }
 
       const intrinsicHeight = Text.toLines(value).length
 
