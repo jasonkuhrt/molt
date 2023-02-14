@@ -1,6 +1,7 @@
-import type { ListParameters } from '../nodes.js'
-import { Leaf, List } from '../nodes.js'
-import { Block } from '../nodes.js'
+import { Block } from '../nodes/block.js'
+import { Leaf } from '../nodes/leaf.js'
+import type { ListParameters } from '../nodes/list.js'
+import { List } from '../nodes/list.js'
 import type { NodeImplementor } from './helpers.js'
 import { toInternalBuilder } from './helpers.js'
 
@@ -51,8 +52,7 @@ export const createListBuilder = (): ListBuilder => {
       return $
     },
     items: (...args) => {
-      const childrenish =
-        args.length === 1 && Array.isArray(args[0]) ? (args[0] as Childrenish) : (args as Childish[])
+      const childrenish = args.length === 1 && Array.isArray(args[0]) ? (args[0] as Childrenish) : args
 
       if (childrenish === null) return $
 

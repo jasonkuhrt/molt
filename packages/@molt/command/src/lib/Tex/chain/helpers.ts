@@ -1,4 +1,7 @@
-import type { Block, List, Node, Table } from '../nodes.js'
+import type { Block } from '../nodes/block.js'
+import type { List } from '../nodes/list.js'
+import type { Node } from '../nodes/node.js'
+import type { Table } from '../nodes/table.js'
 import type { BlockBuilder } from './block.js'
 import type { ListBuilder } from './list.js'
 import type { RootBuilder } from './root.js'
