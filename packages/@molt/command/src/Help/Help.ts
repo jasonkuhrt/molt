@@ -103,44 +103,39 @@ export const render = (
           )
           .header({ padding: { right: 4 } }, chalk.underline(colors.mute(columnTitles.default)))
           .header(columnTitles.environment ? chalk.underline(colors.mute(columnTitles.environment)) : null)
-          .rows(
-            ...[
-              ...basicAndUnionSpecsWithoutHelp.map((spec) => [
-                parameterName(spec),
-                Tex.block(
-                  { maxWidth: 40, padding: { right: 9, bottom: 1 } },
-                  parameterTypeAndDescription(spec)
-                ),
-                Tex.block({ maxWidth: 24 }, parameterDefault(spec)),
-                ...(isEnvironmentEnabled ? [parameterEnvironment(spec, settings)] : []),
-              ]),
-              ...mexGroups.flatMap((mexGroup) => {
-                const default_ =
-                  mexGroup.optionality._tag === `default`
-                    ? `${mexGroup.optionality.tag}@${String(mexGroup.optionality.getValue())}`
-                    : mexGroup.optionality._tag === `optional`
-                    ? `undefined`
-                    : labels.required
-                return [
-                  [
-                    Tex.block(
-                      { border: { left: colors.dim(`┌`) } },
-                      colors.dim(`─${mexGroup.label} ${`(2)`}`)
-                    ),
-                    ``,
-                    default_,
-                  ],
-                  ...Object.values(mexGroup.parameters).map((spec) => [
-                    parameterName(spec),
-                    parameterTypeAndDescription(spec),
-                    parameterDefault(spec),
-                    ...(isEnvironmentEnabled ? [parameterEnvironment(spec, settings)] : []),
-                  ]),
-                  [Tex.block({ border: { left: colors.dim(`└`) } }, colors.dim(`─`))],
-                ]
-              }),
-            ]
-          )
+          .rows([
+            ...basicAndUnionSpecsWithoutHelp.map((spec) => [
+              parameterName(spec),
+              Tex.block(
+                { maxWidth: 40, padding: { right: 9, bottom: 1 } },
+                parameterTypeAndDescription(spec)
+              ),
+              Tex.block({ maxWidth: 24 }, parameterDefault(spec)),
+              ...(isEnvironmentEnabled ? [parameterEnvironment(spec, settings)] : []),
+            ]),
+            ...mexGroups.flatMap((mexGroup) => {
+              const default_ =
+                mexGroup.optionality._tag === `default`
+                  ? `${mexGroup.optionality.tag}@${String(mexGroup.optionality.getValue())}`
+                  : mexGroup.optionality._tag === `optional`
+                  ? `undefined`
+                  : labels.required
+              return [
+                [
+                  Tex.block({ border: { left: colors.dim(`┌`) } }, colors.dim(`─${mexGroup.label} ${`(2)`}`)),
+                  ``,
+                  default_,
+                ],
+                ...Object.values(mexGroup.parameters).map((spec) => [
+                  parameterName(spec),
+                  parameterTypeAndDescription(spec),
+                  parameterDefault(spec),
+                  ...(isEnvironmentEnabled ? [parameterEnvironment(spec, settings)] : []),
+                ]),
+                [Tex.block({ border: { left: colors.dim(`└`) } }, colors.dim(`─`))],
+              ]
+            }),
+          ])
       ).block({ color: colors.dim }, ($) => {
         if (noteItems.length === 0) {
           return null

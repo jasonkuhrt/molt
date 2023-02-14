@@ -201,6 +201,42 @@ exports[`list > the gutter of bullets is left aligned by default 1`] = `
 25 z"
 `;
 
+exports[`table > builder > row > can have a row 1`] = `
+"alpha | bravo
+-------------
+a     | b    "
+`;
+
+exports[`table > builder > row > if a row has columns exceeding the headers they render with empty header cells 1`] = `
+"alpha | bravo
+-----------------
+a     | b     | c"
+`;
+
+exports[`table > builder > row > null cell is not rendered 1`] = `
+"a1 | b1
+-------
+a2 | c2"
+`;
+
+exports[`table > builder > row > null is not rendered 1`] = `
+"a1 | b1
+-------
+a3 | b3"
+`;
+
+exports[`table > builder > rows > null rows are not rendered 1`] = `
+"a1 | b1
+-------
+a3 | b3"
+`;
+
+exports[`table > builder > rows > pure null rows are not rendered 1`] = `
+"a1 | b1
+-------
+a3 | b3"
+`;
+
 exports[`table > cell text is vertically aligned top 1`] = `
 "alpha | beta  
 apple | banana
@@ -241,42 +277,6 @@ exports[`table > headers > if exceed column count of the actual given data they 
 "alpha | bravo | charlie
 -----------------------
 a     | b    "
-`;
-
-exports[`table > row > can have a row 1`] = `
-"alpha | bravo
--------------
-a     | b    "
-`;
-
-exports[`table > row > if a row has columns exceeding the headers they render with empty header cells 1`] = `
-"alpha | bravo
------------------
-a     | b     | c"
-`;
-
-exports[`table > row > null cell is not rendered 1`] = `
-"a1 | b1
--------
-a2 | c2"
-`;
-
-exports[`table > row > null is not rendered 1`] = `
-"a1 | b1
--------
-a3 | b3"
-`;
-
-exports[`table > rows > null rows are not rendered 1`] = `
-"a1 | b1
--------
-a3 | b3"
-`;
-
-exports[`table > rows > pure null rows are not rendered 1`] = `
-"a1 | b1
--------
-a3 | b3"
 `;
 
 exports[`table > set > custom row separator 1`] = `

@@ -122,6 +122,10 @@ describe(`list`, () => {
   $(`can render items`, Tex.Tex().list([`foo`, `bar`]))
   it(`null items are ignored`, () => {
     expect(Tex.Tex().list([`foo`, null, `bar`]).render()).toEqual(Tex.Tex().list([`foo`, `bar`]).render())
+    expect(Tex.Tex().list(null).render()).toEqual(Tex.Tex().render())
+  })
+  it(`can be just null items`, () => {
+    expect(Tex.Tex().list([null]).render()).toEqual(Tex.Tex().list([]).render())
   })
   $(`can render multi-line items`, Tex.Tex().list([`foo`, `bar\nbaz\nqux`, `zod`]))
   $(`can have custom bullet`, Tex.Tex().list({ bullet: { graphic: `-` } }, [`foo`, `zod`]))
@@ -140,6 +144,30 @@ describe(`list`, () => {
       `abcdefghijklmnopqrstuvwxyz`.split(``)
     )
   )
+  // prettier-ignore
+  describe(`builder`, () => {
+    describe(`item`, () => {
+      it(`can render text`, () => {
+        expect(Tex.Tex().list(($) => $.item(`x`)).render()).toEqual(Tex.Tex().list([`x`]).render())
+      })
+      it(`can render to nothing`, () => {
+        expect(Tex.Tex().list(($) => $.item(null)).render()).toEqual(Tex.Tex().render())
+      })
+    })
+    describe(`items`, () => {
+      it(`can render text`, () => {
+        expect(Tex.Tex().list(($) => $.items(`a`,`b`)).render()).toEqual(Tex.Tex().list([`a`,`b`]).render())
+        expect(Tex.Tex().list(($) => $.items([`a`,`b`])).render()).toEqual(Tex.Tex().list([`a`,`b`]).render())
+      })
+      it(`null items are removed`, () => {
+        expect(Tex.Tex().list(($) => $.items([`a`,null])).render()).toEqual(Tex.Tex().list([`a`]).render())
+      })
+      it(`can render to nothing`, () => {
+        expect(Tex.Tex().list(($) => $.items(null)).render()).toEqual(Tex.Tex().render())
+        expect(Tex.Tex().list(($) => $.items([null])).render()).toEqual(Tex.Tex().render())
+      })
+    })
+  })
 })
 describe(`table`, () => {
   describe(`headers`, () => {
@@ -162,34 +190,40 @@ describe(`table`, () => {
       )
     )
   })
-
-  describe(`row`, () => {
-    $(
-      `can have a row`,
-      Tex.Tex().table(($) => $.headers([`alpha`, `bravo`]).row(`a`, `b`))
-    )
-    $(
-      `if a row has columns exceeding the headers they render with empty header cells`,
-      Tex.Tex().table(($) => $.headers([`alpha`, `bravo`]).row(`a`, `b`, `c`))
-    )
-    $(
-      `null is not rendered`,
-      Tex.Tex().table(($) => $.row(`a1`, `b1`).row(null).row(`a3`, `b3`))
-    )
-    $(
-      `null cell is not rendered`,
-      Tex.Tex().table(($) => $.row(`a1`, `b1`).row(`a2`, null, `c2`))
-    )
-  })
-  describe(`rows`, () => {
-    $(
-      `pure null rows are not rendered`,
-      Tex.Tex().table(($) => $.rows([`a1`, `b1`]).rows(null).rows([`a3`, `b3`]))
-    )
-    $(
-      `null rows are not rendered`,
-      Tex.Tex().table(($) => $.rows([`a1`, `b1`], null, [`a3`, `b3`]))
-    )
+  describe(`builder`, () => {
+    describe(`row`, () => {
+      $(
+        `can have a row`,
+        Tex.Tex().table(($) => $.headers([`alpha`, `bravo`]).row(`a`, `b`))
+      )
+      $(
+        `if a row has columns exceeding the headers they render with empty header cells`,
+        Tex.Tex().table(($) => $.headers([`alpha`, `bravo`]).row(`a`, `b`, `c`))
+      )
+      $(
+        `null is not rendered`,
+        Tex.Tex().table(($) => $.row(`a1`, `b1`).row(null).row(`a3`, `b3`))
+      )
+      $(
+        `null cell is not rendered`,
+        Tex.Tex().table(($) => $.row(`a1`, `b1`).row(`a2`, null, `c2`))
+      )
+    })
+    describe(`rows`, () => {
+      // prettier-ignore
+      it(`single arg or vargs`, () => {
+        expect(Tex.Tex().table(($) => $.rows([[`r1c1`, `r1c2`],[`r2c1`, `r2c2`]])).render()).toEqual(Tex.Tex().table([[`r1c1`, `r1c2`],[`r2c1`, `r2c2`]]).render())
+        expect(Tex.Tex().table(($) => $.rows([`r1c1`, `r1c2`],[`r2c1`, `r2c2`])).render()).toEqual(Tex.Tex().table([[`r1c1`, `r1c2`],[`r2c1`, `r2c2`]]).render())
+      })
+      $(
+        `pure null rows are not rendered`,
+        Tex.Tex().table(($) => $.rows([`a1`, `b1`]).rows(null).rows([`a3`, `b3`]))
+      )
+      $(
+        `null rows are not rendered`,
+        Tex.Tex().table(($) => $.rows([`a1`, `b1`], null, [`a3`, `b3`]))
+      )
+    })
   })
 
   $(

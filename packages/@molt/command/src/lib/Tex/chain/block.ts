@@ -4,41 +4,38 @@ import type { NodeImplementor } from './helpers.js'
 import { toInternalBuilder } from './helpers.js'
 import type { ListArgs, ListMethod } from './list.js'
 import { createListBuilder } from './list.js'
-import type { RootBuilder } from './root.js'
 import { createRootBuilder } from './root.js'
 import type { TableMethod, TableMethodArgs } from './table.js'
 import { resolveTableMethodArgs } from './table.js'
 
+type Childish = string | null | BlockBuilder | Block
+type Childrenish = Childish | Childish[]
+
 // prettier-ignore
 export interface BlockMethod<Chain> {
-  (builder: ($: BlockBuilder) => null | BlockBuilder)                                                 : Chain
-  (children: (string | null | RootBuilder | BlockBuilder | Block)[])                                  : Chain
-  (child: string | null | RootBuilder | BlockBuilder | Block)                                         : Chain
-  (parameters: BlockParameters, child: Block | BlockBuilder | RootBuilder | string | null)            : Chain
-  (parameters: BlockParameters, children: (Block | BlockBuilder | RootBuilder | string | null)[])     : Chain
-  (parameters: BlockParameters, builder: ($: BlockBuilder) => null | BlockBuilder)                    : Chain
+  (builder: ($: BlockBuilder) => null | BlockBuilder)                                   : Chain
+  (child: Childrenish) 																					                        : Chain
+  (parameters: BlockParameters, children: Childrenish)                                  : Chain
+  (parameters: BlockParameters, builder: ($: BlockBuilder) => null | BlockBuilder)      : Chain
 }
 
 // prettier-ignore
 export interface BlockBuilder<Chain = null> {
   block: BlockMethod<Chain extends null ? BlockBuilder : Chain>
   table: TableMethod<Chain extends null ? BlockBuilder : Chain>
-  list: ListMethod<Chain extends null ? BlockBuilder : Chain>
+  list: ListMethod  <Chain extends null ? BlockBuilder : Chain>
   text(text: string)                                                            : Chain extends null ? BlockBuilder : Chain
   set(parameters: BlockParameters)                                              : Chain extends null ? BlockBuilder : Chain
 }
 
 export type BlockMethodArgs =
-  | [BlockParameters, Block | string | null | BlockBuilder | RootBuilder]
-  | [BlockParameters, (Block | string | null | BlockBuilder | RootBuilder)[]]
-  | [Block | string | null | BlockBuilder | RootBuilder]
-  | [(Block | string | null | BlockBuilder | RootBuilder)[]]
+  | [BlockParameters, Childrenish]
+  | [Childrenish]
   | [NodeImplementor<BlockBuilder>]
   | [BlockParameters, NodeImplementor<BlockBuilder>]
 
 export const createBlockBuilder = (params?: { getSuperChain: () => any }): BlockBuilder => {
   const parentNode = new Block()
-  // let parentParameters: = parameters ?? {}
 
   const $: BlockBuilder = {
     block: (...args: BlockMethodArgs) => {
@@ -67,17 +64,21 @@ export const createBlockBuilder = (params?: { getSuperChain: () => any }): Block
     },
     list: (...args: ListArgs) => {
       const parameters = args.length === 1 ? null : args[0]
-      const nodeishes = args.length === 1 ? args[0] : args[1]
-      const node =
-        typeof nodeishes === `function`
-          ? toInternalBuilder(nodeishes(createListBuilder()))?._.node ?? null
+      const childrenish = args.length === 1 ? args[0] : args[1]
+      const child =
+        typeof childrenish === `function`
+          ? toInternalBuilder(childrenish(createListBuilder()))?._.node ?? null
+          : childrenish === null
+          ? null
           : new List(
-              nodeishes.map((_) => (typeof _ === `string` ? (_ === null ? null : new Block(new Leaf(_))) : _))
+              childrenish.map((_) =>
+                typeof _ === `string` ? (_ === null ? null : new Block(new Leaf(_))) : _
+              )
             )
-      if (node) {
-        parentNode.addChild(node)
+      if (child) {
+        parentNode.addChild(child)
         if (parameters) {
-          node.setParameters(parameters)
+          child.setParameters(parameters)
         }
       }
       return params?.getSuperChain() ?? $
