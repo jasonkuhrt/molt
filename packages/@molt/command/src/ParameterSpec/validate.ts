@@ -1,6 +1,8 @@
 import type { Output } from './output.js'
 import type { Type } from './types.js'
 import { Alge } from 'alge'
+// TODO https://github.com/jasonkuhrt/alge/issues/258#issuecomment-1435759514
+import * as _ from 'alge/types'
 import { z } from 'zod'
 
 export const Result = Alge.data(`Result`, {
