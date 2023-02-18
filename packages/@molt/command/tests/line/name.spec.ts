@@ -9,7 +9,7 @@ describe(`errors`, () => {
   test.todo(`when a long flag and its short flag are given there is an error`)
 })
 
-describe.only(`string`, () => {
+describe(`string`, () => {
   // prettier-ignore
   test.each([
 		[`--ver`, 					[`--ver`, `foo`], 					{ ver: `foo` }],
