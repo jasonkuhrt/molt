@@ -5,7 +5,7 @@ import type { ArgumentValue } from '../../types.js'
 import { getUnionScalar } from '../../types.js'
 import { processEnvironment } from '../helpers/environment.js'
 import { processName } from '../helpers/name.js'
-import { analyzeTypeScalar } from '../helpers/type.js'
+import { analyzeZodTypeScalar } from '../helpers/type.js'
 
 export const processUnion = (
   nameExpression: string,
@@ -37,11 +37,11 @@ const analyzeType = (input: Input.Union) => {
   const union = getUnionScalar(input.type)
   const description = union.description ?? null
   const types = union._def.options.map((_) => {
-    const typeAnalysis = analyzeTypeScalar(_)
+    const typeAnalysis = analyzeZodTypeScalar(_)
     return {
-      type: _,
+      zodType: _,
       description: typeAnalysis.description,
-      typePrimitiveKind: typeAnalysis.primitiveKind,
+      type: typeAnalysis.type,
     }
   })
   const optionality = (

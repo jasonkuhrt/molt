@@ -138,13 +138,13 @@ export const createViaParameters: RootBuilder['parameters'] = (...args) => creat
 // Internal Types
 //
 
-type State = {
+interface State {
   settings: null | Settings.Output
   newSettingsBuffer: Settings.Input[]
   parameterSpecInputs: Record<string, ParameterSpec.Input>
 }
 
-type InternalRootBuilder = {
+interface InternalRootBuilder {
   description: (description: string) => InternalRootBuilder
   settings: (newSettings: Settings.Input) => InternalRootBuilder
   parameters: (parametersObject: Record<string, ParameterSpec.SomeBasicType>) => InternalRootBuilder

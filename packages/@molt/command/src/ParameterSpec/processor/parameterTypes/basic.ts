@@ -4,7 +4,7 @@ import type { Output } from '../../output.js'
 import type { ArgumentValue } from '../../types.js'
 import { processEnvironment } from '../helpers/environment.js'
 import { processName } from '../helpers/name.js'
-import { analyzeTypeScalar } from '../helpers/type.js'
+import { analyzeZodTypeScalar } from '../helpers/type.js'
 
 export const processBasic = (
   expression: string,
@@ -13,12 +13,12 @@ export const processBasic = (
 ): Output.Basic => {
   const name = processName(expression)
   const environment = processEnvironment(settings, name)
-  const typeAnalysis = analyzeType(input)
+  const typeAnalysis = analyzeZodType(input)
   const parameter = {
     _tag: `Basic`,
     zodType: input.type,
     description: typeAnalysis.description,
-    typePrimitiveKind: typeAnalysis.primitiveKind,
+    type: typeAnalysis.type,
     optionality: typeAnalysis.optionality,
     environment,
     name,
@@ -27,13 +27,13 @@ export const processBasic = (
   return parameter
 }
 
-export const analyzeType = (input: Input.Basic) => {
+export const analyzeZodType = (input: Input.Basic) => {
   const isOptional = input.type._def.typeName === `ZodOptional`
   const hasDefault = input.type._def.typeName === `ZodDefault`
   // @ts-expect-error todo
   // eslint-disable-next-line
   const defaultGetter = hasDefault ? (input.type._def.defaultValue as DefaultGetter) : null
-  const { description, primitiveKind } = analyzeTypeScalar(input.type)
+  const { description, type } = analyzeZodTypeScalar(input.type)
   const optionality = (
     defaultGetter
       ? { _tag: `default`, getValue: () => defaultGetter() }
@@ -45,7 +45,7 @@ export const analyzeType = (input: Input.Basic) => {
   return {
     optionality,
     description,
-    primitiveKind,
+    type,
   }
 }
 

@@ -21,7 +21,7 @@ export const lowerCaseObjectKeys = (obj: object) =>
 export const parseRawInput = (name: string, rawValue: string, spec: ParameterSpec.Output): Value => {
   const parsedValue = parseRawValue(rawValue, spec)
   if (parsedValue === null) {
-    const expectedTypes = Alge.match(spec).Union((spec) => spec.types.map(_=>_.typePrimitiveKind).join(` | `)).else(spec => spec.typePrimitiveKind)
+    const expectedTypes = Alge.match(spec).Union((spec) => spec.types.map(_=>_.type._tag).join(` | `)).else(spec => spec.type._tag)
     throw new Error(`Failed to parse input ${name} with value ${rawValue}. Expected type of ${expectedTypes}.`)
   }
   if (typeof parsedValue === `string`) return { _tag: `string`, value: parsedValue }
@@ -70,17 +70,23 @@ export const parseRawValue = (
        * For example a number is a subset of string type. If there is a string and number variant
        * we should first check if the value could be a number, than a string.
        */
-      const variantOrder = [`number`, `boolean`, `string`] as const
+      const variantOrder: ParameterSpec.Type['_tag'][] = [
+        `TypeNumber`,
+        `TypeBoolean`,
+        `TypeString`,
+        `TypeEnum`,
+      ]
       const types = spec.types.sort(
-        (a, b) => variantOrder.indexOf(a.typePrimitiveKind) - variantOrder.indexOf(b.typePrimitiveKind)
+        (a, b) => variantOrder.indexOf(a.type._tag) - variantOrder.indexOf(b.type._tag)
       )
       return (
         types
           .map((_) =>
-            Alge.match(_.typePrimitiveKind)
-              .string(() => value)
-              .boolean(() => parseEnvironmentVariableBoolean(value))
-              .number(() => {
+            Alge.match(_.type)
+              .TypeString(() => value)
+              .TypeEnum(() => value)
+              .TypeBoolean(() => parseEnvironmentVariableBoolean(value))
+              .TypeNumber(() => {
                 const result = Number(value)
                 return isNaN(result) ? null : result
               })
@@ -90,10 +96,11 @@ export const parseRawValue = (
       )
     })
     .else((spec) =>
-      Alge.match(spec.typePrimitiveKind)
-        .string(() => value)
-        .boolean(() => parseEnvironmentVariableBoolean(value))
-        .number(() => Number(value))
+      Alge.match(spec.type)
+        .TypeString(() => value)
+        .TypeEnum(() => value)
+        .TypeBoolean(() => parseEnvironmentVariableBoolean(value))
+        .TypeNumber(() => Number(value))
         .done()
     )
 }

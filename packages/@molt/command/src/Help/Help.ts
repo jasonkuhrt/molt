@@ -1,13 +1,11 @@
 import { groupBy } from '../lib/prelude.js'
 import { Tex } from '../lib/Tex/index.js'
 import { Text } from '../lib/Text/index.js'
-import { ZodHelpers } from '../lib/zodHelpers/index.js'
 import type { ParameterSpec } from '../ParameterSpec/index.js'
 import type { Settings } from '../Settings/index.js'
 import { chalk } from '../singletons/chalk.js'
 import camelCase from 'lodash.camelcase'
 import snakeCase from 'lodash.snakecase'
-import type { z } from 'zod'
 
 const colors = {
   mute: (text: string) => chalk.grey(text),
@@ -19,8 +17,6 @@ const colors = {
   positive: (text: string) => chalk.green(text),
   secondary: (text: string) => chalk.blue(text),
 }
-
-type SomeEnumType = z.ZodEnum<[string, ...string[]]>
 
 // TODO use
 interface RenderSettings {
@@ -286,7 +282,6 @@ const parameterTypeAndDescription = (spec: ParameterSpec.Output) => {
     const isOneOrMoreMembersWithDescription = spec.types.some((_) => _.description !== null)
     if (isOneOrMoreMembersWithDescription) {
       const types = spec.types.flatMap((_) => {
-        const maybeZodEnum = ZodHelpers.getEnum(_.type)
         return Tex.block(
           {
             padding: { bottomBetween: 1 },
@@ -294,10 +289,7 @@ const parameterTypeAndDescription = (spec: ParameterSpec.Output) => {
               left: (index) => `${index === 0 ? unionMemberIcon : colors.dim(Text.chars.borders.vertical)} `,
             },
           },
-          (__) =>
-            __.block(maybeZodEnum ? typeEnum(_.type as any) : colors.positive(_.typePrimitiveKind)).block(
-              _.description
-            )
+          (__) => __.block(typeScalar(_.type)).block(_.description)
         )
       })
       return Tex.block((__) =>
@@ -310,16 +302,14 @@ const parameterTypeAndDescription = (spec: ParameterSpec.Output) => {
           .block(colors.dim(Text.chars.borders.leftBottom + Text.chars.borders.horizontal))
       )
     } else {
-      const types = spec.types.map((_) => _.typePrimitiveKind).join(` | `)
+      const types = spec.types.map((_) => typeTagsToTypeScriptName[_.type._tag]).join(` | `)
       return Tex.block(($) => $.block(types).block(spec.description ?? null))
     }
   }
 
-  const maybeZodEnum = ZodHelpers.getEnum(spec.zodType)
+  // const maybeZodEnum = ZodHelpers.getEnum(spec.zodType)
   return Tex.block({ padding: { bottom: spec._tag === `Exclusive` ? 0 : 1 } }, ($) =>
-    $.block(maybeZodEnum ? typeEnum(maybeZodEnum) : colors.positive(spec.typePrimitiveKind)).block(
-      spec.description ?? null
-    )
+    $.block(typeScalar(spec.type)).block(spec.description)
   )
 }
 
@@ -346,9 +336,9 @@ const parameterEnvironment = (spec: ParameterSpec.Output, settings: Settings.Out
 /**
  * Render an enum type into a column.
  */
-const typeEnum = (schema: SomeEnumType) => {
+const typeEnum = (type: ParameterSpec.TypeEnum) => {
   const separator = colors.accent(` ${Text.chars.pipe} `)
-  const members = Object.values(schema.Values)
+  const members = Object.values(type.members)
   const lines = members.map((member) => colors.positive(member)).join(separator)
 
   // eslint-disable-next-line
@@ -357,4 +347,16 @@ const typeEnum = (schema: SomeEnumType) => {
 
 const title = (string: string) => {
   return Text.line(string.toUpperCase())
+}
+
+const typeScalar = (type: ParameterSpec.Type): string => {
+  if (type._tag === `TypeEnum`) return typeEnum(type)
+  return colors.positive(typeTagsToTypeScriptName[type._tag])
+}
+
+const typeTagsToTypeScriptName = {
+  TypeString: `string`,
+  TypeNumber: `number`,
+  TypeEnum: `enum`,
+  TypeBoolean: `boolean`,
 }

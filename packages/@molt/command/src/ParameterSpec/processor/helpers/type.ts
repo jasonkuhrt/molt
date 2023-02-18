@@ -1,19 +1,28 @@
-import { ZodHelpers } from '../../../lib/zodHelpers/index.js'
-import type { SomeBasicType } from '../../types.js'
+import type { SomeBasicType, Type } from '../../types.js'
+import { getBasicScalar } from '../../types.js'
 
-export const analyzeTypeScalar = (type: SomeBasicType) => {
-  let description = type.description ?? null
-  let primitiveType = type
+export const analyzeZodTypeScalar = (zodType: SomeBasicType) => {
+  let description = zodType.description ?? null
+  let primitiveType = zodType
 
   while (primitiveType._def.typeName === `ZodDefault` || primitiveType._def.typeName === `ZodOptional`) {
     description = description ?? primitiveType._def.innerType.description ?? null
     primitiveType = primitiveType._def.innerType
   }
 
-  const primitiveKind = ZodHelpers.ZodPrimitiveToPrimitive[ZodHelpers.getZodPrimitive(primitiveType)]
+  const zodTypeScalar = getBasicScalar(primitiveType)
+
+  const type: Type =
+    zodTypeScalar._def.typeName === `ZodString`
+      ? { _tag: `TypeString` }
+      : zodTypeScalar._def.typeName === `ZodBoolean`
+      ? { _tag: `TypeBoolean` }
+      : zodTypeScalar._def.typeName === `ZodNumber`
+      ? { _tag: `TypeNumber` }
+      : { _tag: `TypeEnum`, members: zodTypeScalar._def.values }
 
   return {
     description,
-    primitiveKind,
+    type,
   }
 }

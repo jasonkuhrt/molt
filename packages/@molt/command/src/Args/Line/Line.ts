@@ -41,7 +41,7 @@ export const parse = (
        * If union with boolean or boolean then we interpret foo argument as being a boolean.
        * Otherwise it is an error.
        */
-      if (ParameterSpec.isOrHasTypePrimitive(pendingReport.spec, `boolean`)) {
+      if (ParameterSpec.isOrHasType(pendingReport.spec, `TypeBoolean`)) {
         pendingReport.value = {
           value: true,
           _tag: `boolean`,
