@@ -16,7 +16,6 @@ export const processBasic = (
   const typeAnalysis = analyzeZodType(input)
   const parameter = {
     _tag: `Basic`,
-    zodType: input.type,
     description: typeAnalysis.description,
     type: typeAnalysis.type,
     optionality: typeAnalysis.optionality,

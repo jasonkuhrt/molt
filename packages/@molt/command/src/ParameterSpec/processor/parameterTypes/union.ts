@@ -19,7 +19,6 @@ export const processUnion = (
     _tag: `Union`,
     name,
     environment,
-    zodType: input.type,
     description: typeAnalysis.description,
     optionality: typeAnalysis.optionality,
     types: typeAnalysis.types,

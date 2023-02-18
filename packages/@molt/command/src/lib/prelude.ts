@@ -42,3 +42,7 @@ export function groupBy<Item extends object, Key extends keyof Item>(items: Item
   // eslint-disable-next-line
   return result as any // eslint-disable-line
 }
+
+export type RenameKey<Obj, Old extends keyof Obj, New extends string> = {
+  [Key in keyof Obj as Key extends Old ? New : Key]: Obj[Key]
+}

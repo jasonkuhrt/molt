@@ -15,8 +15,22 @@ export interface TypeEnum {
 
 export interface TypeString {
   _tag: 'TypeString'
+  regex?: RegExp
+  // TODO validate these
+  min?: number
+  max?: number
+  length?: number
+  pattern?: 'email' | 'url' | 'uuid' | 'cuid'
+  startsWith?: string
+  endsWith?: string
 }
 
 export interface TypeNumber {
   _tag: 'TypeNumber'
+  int?: boolean
+  // TODO validate these
+  min?: number
+  max?: number
+  multipleOf?: number
+  finite?: boolean
 }

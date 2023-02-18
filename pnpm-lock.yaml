@@ -74,7 +74,7 @@ importers:
       '@molt/types': workspace:*
       '@types/lodash.camelcase': 4.3.7
       '@types/lodash.snakecase': ^4.1.7
-      alge: 0.7.0-next.1
+      alge: ^0.6.1
       chalk: '4'
       conditional-type-checks: 1.0.6
       execa: 7.0.0
@@ -91,7 +91,7 @@ importers:
       zod: ^3.20.2
     dependencies:
       '@molt/types': link:../types
-      alge: 0.7.0-next.1
+      alge: 0.6.1
       chalk: 4.1.2
       lodash.camelcase: 4.3.0
       lodash.snakecase: 4.1.1
@@ -971,6 +971,15 @@ packages:
       json-schema-traverse: 0.4.1
       uri-js: 4.4.1
     dev: true
+
+  /alge/0.6.1:
+    resolution: {integrity: sha512-LcKiPDMzWnXLHzhzp8/JPJE9CDcjSsGzDpehflmED4JCGMJG9reYTUZVgcgIZTWlLcOz8Uf8jxDYPO94fm2vVg==}
+    dependencies:
+      lodash.ismatch: 4.4.0
+      remeda: 1.1.0
+      ts-toolbelt: 9.6.0
+      zod: 3.20.2
+    dev: false
 
   /alge/0.7.0-next.1:
     resolution: {integrity: sha512-QGB+1x1LJtVi9VKvzEU4oXXHcOXNmMRvX15Vks12AVltlBmxY0yrthn/+hh1tsU7mlPbXXPNw4aIklVoh628+w==}

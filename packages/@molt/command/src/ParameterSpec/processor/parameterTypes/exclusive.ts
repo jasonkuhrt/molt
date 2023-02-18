@@ -19,7 +19,6 @@ export const processExclusive = (
       _tag: `Exclusive`,
       description: typeAnalysis.description,
       type: typeAnalysis.type,
-      zodType: _.type,
       environment,
       name,
       // See comment/code below: (1)

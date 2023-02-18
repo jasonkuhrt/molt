@@ -72,7 +72,8 @@ exports[`is validated 1`] = `
   [
     "Cannot run command, you made some mistakes:
 
-Invalid value for name
+Invalid value for name:
+Value does not conform to Regular Expression.
 
 Here are the docs for this command:
 

@@ -72,7 +72,8 @@ exports[`errors > validates the  input 1`] = `
   [
     "Cannot run command, you made some mistakes:
 
-Invalid value for age
+Invalid value for age:
+Value is not an integer.
 
 Here are the docs for this command:
 

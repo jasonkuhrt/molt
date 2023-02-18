@@ -17,7 +17,7 @@
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
-    "exactOptionalPropertyTypes": true,
+    "exactOptionalPropertyTypes": false,
     // We handle these with ESLint:
     // "noUnusedLocals": false,
     // "noUnusedParameters": false,
