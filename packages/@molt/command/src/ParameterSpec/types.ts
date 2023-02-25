@@ -49,7 +49,6 @@ export interface TypeNumber {
   int?: boolean
   min?: number
   max?: number
-  // TODO validate these
   multipleOf?: number
   finite?: boolean
 }
