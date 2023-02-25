@@ -47,9 +47,9 @@ export interface TypeString {
 export interface TypeNumber {
   _tag: 'TypeNumber'
   int?: boolean
-  // TODO validate these
   min?: number
   max?: number
+  // TODO validate these
   multipleOf?: number
   finite?: boolean
 }

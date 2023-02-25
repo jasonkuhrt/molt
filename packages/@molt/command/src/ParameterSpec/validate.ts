@@ -80,6 +80,21 @@ const validateType = (type: Type, value: unknown): Result => {
       if (type.int && !Number.isInteger(value)) {
         errors.push(`Value is not an integer.`)
       }
+      if (type.min) {
+        if (value < type.min) {
+          errors.push(`value must be bigger than ${type.min}.`)
+        }
+      }
+      if (type.max) {
+        if (value > type.max) {
+          errors.push(`value must be smaller than ${type.max}.`)
+        }
+      }
+      if (type.multipleOf) {
+        if (value % type.multipleOf !== 0) {
+          errors.push(`Value is not a multiple of ${type.multipleOf}.`)
+        }
+      }
       if (errors.length > 0) {
         return Result.Failure.create({ value, errors })
       }

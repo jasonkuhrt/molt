@@ -1,5 +1,5 @@
 import type { ZodNumberCheck, ZodStringCheck } from '../../../lib/zodHelpers/index_.js'
-import type { SomeBasicType, Type, TypeString } from '../../types.js'
+import type { SomeBasicType, Type, TypeNumber, TypeString } from '../../types.js'
 import { getBasicScalar } from '../../types.js'
 import { Alge } from 'alge'
 import type { z } from 'zod'
@@ -34,13 +34,22 @@ const mapZodNumberChecks = (checks: z.ZodNumberCheck[]) => {
   return checks
     .map((_): ZodNumberCheck => ({ _tag: _.kind, ..._ } as any))
     .reduce((acc, check) => {
-      return (
-        Alge.match(check)
-          .int(() => ({ ...acc, int: true }))
-          // TODO all zod check mappings
-          .else(acc)
-      )
-    }, {})
+      return Alge.match(check)
+        .int(() => ({ ...acc, int: true }))
+        .min((check) => ({
+          min: check.value,
+        }))
+        .max((check) => ({
+          max: check.value,
+        }))
+        .finite(() => ({
+          finite: true,
+        }))
+        .multipleOf((check) => ({
+          multipleOf: check.value,
+        }))
+        .done()
+    }, {} as Omit<TypeNumber, '_tag'>)
 }
 
 const mapZodStringChecks = (checks: z.ZodStringCheck[]) => {
