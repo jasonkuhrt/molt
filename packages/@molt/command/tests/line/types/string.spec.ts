@@ -1,30 +1,36 @@
 import { Command } from '../../../src/index.js'
-import { stdout } from '../../_/mocks.js'
 import type { IsExact } from 'conditional-type-checks'
 import { assert } from 'conditional-type-checks'
 import { describe, expect, it } from 'vitest'
 import { z } from 'zod'
 
-// TODO use test.each
 describe(`errors`, () => {
-  it(`when argument missing (last position)`, () => {
-    Command.parameters({ '--name': z.string() }).parse({ line: [`--name`] })
-    expect(stdout.mock.calls).toMatchSnapshot()
+  it.each(
+    // prettier-ignore
+    [
+      [`when argument missing (last position)`,     { name: z.string() },                   { line: [`--name`] }],
+      [`when argument missing (non-last position)`, { name: z.string(), age: z.number() },  { line: [`--name`, `--age`, `1`] }],
+      [`when flag passed twice`,                    { '--name': z.string() },               { line: [`--name`, `1`, `--name`, `1`] }],
+      [`when long and short flag passed `,          { '--name -n': z.string() },            { line: [`--name`, `1`, `-n`, `1`] }],
+    ]
+  )(`%s`, (_, parameters, input) => {
+    expect(() =>
+      Command.parameters(parameters).settings({ onError: `throw`, helpOnError: false }).parse(input)
+    ).toThrowErrorMatchingSnapshot()
   })
-  it(`when argument missing (non-last position)`, () => {
-    Command.parameters({ '--name': z.string(), '--age': z.number() }).parse({
-      line: [`--name`, ` --age`, `1`],
-    })
-    expect(stdout.mock.calls).toMatchSnapshot()
-  })
-  // TODO use test.each
-  it.todo(`when flag passed twice`)
-  it.todo(`when long and short flag passed `)
-})
 
-it(`is validated`, () => {
-  Command.parameters({ '--name': z.string().regex(/[a-z]+/) }).parse({ line: [`--name`, `BAD`] })
-  expect(stdout.mock.calls).toMatchSnapshot()
+  describe(`validation`, () => {
+    it.each(
+      // prettier-ignore
+      [
+        [`regex`,     { name: z.string().regex(/[a-z]+/) },                   { line: [`--name`, `BAD`] }],
+      ]
+    )(`%s`, (_, parameters, input) => {
+      expect(() =>
+        Command.parameters(parameters).settings({ onError: `throw`, helpOnError: false }).parse(input)
+      ).toThrowErrorMatchingSnapshot()
+    })
+  })
 })
 
 describe(`optional`, () => {

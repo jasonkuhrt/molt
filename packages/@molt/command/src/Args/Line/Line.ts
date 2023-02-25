@@ -71,7 +71,10 @@ export const parse = (
 
       const existing = reports[spec.name.canonical]
       if (existing) {
-        // TODO The argument is already present, we should report an error? Or just ignore? Handle once we support multiple values (arrays).
+        // TODO Handle once we support multiple values (arrays).
+        // TODO richer structured info about the duplication. For example if
+        // duplicated across aliases, make it easy to report a nice message explaining that.
+        errors.push(new Error(`Duplicate flag "${flagNameNoDashPrefixNoNegate}"`))
         continue
       }
 
