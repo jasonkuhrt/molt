@@ -57,7 +57,8 @@ export const parse = (
       if (arg.value._tag === `boolean`) {
         argsFinal[spec.name.canonical] = arg.value.negated ? !arg.value.value : arg.value.value
       } else {
-        const result = ParameterSpec.validate(spec, arg.value.value)
+        const valueTransformed = ParameterSpec.transform(spec, arg.value.value)
+        const result = ParameterSpec.validate(spec, valueTransformed)
         Alge.match(result)
           .Success((result) => {
             argsFinal[spec.name.canonical] = result.value

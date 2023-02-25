@@ -8,6 +8,20 @@ exports[`errors > when flag passed twice 1`] = `"Duplicate flag \\"name\\""`;
 
 exports[`errors > when long and short flag passed  1`] = `"Duplicate flag \\"n\\""`;
 
+exports[`is not trimmed by default 1`] = `
+{
+  "help": false,
+  "name": "foobar  ",
+}
+`;
+
+exports[`zod > transformations > trim 1`] = `
+{
+  "help": false,
+  "name": "foobar",
+}
+`;
+
 exports[`zod > validation > cuid 1`] = `
 "Invalid value for name:
 Value is not a cuid."

@@ -1,5 +1,5 @@
 import type { ZodNumberCheck, ZodStringCheck } from '../../../lib/zodHelpers/index_.js'
-import type { SomeBasicType, Type } from '../../types.js'
+import type { SomeBasicType, Type, TypeString } from '../../types.js'
 import { getBasicScalar } from '../../types.js'
 import { Alge } from 'alge'
 import type { z } from 'zod'
@@ -70,7 +70,7 @@ const mapZodStringChecks = (checks: z.ZodStringCheck[]) => {
           }))
           .datetime((check) => ({
             pattern: {
-              _tag: `dateTime`,
+              _tag: `dateTime` as const,
               offset: check.offset,
               precision: check.precision,
             },
@@ -87,7 +87,13 @@ const mapZodStringChecks = (checks: z.ZodStringCheck[]) => {
           .length((check) => ({
             length: check.value,
           }))
-          .else({}),
+          .trim(() => ({
+            transformations: {
+              ...acc.transformations,
+              trim: true,
+            },
+          }))
+          .done(),
       }
-    }, {})
+    }, {} as Omit<TypeString, '_tag'>)
 }

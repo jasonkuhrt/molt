@@ -33,18 +33,21 @@ describe(`optional`, () => {
   })
 })
 
+it(`is not trimmed by default`, () => {
+  expect(Command.parameters({ name: z.string() }).parse({ line: [`--name`, `foobar  `] })).toMatchSnapshot()
+})
+
 describe(`zod`, () => {
-  // TODO currently trim is hardcoded but should be based on passed transformation only
-  // describe(`transformations`, () => {
-  //   it.each(
-  //     // prettier-ignore
-  //     [
-  //       [`trim`,                   { name: z.string().trim() },                         { line: [`--name`, `foobar   `] }],
-  //     ]
-  //   )(`%s`, (_, parameters, input) => {
-  //     expect(Command.parameters(parameters).parse(input)).toMatchSnapshot()
-  //   })
-  // })
+  describe(`transformations`, () => {
+    it.each(
+      // prettier-ignore
+      [
+        [`trim`,                   { name: z.string().trim() },                         { line: [`--name`, `foobar   `] }],
+      ]
+    )(`%s`, (_, parameters, input) => {
+      expect(Command.parameters(parameters).parse(input)).toMatchSnapshot()
+    })
+  })
   describe(`validation`, () => {
     it.each(
       // prettier-ignore

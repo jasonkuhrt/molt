@@ -15,6 +15,9 @@ export interface TypeEnum {
 
 export interface TypeString {
   _tag: 'TypeString'
+  transformations?: {
+    trim?: boolean
+  }
   regex?: RegExp
   min?: number
   max?: number
