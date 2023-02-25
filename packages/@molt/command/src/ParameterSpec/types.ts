@@ -16,11 +16,27 @@ export interface TypeEnum {
 export interface TypeString {
   _tag: 'TypeString'
   regex?: RegExp
-  // TODO validate these
   min?: number
   max?: number
   length?: number
-  pattern?: 'email' | 'url' | 'uuid' | 'cuid'
+  pattern?:
+    | {
+        _tag: 'email'
+      }
+    | {
+        _tag: 'url'
+      }
+    | {
+        _tag: 'uuid'
+      }
+    | {
+        _tag: 'cuid'
+      }
+    | {
+        _tag: 'dateTime'
+        offset: boolean
+        precision: null | number
+      }
   startsWith?: string
   endsWith?: string
 }

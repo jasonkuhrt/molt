@@ -47,14 +47,47 @@ const mapZodStringChecks = (checks: z.ZodStringCheck[]) => {
   return checks
     .map((_): ZodStringCheck => ({ _tag: _.kind, ..._ } as any))
     .reduce((acc, check) => {
-      return (
-        Alge.match(check)
+      return {
+        ...acc,
+        ...Alge.match(check)
           .regex((check) => ({
-            ...acc,
             regex: check.regex,
           }))
-          // TODO all zod check mappings
-          .else(acc)
-      )
+          .min((check) => ({
+            min: check.value,
+          }))
+          .max((check) => ({
+            max: check.value,
+          }))
+          .url((check) => ({
+            pattern: { _tag: check._tag },
+          }))
+          .cuid((check) => ({
+            pattern: { _tag: check._tag },
+          }))
+          .uuid((check) => ({
+            pattern: { _tag: check._tag },
+          }))
+          .datetime((check) => ({
+            pattern: {
+              _tag: `dateTime`,
+              offset: check.offset,
+              precision: check.precision,
+            },
+          }))
+          .email((check) => ({
+            pattern: { _tag: check._tag },
+          }))
+          .endsWith((check) => ({
+            endsWith: check.value,
+          }))
+          .startsWith((check) => ({
+            startsWith: check.value,
+          }))
+          .length((check) => ({
+            length: check.value,
+          }))
+          .else({}),
+      }
     }, {})
 }

@@ -1,3 +1,4 @@
+import { Patterns } from '../lib/Patterns/index.js'
 import type { Output } from './output.js'
 import type { Type } from './types.js'
 import { Alge } from 'alge'
@@ -91,6 +92,62 @@ const validateType = (type: Type, value: unknown): Result => {
       }
       if (type.regex && !type.regex.test(value)) {
         errors.push(`Value does not conform to Regular Expression.`)
+      }
+      if (type.min) {
+        if (value.length < type.min) {
+          errors.push(`Value is too short.`)
+        }
+      }
+      if (type.max) {
+        if (value.length > type.max) {
+          errors.push(`Value is too long.`)
+        }
+      }
+      if (type.pattern) {
+        Alge.match(type.pattern)
+          .cuid(() => {
+            if (!Patterns.cuid.test(value)) {
+              errors.push(`Value is not a cuid.`)
+            }
+          })
+          .url(() => {
+            try {
+              new URL(value)
+            } catch (error) {
+              errors.push(`Value is not a URL.`)
+            }
+          })
+          .email(() => {
+            if (!Patterns.email.test(value)) {
+              errors.push(`Value is not an email address.`)
+            }
+          })
+          .uuid(() => {
+            if (!Patterns.uuid.test(value)) {
+              errors.push(`Value is not a uuid.`)
+            }
+          })
+          .dateTime((type) => {
+            if (!Patterns.dateTime({ offset: type.offset, precision: type.precision }).test(value)) {
+              errors.push(`Value is not a conforming datetime.`)
+            }
+          })
+          .done()
+      }
+      if (type.startsWith) {
+        if (!value.startsWith(type.startsWith)) {
+          errors.push(`Value does not start with ${type.startsWith}.`)
+        }
+      }
+      if (type.endsWith) {
+        if (!value.endsWith(type.endsWith)) {
+          errors.push(`Value does not end with ${type.endsWith}.`)
+        }
+      }
+      if (type.length) {
+        if (value.length !== type.length) {
+          errors.push(`Value does not have the length ${type.length}.`)
+        }
       }
       if (errors.length > 0) {
         return Result.Failure.create({ value, errors })
