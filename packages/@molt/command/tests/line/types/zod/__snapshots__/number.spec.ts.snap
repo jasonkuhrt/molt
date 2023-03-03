@@ -1,4 +1,9 @@
-// Vitest Snapshot v1
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`zod > validation > int 1`] = `
+"Invalid value for name:
+Value is not an integer."
+`;
 
 exports[`zod > validation > max 1`] = `
 "Invalid value for name:

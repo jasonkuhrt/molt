@@ -17,19 +17,20 @@ describe(`zod`, () => {
     it.each(
       // prettier-ignore
       [
-        [`regex`,                   { name: z.string().regex(/[a-z]+/) },                         { line: [`--name`, `BAD`] }],
-        [`min`,                     { name: z.string().min(5) },                                  { line: [`--name`, `BAD`] }],
-        [`max`,                     { name: z.string().max(1) },                                  { line: [`--name`, `BAD`] }],
-        [`url`,                     { name: z.string().url() },                                   { line: [`--name`, `BAD`] }],
-        [`uuid`,                    { name: z.string().uuid() },                                  { line: [`--name`, `BAD`] }],
-        [`cuid`,                    { name: z.string().cuid() },                                  { line: [`--name`, `BAD`] }],
-        [`email`,                   { name: z.string().email() },                                 { line: [`--name`, `BAD`] }],
-        [`length`,                  { name: z.string().length(1) },                               { line: [`--name`, `BAD`] }],
-        [`endsWith`,                { name: z.string().endsWith(`x`) },                           { line: [`--name`, `BAD`] }],
-        [`startsWith`,              { name: z.string().startsWith(`y`) },                         { line: [`--name`, `BAD`] }],
-        [`datetime`,                { name: z.string().datetime() },                              { line: [`--name`, `BAD`] }],
-        [`datetime no offset`,      { name: z.string().datetime({offset:false}) },                { line: [`--name`, `2023-02-25T08:01:28.364-05:00`] }],
-        [`datetime precision 1`,    { name: z.string().datetime({precision:1}) },                 { line: [`--name`, `2023-02-25T08:01:28.364Z`] }],
+        [`regex`,                   { foo: z.string().regex(/[a-z]+/) },                         { line: [`--foo`, `BAD`] }],
+        [`min`,                     { foo: z.string().min(5) },                                  { line: [`--foo`, `BAD`] }],
+        [`max`,                     { foo: z.string().max(1) },                                  { line: [`--foo`, `BAD`] }],
+        [`url`,                     { foo: z.string().url() },                                   { line: [`--foo`, `BAD`] }],
+        [`uuid`,                    { foo: z.string().uuid() },                                  { line: [`--foo`, `BAD`] }],
+        [`cuid`,                    { foo: z.string().cuid() },                                  { line: [`--foo`, `BAD`] }],
+        [`cuid2`,                   { foo: z.string().cuid2() },                                 { line: [`--foo`, `BAD`] }],
+        [`email`,                   { foo: z.string().email() },                                 { line: [`--foo`, `BAD`] }],
+        [`length`,                  { foo: z.string().length(1) },                               { line: [`--foo`, `BAD`] }],
+        [`endsWith`,                { foo: z.string().endsWith(`x`) },                           { line: [`--foo`, `BAD`] }],
+        [`startsWith`,              { foo: z.string().startsWith(`y`) },                         { line: [`--foo`, `BAD`] }],
+        [`datetime`,                { foo: z.string().datetime() },                              { line: [`--foo`, `BAD`] }],
+        [`datetime no offset`,      { foo: z.string().datetime({offset:false}) },                { line: [`--foo`, `2023-02-25T08:01:28.364-05:00`] }],
+        [`datetime precision 1`,    { foo: z.string().datetime({precision:1}) },                 { line: [`--foo`, `2023-02-25T08:01:28.364Z`] }],
       ]
     )(`%s`, (_, parameters, input) => {
       expect(() =>

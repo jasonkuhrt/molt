@@ -24,19 +24,22 @@ export interface TypeString {
   length?: number
   pattern?:
     | {
-        _tag: 'email'
+        type: 'email'
       }
     | {
-        _tag: 'url'
+        type: 'url'
       }
     | {
-        _tag: 'uuid'
+        type: 'uuid'
       }
     | {
-        _tag: 'cuid'
+        type: 'cuid'
       }
     | {
-        _tag: 'dateTime'
+        type: 'cuid2'
+      }
+    | {
+        type: 'dateTime'
         offset: boolean
         precision: null | number
       }

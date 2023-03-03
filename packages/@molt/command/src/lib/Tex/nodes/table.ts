@@ -75,7 +75,7 @@ export class Table extends Node {
     const headers = this.headers.map((cell) => cell.render(context).value)
     const rowsAndHeaders = this.headers.length > 0 ? [headers, ...rows] : rows
     const maxWidthOfEachColumn = invertTable(rowsAndHeaders).map((col) =>
-      Math.max(...col.flatMap(Text.toLines).map(Text.getLength))
+      Math.max(...col.flatMap(Text.toLines).map((_) => Text.getLength(_)))
     )
     const rowsWithCellWidthsNormalized = rowsAndHeaders.map((row) => {
       const maxNumberOfLinesAmongColumns = Math.max(...row.map(Text.toLines).map((lines) => lines.length))
@@ -94,7 +94,7 @@ export class Table extends Node {
     const rowsWithCellsJoined = rowsWithCellWidthsNormalized.map((r) =>
       Text.joinColumns(r.map(Text.toLines), separators.column)
     )
-    const width = Math.max(...rowsWithCellsJoined.flatMap(Text.toLines).map(Text.getLength))
+    const width = Math.max(...rowsWithCellsJoined.flatMap(Text.toLines).map((_) => Text.getLength(_)))
     const value = rowsWithCellsJoined.join(separators.row(width))
 
     return {

@@ -52,10 +52,10 @@ const mapZodNumberChecks = (checks: z.ZodNumberCheck[]) => {
     }, {} as Omit<TypeNumber, '_tag'>)
 }
 
-const mapZodStringChecks = (checks: z.ZodStringCheck[]) => {
+const mapZodStringChecks = (checks: z.ZodStringCheck[]): Omit<TypeString, '_tag'> => {
   return checks
     .map((_): ZodStringCheck => ({ _tag: _.kind, ..._ } as any))
-    .reduce((acc, check) => {
+    .reduce<Omit<TypeString, '_tag'>>((acc, check) => {
       return {
         ...acc,
         ...Alge.match(check)
@@ -69,23 +69,26 @@ const mapZodStringChecks = (checks: z.ZodStringCheck[]) => {
             max: check.value,
           }))
           .url((check) => ({
-            pattern: { _tag: check._tag },
+            pattern: { type: check._tag },
           }))
           .cuid((check) => ({
-            pattern: { _tag: check._tag },
+            pattern: { type: check._tag },
+          }))
+          .cuid2(() => ({
+            pattern: { type: `cuid2` as const },
           }))
           .uuid((check) => ({
-            pattern: { _tag: check._tag },
+            pattern: { type: check._tag },
           }))
           .datetime((check) => ({
             pattern: {
-              _tag: `dateTime` as const,
+              type: `dateTime` as const,
               offset: check.offset,
               precision: check.precision,
             },
           }))
           .email((check) => ({
-            pattern: { _tag: check._tag },
+            pattern: { type: check._tag },
           }))
           .endsWith((check) => ({
             endsWith: check.value,

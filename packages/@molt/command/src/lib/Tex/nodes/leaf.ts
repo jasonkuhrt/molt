@@ -11,7 +11,7 @@ export class Leaf extends Node {
   render(context: RenderContext) {
     const lines = Text.lines(context.maxWidth ?? 1000, this.value)
     const value = lines.join(Text.chars.newline)
-    const intrinsicWidth = Math.max(...lines.map(Text.getLength))
+    const intrinsicWidth = Math.max(...lines.map((_) => Text.getLength(_)))
     const intrinsicHeight = lines.length
     const valueColored = context.color ? context.color(value) : value
     return {

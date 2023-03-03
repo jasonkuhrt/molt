@@ -147,6 +147,11 @@ const validateType = (type: Type, value: unknown): Result => {
               errors.push(`Value is not a conforming datetime.`)
             }
           })
+          .cuid2(() => {
+            if (!Patterns.cuid2.test(value)) {
+              errors.push(`Value is not a cuid2.`)
+            }
+          })
           .done()
       }
       if (type.startsWith) {
