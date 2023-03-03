@@ -19,9 +19,10 @@
     - [Short, Long, & Aliasing](#short-long--aliasing)
     - [Kebab / Camel Case](#kebab--camel-case)
     - [Type Safety](#type-safety)
-  - [Parameter Typing](#parameter-typing)
-    - [Acceptable Zod Types](#acceptable-zod-types)
+  - [Parameter Types](#parameter-types)
+    - [Zod Support](#zod-support)
     - [Boolean](#boolean)
+    - [String](#string)
     - [Number](#number)
     - [Enum](#enum)
     - [Union](#union)
@@ -300,11 +301,11 @@ const args = Command
   .parse()
 ```
 
-### Parameter Typing
+### Parameter Types
 
 This section covers how parameters are typed via a subset of Zod schemas and the types used will affect parsing.
 
-#### Acceptable Zod Types
+#### Zod Support
 
 Only the following set of Zod types are supported. In addition to the docs below, static typing will raise an error if you pass in something invalid.
 
@@ -313,12 +314,12 @@ z.boolean()
 z.string()
 z.enum(['...', '...'])
 z.number()
-z.union([...])
+z.union([...]) // where ... can be any other type above.
 ```
 
 Validation methods like `.min(1)` and `.regex(/.../)` should all just work.
 
-The following modifies are accepted:
+The following modifiers are accepted:
 
 ```ts
 .optional()
