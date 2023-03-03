@@ -1,0 +1,78 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`zod > transformations > trim 1`] = `
+{
+  "help": false,
+  "name": "foobar",
+}
+`;
+
+exports[`zod > validation > cuid 1`] = `
+"Invalid value for foo:
+Value is not a cuid."
+`;
+
+exports[`zod > validation > cuid2 1`] = `
+"Invalid value for foo:
+Value is not a cuid2."
+`;
+
+exports[`zod > validation > datetime 1`] = `
+"Invalid value for foo:
+Value is not a conforming datetime."
+`;
+
+exports[`zod > validation > datetime no offset 1`] = `
+"Invalid value for foo:
+Value is not a conforming datetime."
+`;
+
+exports[`zod > validation > datetime precision 1 1`] = `
+"Invalid value for foo:
+Value is not a conforming datetime."
+`;
+
+exports[`zod > validation > email 1`] = `
+"Invalid value for foo:
+Value is not an email address."
+`;
+
+exports[`zod > validation > endsWith 1`] = `
+"Invalid value for foo:
+Value does not end with x."
+`;
+
+exports[`zod > validation > length 1`] = `
+"Invalid value for foo:
+Value does not have the length 1."
+`;
+
+exports[`zod > validation > max 1`] = `
+"Invalid value for foo:
+Value is too long."
+`;
+
+exports[`zod > validation > min 1`] = `
+"Invalid value for foo:
+Value is too short."
+`;
+
+exports[`zod > validation > regex 1`] = `
+"Invalid value for foo:
+Value does not conform to Regular Expression."
+`;
+
+exports[`zod > validation > startsWith 1`] = `
+"Invalid value for foo:
+Value does not start with y."
+`;
+
+exports[`zod > validation > url 1`] = `
+"Invalid value for foo:
+Value is not a URL."
+`;
+
+exports[`zod > validation > uuid 1`] = `
+"Invalid value for foo:
+Value is not a uuid."
+`;

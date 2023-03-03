@@ -1,11 +1,12 @@
-// Vitest Snapshot v1
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`enum can be parsed > throws an error if the value does not pass validation 1`] = `
 [
   [
     "Cannot run command, you made some mistakes:
 
-Invalid value for foo
+Invalid value for foo:
+Value is not a member of the enum.
 
 Here are the docs for this command:
 

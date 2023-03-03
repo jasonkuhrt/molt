@@ -19,9 +19,10 @@
     - [Short, Long, & Aliasing](#short-long--aliasing)
     - [Kebab / Camel Case](#kebab--camel-case)
     - [Type Safety](#type-safety)
-  - [Parameter Typing](#parameter-typing)
-    - [Acceptable Zod Types](#acceptable-zod-types)
+  - [Parameter Types](#parameter-types)
+    - [Zod Support](#zod-support)
     - [Boolean](#boolean)
+    - [String](#string)
     - [Number](#number)
     - [Enum](#enum)
     - [Union](#union)
@@ -300,11 +301,11 @@ const args = Command
   .parse()
 ```
 
-### Parameter Typing
+### Parameter Types
 
 This section covers how parameters are typed via a subset of Zod schemas and the types used will affect parsing.
 
-#### Acceptable Zod Types
+#### Zod Support
 
 Only the following set of Zod types are supported. In addition to the docs below, static typing will raise an error if you pass in something invalid.
 
@@ -313,12 +314,12 @@ z.boolean()
 z.string()
 z.enum(['...', '...'])
 z.number()
-z.union([...])
+z.union([...]) // where ... can be any other type above.
 ```
 
 Validation methods like `.min(1)` and `.regex(/.../)` should all just work.
 
-The following modifies are accepted:
+The following modifiers are accepted:
 
 ```ts
 .optional()
@@ -369,10 +370,39 @@ args.force === false
 args.force === true
 ```
 
+#### String
+
+- Flag expects an argument.
+
+##### Validations
+
+- `startsWith` - A prefix the value must be begin with.
+- `endsWith` - A suffix the value must end with.
+- `regex` - An arbitrary Regular Expression that the value must conform to.
+- `min` - The minimum allowed string length
+- `max` - The maximum allowed string length
+- `length` - An exact length the string must be
+- `pattern` - Different well known patterns that the value must conform to.
+  - `email` - An email
+  - `url` - A URL
+  - `uuid` - A [UUID](https://www.ietf.org/rfc/rfc4122.txt)
+  - `cuid` - A [CUID](https://github.com/paralleldrive/cuid)
+  - `cuid2` - A [CUID v2](https://github.com/paralleldrive/cuid2)
+  - `dateTime` - An ISO DateTime. Can be configured:
+    - To forbid or accept an `offset`
+    - To require a specific level of precision
+
 #### Number
 
 - Flag expects an argument.
 - Argument is cast via the `Number()` function.
+
+##### Validations
+
+- `min` - The minimum allowed number.
+- `max` - the maximum allowed number.
+- `multipleOf` - The multiple that the given number must be of. For example `20, 15, 10,5 ` would all be allowed if `multipleOf` was `5` since all those numbers are divisible by `5`.
+- `int`
 
 #### Enum
 

@@ -40,7 +40,7 @@ export class List extends Node {
       .repeat(this.items.length)
       .split(` `)
       .map((_, index) => (typeof bullet.graphic === `function` ? bullet.graphic(index) : bullet.graphic))
-    const gutterWidth = Math.max(...bullets.map(Text.getLength))
+    const gutterWidth = Math.max(...bullets.map((_) => Text.getLength(_)))
     const gutterWidthWithSpacing = gutterWidth + 1
     const context_ = {
       ...context,
@@ -61,7 +61,7 @@ export class List extends Node {
     }
 
     const lines = items.flatMap(Text.toLines)
-    const intrinsicWidth = Math.max(...lines.map(Text.getLength))
+    const intrinsicWidth = Math.max(...lines.map((_) => Text.getLength(_)))
     const intrinsicHeight = lines.length
     return {
       shape: {

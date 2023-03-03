@@ -1,9 +1,10 @@
 import { Errors } from '../Errors/index.js'
 import { groupBy } from '../lib/prelude.js'
-import type { ParameterSpec } from '../ParameterSpec/index.js'
+import { ParameterSpec } from '../ParameterSpec/index.js'
 import { Environment } from './Environment/index.js'
 import { Line } from './Line/index.js'
 import type { ArgumentReport } from './types.js'
+import { Alge } from 'alge'
 export { Environment } from './Environment/index.js'
 export { Line } from './Line/index.js'
 export * from './types.js'
@@ -42,7 +43,6 @@ export const parse = (
      * No matter, we can just ignore the possibility to use arg.spec here anyways.
      */
     const arg = lineParseResult.line[spec.name.canonical] ?? env[spec.name.canonical]
-    // dump({ arg })
 
     if (arg) {
       if (arg.errors.length > 0) {
@@ -57,15 +57,20 @@ export const parse = (
       if (arg.value._tag === `boolean`) {
         argsFinal[spec.name.canonical] = arg.value.negated ? !arg.value.value : arg.value.value
       } else {
-        let value: unknown
-        try {
-          value = spec.zodType.parse(arg.value.value)
-        } catch (e) {
-          errors.push(new Error(`Invalid value for ${spec.name.canonical}`, { cause: e }))
-          argsFinal[spec.name.canonical] = undefined
+        const valueTransformed = ParameterSpec.transform(spec, arg.value.value)
+        const result = ParameterSpec.validate(spec, valueTransformed)
+        Alge.match(result)
+          .Success((result) => {
+            argsFinal[spec.name.canonical] = result.value
+          })
+          .Failure((result) => {
+            errors.push(new Error(`Invalid value for ${spec.name.canonical}:\n${result.errors.join(`\n`)}`))
+            argsFinal[spec.name.canonical] = undefined
+          })
+          .done()
+        if (result._tag === `Failure`) {
           continue
         }
-        argsFinal[spec.name.canonical] = value
       }
       continue
     }

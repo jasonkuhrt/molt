@@ -1,11 +1,12 @@
-// Vitest Snapshot v1
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`errors > is validated 1`] = `
 [
   [
     "Cannot run command, you made some mistakes:
 
-Invalid value for mode
+Invalid value for mode:
+Value is not a member of the enum.
 
 Here are the docs for this command:
 

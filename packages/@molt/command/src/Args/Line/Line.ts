@@ -14,16 +14,15 @@ export const parse = (
   const errors: Error[] = []
 
   const rawLineInputsPrepared = rawLineInputs
-    .map((lineInput) => lineInput.trim())
     .flatMap((lineInput) => {
       if (!isShortFlag(lineInput)) return [lineInput]
       return stripeShortFlagPrefixUnsafe(lineInput).split(``).map(addShortFlagPrefix)
     })
     .flatMap((lineInput) => {
-      if (lineInput === `=`) return []
-      if (!isFlag(lineInput)) return [lineInput]
+      if (lineInput.trim() === `=`) return []
+      if (!isFlag(lineInput.trim())) return [lineInput]
       // Nodejs will not get us empty string input so we are guaranteed a flag name here.
-      const [flag, ...value] = lineInput.split(`=`) as [string, ...string[]]
+      const [flag, ...value] = lineInput.trim().split(`=`) as [string, ...string[]]
       if (value.length === 0) return [flag]
       if (value.join(``) === ``) return [flag]
       return [flag, value.join(`=`)]
@@ -71,7 +70,10 @@ export const parse = (
 
       const existing = reports[spec.name.canonical]
       if (existing) {
-        // TODO The argument is already present, we should report an error? Or just ignore? Handle once we support multiple values (arrays).
+        // TODO Handle once we support multiple values (arrays).
+        // TODO richer structured info about the duplication. For example if
+        // duplicated across aliases, make it easy to report a nice message explaining that.
+        errors.push(new Error(`Duplicate flag "${flagNameNoDashPrefixNoNegate}"`))
         continue
       }
 

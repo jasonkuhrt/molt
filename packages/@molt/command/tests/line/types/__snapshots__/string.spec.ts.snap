@@ -1,100 +1,16 @@
-// Vitest Snapshot v1
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`errors > when argument missing (last position) 1`] = `
-[
-  [
-    "Cannot run command, you made some mistakes:
+exports[`errors > when argument missing (last position) 1`] = `"Missing argument"`;
 
-Missing argument
+exports[`errors > when argument missing (non-last position) 1`] = `"Missing argument"`;
 
-Here are the docs for this command:
+exports[`errors > when flag passed twice 1`] = `"Duplicate flag \\"name\\""`;
 
-",
-  ],
-  [
-    "
-PARAMETERS
-                                                                      
-  [4m[90mName[39m[24m     [4m[90mType[39m[24m              [4m[90mDefault[39m[24m       [4m[90mEnvironment (1)[39m[24m
-                                                          
-  [1m[32mname[39m[22m     [32mstring[39m            [1m[30m[101m REQUIRED [49m[39m[22m    [34m✓[39m              
-                                                          
-  [2m[90m[39m[22m
-  [2m[90mNOTES                                                                           [39m[22m
-  [2m[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m[22m
-  [2m[90m(1) Parameters can be passed arguments via environment variables. Command line  [39m[22m
-  [2m[90m    arguments take precedence. Environment variable names are snake cased       [39m[22m
-  [2m[90m    versions of the parameter name (or its aliases), case insensitive. They must[39m[22m
-  [2m[90m    be prefixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples: [39m[22m
-  [2m[90m      → [34mCLI_PARAMETER_[39m[90m[32mNAME[39m[90m=\\"...\\"                                                [39m[22m
-",
-  ],
-]
-`;
+exports[`errors > when long and short flag passed  1`] = `"Duplicate flag \\"n\\""`;
 
-exports[`errors > when argument missing (non-last position) 1`] = `
-[
-  [
-    "Cannot run command, you made some mistakes:
-
-Missing argument
-
-Here are the docs for this command:
-
-",
-  ],
-  [
-    "
-PARAMETERS
-                                                                      
-  [4m[90mName[39m[24m     [4m[90mType[39m[24m              [4m[90mDefault[39m[24m       [4m[90mEnvironment (1)[39m[24m
-                                                          
-  [1m[32mage[39m[22m      [32mnumber[39m            [1m[30m[101m REQUIRED [49m[39m[22m    [34m✓[39m              
-                                                          
-  [1m[32mname[39m[22m     [32mstring[39m            [1m[30m[101m REQUIRED [49m[39m[22m    [34m✓[39m              
-                                                          
-  [2m[90m[39m[22m
-  [2m[90mNOTES                                                                           [39m[22m
-  [2m[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m[22m
-  [2m[90m(1) Parameters can be passed arguments via environment variables. Command line  [39m[22m
-  [2m[90m    arguments take precedence. Environment variable names are snake cased       [39m[22m
-  [2m[90m    versions of the parameter name (or its aliases), case insensitive. They must[39m[22m
-  [2m[90m    be prefixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples: [39m[22m
-  [2m[90m      → [34mCLI_PARAMETER_[39m[90m[32mAGE[39m[90m=\\"...\\"                                                 [39m[22m
-  [2m[90m      → [34mCLI_PARAMETER_[39m[90m[32mNAME[39m[90m=\\"...\\"                                                [39m[22m
-",
-  ],
-]
-`;
-
-exports[`is validated 1`] = `
-[
-  [
-    "Cannot run command, you made some mistakes:
-
-Invalid value for name
-
-Here are the docs for this command:
-
-",
-  ],
-  [
-    "
-PARAMETERS
-                                                                      
-  [4m[90mName[39m[24m     [4m[90mType[39m[24m              [4m[90mDefault[39m[24m       [4m[90mEnvironment (1)[39m[24m
-                                                          
-  [1m[32mname[39m[22m     [32mstring[39m            [1m[30m[101m REQUIRED [49m[39m[22m    [34m✓[39m              
-                                                          
-  [2m[90m[39m[22m
-  [2m[90mNOTES                                                                           [39m[22m
-  [2m[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m[22m
-  [2m[90m(1) Parameters can be passed arguments via environment variables. Command line  [39m[22m
-  [2m[90m    arguments take precedence. Environment variable names are snake cased       [39m[22m
-  [2m[90m    versions of the parameter name (or its aliases), case insensitive. They must[39m[22m
-  [2m[90m    be prefixed with [34mCLI_PARAMETER_[39m[90m or [34mCLI_PARAM_[39m[90m (case insensitive). Examples: [39m[22m
-  [2m[90m      → [34mCLI_PARAMETER_[39m[90m[32mNAME[39m[90m=\\"...\\"                                                [39m[22m
-",
-  ],
-]
+exports[`is not trimmed by default 1`] = `
+{
+  "help": false,
+  "name": "foobar  ",
+}
 `;

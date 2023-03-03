@@ -1,4 +1,4 @@
-import type { ArgumentValue, SomeBasicType, SomeUnionType, Type } from './types.js'
+import type { ArgumentValue, SomeBasicType, Type } from './types.js'
 
 export type Output = Output.Exclusive | Output.Basic | Output.Union
 
@@ -7,7 +7,6 @@ export namespace Output {
     _tag: 'Basic'
     name: Name
     type: Type
-    zodType: SomeBasicType
     optionality: BasicOptionality
     description: null | string
     environment: Environment
@@ -16,7 +15,6 @@ export namespace Output {
   export interface Union {
     _tag: 'Union'
     name: Name
-    zodType: SomeUnionType
     types: {
       type: Type
       zodType: SomeBasicType
@@ -30,7 +28,6 @@ export namespace Output {
   export interface Exclusive {
     _tag: 'Exclusive'
     name: Name
-    zodType: SomeBasicType
     type: Type
     description: string | null
     environment: Environment

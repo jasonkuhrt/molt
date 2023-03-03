@@ -18,9 +18,7 @@ export const mapLines = (text: string, fn: (line: string, index: number) => stri
 export const joinColumns = (cols: Row, separator: string): string => {
   const maxLineCountAmongColumns = Math.max(...cols.map((_) => _.length))
   const linesSpanningColumns = []
-  const colWidths = cols.map((col) => {
-    return Math.max(...col.map(getLength))
-  })
+  const colWidths = cols.map((col) => Math.max(...col.map((_) => getLength(_))))
   for (let lineNumber = 0; lineNumber < maxLineCountAmongColumns; lineNumber++) {
     const targetLinesAcrossColumns = cols.map((col) => col[lineNumber] ?? ``)
     const line = targetLinesAcrossColumns
@@ -180,12 +178,12 @@ export const visualStringTake = (string: string, size: number): string => {
 }
 
 export const maxWidth = (string: string): number => {
-  return Math.max(...toLines(string).map(getLength))
+  return Math.max(...toLines(string).map((_) => getLength(_)))
 }
 
 export const measure = (string: string) => {
   const lines = toLines(string)
-  const maxWidth = Math.max(...lines.map(getLength))
+  const maxWidth = Math.max(...lines.map((_) => getLength(_)))
   const height = lines.length
   return {
     height,

@@ -9,8 +9,8 @@
     "test": "vitest",
     "clean": "tsc --build --clean",
     "build": "pnpm clean && pnpm build:cjs && pnpm build:esm",
-    "build:cjs": "ts-node scripts/build-cjs.ts",
-    "build:esm": "pnpm tsc --project tsconfig.esm.json",
+    "build:cjs": "tsc --project tsconfig.cjs.json && echo '{\"type\":\"commonjs\"}' > build/cjs/package.json",
+    "build:esm": "tsc --project tsconfig.esm.json",
     "build:toc": "markdown-toc README.md -i --maxdepth 4 && prettier --write README.md",
     "prepublishOnly": "pnpm build",
     "examples:intro": "ts-node examples/intro.ts",
@@ -40,13 +40,13 @@
   "dependencies": {
     "@molt/types": "workspace:*",
     "alge": "0.8.1",
-    "chalk": "4",
+    "chalk": "^5.2.0",
     "lodash.camelcase": "^4.3.0",
     "lodash.snakecase": "^4.1.1",
-    "string-length": "4",
-    "strip-ansi": "6",
+    "string-length": "^5.0.1",
+    "strip-ansi": "^7.0.1",
     "ts-toolbelt": "^9.6.0",
-    "zod": "^3.20.2"
+    "zod": "^3.20.6"
   },
   "devDependencies": {
     "@types/lodash.camelcase": "4.3.7",
@@ -56,7 +56,7 @@
     "fast-glob": "3.2.12",
     "fs-jetpack": "5.1.0",
     "tsd": "0.25.0",
-    "vitest": "0.25.8",
+    "vitest": "0.29.2",
     "vitest-mock-process": "^1.0.4"
   }
 }
