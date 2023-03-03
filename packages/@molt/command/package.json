@@ -39,8 +39,8 @@
   "license": "MIT",
   "dependencies": {
     "@molt/types": "workspace:*",
-    "alge": "0.7.0",
     "chalk": "^5.2.0",
+    "alge": "0.8.1",
     "lodash.camelcase": "^4.3.0",
     "lodash.snakecase": "^4.1.1",
     "string-length": "^5.0.1",

@@ -15,7 +15,7 @@ importers:
       '@types/semver': ^7.3.13
       '@typescript-eslint/eslint-plugin': 5.46.1
       '@typescript-eslint/parser': 5.46.1
-      alge: 0.7.0-next.1
+      alge: 0.8.1
       eslint: 8.30.0
       eslint-config-prettier: 8.5.0
       eslint-plugin-deprecation: 1.3.3
@@ -36,7 +36,7 @@ importers:
       vitest: 0.25.8
       zod: 3.20.2
     dependencies:
-      alge: 0.7.0-next.1
+      alge: 0.8.1
     devDependencies:
       '@octokit/core': 4.2.0
       '@prisma-labs/prettier-config': 0.1.0
@@ -74,7 +74,7 @@ importers:
       '@molt/types': workspace:*
       '@types/lodash.camelcase': 4.3.7
       '@types/lodash.snakecase': ^4.1.7
-      alge: 0.7.0
+      alge: 0.8.1
       chalk: ^5.2.0
       conditional-type-checks: 1.0.6
       execa: 7.0.0
@@ -91,7 +91,7 @@ importers:
       zod: ^3.20.6
     dependencies:
       '@molt/types': link:../types
-      alge: 0.7.0
+      alge: 0.8.1
       chalk: 5.2.0
       lodash.camelcase: 4.3.0
       lodash.snakecase: 4.1.1
@@ -1004,17 +1004,8 @@ packages:
       uri-js: 4.4.1
     dev: true
 
-  /alge/0.7.0:
-    resolution: {integrity: sha512-bpPT9QLXFEYzlyYUaQTNmNlm5ovz0SXak5UCdsY+krb1CP+QhsA1reRWOdpT9EnpOcMSHdySI5VektelhSb6qQ==}
-    dependencies:
-      lodash.ismatch: 4.4.0
-      remeda: 1.6.2
-      ts-toolbelt: 9.6.0
-      zod: 3.20.6
-    dev: false
-
-  /alge/0.7.0-next.1:
-    resolution: {integrity: sha512-QGB+1x1LJtVi9VKvzEU4oXXHcOXNmMRvX15Vks12AVltlBmxY0yrthn/+hh1tsU7mlPbXXPNw4aIklVoh628+w==}
+  /alge/0.8.1:
+    resolution: {integrity: sha512-kiV9nTt+XIauAXsowVygDxMZLplZxDWt0W8plE/nB32/V2ziM/P/TxDbSVK7FYIUt2Xo16h3/htDh199LNPCKQ==}
     dependencies:
       lodash.ismatch: 4.4.0
       remeda: 1.6.2
