@@ -1,5 +1,6 @@
 import type { Values } from '../helpers.js'
 import type { ParameterSpec } from '../ParameterSpec/index.js'
+import type { ParameterConfiguration } from './root/types.js'
 import type { FlagName } from '@molt/types'
 import type { Any } from 'ts-toolbelt'
 import type { z } from 'zod'
@@ -43,9 +44,13 @@ export namespace State {
   export type GetUsedNames<State extends Base> = Values<State['Parameters']>['NameUnion']
 
   // prettier-ignore
-  export type AddParameter<State extends Base, NameExpression extends string, Type extends ParameterSpec.SomeBasicType|ParameterSpec.SomeUnionType> =
+  export type AddParameter<
+    State extends Base,
+    NameExpression extends string,
+    Configuration extends ParameterConfiguration
+  > =
     Omit<State, 'Parameters'> & {
-      Parameters:  State['Parameters'] & { [_ in NameExpression]: CreateParameter<State,NameExpression,Type> }
+      Parameters:  State['Parameters'] & { [_ in NameExpression]: CreateParameter<State,NameExpression,Configuration> }
     }
 
   export type ParametersObjectBase = z.ZodRawShape
@@ -53,7 +58,7 @@ export namespace State {
   // prettier-ignore
   export type AddParametersObject<State extends Base, ParametersObject extends ParametersObjectBase> =
     Omit<State, 'Parameters'> & {
-      Parameters: State['Parameters'] & { [NameExpression in keyof ParametersObject & string]: CreateParameter<State,NameExpression,ParametersObject[NameExpression]> }
+      Parameters: State['Parameters'] & { [NameExpression in keyof ParametersObject & string]: CreateParameter<State,NameExpression,{schema:ParametersObject[NameExpression]}> }
     }
 
   // prettier-ignore
@@ -99,8 +104,12 @@ export namespace State {
   }
 
   // prettier-ignore
-  type CreateParameter<State extends Base, NameExpression extends string, Type extends ParameterSpec.SomeBasicType|ParameterSpec.SomeUnionType> = {
-    Schema: Type
+  type CreateParameter<
+    State           extends Base,
+    NameExpression  extends string,
+    Configuration   extends ParameterConfiguration,
+  > = {
+    Schema: Configuration['schema']
     NameParsed: FlagName.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>
     NameUnion: FlagName.Data.GetNamesFromParseResult<FlagName.Parse<NameExpression,{ usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>>
   }
