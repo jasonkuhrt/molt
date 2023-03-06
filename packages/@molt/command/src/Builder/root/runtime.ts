@@ -4,7 +4,7 @@ import { getLowerCaseEnvironment, lowerCaseObjectKeys } from '../../helpers.js'
 import { ParameterSpec } from '../../ParameterSpec/index.js'
 import { Settings } from '../../Settings/index.js'
 import * as ExclusiveBuilder from '../exclusive/constructor.js'
-import type { RawArgInputs, RootBuilder } from './types.js'
+import type { ParameterConfiguration, RawArgInputs, RootBuilder } from './types.js'
 
 const create = () => {
   const $: State = {
@@ -14,19 +14,16 @@ const create = () => {
   }
 
   const $$ = {
-    addParameterBasicOrUnion: (
-      nameExpression: string,
-      type: ParameterSpec.SomeBasicType | ParameterSpec.SomeUnionType
-    ) => {
-      const parameter = ParameterSpec.isUnionType(type)
+    addParameterBasicOrUnion: (nameExpression: string, configuration: ParameterConfiguration) => {
+      const parameter = ParameterSpec.isUnionType(configuration.schema)
         ? ({
             _tag: `Union`,
-            type,
+            type: configuration.schema,
             nameExpression: nameExpression,
           } satisfies ParameterSpec.Input.Union)
         : ({
             _tag: `Basic`,
-            type,
+            type: configuration.schema,
             nameExpression: nameExpression,
           } satisfies ParameterSpec.Input.Basic)
       $.parameterSpecInputs[nameExpression] = parameter
@@ -46,12 +43,14 @@ const create = () => {
     },
     parameters: (parametersObject) => {
       Object.entries(parametersObject).forEach(([nameExpression, type]) => {
-        $$.addParameterBasicOrUnion(nameExpression, type)
+        $$.addParameterBasicOrUnion(nameExpression, { schema: type })
       })
       return chain
     },
-    parameter: (nameExpression, type) => {
-      $$.addParameterBasicOrUnion(nameExpression, type)
+    parameter: (nameExpression, typeOrConfiguration) => {
+      const configuration =
+        `schema` in typeOrConfiguration ? typeOrConfiguration : { schema: typeOrConfiguration }
+      $$.addParameterBasicOrUnion(nameExpression, configuration)
 
       return chain
     },
@@ -144,11 +143,16 @@ interface State {
   parameterSpecInputs: Record<string, ParameterSpec.Input>
 }
 
+interface Parameter {
+  (nameExpression: string, type: ParameterSpec.SomeBasicType): InternalRootBuilder
+  (nameExpression: string, configuration: ParameterConfiguration): InternalRootBuilder
+}
+
 interface InternalRootBuilder {
   description: (description: string) => InternalRootBuilder
   settings: (newSettings: Settings.Input) => InternalRootBuilder
   parameters: (parametersObject: Record<string, ParameterSpec.SomeBasicType>) => InternalRootBuilder
-  parameter: (nameExpression: string, type: ParameterSpec.SomeBasicType) => InternalRootBuilder
+  parameter: Parameter
   parametersExclusive: (label: string, builderContainer: any) => InternalRootBuilder
   parse: (args: RawArgInputs) => object
 }
