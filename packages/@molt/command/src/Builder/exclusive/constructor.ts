@@ -13,8 +13,10 @@ export const create = (): SomeBuilderExclusiveInitial => {
   }
 
   const chain: SomeBuilderExclusiveInitial = {
-    parameter: (nameExpression: string, type) => {
-      _.input.parameters.push({ nameExpression, type })
+    parameter: (nameExpression: string, schemaOrConfiguration) => {
+      const configuration =
+        `schema` in schemaOrConfiguration ? schemaOrConfiguration : { schema: schemaOrConfiguration }
+      _.input.parameters.push({ nameExpression, type: configuration.schema })
       return chain as any // eslint-disable-line
     },
     optional: () => {

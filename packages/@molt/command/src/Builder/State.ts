@@ -1,5 +1,6 @@
 import type { Values } from '../helpers.js'
 import type { ParameterSpec } from '../ParameterSpec/index.js'
+import type { ExclusiveParameterConfiguration } from './exclusive/types.js'
 import type { ParameterConfiguration } from './root/types.js'
 import type { FlagName } from '@molt/types'
 import type { Any } from 'ts-toolbelt'
@@ -81,7 +82,7 @@ export namespace State {
     State extends Base,
     Label extends string,
     NameExpression extends string,
-    Type extends ParameterSpec.SomeBasicType
+    Configuration extends ExclusiveParameterConfiguration
   > = {
     Parameters: State['Parameters']
     ParametersExclusive: State['ParametersExclusive'] & 
@@ -91,7 +92,7 @@ export namespace State {
           Parameters: {
             // @ts-expect-error - Trust the name expression here...
             [_ in NameExpression as FlagName.Data.GetCanonicalName<FlagName.Parse<NameExpression>>]: {
-              Schema: Type
+              Schema: Configuration['schema']
               NameParsed: FlagName.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>
               NameUnion: FlagName.Data.GetNamesFromParseResult<
                 FlagName.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>
