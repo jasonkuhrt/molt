@@ -111,7 +111,7 @@ export const render = (
               parameterName(spec),
               Tex.block(
                 { maxWidth: 40, padding: { right: 9, bottom: 1 } },
-                parameterTypeAndDescription(spec)
+                parameterTypeAndDescription(settings, spec)
               ),
               Tex.block({ maxWidth: 24 }, parameterDefault(spec)),
               ...(isEnvironmentEnabled ? [parameterEnvironment(spec, settings)] : []),
@@ -131,7 +131,7 @@ export const render = (
                 ],
                 ...Object.values(mexGroup.parameters).map((spec) => [
                   parameterName(spec),
-                  parameterTypeAndDescription(spec),
+                  parameterTypeAndDescription(settings, spec),
                   parameterDefault(spec),
                   ...(isEnvironmentEnabled ? [parameterEnvironment(spec, settings)] : []),
                 ]),
@@ -276,15 +276,18 @@ const parameterName = (spec: ParameterSpec.Output) => {
   )
 }
 
-const parameterTypeAndDescription = (spec: ParameterSpec.Output) => {
+const parameterTypeAndDescription = (settings: Settings.Output, spec: ParameterSpec.Output) => {
   if (spec._tag === `Union`) {
     const unionMemberIcon = colors.accent(`◒`)
     const isOneOrMoreMembersWithDescription = spec.types.some((_) => _.description !== null)
-    if (isOneOrMoreMembersWithDescription) {
+    const isExpandedMode =
+      isOneOrMoreMembersWithDescription || settings.helpRendering.union.mode === `expandAlways`
+    const isExpandedModeViaForceSetting = isExpandedMode && !isOneOrMoreMembersWithDescription
+    if (isExpandedMode) {
       const types = spec.types.flatMap((_) => {
         return Tex.block(
           {
-            padding: { bottomBetween: 1 },
+            padding: { bottomBetween: isExpandedModeViaForceSetting ? 0 : 1 },
             border: {
               left: (index) => `${index === 0 ? unionMemberIcon : colors.dim(Text.chars.borders.vertical)} `,
             },
