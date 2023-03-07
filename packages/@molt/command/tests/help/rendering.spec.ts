@@ -282,7 +282,14 @@ describe(`union parameter`, () => {
       expect(output.value).toMatchSnapshot(`polychrome`)
     })
   })
-  describe(`verbose style`, () => {
+  describe(`expanded style`, () => {
+    it(`can be forced via settings`, () => {
+      Command.parameter(`b bar`, z.union([z.string(), z.number()]))
+        .settings({ onOutput, helpRendering: { union: { mode: `expandAlways` } } })
+        .parse({ line: [`-h`] })
+      expect(stripAnsi(output.value)).toMatchSnapshot(`monochrome`)
+      expect(output.value).toMatchSnapshot(`polychrome`)
+    })
     it(`shows member on each line if each has description`, () => {
       Command.parameter(
         `b bar`,

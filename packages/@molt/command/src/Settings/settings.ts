@@ -12,6 +12,11 @@ export interface Input<ParametersObject extends State.ParametersObjectBase = {}>
   help?: boolean
   helpOnNoArguments?: boolean
   helpOnError?: boolean
+  helpRendering?: {
+    union?: {
+      mode?: 'expandAlways' | 'expandOnParameterDescription'
+    }
+  }
   onError?: OnErrorReaction
   onOutput?: (output: string, defaultHandler: (output: string) => void) => void
   parameters?: {
@@ -31,6 +36,11 @@ export interface Output {
   help: boolean
   helpOnNoArguments: boolean
   helpOnError: boolean
+  helpRendering: {
+    union: {
+      mode: 'expandAlways' | 'expandOnParameterDescription'
+    }
+  }
   onError: OnErrorReaction
   onOutput: (output: string) => void
   parameters: {
@@ -69,6 +79,13 @@ export const change = (current: Output, input: Input<{}>, environment: Environme
   current.helpOnNoArguments = input.helpOnNoArguments ?? current.helpOnNoArguments
 
   current.helpOnError = input.helpOnError ?? current.helpOnError
+
+  current.helpRendering = {
+    union: {
+      ...current.helpRendering.union,
+      ...input.helpRendering?.union,
+    },
+  }
 
   current.onOutput = input.onOutput
     ? (_) => {
@@ -162,6 +179,11 @@ export const getDefaults = (lowercaseEnv: NodeJS.ProcessEnv): Output => {
     help: true,
     helpOnNoArguments: true,
     helpOnError: true,
+    helpRendering: {
+      union: {
+        mode: `expandOnParameterDescription`,
+      },
+    },
     onError: `exit`,
     onOutput: (_) => process.stdout.write(_),
     parameters: {
