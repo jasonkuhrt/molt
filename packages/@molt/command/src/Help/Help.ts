@@ -1,4 +1,4 @@
-import { dump, groupBy } from '../lib/prelude.js'
+import { groupBy } from '../lib/prelude.js'
 import { Tex } from '../lib/Tex/index.js'
 import { Text } from '../lib/Text/index.js'
 import type { ParameterSpec } from '../ParameterSpec/index.js'
