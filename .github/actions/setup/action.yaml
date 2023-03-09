@@ -36,7 +36,7 @@ runs:
     - name: Get pnpm store directory
       id: pnpm-cache
       shell: bash
-      run: echo "pnpm_cache_dir=$(pnpm store path)" >> $GITHUB_OUTPUT 
+      run: echo "pnpm_cache_dir=$(pnpm store path)" >> $GITHUB_OUTPUT
     - uses: actions/cache@v3
       name: Setup pnpm cache
       with:
