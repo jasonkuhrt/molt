@@ -31,7 +31,6 @@ interface Parameters<State extends State.Base = State.BaseEmpty> {
 export interface RootBuilder<State extends State.Base = State.BaseEmpty> {
   description:         (description:string) => RootBuilder<State>
   parameter:           Parameter<State>
-  // parameters:          <ParametersObject extends Record<string,ParameterConfiguration['schema']|{prompt?:boolean;schema:ParameterConfiguration['schema']}>>(schema:ParametersObject) => RootBuilder<State.AddParametersObject<State,ParametersObject>>
   parameters:          Parameters<State>
   parametersExclusive: <Label extends string, BuilderExclusive extends SomeBuilderExclusive>(label:Label, ExclusiveBuilderContainer: (builder:BuilderExclusiveInitial<State,Label>) => BuilderExclusive) => RootBuilder<BuilderExclusive['_']['typeState']>
   settings:            (newSettings:Settings.Input<State.ToSchema<State>>) => BuilderAfterSettings<State>

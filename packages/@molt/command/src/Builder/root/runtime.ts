@@ -112,7 +112,7 @@ interface Parameter {
 interface InternalRootBuilder {
   description: (description: string) => InternalRootBuilder
   settings: (newSettings: Settings.Input) => InternalRootBuilder
-  parameters: (parametersObject: Record<string, ParameterSpec.SomeBasicType|{schema:ParameterSpec.SomeBasicType,prompt?:boolean}>) => InternalRootBuilder
+  parameters: (parametersObject: Record<string, ParameterConfiguration['schema']|{schema:ParameterConfiguration['schema'],prompt?:boolean}>) => InternalRootBuilder
   parameter: Parameter
   parametersExclusive: (label: string, builderContainer: any) => InternalRootBuilder
   parse: (args: RawArgInputs) => object
