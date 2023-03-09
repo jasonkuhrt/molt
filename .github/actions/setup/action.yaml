@@ -9,10 +9,6 @@ inputs:
     description: Should deps be installed?
     required: false
     default: 'true'
-  offline:
-    description: Should --offline be used?
-    required: false
-    default: 'true'
 runs:
   using: composite
   steps:
@@ -44,6 +40,6 @@ runs:
         key: ${{ runner.os }}-pnpm-store-${{steps.date-month.outputs.date_month}}-${{ hashFiles('**/pnpm-lock.yaml') }}
         restore-keys: ${{ runner.os }}-pnpm-store-${{steps.date-month.outputs.date_month}}
     - name: Install Dependencies
-      run: pnpm install ${{ (inputs.offline == 'true') && format('{0}', '--offline') || format('{0}', '') }}
+      run: pnpm install
       shell: bash
       if: ${{inputs.install-deps}} == 'true'
