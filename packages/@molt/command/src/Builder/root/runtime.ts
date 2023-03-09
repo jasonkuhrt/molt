@@ -41,9 +41,10 @@ const create = () => {
       $.newSettingsBuffer.push(newSettings)
       return chain
     },
-    parameters: (parametersObject) => {
-      Object.entries(parametersObject).forEach(([nameExpression, type]) => {
-        $$.addParameterBasicOrUnion(nameExpression, { schema: type })
+    parameters: (parametersConfigOrSchemaObject) => {
+      Object.entries(parametersConfigOrSchemaObject).forEach(([nameExpression, schemaOrConfig]) => {
+        const config = `schema` in schemaOrConfig ? schemaOrConfig : { schema: schemaOrConfig }
+        $$.addParameterBasicOrUnion(nameExpression, { schema: config.schema })
       })
       return chain
     },
@@ -148,10 +149,11 @@ interface Parameter {
   (nameExpression: string, configuration: ParameterConfiguration): InternalRootBuilder
 }
 
+// prettier-ignore
 interface InternalRootBuilder {
   description: (description: string) => InternalRootBuilder
   settings: (newSettings: Settings.Input) => InternalRootBuilder
-  parameters: (parametersObject: Record<string, ParameterSpec.SomeBasicType>) => InternalRootBuilder
+  parameters: (parametersObject: Record<string, ParameterConfiguration['schema']|{schema:ParameterConfiguration['schema']}>) => InternalRootBuilder
   parameter: Parameter
   parametersExclusive: (label: string, builderContainer: any) => InternalRootBuilder
   parse: (args: RawArgInputs) => object

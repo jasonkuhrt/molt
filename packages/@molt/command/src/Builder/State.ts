@@ -54,12 +54,20 @@ export namespace State {
       Parameters:  State['Parameters'] & { [_ in NameExpression]: CreateParameter<State,NameExpression,Configuration> }
     }
 
-  export type ParametersObjectBase = z.ZodRawShape
+  export type ParametersSchemaObjectBase = Record<string, ParameterConfiguration['schema']>
+
+  export type ParametersObjectBase = Record<
+    string,
+    {
+      schema: ParameterConfiguration['schema']
+      prompt?: boolean
+    }
+  >
 
   // prettier-ignore
   export type AddParametersObject<State extends Base, ParametersObject extends ParametersObjectBase> =
     Omit<State, 'Parameters'> & {
-      Parameters: State['Parameters'] & { [NameExpression in keyof ParametersObject & string]: CreateParameter<State,NameExpression,{schema:ParametersObject[NameExpression]}> }
+      Parameters: State['Parameters'] & { [NameExpression in keyof ParametersObject & string]: CreateParameter<State,NameExpression,{schema:ParametersObject[NameExpression]['schema']}> }
     }
 
   // prettier-ignore
