@@ -33,4 +33,5 @@ const helpParameter: Input.Basic = {
   _tag: `Basic`,
   type: z.boolean().default(false),
   nameExpression: `-h --help`,
+  prompt: false,
 }

@@ -39,10 +39,12 @@
   "license": "MIT",
   "dependencies": {
     "@molt/types": "workspace:*",
+    "@types/readline-sync": "^1.4.4",
     "alge": "0.8.1",
     "chalk": "^5.2.0",
     "lodash.camelcase": "^4.3.0",
     "lodash.snakecase": "^4.1.1",
+    "readline-sync": "^1.4.10",
     "string-length": "^5.0.1",
     "strip-ansi": "^7.0.1",
     "ts-toolbelt": "^9.6.0",

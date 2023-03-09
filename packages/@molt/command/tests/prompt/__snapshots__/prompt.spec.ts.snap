@@ -1,0 +1,15 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`a required parameter can be given at prompt 1`] = `
+{
+  "a": "foo",
+  "help": false,
+}
+`;
+
+exports[`a required parameter can be given at prompt 2`] = `
+[
+  "Please give argument for parameter \\"a\\"",
+  "foo",
+]
+`;
