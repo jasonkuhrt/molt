@@ -32,7 +32,7 @@ runs:
       run: |
         DATE=$(date +'%Y-%m')
         echo "$DATE"
-        echo "dateMonth=$DATE" >> $GITHUB_OUTPUT
+        echo "date_month=$DATE" >> $GITHUB_OUTPUT
     - name: Get pnpm store directory
       id: pnpm-cache
       shell: bash
@@ -42,8 +42,8 @@ runs:
       name: Setup pnpm cache
       with:
         path: ${{ steps.pnpm-cache.outputs.pnpm_cache_dir }}
-        key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-        restore-keys: ${{ runner.os }}-pnpm-store-${{steps.date-month.outputs.dateMonth}}
+        key: ${{ runner.os }}-pnpm-store-${{steps.date-month.outputs.dateMonth}}-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: ${{ runner.os }}-pnpm-store-${{steps.date-month.outputs.date_month}}
     - name: Install Dependencies
       run: pnpm install ${{ (inputs.offline == 'true') && format('{0}', '--offline') || format('{0}', '') }}
       shell: bash
