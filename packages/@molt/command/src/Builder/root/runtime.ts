@@ -1,5 +1,3 @@
-import { Args } from '../../Args/index.js'
-import { Help } from '../../Help/index.js'
 import { getLowerCaseEnvironment, lowerCaseObjectKeys } from '../../helpers.js'
 import { ParameterSpec } from '../../ParameterSpec/index.js'
 import { parse } from '../../parse.js'
