@@ -11,8 +11,7 @@ it.each(
     [`a required parameter opted out of prompt is not prompted for`,  { a: { schema: s, prompt: false } },            [], []],
     [`an optional parameter can be skipped at prompt`,                { a: { schema: s.optional(), prompt: true } },  [], []],
     [`by default parameter prompt is disabled`,                       { a: { schema: s } },                           [], []],
-    //todo
-    [`prompt input is validated`,                                     { a: { schema: s.min(2), prompt:true } },       [], [`x`]],
+    [`prompt input is validated`,                                     { a: { schema: s.min(2), prompt:true } },       [], [`x`,`xx`]],
   ] satisfies [string, any, string[], string[]][]
 )(`%s`, (_, parameters, line, ttyReadsScript) => {
   tty.script.reads(ttyReadsScript)

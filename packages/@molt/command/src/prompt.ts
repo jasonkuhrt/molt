@@ -1,4 +1,4 @@
-import type { ParameterSpec } from './ParameterSpec/index.js'
+import { ParameterSpec } from './ParameterSpec/index.js'
 
 export interface TTY {
   write: (text: string) => void
@@ -14,9 +14,17 @@ export const prompt = (specs: ParameterSpec.Output[], tty: TTY): Record<string, 
   for (const spec of specs) {
     // todo show a pretty prompt
     tty.write(`Please give argument for parameter "${spec.name.canonical}"`)
-    const arg = tty.read()
-    // todo validate arg. if not valid, show reason, ask again.
-    args[spec.name.canonical] = arg
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      const arg = tty.read()
+      const validationResult = ParameterSpec.validate(spec, arg)
+      if (validationResult._tag === `Success`) {
+        args[spec.name.canonical] = validationResult.value
+        break
+      } else {
+        tty.write(`Invalid value: ${validationResult.errors.join(`, `)}`)
+      }
+    }
   }
 
   return args
