@@ -39,7 +39,6 @@
   "license": "MIT",
   "dependencies": {
     "@molt/types": "workspace:*",
-    "@types/readline-sync": "^1.4.4",
     "alge": "0.8.1",
     "chalk": "^5.2.0",
     "lodash.camelcase": "^4.3.0",
@@ -53,6 +52,7 @@
   "devDependencies": {
     "@types/lodash.camelcase": "4.3.7",
     "@types/lodash.snakecase": "^4.1.7",
+    "@types/readline-sync": "^1.4.4",
     "conditional-type-checks": "1.0.6",
     "execa": "7.0.0",
     "fast-glob": "3.2.12",

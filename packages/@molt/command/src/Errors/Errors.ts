@@ -10,9 +10,11 @@ export class ErrorMissingFlagArgument extends Error {
 }
 
 export class ErrorMissingArgument extends Error {
+  public spec: ParameterSpec.Output
   constructor(params: { spec: ParameterSpec.Output }) {
     const message = `Missing argument for flag "${params.spec.name.canonical}".`
     super(message)
+    this.spec = params.spec
   }
 }
 

@@ -1,5 +1,6 @@
 import { Args } from './Args/index.js'
 import type { RawArgInputs } from './Builder/root/types.js'
+import { ErrorMissingArgument } from './Errors/Errors.js'
 import { Help } from './Help/index.js'
 import { getLowerCaseEnvironment, lowerCaseObjectKeys } from './helpers.js'
 import type { Settings } from './index.js'
@@ -13,10 +14,14 @@ export const parse = (
   argInputs: RawArgInputs
 ) => {
   const testDebuggingNoExit = process.env[`testing_molt`] === `true`
-  const argInputsTTY = argInputs?.tty ?? {
-    write: console.log,
-    read: ReadLineSync.question,
-  }
+  const argInputsTTY =
+    argInputs?.tty ??
+    (process.stdout.isTTY
+      ? {
+          write: console.log,
+          read: ReadLineSync.question,
+        }
+      : null)
   const argInputsLine = argInputs?.line ?? process.argv.slice(2)
   const argInputsEnvironment = argInputs?.environment
     ? lowerCaseObjectKeys(argInputs.environment)
@@ -28,6 +33,18 @@ export const parse = (
   }
   // dump(specsResult)
   const argsResult = Args.parse(specsResult.specs, argInputsLine, argInputsEnvironment)
+  let prompts: ParameterSpec.Output[] = []
+  if (argInputsTTY && argsResult.errors.length > 0) {
+    const missingArgErrors: ErrorMissingArgument[] = argsResult.errors.filter(
+      (_): _ is ErrorMissingArgument =>
+        _ instanceof ErrorMissingArgument && _.spec._tag === `Basic` && _.spec.prompt
+    )
+    const otherErrors = argsResult.errors.filter(
+      (_) => !(_ instanceof ErrorMissingArgument && _.spec._tag === `Basic` && _.spec.prompt)
+    )
+    argsResult.errors = otherErrors
+    prompts = missingArgErrors.map((_) => _.spec)
+  }
   // dump(argsResult)
 
   // eslint-disable-next-line
@@ -66,8 +83,7 @@ export const parse = (
     throw new Error(`missing args`) // When testing, with process.exit mock, we will reach this case
   }
 
-  // todo this is not possible when there is no tty AND the default TTY is being depended upon.
-  const argsFromPrompt = prompt(argsResult.prompts, argInputsTTY)
+  const argsFromPrompt = argInputsTTY ? prompt(prompts, argInputsTTY) : {}
 
   const args = {
     ...argsResult.args,

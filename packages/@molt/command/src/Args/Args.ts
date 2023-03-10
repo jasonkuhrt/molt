@@ -9,17 +9,17 @@ export { Environment } from './Environment/index.js'
 export { Line } from './Line/index.js'
 export * from './types.js'
 
+type Errs = Errors.ErrorMissingArgument | Errors.ErrorMissingArgumentForMutuallyExclusiveParameters | Error
+
 export const parse = (
   specs: ParameterSpec.Output[],
   argInputsLine: Line.RawInputs,
   argInputsEnvironment: Environment.RawInputs
 ): {
   args: Record<string, unknown>
-  prompts: ParameterSpec.Output[]
-  errors: Errors.ErrorMissingArgument[]
+  errors: Errs[]
 } => {
-  const errors: Error[] = []
-  const prompts: ParameterSpec.Output[] = []
+  const errors: Errs[] = []
   const argsOutput: Record<string, unknown> = {}
   const env = Environment.parse(argInputsEnvironment, specs)
   const lineParseResult = Line.parse(argInputsLine, specs)
@@ -91,11 +91,7 @@ export const parse = (
     }
 
     if (spec.optionality._tag === `required`) {
-      if (spec._tag === `Basic` && spec.prompt) {
-        prompts.push(spec)
-      } else {
-        errors.push(new Errors.ErrorMissingArgument({ spec }))
-      }
+      errors.push(new Errors.ErrorMissingArgument({ spec }))
     }
 
     argsOutput[spec.name.canonical] = undefined
@@ -174,6 +170,5 @@ export const parse = (
   return {
     args: argsOutput,
     errors,
-    prompts,
   }
 }

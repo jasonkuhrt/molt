@@ -93,7 +93,6 @@ importers:
       zod: ^3.20.6
     dependencies:
       '@molt/types': link:../types
-      '@types/readline-sync': 1.4.4
       alge: 0.8.1
       chalk: 5.2.0
       lodash.camelcase: 4.3.0
@@ -106,6 +105,7 @@ importers:
     devDependencies:
       '@types/lodash.camelcase': 4.3.7
       '@types/lodash.snakecase': 4.1.7
+      '@types/readline-sync': 1.4.4
       conditional-type-checks: 1.0.6
       execa: 7.0.0
       fast-glob: 3.2.12
@@ -732,7 +732,7 @@ packages:
 
   /@types/readline-sync/1.4.4:
     resolution: {integrity: sha512-cFjVIoiamX7U6zkO2VPvXyTxbFDdiRo902IarJuPVxBhpDnXhwSaVE86ip+SCuyWBbEioKCkT4C88RNTxBM1Dw==}
-    dev: false
+    dev: true
 
   /@types/semver/7.3.13:
     resolution: {integrity: sha512-21cFJr9z3g5dW8B0CVI9g2O9beqaThGQ6ZFBqHfwhzLDKUxaqTIy3vnfah/UPkfOiF2pLq+tGz+W8RyCskuslw==}

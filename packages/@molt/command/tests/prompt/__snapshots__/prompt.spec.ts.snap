@@ -1,5 +1,12 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`a parameter with prompt enabled given an invalid value at line does not prompt > args 1`] = `
+[Error: Invalid value for a:
+Value is too short.]
+`;
+
+exports[`a parameter with prompt enabled given an invalid value at line does not prompt > tty 1`] = `[]`;
+
 exports[`a required parameter can be given at prompt > args 1`] = `
 {
   "a": "foo",
@@ -55,3 +62,7 @@ exports[`prompt input is validated > tty 1`] = `
   "xx",
 ]
 `;
+
+exports[`when there is no tty then prompt is skipped > args 1`] = `[Error: Missing argument for flag "a".]`;
+
+exports[`when there is no tty then prompt is skipped > tty 1`] = `[]`;
