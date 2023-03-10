@@ -22,7 +22,6 @@ it.each(
       .settings({ onError: `throw`, helpOnError: false })
       .parse({ line, tty: tty.interface })
   )
-
   expect(args).toMatchSnapshot(`args`)
   expect(tty.state.history.full).toMatchSnapshot(`tty`)
 })
