@@ -3,20 +3,10 @@ import { Tex } from '../lib/Tex/index.js'
 import { Text } from '../lib/Text/index.js'
 import type { ParameterSpec } from '../ParameterSpec/index.js'
 import type { Settings } from '../Settings/index.js'
-import { chalk } from '../singletons/chalk.js'
+import { Term } from '../term.js'
+import chalk from 'chalk'
 import camelCase from 'lodash.camelcase'
 import snakeCase from 'lodash.snakecase'
-
-const colors = {
-  mute: (text: string) => chalk.grey(text),
-  dim: (text: string) => chalk.dim(chalk.grey(text)),
-  accent: (text: string) => chalk.yellow(text),
-  alert: (text: string) => chalk.red(text),
-  alertBoldBg: (text: string) => chalk.bgRedBright(text),
-  positiveBold: (text: string) => chalk.bold(colors.positive(text)),
-  positive: (text: string) => chalk.green(text),
-  secondary: (text: string) => chalk.blue(text),
-}
 
 // TODO use
 interface RenderSettings {
@@ -96,16 +86,18 @@ export const render = (
     .block({ padding: { top: 1, bottom: 1 } }, title(`PARAMETERS`))
     .block({ padding: { left: 2 } }, (__) =>
       __.table({ separators: { column: `   `, row: null } }, (__) =>
-        __.header({ padding: { right: 2, bottom: 1 } }, chalk.underline(colors.mute(columnTitles.name)))
+        __.header({ padding: { right: 2, bottom: 1 } }, chalk.underline(Term.colors.mute(columnTitles.name)))
           .header(
             {
               minWidth: 8,
               padding: { right: 5 },
             },
-            chalk.underline(colors.mute(columnTitles.typeDescription))
+            chalk.underline(Term.colors.mute(columnTitles.typeDescription))
           )
-          .header({ padding: { right: 4 } }, chalk.underline(colors.mute(columnTitles.default)))
-          .header(columnTitles.environment ? chalk.underline(colors.mute(columnTitles.environment)) : null)
+          .header({ padding: { right: 4 } }, chalk.underline(Term.colors.mute(columnTitles.default)))
+          .header(
+            columnTitles.environment ? chalk.underline(Term.colors.mute(columnTitles.environment)) : null
+          )
           .rows([
             ...basicAndUnionSpecsWithoutHelp.map((spec) => [
               parameterName(spec),
@@ -125,7 +117,10 @@ export const render = (
                   : labels.required
               return [
                 [
-                  Tex.block({ border: { left: colors.dim(`┌`) } }, colors.dim(`─${mexGroup.label} ${`(2)`}`)),
+                  Tex.block(
+                    { border: { left: Term.colors.dim(`┌`) } },
+                    Term.colors.dim(`─${mexGroup.label} ${`(2)`}`)
+                  ),
                   ``,
                   default_,
                 ],
@@ -135,11 +130,11 @@ export const render = (
                   parameterDefault(spec),
                   ...(isEnvironmentEnabled ? [parameterEnvironment(spec, settings)] : []),
                 ]),
-                [Tex.block({ border: { left: colors.dim(`└`) } }, colors.dim(`─`))],
+                [Tex.block({ border: { left: Term.colors.dim(`└`) } }, Term.colors.dim(`─`))],
               ]
             }),
           ])
-      ).block({ color: colors.dim }, ($) => {
+      ).block({ color: Term.colors.dim }, ($) => {
         if (noteItems.length === 0) {
           return null
         }
@@ -180,14 +175,14 @@ const environmentNote = (specs: ParameterSpec.Output[], settings: Settings.Outpu
       content += `By default they must be prefixed with`
       content += ` ${Text.joinListEnglish(
         settings.parameters.environment.$default.prefix.map((_) =>
-          colors.secondary(Text.toEnvarNameCase(_) + `_`)
+          Term.colors.secondary(Text.toEnvarNameCase(_) + `_`)
         )
       )} (case insensitive), though some parameters deviate (shown in docs). `
     } else {
       content += `They must be prefixed with`
       content += ` ${Text.joinListEnglish(
         settings.parameters.environment.$default.prefix.map((_) =>
-          colors.secondary(Text.toEnvarNameCase(_) + `_`)
+          Term.colors.secondary(Text.toEnvarNameCase(_) + `_`)
         )
       )} (case insensitive). `
     }
@@ -204,10 +199,10 @@ const environmentNote = (specs: ParameterSpec.Output[], settings: Settings.Outpu
     .slice(0, 3)
     .map((_) =>
       _.environment!.namespaces.length > 0
-        ? `${colors.secondary(Text.toEnvarNameCase(_.environment!.namespaces[0]!) + `_`)}${colors.positive(
-            Text.toEnvarNameCase(_.name.canonical)
-          )}`
-        : colors.positive(Text.toEnvarNameCase(_.name.canonical))
+        ? `${Term.colors.secondary(
+            Text.toEnvarNameCase(_.environment!.namespaces[0]!) + `_`
+          )}${Term.colors.positive(Text.toEnvarNameCase(_.name.canonical))}`
+        : Term.colors.positive(Text.toEnvarNameCase(_.name.canonical))
     )
     .map((_) => `${_}="..."`)
 
@@ -226,19 +221,19 @@ const environmentNote = (specs: ParameterSpec.Output[], settings: Settings.Outpu
 
 const parameterDefault = (spec: ParameterSpec.Output) => {
   if (spec._tag === `Exclusive`) {
-    return colors.dim(`–`)
+    return Term.colors.dim(`–`)
   }
 
   if (spec.optionality._tag === `optional`) {
-    return colors.secondary(`undefined`)
+    return Term.colors.secondary(`undefined`)
   }
 
   if (spec.optionality._tag === `default`) {
     try {
-      return colors.secondary(String(spec.optionality.getValue()))
+      return Term.colors.secondary(String(spec.optionality.getValue()))
     } catch (e) {
       const error = e instanceof Error ? e : new Error(String(e))
-      return chalk.bold(colors.alert(`Error trying to render this default: ${error.message}`))
+      return chalk.bold(Term.colors.alert(`Error trying to render this default: ${error.message}`))
     }
   }
 
@@ -246,7 +241,7 @@ const parameterDefault = (spec: ParameterSpec.Output) => {
 }
 
 const labels = {
-  required: chalk.bold(chalk.black(colors.alertBoldBg(` REQUIRED `))),
+  required: chalk.bold(chalk.black(Term.colors.alertBoldBg(` REQUIRED `))),
 }
 
 const parameterName = (spec: ParameterSpec.Output) => {
@@ -259,7 +254,9 @@ const parameterName = (spec: ParameterSpec.Output) => {
       ? {
           border: {
             left: (lineNumber) =>
-              lineNumber === 0 ? colors.accent(`◒ `) : colors.dim(`${Text.chars.borders.vertical} `),
+              lineNumber === 0
+                ? Term.colors.accent(`◒ `)
+                : Term.colors.dim(`${Text.chars.borders.vertical} `),
           },
         }
       : {
@@ -269,16 +266,18 @@ const parameterName = (spec: ParameterSpec.Output) => {
         }
 
   return Tex.block(parameters, (__) =>
-    __.block(isRequired ? colors.positiveBold(spec.name.canonical) : colors.positive(spec.name.canonical))
-      .block(colors.dim(spec.name.aliases.long.join(`, `)) || null)
-      .block(colors.dim(spec.name.short ?? ``) || null)
-      .block(colors.dim(spec.name.aliases.long.join(`, `)) || null)
+    __.block(
+      isRequired ? Term.colors.positiveBold(spec.name.canonical) : Term.colors.positive(spec.name.canonical)
+    )
+      .block(Term.colors.dim(spec.name.aliases.long.join(`, `)) || null)
+      .block(Term.colors.dim(spec.name.short ?? ``) || null)
+      .block(Term.colors.dim(spec.name.aliases.long.join(`, `)) || null)
   )
 }
 
 const parameterTypeAndDescription = (settings: Settings.Output, spec: ParameterSpec.Output) => {
   if (spec._tag === `Union`) {
-    const unionMemberIcon = colors.accent(`◒`)
+    const unionMemberIcon = Term.colors.accent(`◒`)
     const isOneOrMoreMembersWithDescription = spec.types.some((_) => _.description !== null)
     const isExpandedMode =
       isOneOrMoreMembersWithDescription || settings.helpRendering.union.mode === `expandAlways`
@@ -289,20 +288,21 @@ const parameterTypeAndDescription = (settings: Settings.Output, spec: ParameterS
           {
             padding: { bottomBetween: isExpandedModeViaForceSetting ? 0 : 1 },
             border: {
-              left: (index) => `${index === 0 ? unionMemberIcon : colors.dim(Text.chars.borders.vertical)} `,
+              left: (index) =>
+                `${index === 0 ? unionMemberIcon : Term.colors.dim(Text.chars.borders.vertical)} `,
             },
           },
           (__) => __.block(typeScalar(_.type)).block(_.description)
         )
       })
       return Tex.block((__) =>
-        __.block(colors.dim(Text.chars.borders.leftTop + Text.chars.borders.horizontal + `union`))
+        __.block(Term.colors.dim(Text.chars.borders.leftTop + Text.chars.borders.horizontal + `union`))
           .block(
-            { padding: { bottom: 1 }, border: { left: `${colors.dim(Text.chars.borders.vertical)} ` } },
+            { padding: { bottom: 1 }, border: { left: `${Term.colors.dim(Text.chars.borders.vertical)} ` } },
             spec.description
           )
           .block(types)
-          .block(colors.dim(Text.chars.borders.leftBottom + Text.chars.borders.horizontal))
+          .block(Term.colors.dim(Text.chars.borders.leftBottom + Text.chars.borders.horizontal))
       )
     } else {
       const types = spec.types.map((_) => typeTagsToTypeScriptName[_.type._tag]).join(` | `)
@@ -318,34 +318,34 @@ const parameterTypeAndDescription = (settings: Settings.Output, spec: ParameterS
 
 const parameterEnvironment = (spec: ParameterSpec.Output, settings: Settings.Output) => {
   return spec.environment?.enabled
-    ? colors.secondary(Text.chars.check) +
+    ? Term.colors.secondary(Text.chars.check) +
         (spec.environment.enabled && spec.environment.namespaces.length === 0
-          ? ` ` + colors.dim(Text.toEnvarNameCase(spec.name.canonical))
+          ? ` ` + Term.colors.dim(Text.toEnvarNameCase(spec.name.canonical))
           : spec.environment.enabled &&
             spec.environment.namespaces.filter(
               // TODO settings normalized should store prefix in camel case
               (_) => !settings.parameters.environment.$default.prefix.includes(snakeCase(_))
             ).length > 0
           ? ` ` +
-            colors.dim(
+            Term.colors.dim(
               spec.environment.namespaces
                 .map((_) => `${Text.toEnvarNameCase(_)}_${Text.toEnvarNameCase(spec.name.canonical)}`)
                 .join(` ${Text.chars.pipe} `)
             )
           : ``)
-    : colors.dim(Text.chars.x)
+    : Term.colors.dim(Text.chars.x)
 }
 
 /**
  * Render an enum type into a column.
  */
 const typeEnum = (type: ParameterSpec.TypeEnum) => {
-  const separator = colors.accent(` ${Text.chars.pipe} `)
+  const separator = Term.colors.accent(` ${Text.chars.pipe} `)
   const members = Object.values(type.members)
-  const lines = members.map((member) => colors.positive(member)).join(separator)
+  const lines = members.map((member) => Term.colors.positive(member)).join(separator)
 
   // eslint-disable-next-line
-  return members.length > 1 ? lines : `${lines} ${colors.dim(`(enum)`)}`
+  return members.length > 1 ? lines : `${lines} ${Term.colors.dim(`(enum)`)}`
 }
 
 const title = (string: string) => {
@@ -354,7 +354,7 @@ const title = (string: string) => {
 
 const typeScalar = (type: ParameterSpec.Type): string => {
   if (type._tag === `TypeEnum`) return typeEnum(type)
-  return colors.positive(typeTagsToTypeScriptName[type._tag])
+  return Term.colors.positive(typeTagsToTypeScriptName[type._tag])
 }
 
 const typeTagsToTypeScriptName = {

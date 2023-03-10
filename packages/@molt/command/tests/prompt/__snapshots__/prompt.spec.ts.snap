@@ -7,6 +7,8 @@ Value is too short.]
 
 exports[`a parameter with prompt enabled given an invalid value at line does not prompt > tty 1`] = `[]`;
 
+exports[`a parameter with prompt enabled given an invalid value at line does not prompt > tty strip ansi 1`] = `[]`;
+
 exports[`a required parameter can be given at prompt > args 1`] = `
 {
   "a": "foo",
@@ -16,8 +18,19 @@ exports[`a required parameter can be given at prompt > args 1`] = `
 
 exports[`a required parameter can be given at prompt > tty 1`] = `
 [
-  "Please give argument for parameter \\"a\\"",
+  "[32ma[39m",
   "foo",
+  "
+",
+]
+`;
+
+exports[`a required parameter can be given at prompt > tty strip ansi 1`] = `
+[
+  "a",
+  "foo",
+  "
+",
 ]
 `;
 
@@ -30,9 +43,13 @@ exports[`a required parameter given by flag is not asked for in prompt > args 1`
 
 exports[`a required parameter given by flag is not asked for in prompt > tty 1`] = `[]`;
 
+exports[`a required parameter given by flag is not asked for in prompt > tty strip ansi 1`] = `[]`;
+
 exports[`a required parameter opted out of prompt is not prompted for > args 1`] = `[Error: Missing argument for flag "a".]`;
 
 exports[`a required parameter opted out of prompt is not prompted for > tty 1`] = `[]`;
+
+exports[`a required parameter opted out of prompt is not prompted for > tty strip ansi 1`] = `[]`;
 
 exports[`an optional parameter can be skipped at prompt > args 1`] = `
 {
@@ -43,9 +60,13 @@ exports[`an optional parameter can be skipped at prompt > args 1`] = `
 
 exports[`an optional parameter can be skipped at prompt > tty 1`] = `[]`;
 
+exports[`an optional parameter can be skipped at prompt > tty strip ansi 1`] = `[]`;
+
 exports[`by default parameter prompt is disabled > args 1`] = `[Error: Missing argument for flag "a".]`;
 
 exports[`by default parameter prompt is disabled > tty 1`] = `[]`;
+
+exports[`by default parameter prompt is disabled > tty strip ansi 1`] = `[]`;
 
 exports[`prompt input is validated > args 1`] = `
 {
@@ -56,13 +77,28 @@ exports[`prompt input is validated > args 1`] = `
 
 exports[`prompt input is validated > tty 1`] = `
 [
-  "Please give argument for parameter \\"a\\"",
+  "[32ma[39m",
+  "x",
+  "[31mInvalid value: Value is too short.[39m",
+  "xx",
+  "
+",
+]
+`;
+
+exports[`prompt input is validated > tty strip ansi 1`] = `
+[
+  "a",
   "x",
   "Invalid value: Value is too short.",
   "xx",
+  "
+",
 ]
 `;
 
 exports[`when there is no tty then prompt is skipped > args 1`] = `[Error: Missing argument for flag "a".]`;
 
 exports[`when there is no tty then prompt is skipped > tty 1`] = `[]`;
+
+exports[`when there is no tty then prompt is skipped > tty strip ansi 1`] = `[]`;

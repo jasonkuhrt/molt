@@ -1,8 +1,10 @@
+import { Text } from './lib/Text/index.js'
 import { ParameterSpec } from './ParameterSpec/index.js'
+import { Term } from './term.js'
 
 export interface TTY {
   write: (text: string) => void
-  read: () => string
+  read: (params: { prompt: string }) => string
 }
 
 /**
@@ -13,16 +15,21 @@ export const prompt = (specs: ParameterSpec.Output[], tty: TTY): Record<string, 
 
   for (const spec of specs) {
     // todo show a pretty prompt
-    tty.write(`Please give argument for parameter "${spec.name.canonical}"`)
+    let question = Term.colors.positive(`${spec.name.canonical}`)
+    if (spec.description) {
+      question += Term.colors.dim(`\n${spec.description}`)
+    }
+    tty.write(question)
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      const arg = tty.read()
+      const arg = tty.read({ prompt: `❯ ` })
       const validationResult = ParameterSpec.validate(spec, arg)
       if (validationResult._tag === `Success`) {
         args[spec.name.canonical] = validationResult.value
+        tty.write(Text.chars.newline)
         break
       } else {
-        tty.write(`Invalid value: ${validationResult.errors.join(`, `)}`)
+        tty.write(Term.colors.alert(`Invalid value: ${validationResult.errors.join(`, `)}`))
       }
     }
   }

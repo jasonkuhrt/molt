@@ -1,6 +1,7 @@
 import { Command } from '../../src/index.js'
 import { s, tryCatch } from '../_/helpers.js'
 import { tty } from '../_/mocks/tty.js'
+import stripAnsi from 'strip-ansi'
 import { expect, it } from 'vitest'
 
 it.each(
@@ -24,6 +25,7 @@ it.each(
   )
   expect(args).toMatchSnapshot(`args`)
   expect(tty.state.history.full).toMatchSnapshot(`tty`)
+  expect(tty.state.history.full.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)
 })
 
 it(`when there is no tty then prompt is skipped`, () => {
@@ -36,4 +38,5 @@ it(`when there is no tty then prompt is skipped`, () => {
   )
   expect(args).toMatchSnapshot(`args`)
   expect(tty.state.history.full).toMatchSnapshot(`tty`)
+  expect(tty.state.history.full.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)
 })
