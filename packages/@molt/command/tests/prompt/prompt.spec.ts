@@ -15,6 +15,7 @@ it.each(
     [`prompt input is validated`,                                                                 { a: { schema: s.min(2), prompt:true } },       [], [`x`,`xx`]],
     // todo we may want to change this behavior
     [`a parameter with prompt enabled given an invalid value at line does not prompt`,            { a: { schema: s.min(2), prompt: true } },      [`-a`,`x`], []],
+    [`shows progress gutter even when there is only one thing to prompt`,                         { a: { schema: s, prompt: true } },             [], [`foo`]],
   ] satisfies [description: string, config:any, line:string[], tty:string[]][]
 )(`%s`, (_, parameters, line, ttyReadsScript) => {
   tty.script.reads(ttyReadsScript)

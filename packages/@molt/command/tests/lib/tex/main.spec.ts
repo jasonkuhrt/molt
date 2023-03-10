@@ -1,4 +1,5 @@
 import { Tex } from '../../../src/lib/Tex/index.js'
+import chalk from 'chalk'
 import { describe, expect, it } from 'vitest'
 
 describe(`text`, () => {
@@ -6,6 +7,20 @@ describe(`text`, () => {
 })
 
 describe(`block`, () => {
+  describe(`flow`, () => {
+    $(
+      `can flow horizontally`,
+      Tex.Tex({ flow: `horizontal` })
+        .block(($) => $.block(`1aaaaa`).block(`1b`).block(`1ccccc`))
+        .block(($) => $.block(`2aaaa`).block(`2b`).block(`2ccccc`))
+    )
+    $(
+      `ansi does not contribute to column width calculation`,
+      Tex.Tex({ flow: `horizontal` })
+        .block(($) => $.block(`1a`).block(chalk.red(`1b`)).block(`1c`))
+        .block(($) => $.block(`2aaaa`).block(`2b`).block(`2ccccc`))
+    )
+  })
   describe(`width`, () => {
     describe(`%`, () => {
       $(

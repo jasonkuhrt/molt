@@ -94,6 +94,18 @@ exports[`block > can render two lines 1`] = `
 bar"
 `;
 
+exports[`block > flow > ansi does not contribute to column width calculation 1`] = `
+"1a2aaaa 
+[31m1b[39m2b    
+1c2ccccc"
+`;
+
+exports[`block > flow > can flow horizontally 1`] = `
+"1aaaaa2aaaa 
+1b    2b    
+1ccccc2ccccc"
+`;
+
 exports[`block > padding > bottom 1`] = `
 "foo
 
