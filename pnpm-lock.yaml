@@ -74,6 +74,7 @@ importers:
       '@molt/types': workspace:*
       '@types/lodash.camelcase': 4.3.7
       '@types/lodash.snakecase': ^4.1.7
+      '@types/readline-sync': ^1.4.4
       alge: 0.8.1
       chalk: ^5.2.0
       conditional-type-checks: 1.0.6
@@ -82,6 +83,7 @@ importers:
       fs-jetpack: 5.1.0
       lodash.camelcase: ^4.3.0
       lodash.snakecase: ^4.1.1
+      readline-sync: ^1.4.10
       string-length: ^5.0.1
       strip-ansi: ^7.0.1
       ts-toolbelt: ^9.6.0
@@ -95,6 +97,7 @@ importers:
       chalk: 5.2.0
       lodash.camelcase: 4.3.0
       lodash.snakecase: 4.1.1
+      readline-sync: 1.4.10
       string-length: 5.0.1
       strip-ansi: 7.0.1
       ts-toolbelt: 9.6.0
@@ -102,6 +105,7 @@ importers:
     devDependencies:
       '@types/lodash.camelcase': 4.3.7
       '@types/lodash.snakecase': 4.1.7
+      '@types/readline-sync': 1.4.4
       conditional-type-checks: 1.0.6
       execa: 7.0.0
       fast-glob: 3.2.12
@@ -724,6 +728,10 @@ packages:
 
   /@types/normalize-package-data/2.4.1:
     resolution: {integrity: sha512-Gj7cI7z+98M282Tqmp2K5EIsoouUEzbBJhQQzDE3jSIRk6r9gsz0oUokqIUR4u1R3dMHo0pDHM7sNOHyhulypw==}
+    dev: true
+
+  /@types/readline-sync/1.4.4:
+    resolution: {integrity: sha512-cFjVIoiamX7U6zkO2VPvXyTxbFDdiRo902IarJuPVxBhpDnXhwSaVE86ip+SCuyWBbEioKCkT4C88RNTxBM1Dw==}
     dev: true
 
   /@types/semver/7.3.13:
@@ -2634,6 +2642,11 @@ packages:
     dependencies:
       picomatch: 2.3.1
     dev: true
+
+  /readline-sync/1.4.10:
+    resolution: {integrity: sha512-gNva8/6UAe8QYepIQH/jQ2qn91Qj0B9sYjMBBs3QOB8F2CXcKgLxQaJRP76sWVRQt+QU+8fAkCbCvjjMFu7Ycw==}
+    engines: {node: '>= 0.8.0'}
+    dev: false
 
   /redent/3.0.0:
     resolution: {integrity: sha512-6tDA8g98We0zd0GvVeMT9arEOnTw9qM03L9cJXaCjrip1OO764RDBLBfrB4cwzNGDj5OA5ioymC9GkizgWJDUg==}

@@ -19,6 +19,7 @@ export const processBasic = (
     description: typeAnalysis.description,
     type: typeAnalysis.type,
     optionality: typeAnalysis.optionality,
+    prompt: input.prompt,
     environment,
     name,
   } satisfies Output.Basic

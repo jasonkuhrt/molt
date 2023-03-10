@@ -9,13 +9,18 @@ export { Environment } from './Environment/index.js'
 export { Line } from './Line/index.js'
 export * from './types.js'
 
+type Errs = Errors.ErrorMissingArgument | Errors.ErrorMissingArgumentForMutuallyExclusiveParameters | Error
+
 export const parse = (
   specs: ParameterSpec.Output[],
   argInputsLine: Line.RawInputs,
   argInputsEnvironment: Environment.RawInputs
-): { args: Record<string, unknown>; errors: Errors.ErrorMissingArgument[] } => {
-  const errors = []
-  const argsFinal: Record<string, unknown> = {}
+): {
+  args: Record<string, unknown>
+  errors: Errs[]
+} => {
+  const errors: Errs[] = []
+  const argsOutput: Record<string, unknown> = {}
   const env = Environment.parse(argInputsEnvironment, specs)
   const lineParseResult = Line.parse(argInputsLine, specs)
 
@@ -55,17 +60,17 @@ export const parse = (
       }
 
       if (arg.value._tag === `boolean`) {
-        argsFinal[spec.name.canonical] = arg.value.negated ? !arg.value.value : arg.value.value
+        argsOutput[spec.name.canonical] = arg.value.negated ? !arg.value.value : arg.value.value
       } else {
         const valueTransformed = ParameterSpec.transform(spec, arg.value.value)
         const result = ParameterSpec.validate(spec, valueTransformed)
         Alge.match(result)
           .Success((result) => {
-            argsFinal[spec.name.canonical] = result.value
+            argsOutput[spec.name.canonical] = result.value
           })
           .Failure((result) => {
             errors.push(new Error(`Invalid value for ${spec.name.canonical}:\n${result.errors.join(`\n`)}`))
-            argsFinal[spec.name.canonical] = undefined
+            argsOutput[spec.name.canonical] = undefined
           })
           .done()
         if (result._tag === `Failure`) {
@@ -77,10 +82,10 @@ export const parse = (
 
     if (spec.optionality._tag === `default`) {
       try {
-        argsFinal[spec.name.canonical] = spec.optionality.getValue()
+        argsOutput[spec.name.canonical] = spec.optionality.getValue()
       } catch (error) {
         errors.push(new Error(`Failed to get default value for ${spec.name.canonical}`, { cause: error }))
-        argsFinal[spec.name.canonical] = undefined
+        argsOutput[spec.name.canonical] = undefined
       }
       continue
     }
@@ -89,7 +94,7 @@ export const parse = (
       errors.push(new Errors.ErrorMissingArgument({ spec }))
     }
 
-    argsFinal[spec.name.canonical] = undefined
+    argsOutput[spec.name.canonical] = undefined
   }
 
   /**
@@ -117,7 +122,7 @@ export const parse = (
       if (group.optionality._tag === `default`) {
         const defaultValue = group.optionality.getValue()
         if (defaultValue) {
-          argsFinal[group.label] = {
+          argsOutput[group.label] = {
             _tag: group.optionality.tag,
             value: defaultValue,
           }
@@ -145,7 +150,7 @@ export const parse = (
 
     if (argsToGroup.length === 1) {
       const arg = argsToGroup[0]! // eslint-disable-line
-      argsFinal[group.label] = {
+      argsOutput[group.label] = {
         _tag: arg.spec.name.canonical,
         value: arg.value.value,
       }
@@ -163,7 +168,7 @@ export const parse = (
 
   // dump({ args })
   return {
-    args: argsFinal,
+    args: argsOutput,
     errors,
   }
 }

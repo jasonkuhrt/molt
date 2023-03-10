@@ -43,6 +43,7 @@
     "chalk": "^5.2.0",
     "lodash.camelcase": "^4.3.0",
     "lodash.snakecase": "^4.1.1",
+    "readline-sync": "^1.4.10",
     "string-length": "^5.0.1",
     "strip-ansi": "^7.0.1",
     "ts-toolbelt": "^9.6.0",
@@ -51,6 +52,7 @@
   "devDependencies": {
     "@types/lodash.camelcase": "4.3.7",
     "@types/lodash.snakecase": "^4.1.7",
+    "@types/readline-sync": "^1.4.4",
     "conditional-type-checks": "1.0.6",
     "execa": "7.0.0",
     "fast-glob": "3.2.12",

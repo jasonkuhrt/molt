@@ -28,6 +28,7 @@
     - [Number](#number)
     - [Enum](#enum)
     - [Union](#union)
+  - [Parameter Prompts](#parameter-prompts)
   - [Line Arguments](#line-arguments)
     - [Parameter Argument Separator](#parameter-argument-separator)
     - [Stacked Short Flags](#stacked-short-flags)
@@ -560,6 +561,48 @@ args.force === true
             ◒ number
             └─
   ```
+
+### Parameter Prompts
+
+You can make Molt Command prompt users for arguments in addition to accepting them via flags and/or environment variables. Here's how it works:
+
+- You can configure any parameter to have prompt enabled or disabled
+- By default prompting is disabled
+- When prompt is enabled for a parameter, your users will be prompted for an argument for that parameter when the following holds:
+  1. It is has not been given via flag or environment variable
+  2. The node process has a TTY (`process.stdout.isTTY` must be `true`)
+- Prompt arguments are validated as when they are passed via flags or environment variables. However when validation fails the user will be asked to retry the input instead of the process completely failing.
+- Prompts are _synchronously_ executed allowing them to be used without forcing you to write async CLI code.
+  - > 💡 This is achieved via the [`readline-sync`](https://github.com/anseki/readline-sync). That project's repository is archived and the package not maintained. We may try [prompt-sync](`https://github.com/heapwolf/prompt-sync`) but it also does not look actively maintained. Worst case Molt Command will need its own implementation or move to an async API.
+- [Mutually exclusive parameters](#mutually-exclusive-parameters) are not supported yet.
+
+Take a look at the [intro example](./examples/intro.ts) for a working demo. Here's a quick preview:
+
+```ts
+// prettier-ignore
+const args = Command
+  .parameter(`filePath`, {
+    schema: z.string(),
+    prompt: true,
+  })
+  .parameter(`to`, {
+    schema: z.enum([`json`, `yaml`, `toml`]),
+    prompt: true,
+  })
+  .parse()
+```
+
+```
+$ binary
+Please give argument for parameter "filePath"
+./a/b/c.yaml
+Please give argument for parameter "to"
+jsonn
+Invalid value: Value is not a member of the enum.
+json
+```
+
+As you can see, while functional, the developer experience here is bad. This area of Molt Command [will improve](https://github.com/jasonkuhrt/molt/issues/9).
 
 ### Line Arguments
 

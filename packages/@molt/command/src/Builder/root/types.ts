@@ -1,5 +1,6 @@
 import type { Args } from '../../Args/index.js'
 import type { ParameterSpec } from '../../ParameterSpec/index.js'
+import type { TTY } from '../../prompt.js'
 import type { Settings } from '../../Settings/index.js'
 import type {
   BuilderAfterSettings,
@@ -23,7 +24,7 @@ interface Parameter<State extends State.Base = State.BaseEmpty> {
 // prettier-ignore
 interface Parameters<State extends State.Base = State.BaseEmpty> {
   <ParametersSchemaObject extends Record<string,ParameterConfiguration['schema']>>(schema:ParametersSchemaObject):                    RootBuilder<State.AddParametersObject<State,{[k in keyof ParametersSchemaObject]:{schema:ParametersSchemaObject[k]}}>>
-  <ParametersObject       extends Record<string,{schema:ParameterConfiguration['schema']}>>(schema:ParametersObject): RootBuilder<State.AddParametersObject<State,ParametersObject>>
+  <ParametersObject       extends Record<string,{schema:ParameterConfiguration['schema'];prompt?:boolean}>>(schema:ParametersObject): RootBuilder<State.AddParametersObject<State,ParametersObject>>
 }
 
 // prettier-ignore
@@ -39,6 +40,7 @@ export interface RootBuilder<State extends State.Base = State.BaseEmpty> {
 export type RawArgInputs = {
   line?: Args.Line.RawInputs
   environment?: Args.Environment.RawInputs
+  tty?: TTY
 }
 
 export type SomeArgsNormalized = Record<string, unknown>
