@@ -595,16 +595,16 @@ const args = Command
 ```
 $ binary
 
-filePath
-❯ ./a/b/c.yaml
+1/2  filePath
+     ❯ ./a/b/c.yaml
 
-to
-❯ jsonn
-Invalid value: Value is not a member of the enum.
-❯ json
+2/2  to
+     ❯ jsonn
+     Invalid value: Value is not a member of the enum.
+     ❯ json
 ```
 
-As you can see, while functional, the developer experience here is bad. This area of Molt Command [will improve](https://github.com/jasonkuhrt/molt/issues/9).
+This area of Molt Command [will improve](https://github.com/jasonkuhrt/molt/issues/9).
 
 ### Line Arguments
 
