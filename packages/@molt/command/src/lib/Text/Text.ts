@@ -73,7 +73,7 @@ export const row = (columns: ColSpec[]): string => {
   const columnsSized = columns.map((_) => {
     return {
       lines: _.lines,
-      width: _.width ?? _.lines.reduce((widthSoFar, line) => Math.max(widthSoFar, line.length), 0),
+      width: _.width ?? _.lines.reduce((widthSoFar, line) => Math.max(widthSoFar, stringLength(line)), 0),
       separator: _.separator ?? defaultColumnSeparator,
     }
   })

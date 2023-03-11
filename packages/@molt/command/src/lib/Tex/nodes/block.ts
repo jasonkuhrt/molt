@@ -5,6 +5,7 @@ import { Leaf } from './leaf.js'
 import { Node } from './node.js'
 
 export interface BlockParameters {
+  flow?: 'vertical' | 'horizontal'
   minWidth?: number
   maxWidth?: number
   width?: `${number}%`
@@ -82,6 +83,8 @@ export class Block extends Node {
     return this
   }
   render(context: RenderContext) {
+    const flow = this.parameters.flow ?? `vertical`
+
     if (context.phase === `inner` || !context.phase) {
       const widthOwn =
         typeof this.parameters.width === `number`
@@ -131,11 +134,24 @@ export class Block extends Node {
         index++
       }
 
-      const width = widthOwnResolved === null ? intrinsicWidth : maxWidthResolved
-      // each line must span the width of the box
-      renderings = renderings.map((_) => Text.minSpan(`left`, width, _))
+      let joined = ``
+      let width = 0
 
-      const joined = renderings.join(Text.chars.newline)
+      if (flow === `horizontal`) {
+        joined = Text.row(
+          renderings.map((_) => ({
+            lines: _.split(`\n`),
+            separator: ``,
+          }))
+        )
+
+        width = Text.measure(joined).maxWidth
+      } else {
+        width = widthOwnResolved === null ? intrinsicWidth : maxWidthResolved
+        // each line must span the width of the box
+        renderings = renderings.map((_) => Text.minSpan(`left`, width, _))
+        joined = renderings.join(Text.chars.newline)
+      }
 
       let value = joined
 

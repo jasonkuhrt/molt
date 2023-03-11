@@ -1,3 +1,4 @@
+import { Tex } from './lib/Tex/index_.js'
 import { Text } from './lib/Text/index.js'
 import { ParameterSpec } from './ParameterSpec/index.js'
 import { Term } from './term.js'
@@ -12,24 +13,38 @@ export interface TTY {
  */
 export const prompt = (specs: ParameterSpec.Output[], tty: TTY): Record<string, any> => {
   const args: Record<string, any> = {}
+  const indexTotal = specs.length
+  let indexCurrent = 1
+  const gutterWidth = String(indexTotal).length * 2 + 3
 
   for (const spec of specs) {
-    // todo show a pretty prompt
-    let question = Term.colors.positive(`${spec.name.canonical}`)
-    if (spec.description) {
-      question += Term.colors.dim(`\n${spec.description}`)
-    }
+    // prettier-ignore
+    const question = Tex({ flow: `horizontal`})
+        .block({ padding: { right: 2 }}, `${Term.colors.dim(`${indexCurrent}/${indexTotal}`)}`)
+        .block((__) =>
+          __.block(Term.colors.positive(spec.name.canonical))
+            .block((spec.description && Term.colors.dim(spec.description)) ?? null)
+        )
+      .render()
     tty.write(question)
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      const arg = tty.read({ prompt: `❯ ` })
+      const arg = tty.read({ prompt: `${Text.pad(`left`, gutterWidth, Text.chars.space, `❯ `)}` })
       const validationResult = ParameterSpec.validate(spec, arg)
       if (validationResult._tag === `Success`) {
         args[spec.name.canonical] = validationResult.value
         tty.write(Text.chars.newline)
+        indexCurrent++
         break
       } else {
-        tty.write(Term.colors.alert(`Invalid value: ${validationResult.errors.join(`, `)}`))
+        tty.write(
+          Text.pad(
+            `left`,
+            gutterWidth,
+            ` `,
+            Term.colors.alert(`Invalid value: ${validationResult.errors.join(`, `)}`)
+          )
+        )
       }
     }
   }
