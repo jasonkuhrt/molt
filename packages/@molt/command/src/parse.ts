@@ -19,7 +19,7 @@ export const parse = (
     (process.stdout.isTTY
       ? {
           write: console.log,
-          read: ReadLineSync.question,
+          read: (params) => ReadLineSync.question(params.prompt),
         }
       : null)
   const argInputsLine = argInputs?.line ?? process.argv.slice(2)
