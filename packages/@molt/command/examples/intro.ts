@@ -1,14 +1,10 @@
 import { Command } from '../src/index.js'
 import { z } from 'zod'
 
-const args = Command.parameter(`filePath`, {
-  schema: z.string().describe(`Path to the file to convert.`),
-  prompt: true,
-})
-  .parameter(`to`, {
-    schema: z.enum([`json`, `yaml`, `toml`]).describe(`Format to convert to.`),
-    prompt: true,
-  })
+// prettier-ignore
+const args = Command
+  .parameter(`filePath`, z.string().describe(`Path to the file to convert.`))
+  .parameter(`to`, z.enum([`json`, `yaml`, `toml`]).describe(`Format to convert to.`))
   .parameter(
     `from`,
     z
@@ -24,6 +20,18 @@ const args = Command.parameter(`filePath`, {
     `move m`,
     z.boolean().default(false).describe(`Delete the original file after it has been converted.`)
   )
+  .settings({
+    defaults: {
+      prompt: [
+        // { enabled: true },
+        {
+          when: (ctx) => ctx.parameter.optionality._tag === `required`,
+          enabled: true,
+        },
+        { enabled: true },
+      ]
+    },
+  })
   .parse()
 
 args.filePath

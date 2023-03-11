@@ -10,7 +10,7 @@ export namespace Output {
     optionality: BasicOptionality
     description: null | string
     environment: Environment
-    prompt: boolean
+    prompt: boolean | null
   }
 
   export interface Union {

@@ -3,13 +3,17 @@ import { groupBy } from '../lib/prelude.js'
 import { ParameterSpec } from '../ParameterSpec/index.js'
 import { Environment } from './Environment/index.js'
 import { Line } from './Line/index.js'
+import type { LineParseError } from './Line/Line.js'
 import type { ArgumentReport } from './types.js'
 import { Alge } from 'alge'
 export { Environment } from './Environment/index.js'
 export { Line } from './Line/index.js'
 export * from './types.js'
 
-type Errs = Errors.ErrorMissingArgument | Errors.ErrorMissingArgumentForMutuallyExclusiveParameters | Error
+export type ParseError =
+  | Errors.ErrorMissingArgument
+  | Errors.ErrorMissingArgumentForMutuallyExclusiveParameters
+  | LineParseError
 
 export const parse = (
   specs: ParameterSpec.Output[],
@@ -17,9 +21,9 @@ export const parse = (
   argInputsEnvironment: Environment.RawInputs
 ): {
   args: Record<string, unknown>
-  errors: Errs[]
+  errors: ParseError[]
 } => {
-  const errors: Errs[] = []
+  const errors: ParseError[] = []
   const argsOutput: Record<string, unknown> = {}
   const env = Environment.parse(argInputsEnvironment, specs)
   const lineParseResult = Line.parse(argInputsLine, specs)

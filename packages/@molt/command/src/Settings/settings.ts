@@ -1,10 +1,26 @@
 import { defaultParameterNamePrefixes } from '../Args/Environment/Environment.js'
 import type { State } from '../Builder/State.js'
+import type { Errors } from '../Errors/index.js'
 import { parseEnvironmentVariableBooleanOrThrow } from '../helpers.js'
+import type { ParameterSpec } from '../ParameterSpec/index.js'
 import type { FlagName } from '@molt/types'
 import snakeCase from 'lodash.snakecase'
 
 export type OnErrorReaction = 'exit' | 'throw'
+
+type PromptConditional = (context: {
+  parameter: ParameterSpec.Output.Union | ParameterSpec.Output.Basic | ParameterSpec.Output.ExclusiveGroup
+  error: Errors.ErrorInvalidArgument | Errors.ErrorMissingArgument | Errors.ErrorMissingArgument
+}) => boolean
+
+interface PromptConditionalDefaults {
+  when: PromptConditional
+  enabled: boolean
+}
+
+interface PromptConstantDefaults {
+  enabled: boolean
+}
 
 // eslint-disable-next-line
 export interface Input<ParametersObject extends State.ParametersSchemaObjectBase = {}> {
@@ -19,6 +35,14 @@ export interface Input<ParametersObject extends State.ParametersSchemaObjectBase
   }
   onError?: OnErrorReaction
   onOutput?: (output: string, defaultHandler: (output: string) => void) => void
+  defaults?: {
+    prompt?:
+      | PromptConditionalDefaults
+      | PromptConstantDefaults
+      | PromptConditionalDefaults[]
+      | [...PromptConditionalDefaults[]]
+      | [...PromptConditionalDefaults[], PromptConstantDefaults]
+  }
   parameters?: {
     // prettier-ignore
     environment?:
@@ -48,6 +72,17 @@ export interface Output {
       $default: SettingNormalizedEnvironmentParameterDefault
     }
   }
+  defaults: {
+    prompt: {
+      conditional: {
+        when: PromptConditional
+        enabled: boolean
+      }[]
+      constant: {
+        enabled: boolean
+      }
+    }
+  }
 }
 
 interface SettingNormalizedEnvironmentParameterDefault {
@@ -72,6 +107,19 @@ interface Environment {
 
 // eslint-disable-next-line
 export const change = (current: Output, input: Input<{}>, environment: Environment): void => {
+  if (input.defaults?.prompt) {
+    const prompt = Array.isArray(input.defaults.prompt) ? input.defaults.prompt : [input.defaults.prompt]
+
+    const conditionalFilters = prompt.filter((_): _ is PromptConditionalDefaults => `when` in _)
+    current.defaults.prompt.conditional = conditionalFilters
+
+    const constantFilters = prompt.filter((_): _ is PromptConstantDefaults => !(`when` in _))
+    const constantFilter = constantFilters[0] ?? null
+    if (constantFilter) {
+      current.defaults.prompt.constant = constantFilter
+    }
+  }
+
   current.onError = input.onError ?? current.onError
 
   current.description = input.description ?? current.description
@@ -176,6 +224,14 @@ const isEnvironmentEnabled = (lowercaseEnv: NodeJS.ProcessEnv) => {
 
 export const getDefaults = (lowercaseEnv: NodeJS.ProcessEnv): Output => {
   return {
+    defaults: {
+      prompt: {
+        conditional: [],
+        constant: {
+          enabled: false,
+        },
+      },
+    },
     help: true,
     helpOnNoArguments: true,
     helpOnError: true,

@@ -1,3 +1,4 @@
+import { Errors } from '../../Errors/index.js'
 import { isNegated, parseRawInput, stripeDashPrefix, stripeNegatePrefixLoose } from '../../helpers.js'
 import type { Index } from '../../lib/prelude.js'
 import { ParameterSpec } from '../../ParameterSpec/index.js'
@@ -6,12 +7,14 @@ import camelCase from 'lodash.camelcase'
 
 export type RawInputs = string[]
 
+export type LineParseError = Errors.ErrorUnknownFlag | Errors.ErrorMissingArgument | Errors.ErrorDuplicateFlag
+
 export const parse = (
   rawLineInputs: RawInputs,
   specs: ParameterSpec.Output[]
-): { errors: Error[]; line: Index<ArgumentReport> } => {
+): { errors: LineParseError[]; line: Index<ArgumentReport> } => {
   // dump(specs)
-  const errors: Error[] = []
+  const errors: LineParseError[] = []
 
   const rawLineInputsPrepared = rawLineInputs
     .flatMap((lineInput) => {
@@ -47,7 +50,7 @@ export const parse = (
           negated: isNegated(camelCase(pendingReport.source.name)),
         }
       } else {
-        pendingReport.errors.push(new Error(`Missing argument`))
+        pendingReport.errors.push(new Errors.ErrorMissingArgument({ spec: pendingReport.spec }))
       }
     }
   }
@@ -64,7 +67,7 @@ export const parse = (
       const flagNameNoDashPrefixNoNegate = stripeNegatePrefixLoose(flagNameNoDashPrefixCamel)
       const spec = ParameterSpec.findByName(flagNameNoDashPrefixCamel, specs)
       if (!spec) {
-        errors.push(new Error(`Unknown flag "${flagNameNoDashPrefixNoNegate}"`))
+        errors.push(new Errors.ErrorUnknownFlag({ flagName: flagNameNoDashPrefixNoNegate }))
         continue
       }
 
@@ -73,7 +76,7 @@ export const parse = (
         // TODO Handle once we support multiple values (arrays).
         // TODO richer structured info about the duplication. For example if
         // duplicated across aliases, make it easy to report a nice message explaining that.
-        errors.push(new Error(`Duplicate flag "${flagNameNoDashPrefixNoNegate}"`))
+        errors.push(new Errors.ErrorDuplicateFlag({ flagName: flagNameNoDashPrefixNoNegate }))
         continue
       }
 

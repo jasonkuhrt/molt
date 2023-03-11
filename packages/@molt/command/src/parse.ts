@@ -1,6 +1,7 @@
 import { Args } from './Args/index.js'
 import type { RawArgInputs } from './Builder/root/types.js'
 import { ErrorMissingArgument } from './Errors/Errors.js'
+import { Errors } from './Errors/index.js'
 import { Help } from './Help/index.js'
 import { getLowerCaseEnvironment, lowerCaseObjectKeys } from './helpers.js'
 import type { Settings } from './index.js'
@@ -31,19 +32,46 @@ export const parse = (
   const specsResult = {
     specs: ParameterSpec.process(parameterSpecInputs, settings),
   }
+
   // dump(specsResult)
   const argsResult = Args.parse(specsResult.specs, argInputsLine, argInputsEnvironment)
   let prompts: ParameterSpec.Output[] = []
   if (argInputsTTY && argsResult.errors.length > 0) {
-    const missingArgErrors: ErrorMissingArgument[] = argsResult.errors.filter(
-      (_): _ is ErrorMissingArgument =>
-        _ instanceof ErrorMissingArgument && _.spec._tag === `Basic` && _.spec.prompt
-    )
-    const otherErrors = argsResult.errors.filter(
-      (_) => !(_ instanceof ErrorMissingArgument && _.spec._tag === `Basic` && _.spec.prompt)
-    )
-    argsResult.errors = otherErrors
-    prompts = missingArgErrors.map((_) => _.spec)
+    const [errorsToPrompt, errors] = partition(argsResult.errors, (error) => {
+      if (
+        error instanceof Errors.ErrorMissingArgumentForMutuallyExclusiveParameters ||
+        error instanceof Errors.ErrorArgsToMultipleMutuallyExclusiveParameters ||
+        error instanceof Errors.ErrorDuplicateFlag ||
+        error instanceof Errors.ErrorUnknownFlag
+      )
+        return false
+      if (
+        error instanceof ErrorMissingArgument &&
+        error.spec._tag === `Basic` &&
+        error.spec.prompt !== null
+      ) {
+        return error.spec.prompt
+      }
+      const found = settings.defaults.prompt.conditional.find((_) =>
+        _.when({
+          parameter: error.spec._tag === `Exclusive` ? error.spec.group : error.spec,
+          error,
+        })
+      )
+      if (found) {
+        return found.enabled
+      }
+      return settings.defaults.prompt.constant.enabled
+    }) as any as [
+      (Errors.ErrorInvalidArgument | Errors.ErrorMissingArgument)[],
+      (
+        | Errors.ErrorArgsToMultipleMutuallyExclusiveParameters
+        | Errors.ErrorMissingArgumentForMutuallyExclusiveParameters
+        | Errors.ErrorArgsToMultipleMutuallyExclusiveParameters
+      )[]
+    ]
+    argsResult.errors = errors
+    prompts = errorsToPrompt.map((_) => _.spec)
   }
   // dump(argsResult)
 
@@ -83,7 +111,7 @@ export const parse = (
     throw new Error(`missing args`) // When testing, with process.exit mock, we will reach this case
   }
 
-  const argsFromPrompt = argInputsTTY ? prompt(prompts, argInputsTTY) : {}
+  const argsFromPrompt = argInputsTTY ? prompt(settings, prompts, argInputsTTY) : {}
 
   const args = {
     ...argsResult.args,
@@ -91,4 +119,20 @@ export const parse = (
   }
 
   return args
+}
+
+const partition = <T extends [...unknown[]]>(
+  xs: T,
+  fn: (x: T[number]) => boolean
+): [T[number][], T[number][]] => {
+  const xs1: T[number][] = []
+  const xs2: T[number][] = []
+  for (const x of xs) {
+    if (fn(x)) {
+      xs1.push(x)
+    } else {
+      xs2.push(x)
+    }
+  }
+  return [xs1, xs2]
 }
