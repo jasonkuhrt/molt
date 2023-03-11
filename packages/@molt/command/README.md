@@ -594,12 +594,14 @@ const args = Command
 
 ```
 $ binary
-Please give argument for parameter "filePath"
-./a/b/c.yaml
-Please give argument for parameter "to"
-jsonn
+
+filePath
+❯ ./a/b/c.yaml
+
+to
+❯ jsonn
 Invalid value: Value is not a member of the enum.
-json
+❯ json
 ```
 
 As you can see, while functional, the developer experience here is bad. This area of Molt Command [will improve](https://github.com/jasonkuhrt/molt/issues/9).
