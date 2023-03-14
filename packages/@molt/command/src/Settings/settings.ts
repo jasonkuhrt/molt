@@ -10,7 +10,7 @@ export type OnErrorReaction = 'exit' | 'throw'
 
 type PromptConditional = (context: {
   parameter: ParameterSpec.Output.Union | ParameterSpec.Output.Basic | ParameterSpec.Output.ExclusiveGroup
-  error: Errors.ErrorInvalidArgument | Errors.ErrorMissingArgument | Errors.ErrorMissingArgument
+  error: null | Errors.ErrorInvalidArgument | Errors.ErrorMissingArgument
 }) => boolean
 
 interface PromptConditionalDefaults {
@@ -21,6 +21,13 @@ interface PromptConditionalDefaults {
 interface PromptConstantDefaults {
   enabled: boolean
 }
+
+export type InputDefaultsPrompt =
+  | PromptConditionalDefaults
+  | PromptConstantDefaults
+  | PromptConditionalDefaults[]
+  | [...PromptConditionalDefaults[]]
+  | [...PromptConditionalDefaults[], PromptConstantDefaults]
 
 // eslint-disable-next-line
 export interface Input<ParametersObject extends State.ParametersSchemaObjectBase = {}> {
@@ -36,12 +43,7 @@ export interface Input<ParametersObject extends State.ParametersSchemaObjectBase
   onError?: OnErrorReaction
   onOutput?: (output: string, defaultHandler: (output: string) => void) => void
   defaults?: {
-    prompt?:
-      | PromptConditionalDefaults
-      | PromptConstantDefaults
-      | PromptConditionalDefaults[]
-      | [...PromptConditionalDefaults[]]
-      | [...PromptConditionalDefaults[], PromptConstantDefaults]
+    prompt?: InputDefaultsPrompt
   }
   parameters?: {
     // prettier-ignore
@@ -115,6 +117,7 @@ export const change = (current: Output, input: Input<{}>, environment: Environme
 
     const constantFilters = prompt.filter((_): _ is PromptConstantDefaults => !(`when` in _))
     const constantFilter = constantFilters[0] ?? null
+
     if (constantFilter) {
       current.defaults.prompt.constant = constantFilter
     }

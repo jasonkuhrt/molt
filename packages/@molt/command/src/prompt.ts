@@ -1,4 +1,3 @@
-import type { Settings } from './index.js'
 import { Tex } from './lib/Tex/index_.js'
 import { Text } from './lib/Text/index.js'
 import { ParameterSpec } from './ParameterSpec/index.js'
@@ -12,11 +11,7 @@ export interface TTY {
 /**
  * Get args from the user interactively via the console for the given parameters.
  */
-export const prompt = (
-  settings: Settings.Output,
-  specs: ParameterSpec.Output[],
-  tty: TTY
-): Record<string, any> => {
+export const prompt = (specs: ParameterSpec.Output[], tty: TTY): Record<string, any> => {
   const args: Record<string, any> = {}
   const indexTotal = specs.length
   let indexCurrent = 1

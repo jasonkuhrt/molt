@@ -7,7 +7,7 @@ export namespace Input {
     _tag: 'Basic'
     nameExpression: string
     type: SomeBasicType
-    prompt: boolean
+    prompt: null | boolean
   }
 
   export interface Exclusive {

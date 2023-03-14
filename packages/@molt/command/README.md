@@ -965,6 +965,56 @@ const args = Command.description(
 
 Descriptions will show up in the auto generated help.
 
+### Settings
+
+#### Prompt
+
+- You can control the default aspects of [parameter prompts](#parameter-prompts).
+- You can toggle prompt for all parameters. Example:
+  ```ts
+  Command.settings({ prompt: { enabled: true } })
+  ```
+- You can toggle prompt conditionally. Conditional prompts have a matcher (`when`) that executes for every argument missing or that fails parameter validation. Your matcher returns a boolean indicating if prompt applies or not for this parameter. Example:
+  ```ts
+  Command.settings({
+    prompt: {
+      enabled: true,
+      when: (context) => context.error.name === 'ErrorMissingArgument',
+    },
+  })
+  ```
+- You can specify multiple conditional prompts. In this case, when an argument is missing or fails parameter validation the stack of conditional prompt matchers are run in descending order (first defined to last in the array) until one matches (and its prompt toggle is thus used) or none match (and the default prompt toggle is used).
+
+  ```ts
+  Command.settings({
+    prompt: [
+      {
+        enabled: true,
+        when: (context) => context.error.name === 'ErrorMissingArgument',
+      },
+      {
+        enabled: true
+        when: (context) => context.parameter.optionality._tag === 'optional',
+      }
+    ],
+  })
+  ```
+
+- Putting together the above features, you can thus change the default prompt toggle in a prompt setting stack by ending it with a constant prompt config different than the packaged default of `false`:
+  ```ts
+  Command.settings({
+    prompt: [
+      {
+        enabled: false,
+        when: (context) => context.parameter.optionality._tag === 'optional',
+      },
+      {
+        enabled: true,
+      },
+    ],
+  })
+  ```
+
 ## Recipes
 
 ### Optional Argument With Default Behavior

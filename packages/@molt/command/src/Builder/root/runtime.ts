@@ -14,7 +14,7 @@ const create = () => {
 
   const $$ = {
     addParameterBasicOrUnion: (nameExpression: string, configuration: ParameterConfiguration) => {
-      const prompt = configuration.prompt ?? false
+      const prompt = configuration.prompt ?? null
       const parameter = ParameterSpec.isUnionType(configuration.schema)
         ? ({
             _tag: `Union`,

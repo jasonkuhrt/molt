@@ -36,43 +36,76 @@ export const parse = (
   // dump(specsResult)
   const argsResult = Args.parse(specsResult.specs, argInputsLine, argInputsEnvironment)
   let prompts: ParameterSpec.Output[] = []
-  if (argInputsTTY && argsResult.errors.length > 0) {
-    const [errorsToPrompt, errors] = partition(argsResult.errors, (error) => {
-      if (
-        error instanceof Errors.ErrorMissingArgumentForMutuallyExclusiveParameters ||
-        error instanceof Errors.ErrorArgsToMultipleMutuallyExclusiveParameters ||
-        error instanceof Errors.ErrorDuplicateFlag ||
-        error instanceof Errors.ErrorUnknownFlag
-      )
-        return false
-      if (
-        error instanceof ErrorMissingArgument &&
-        error.spec._tag === `Basic` &&
-        error.spec.prompt !== null
-      ) {
-        return error.spec.prompt
+  if (argInputsTTY) {
+    // TODO make this be simply all specs for maximum flexibility but also simplicity
+    const errorsAndOptionalMissing = [
+      ...argsResult.errors,
+      ...specsResult.specs.filter(
+        (_): _ is ParameterSpec.Output.Basic | ParameterSpec.Output.Union =>
+          _._tag !== `Exclusive` &&
+          argsResult.args[_.name.canonical] === undefined &&
+          _.optionality._tag === `optional`
+      ),
+    ]
+    const [promptableSpecsAndErrors, unpromptableSpecsAndErrors] = partition(
+      errorsAndOptionalMissing,
+      (errorOrSpec) => {
+        if (
+          errorOrSpec instanceof Errors.ErrorMissingArgumentForMutuallyExclusiveParameters ||
+          errorOrSpec instanceof Errors.ErrorArgsToMultipleMutuallyExclusiveParameters ||
+          errorOrSpec instanceof Errors.ErrorDuplicateFlag ||
+          errorOrSpec instanceof Errors.ErrorUnknownFlag
+        ) {
+          return false
+        }
+        if (
+          errorOrSpec instanceof ErrorMissingArgument &&
+          errorOrSpec.spec._tag === `Basic` &&
+          errorOrSpec.spec.prompt !== null
+        ) {
+          return errorOrSpec.spec.prompt
+        }
+
+        const conditionalPrompt = settings.defaults.prompt.conditional.find((_) =>
+          _.when({
+            parameter:
+              errorOrSpec instanceof Error
+                ? errorOrSpec.spec._tag === `Exclusive`
+                  ? errorOrSpec.spec.group
+                  : errorOrSpec.spec
+                : errorOrSpec,
+            error: errorOrSpec instanceof Error ? errorOrSpec : null,
+          })
+        )
+        if (conditionalPrompt) {
+          return conditionalPrompt.enabled
+        }
+        return settings.defaults.prompt.constant.enabled
       }
-      const found = settings.defaults.prompt.conditional.find((_) =>
-        _.when({
-          parameter: error.spec._tag === `Exclusive` ? error.spec.group : error.spec,
-          error,
-        })
-      )
-      if (found) {
-        return found.enabled
-      }
-      return settings.defaults.prompt.constant.enabled
-    }) as any as [
-      (Errors.ErrorInvalidArgument | Errors.ErrorMissingArgument)[],
+    ) as any as [
+      (
+        | Errors.ErrorInvalidArgument
+        | Errors.ErrorMissingArgument
+        | ParameterSpec.Output.Basic
+        | ParameterSpec.Output.Union
+      )[],
       (
         | Errors.ErrorArgsToMultipleMutuallyExclusiveParameters
         | Errors.ErrorMissingArgumentForMutuallyExclusiveParameters
-        | Errors.ErrorArgsToMultipleMutuallyExclusiveParameters
+        | ParameterSpec.Output.Basic
+        | ParameterSpec.Output.Union
       )[]
     ]
-    argsResult.errors = errors
-    prompts = errorsToPrompt.map((_) => _.spec)
+    argsResult.errors = unpromptableSpecsAndErrors.filter(
+      (
+        _
+      ): _ is
+        | Errors.ErrorArgsToMultipleMutuallyExclusiveParameters
+        | Errors.ErrorMissingArgumentForMutuallyExclusiveParameters => _ instanceof Error
+    )
+    prompts = promptableSpecsAndErrors.map((_) => (_ instanceof Error ? _.spec : _))
   }
+  // dump(prompts)
   // dump(argsResult)
 
   // eslint-disable-next-line
@@ -111,7 +144,7 @@ export const parse = (
     throw new Error(`missing args`) // When testing, with process.exit mock, we will reach this case
   }
 
-  const argsFromPrompt = argInputsTTY ? prompt(settings, prompts, argInputsTTY) : {}
+  const argsFromPrompt = argInputsTTY ? prompt(prompts, argInputsTTY) : {}
 
   const args = {
     ...argsResult.args,
