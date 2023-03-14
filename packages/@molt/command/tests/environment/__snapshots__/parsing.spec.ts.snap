@@ -5,7 +5,7 @@ exports[`enum can be parsed > throws an error if the value does not pass validat
   [
     "Cannot run command, you made some mistakes:
 
-Invalid value for foo:
+Invalid argument for parameter: \\"foo\\". The error was:
 Value is not a member of the enum.
 
 Here are the docs for this command:

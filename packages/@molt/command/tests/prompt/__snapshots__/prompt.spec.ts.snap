@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`a parameter with prompt enabled given an invalid value at line does not prompt > args 1`] = `
-[Error: Invalid value for a:
+[ErrorInvalidArgument: Invalid argument for parameter: "a". The error was:
 Value is too short.]
 `;
 
