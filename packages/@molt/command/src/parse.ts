@@ -54,7 +54,9 @@ export const parse = (
           errorOrSpec instanceof Errors.ErrorMissingArgumentForMutuallyExclusiveParameters ||
           errorOrSpec instanceof Errors.ErrorArgsToMultipleMutuallyExclusiveParameters ||
           errorOrSpec instanceof Errors.ErrorDuplicateFlag ||
-          errorOrSpec instanceof Errors.ErrorUnknownFlag
+          errorOrSpec instanceof Errors.ErrorUnknownFlag ||
+          errorOrSpec instanceof Errors.ErrorDuplicateArgument ||
+          errorOrSpec instanceof Errors.ErrorFailedToGetParameterDefault
         ) {
           return false
         }

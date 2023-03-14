@@ -1,6 +1,5 @@
 import type { Args } from '../Args/index.js'
 import type { ParameterSpec } from '../ParameterSpec/index.js'
-import type { z } from 'zod'
 
 export class ErrorUnknownFlag extends Error {
   public override name: 'ErrorUnknownFlag'
@@ -16,6 +15,24 @@ export class ErrorDuplicateFlag extends Error {
     const message = `Duplicate flag "${params.flagName}"`
     super(message)
     this.name = `ErrorDuplicateFlag`
+  }
+}
+
+export class ErrorDuplicateArgument extends Error {
+  public override name: 'ErrorDuplicateArgument'
+  constructor(params: { spec: ParameterSpec.Output }) {
+    const message = `Duplicate argument for parameter "${params.spec.name.canonical}"`
+    super(message)
+    this.name = `ErrorDuplicateArgument`
+  }
+}
+
+export class ErrorFailedToGetParameterDefault extends Error {
+  public override name: 'ErrorFailedToGetParameterDefault'
+  constructor(params: { spec: ParameterSpec.Output; cause: Error }) {
+    const message = `Failed to get default value for ${params.spec.name.canonical}`
+    super(message, { cause: params.cause })
+    this.name = `ErrorFailedToGetParameterDefault`
   }
 }
 
@@ -64,16 +81,13 @@ export class ErrorInvalidArgument extends Error {
   constructor(params: {
     spec: ParameterSpec.Output
     environmentVariableName?: string
-    parameterName: string
-    validationError: z.ZodError
+    validationErrors: string[]
   }) {
     const message = `Invalid argument${
       params.environmentVariableName
         ? ` (via environment variable "${params.environmentVariableName}") `
         : ` `
-    }for parameter: "${params.parameterName}". The error was:\n${params.validationError
-      .format()
-      ._errors.join(`\n`)}`
+    }for parameter: "${params.spec.name.canonical}". The error was:\n${params.validationErrors.join(`\n`)}`
     super(message)
     this.spec = params.spec
     this.name = `ErrorInvalidArgument`

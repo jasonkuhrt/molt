@@ -1,9 +1,10 @@
 import type { ParameterSpec } from '../ParameterSpec/index.js'
+import type { LineParseError } from './Line/Line.js'
 
 export interface ArgumentReport extends Argument {
   spec: ParameterSpec.Output
   duplicates: Argument[]
-  errors: Error[]
+  errors: LineParseError[]
 }
 
 export interface Argument {

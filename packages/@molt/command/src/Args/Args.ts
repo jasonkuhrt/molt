@@ -10,9 +10,18 @@ export { Environment } from './Environment/index.js'
 export { Line } from './Line/index.js'
 export * from './types.js'
 
+const errorFromUnknown = (x: unknown): Error => {
+  if (x instanceof Error) return x
+  return new Error(String(x))
+}
+
 export type ParseError =
   | Errors.ErrorMissingArgument
+  | Errors.ErrorFailedToGetParameterDefault
   | Errors.ErrorMissingArgumentForMutuallyExclusiveParameters
+  | Errors.ErrorInvalidArgument
+  | Errors.ErrorDuplicateArgument
+  | Errors.ErrorArgsToMultipleMutuallyExclusiveParameters
   | LineParseError
 
 export const parse = (
@@ -59,7 +68,7 @@ export const parse = (
         continue
       }
       if (arg.duplicates.length > 0) {
-        errors.push(new Error(`Duplicate input for parameter ${spec.name.canonical}`))
+        errors.push(new Errors.ErrorDuplicateArgument({ spec }))
         continue
       }
 
@@ -73,7 +82,8 @@ export const parse = (
             argsOutput[spec.name.canonical] = result.value
           })
           .Failure((result) => {
-            errors.push(new Error(`Invalid value for ${spec.name.canonical}:\n${result.errors.join(`\n`)}`))
+            // `Invalid value for ${spec.name.canonical}:\n${result.errors.join(`\n`)}`
+            errors.push(new Errors.ErrorInvalidArgument({ spec, validationErrors: result.errors }))
             argsOutput[spec.name.canonical] = undefined
           })
           .done()
@@ -88,7 +98,12 @@ export const parse = (
       try {
         argsOutput[spec.name.canonical] = spec.optionality.getValue()
       } catch (error) {
-        errors.push(new Error(`Failed to get default value for ${spec.name.canonical}`, { cause: error }))
+        errors.push(
+          new Errors.ErrorFailedToGetParameterDefault({
+            spec,
+            cause: errorFromUnknown(error),
+          })
+        )
         argsOutput[spec.name.canonical] = undefined
       }
       continue
