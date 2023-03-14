@@ -5,7 +5,7 @@ exports[`errors > throws error when argument missing (last position) 1`] = `
   [
     "Cannot run command, you made some mistakes:
 
-Missing argument
+Missing argument for flag \\"age\\".
 
 Here are the docs for this command:
 
@@ -37,7 +37,7 @@ exports[`errors > throws error when argument missing (non-last position) 1`] = `
   [
     "Cannot run command, you made some mistakes:
 
-Missing argument
+Missing argument for flag \\"age\\".
 
 Here are the docs for this command:
 
