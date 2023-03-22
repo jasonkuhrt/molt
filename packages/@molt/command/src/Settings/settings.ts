@@ -11,6 +11,7 @@ export type OnErrorReaction = 'exit' | 'throw'
 type PromptConditional = (context: {
   parameter: ParameterSpec.Output.Union | ParameterSpec.Output.Basic | ParameterSpec.Output.ExclusiveGroup
   error: null | Errors.ErrorInvalidArgument | Errors.ErrorMissingArgument
+  argument: undefined | ParameterSpec.ArgumentValue
 }) => boolean
 
 interface PromptConditionalDefaults {

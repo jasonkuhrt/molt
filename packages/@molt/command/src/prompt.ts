@@ -82,7 +82,7 @@ export const createMockTTY = () => {
   return {
     state,
     script: {
-      reads: (values: string[]) => {
+      userInputs: (values: string[]) => {
         state.readScript.push(...values)
       },
     },

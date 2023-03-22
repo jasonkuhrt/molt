@@ -68,8 +68,10 @@ export const parse = (
           return errorOrSpec.spec.prompt
         }
 
-        const conditionalPrompt = settings.defaults.prompt.conditional.find((_) =>
-          _.when({
+        const conditionalPrompt = settings.defaults.prompt.conditional.find((_) => {
+          const spec = errorOrSpec instanceof Error ? errorOrSpec.spec : errorOrSpec
+          return _.when({
+            argument: argsResult.args[spec.name.canonical],
             parameter:
               errorOrSpec instanceof Error
                 ? errorOrSpec.spec._tag === `Exclusive`
@@ -78,7 +80,7 @@ export const parse = (
                 : errorOrSpec,
             error: errorOrSpec instanceof Error ? errorOrSpec : null,
           })
-        )
+        })
         if (conditionalPrompt) {
           return conditionalPrompt.enabled
         }

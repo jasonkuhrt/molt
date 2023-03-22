@@ -18,7 +18,7 @@ it.each(
     [`shows progress gutter even when there is only one thing to prompt`,                         { a: { schema: s, prompt: true } },             [], [`foo`]],
   ] satisfies [description: string, config:any, line:string[], tty:string[]][]
 )(`%s`, (_, parameters, line, ttyReadsScript) => {
-  tty.script.reads(ttyReadsScript)
+  tty.script.userInputs(ttyReadsScript)
   const args = tryCatch(() =>
     Command.parameters(parameters)
       .settings({ onError: `throw`, helpOnError: false })

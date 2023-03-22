@@ -1,5 +1,5 @@
 import type { ParameterSpec } from '../../ParameterSpec/index.js'
-import type { ArgumentValue } from '../../ParameterSpec/types.js'
+import type { ArgumentValueScalar } from '../../ParameterSpec/types.js'
 import type { InternalState, SomeBuilderExclusiveInitial } from './types.js'
 
 export const create = (): SomeBuilderExclusiveInitial => {
@@ -23,7 +23,7 @@ export const create = (): SomeBuilderExclusiveInitial => {
       _.input.optionality = { _tag: `optional` }
       return chain
     },
-    default: (tag: string, value: ArgumentValue) => {
+    default: (tag: string, value: ArgumentValueScalar) => {
       _.input.optionality = { _tag: `default`, tag, value }
       return chain
     },

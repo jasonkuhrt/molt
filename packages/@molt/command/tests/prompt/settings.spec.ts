@@ -17,7 +17,7 @@ it(`prompt is disabled by default`, () => {
 })
 
 it(`prompt can be enabled by default`, () => {
-  tty.script.reads([`foo`])
+  tty.script.userInputs([`foo`])
   const settings: Settings.InputDefaultsPrompt = { enabled: true }
   const args = tryCatch(() =>
     Command.parameters({ a: { schema: s } })
@@ -75,7 +75,7 @@ describe(`prompt can be toggled by check on error`, () => {
       when: (ctx) => ctx.error?.name === `ErrorMissingArgument`,
     }
     it(`check does match`, () => {
-      tty.script.reads([`foo`])
+      tty.script.userInputs([`foo`])
       const args = tryCatch(() =>
         Command.parameters({ a: { schema: s } })
           .settings({ onError: `throw`, helpOnError: false, defaults: { prompt: settings } })
@@ -103,7 +103,7 @@ it(`can default to prompt on parameter spec condition`, () => {
     enabled: true,
     when: (ctx) => ctx.parameter.optionality._tag === `required`,
   }
-  tty.script.reads([`foo`])
+  tty.script.userInputs([`foo`])
   const args = tryCatch(() =>
     Command.parameters({ a: { schema: s } })
       .settings({ onError: `throw`, helpOnError: false, defaults: { prompt: settings } })
@@ -114,7 +114,8 @@ it(`can default to prompt on parameter spec condition`, () => {
   expect(tty.state.history.full.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)
 })
 
-it(`default can be stack of conditional prompts`, () => {
+it.only(`default can be stack of conditional prompts`, () => {
+  console.log(1)
   const settings: Settings.InputDefaultsPrompt = [
     {
       enabled: true,
@@ -123,15 +124,16 @@ it(`default can be stack of conditional prompts`, () => {
     {
       enabled: true,
       when: (ctx) => {
-        return ctx.parameter.optionality._tag === `optional`
+        console.log(ctx)
+        return ctx.parameter.optionality._tag === `optional` && ctx.argument === `1`
       },
     },
   ]
-  tty.script.reads([`foo`])
+  tty.script.userInputs([`foo`])
   const args = tryCatch(() =>
     Command.parameters({ a: { schema: s.optional() } })
       .settings({ onError: `throw`, helpOnError: false, defaults: { prompt: settings } })
-      .parse({ line: [], tty: tty.interface })
+      .parse({ line: [`-a`, `1`], tty: tty.interface })
   )
   expect(args).toMatchSnapshot(`args`)
   expect(tty.state.history.full).toMatchSnapshot(`tty`)

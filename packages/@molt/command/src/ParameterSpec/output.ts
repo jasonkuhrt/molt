@@ -1,4 +1,4 @@
-import type { ArgumentValue, SomeBasicType, Type } from './types.js'
+import type { ArgumentValueScalar, SomeBasicType, Type } from './types.js'
 
 export type Output = Output.Exclusive | Output.Basic | Output.Union
 
@@ -39,12 +39,12 @@ export namespace Output {
   export type BasicOptionality = 
     | { _tag: 'required' }
     | { _tag: 'optional' }
-    | { _tag: 'default', getValue: () => ArgumentValue }
+    | { _tag: 'default', getValue: () => ArgumentValueScalar }
 
   export type ExclusiveOptionality =
     | { _tag: 'required' }
     | { _tag: 'optional' }
-    | { _tag: 'default'; tag: string; getValue: () => ArgumentValue }
+    | { _tag: 'default'; tag: string; getValue: () => ArgumentValueScalar }
 
   export type Environment = null | { enabled: boolean; namespaces: string[] }
 

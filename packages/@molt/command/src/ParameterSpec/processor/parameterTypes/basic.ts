@@ -1,7 +1,7 @@
 import type { Settings } from '../../../index.js'
 import type { Input } from '../../input.js'
 import type { Output } from '../../output.js'
-import type { ArgumentValue } from '../../types.js'
+import type { ArgumentValueScalar } from '../../types.js'
 import { processEnvironment } from '../helpers/environment.js'
 import { processName } from '../helpers/name.js'
 import { analyzeZodTypeScalar } from '../helpers/type.js'
@@ -49,4 +49,4 @@ export const analyzeZodType = (input: Input.Basic) => {
   }
 }
 
-type DefaultGetter = () => ArgumentValue
+type DefaultGetter = () => ArgumentValueScalar

@@ -1,6 +1,14 @@
 export * from './zod.js'
 
-export type ArgumentValue = string | boolean | number
+export type ArgumentValueScalar = string | boolean | number
+
+export type ArgumentValue =
+  | undefined
+  | ArgumentValueScalar
+  | {
+      _tag: string
+      value: ArgumentValueScalar
+    }
 
 export type Type = TypeEnum | TypeString | TypeNumber | TypeBoolean
 

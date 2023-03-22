@@ -29,11 +29,11 @@ export const parse = (
   argInputsLine: Line.RawInputs,
   argInputsEnvironment: Environment.RawInputs
 ): {
-  args: Record<string, unknown>
+  args: Record<string, ParameterSpec.ArgumentValue>
   errors: ParseError[]
 } => {
   const errors: ParseError[] = []
-  const argsOutput: Record<string, unknown> = {}
+  const argsOutput: Record<string, ParameterSpec.ArgumentValue> = {}
   const env = Environment.parse(argInputsEnvironment, specs)
   const lineParseResult = Line.parse(argInputsLine, specs)
 
