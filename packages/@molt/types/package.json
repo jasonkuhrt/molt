@@ -4,7 +4,7 @@
   "description": "Advanced Types for parsing CLI flags and more.",
   "scripts": {
     "clean": "tsc --build --clean",
-    "types:check": "tsc --noEmit",
+    "check:types": "tsc --noEmit",
     "build": "pnpm clean && pnpm build:esm",
     "build:esm": "pnpm tsc --project tsconfig.esm.json",
     "prepublishOnly": "pnpm build"
