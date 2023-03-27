@@ -564,19 +564,74 @@ args.force === true
 
 ### Parameter Prompts
 
-You can make Molt Command prompt users for arguments in addition to accepting them via flags and/or environment variables. Here's how it works:
+You can make Molt Command interactively prompt users for arguments. This enables richer experiences for your users, like:
 
-- You can configure any parameter to have prompt enabled or disabled
-- By default prompting is disabled
-- When prompt is enabled for a parameter, your users will be prompted for an argument for that parameter when the following holds:
-  1. It is has not been given via flag or environment variable
-  2. The node process has a TTY (`process.stdout.isTTY` must be `true`)
-- Prompt arguments are validated as when they are passed via flags or environment variables. However when validation fails the user will be asked to retry the input instead of the process completely failing.
-- Prompts are _synchronously_ executed allowing them to be used without forcing you to write async CLI code.
+- Graceful recovery from invalid up front arguments.
+- Guided argument passing meaning no need to know ahead of time the required parameters, just follow the prompts.
+
+Here's how it works:
+
+#### Configuration
+
+- You can enable prompt on basic parameters ([mutually exclusive parameters](#mutually-exclusive-parameters) are not supported yet.).
+- You enable conditionally, such as "when input was missing". You specify event patterns that upon matching will enable the prompt.
+- Patterns can be named, stored, and reused.
+- There are built in patterns. Defining your own patterns is addidative to these.
+- A pattern can be made to be the "default" which means that the shorthand of `true` will refer to it.
+- You can make the default prompt be any pattern (or set of patterns). For example, you can specify that by default a parameter rejected because the argument was missing should prompt. The default default is to be disabled.
+- Type safety underpins this system, so you can always learn/refresh by rapid trial in error in your IDE.
+- The default defaults are:
+  ```ts
+  Command.settings({
+    prompt: {
+      patterns: [
+        {
+          $name: 'always',
+          accepted: {},
+          omitted: {},
+          rejected: {},
+        },
+        {
+          $name: 'omitted',
+          omitted: {
+            optionality: any('optional', 'default'),
+          },
+        },
+        {
+          $name: 'omittedWithoutDefault',
+          omitted: {
+            optionality: 'optional',
+          },
+        },
+        {
+          $name: 'omittedWithDefault',
+          omitted: {
+            optionality: 'default',
+          },
+        },
+        {
+          $name: 'rejectedMissingOrInvalid',
+          rejected: {
+            type: any('missing', 'invalid'),
+          },
+        },
+      ],
+      defaultPattern: 'rejectedMissingOrInvalid'
+      default: false,
+    },
+  })
+  ```
+
+#### Behavior
+
+- When there is no `TTY` (`process.stdout.isTTY === false`) then prompt is always disabled.
+- Arguments are validated just like they are when given "up front". However, when invalid, the user will be shown an error message and re-prompted, instead of the process exiting non-zero.
+- Prompts are _synchronously_ executed allowing them to be used without forcing your users to write async CLI code.
   - > 💡 This is achieved via the [`readline-sync`](https://github.com/anseki/readline-sync). That project's repository is archived and the package not maintained. We may try [prompt-sync](`https://github.com/heapwolf/prompt-sync`) but it also does not look actively maintained. Worst case Molt Command will need its own implementation or move to an async API.
-- [Mutually exclusive parameters](#mutually-exclusive-parameters) are not supported yet.
 
-Take a look at the [intro example](./examples/intro.ts) for a working demo. Here's a quick preview:
+#### Examples
+
+##### Prompt relying on default (uses pattern `rejectedMissingOrInvalid`).
 
 ```ts
 // prettier-ignore
@@ -604,7 +659,128 @@ $ binary
      ❯ json
 ```
 
-This area of Molt Command [will improve](https://github.com/jasonkuhrt/molt/issues/9).
+##### Prompt when argument missing, parameter configuration.
+
+```ts
+// prettier-ignore
+const args = Command
+  .parameter(`filePath`, {
+    schema: z.string(),
+    prompt: {
+      when: {
+        rejected: {
+          type: 'missing'
+        },
+      } 
+    },
+  })
+  .parameter(`to`, {
+    schema: z.enum([`json`, `yaml`, `toml`]),
+    prompt: {
+      when: {
+        rejected: {
+          type: 'missing'
+        },
+      } 
+    },
+  })
+  .parse()
+```
+
+##### Prompt when argument missing, pattern configuration.
+
+```ts
+const args = Command.parameter(`filePath`, {
+  schema: z.string(),
+  prompt: 'missing',
+})
+  .parameter(`to`, {
+    schema: z.enum([`json`, `yaml`, `toml`]),
+    prompt: 'missing',
+  })
+  .settings({
+    prompt: {
+      patterns: [
+        {
+          $name: 'missing',
+          rejected: {
+            type: 'missing',
+          },
+        },
+      ],
+    },
+  })
+  .parse()
+```
+
+##### Prompt when argument missing, default pattern configuration.
+
+```ts
+const args = Command.parameter(`filePath`, {
+  schema: z.string(),
+  prompt: true,
+})
+  .parameter(`to`, {
+    schema: z.enum([`json`, `yaml`, `toml`]),
+    prompt: true,
+  })
+  .settings({
+    prompt: {
+      defaultPattern: 'missing',
+      patterns: [
+        {
+          $name: 'missing',
+          rejected: {
+            type: 'missing',
+          },
+        },
+      ],
+    },
+  })
+  .parse()
+```
+
+##### Prompt when argument missing or invalid or omitted without having default, using built in patterns.
+
+```ts
+const args = Command.parameter(`filePath`, {
+  schema: z.string(),
+})
+  .parameter(`to`, {
+    schema: z.enum([`json`, `yaml`, `toml`]),
+  })
+  .settings({
+    prompt: {
+      default: ['rejectedMissingOrInvalid', 'omittedWithoutDefault'],
+    },
+  })
+  .parse()
+```
+
+##### Prompt when argument missing, default configuration.
+
+```ts
+const args = Command.parameter(`filePath`, {
+  schema: z.string(),
+})
+  .parameter(`to`, {
+    schema: z.enum([`json`, `yaml`, `toml`]),
+  })
+  .settings({
+    prompt: {
+      default: 'missing',
+      patterns: [
+        {
+          $name: 'missing',
+          rejected: {
+            type: 'missing',
+          },
+        },
+      ],
+    },
+  })
+  .parse()
+```
 
 ### Line Arguments
 
@@ -964,56 +1140,6 @@ const args = Command.description(
 ```
 
 Descriptions will show up in the auto generated help.
-
-### Settings
-
-#### Prompt
-
-- You can control the default aspects of [parameter prompts](#parameter-prompts).
-- You can toggle prompt for all parameters. Example:
-  ```ts
-  Command.settings({ prompt: { enabled: true } })
-  ```
-- You can toggle prompt conditionally. Conditional prompts have a matcher (`when`) that executes for every argument missing or that fails parameter validation. Your matcher returns a boolean indicating if prompt applies or not for this parameter. Example:
-  ```ts
-  Command.settings({
-    prompt: {
-      enabled: true,
-      when: (context) => context.error.name === 'ErrorMissingArgument',
-    },
-  })
-  ```
-- You can specify multiple conditional prompts. In this case, when an argument is missing or fails parameter validation the stack of conditional prompt matchers are run in descending order (first defined to last in the array) until one matches (and its prompt toggle is thus used) or none match (and the default prompt toggle is used).
-
-  ```ts
-  Command.settings({
-    prompt: [
-      {
-        enabled: true,
-        when: (context) => context.error.name === 'ErrorMissingArgument',
-      },
-      {
-        enabled: true
-        when: (context) => context.parameter.optionality._tag === 'optional',
-      }
-    ],
-  })
-  ```
-
-- Putting together the above features, you can thus change the default prompt toggle in a prompt setting stack by ending it with a constant prompt config different than the packaged default of `false`:
-  ```ts
-  Command.settings({
-    prompt: [
-      {
-        enabled: false,
-        when: (context) => context.parameter.optionality._tag === 'optional',
-      },
-      {
-        enabled: true,
-      },
-    ],
-  })
-  ```
 
 ## Recipes
 
