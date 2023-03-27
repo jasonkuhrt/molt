@@ -577,11 +577,11 @@ Here's how it works:
 #### Configuration
 
 - You can enable prompt on basic parameters ([mutually exclusive parameters](#mutually-exclusive-parameters) are not supported yet.).
-- You enable conditionally, such as "when input was missing". You specify event patterns that upon matching will enable the prompt.
+- You specify event patterns that upon matching enable the prompt.
 - Patterns can be named, stored, and reused.
 - There are built in patterns. Defining your own patterns is addidative to these.
 - A pattern can be made to be the "default" which means that the shorthand of `true` will refer to it.
-- You can make the default prompt be any pattern (or set of patterns). For example, you can specify that by default a parameter rejected because the argument was missing should prompt. The default default is to be disabled.
+- The default prompt behavior is to be disabled. You can change that to any pattern (or set of patterns).
 - Type safety underpins this system, so you can always learn/refresh by rapid trial in error in your IDE.
 - The default defaults are:
   ```ts
@@ -590,9 +590,9 @@ Here's how it works:
       patterns: [
         {
           $name: 'always',
-          accepted: {},
-          omitted: {},
-          rejected: {},
+          accepted: any,
+          omitted: any,
+          rejected: any,
         },
         {
           $name: 'omitted',
