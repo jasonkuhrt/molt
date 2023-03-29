@@ -1,8 +1,12 @@
+import type { Input } from './input.js'
 import type { ArgumentValueScalar, SomeBasicType, Type } from './types.js'
 
 export type Output = Output.Exclusive | Output.Basic | Output.Union
 
 export namespace Output {
+  export type Prompt = Input.Prompt
+  export type EventPattern = Input.EventPattern
+
   export interface Basic {
     _tag: 'Basic'
     name: Name
@@ -10,7 +14,7 @@ export namespace Output {
     optionality: BasicOptionality
     description: null | string
     environment: Environment
-    prompt: boolean | null
+    prompt: Prompt
   }
 
   export interface Union {

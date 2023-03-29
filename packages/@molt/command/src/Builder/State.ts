@@ -56,19 +56,20 @@ export namespace State {
 
   export type ParametersSchemaObjectBase = Record<string, ParameterConfiguration['schema']>
 
-  export type ParametersObjectBase = Record<
+  export type ParametersConfigBase = Record<
     string,
     {
       schema: ParameterConfiguration['schema']
-      prompt?: boolean
+      prompt?: ParameterSpec.Output.Prompt
     }
   >
 
   // prettier-ignore
-  export type AddParametersObject<State extends Base, ParametersObject extends ParametersObjectBase> =
-    Omit<State, 'Parameters'> & {
-      Parameters: State['Parameters'] & { [NameExpression in keyof ParametersObject & string]: CreateParameter<State,NameExpression,{schema:ParametersObject[NameExpression]['schema']}> }
-    }
+  export type AddParametersConfig<State extends Base, ParametersConfig extends ParametersConfigBase> =
+    // todo pass prompt through too
+    MergeIntoProperty<State, 'Parameters', {
+      [NameExpression in keyof ParametersConfig & string]: CreateParameter<State,NameExpression,{schema:ParametersConfig[NameExpression]['schema']}>
+    }>
 
   // prettier-ignore
   export type SetExclusiveOptional<
@@ -91,26 +92,23 @@ export namespace State {
     Label extends string,
     NameExpression extends string,
     Configuration extends ExclusiveParameterConfiguration
-  > = {
-    Parameters: State['Parameters']
-    ParametersExclusive: State['ParametersExclusive'] & 
-      {
-        [_ in Label]: {
-          Optional: State['ParametersExclusive'][_]['Optional']
-          Parameters: {
-            // @ts-expect-error - Trust the name expression here...
-            [_ in NameExpression as FlagName.Data.GetCanonicalName<FlagName.Parse<NameExpression>>]: {
-              Schema: Configuration['schema']
-              NameParsed: FlagName.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>
-              NameUnion: FlagName.Data.GetNamesFromParseResult<
-                FlagName.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>
-              >
-            }
-
+  > =
+    MergeIntoProperty<State, 'ParametersExclusive', {
+      [_ in Label]: {
+        Optional: State['ParametersExclusive'][_]['Optional']
+        Parameters: {
+          // @ts-expect-error - Trust the name expression here...
+          [_ in NameExpression as FlagName.Data.GetCanonicalName<FlagName.Parse<NameExpression>>]: {
+            Schema: Configuration['schema']
+            NameParsed: FlagName.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>
+            NameUnion: FlagName.Data.GetNamesFromParseResult<
+              FlagName.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>
+            >
           }
+
         }
       }
-  }
+    }>
 
   // prettier-ignore
   type CreateParameter<
@@ -172,3 +170,13 @@ export namespace State {
 type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (k: infer I) => void
   ? I
   : never
+
+type SetProperty<Obj extends object, PropertyName extends keyof Obj, Value> = Omit<Obj, PropertyName> & {
+  [P in PropertyName]: Value
+}
+
+type MergeIntoProperty<Obj extends object, PropertyName extends keyof Obj, Value> = SetProperty<
+  Obj,
+  PropertyName,
+  Obj[PropertyName] & Value
+>

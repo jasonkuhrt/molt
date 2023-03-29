@@ -1,10 +1,11 @@
 import { Args } from './Args/index.js'
 import type { RawArgInputs } from './Builder/root/types.js'
 import { ErrorMissingArgument } from './Errors/Errors.js'
-import { Errors } from './Errors/index.js'
+import type { Errors } from './Errors/index.js'
 import { Help } from './Help/index.js'
 import { getLowerCaseEnvironment, lowerCaseObjectKeys } from './helpers.js'
 import type { Settings } from './index.js'
+import { dump } from './lib/prelude.js'
 import { ParameterSpec } from './ParameterSpec/index.js'
 import { prompt } from './prompt.js'
 import * as ReadLineSync from 'readline-sync'
@@ -32,82 +33,75 @@ export const parse = (
   const specsResult = {
     specs: ParameterSpec.process(parameterSpecInputs, settings),
   }
-
   // dump(specsResult)
-  const argsResult = Args.parse(specsResult.specs, argInputsLine, argInputsEnvironment)
-  let prompts: ParameterSpec.Output[] = []
-  if (argInputsTTY) {
-    // TODO make this be simply all specs for maximum flexibility but also simplicity
-    const errorsAndOptionalMissing = [
-      ...argsResult.errors,
-      ...specsResult.specs.filter(
-        (_): _ is ParameterSpec.Output.Basic | ParameterSpec.Output.Union =>
-          _._tag !== `Exclusive` &&
-          argsResult.args[_.name.canonical] === undefined &&
-          _.optionality._tag === `optional`
-      ),
-    ]
-    const [promptableSpecsAndErrors, unpromptableSpecsAndErrors] = partition(
-      errorsAndOptionalMissing,
-      (errorOrSpec) => {
-        if (
-          errorOrSpec instanceof Errors.ErrorMissingArgumentForMutuallyExclusiveParameters ||
-          errorOrSpec instanceof Errors.ErrorArgsToMultipleMutuallyExclusiveParameters ||
-          errorOrSpec instanceof Errors.ErrorDuplicateFlag ||
-          errorOrSpec instanceof Errors.ErrorUnknownFlag ||
-          errorOrSpec instanceof Errors.ErrorDuplicateArgument ||
-          errorOrSpec instanceof Errors.ErrorFailedToGetParameterDefault
-        ) {
-          return false
-        }
-        if (
-          errorOrSpec instanceof ErrorMissingArgument &&
-          errorOrSpec.spec._tag === `Basic` &&
-          errorOrSpec.spec.prompt !== null
-        ) {
-          return errorOrSpec.spec.prompt
-        }
 
-        const conditionalPrompt = settings.defaults.prompt.conditional.find((_) => {
-          const spec = errorOrSpec instanceof Error ? errorOrSpec.spec : errorOrSpec
-          return _.when({
-            argument: argsResult.args[spec.name.canonical],
-            parameter:
-              errorOrSpec instanceof Error
-                ? errorOrSpec.spec._tag === `Exclusive`
-                  ? errorOrSpec.spec.group
-                  : errorOrSpec.spec
-                : errorOrSpec,
-            error: errorOrSpec instanceof Error ? errorOrSpec : null,
-          })
-        })
-        if (conditionalPrompt) {
-          return conditionalPrompt.enabled
+  /**
+   * todo make this data structure more sophisticated.
+   * Right now it splits into errors and args. Prompt makes things more complicated.
+   * We want to know for each parameter what happened in order to properly prompt.
+   * So the data structure should be a map of parameter names to results that indicate:
+   * 1. error
+   * 2. supplied
+   * 3. omitted
+   * This nicely maps to the events we have defined that prompts can match on.
+   * This data structure should be the "pre-prompt parse results".
+   *
+   * Then we match prompts. this leads to a data structure of specs-to-prompt.
+   * If there are still errors after matching, then we cannot continue.
+   * if all errors become prompts, we can continue.
+   * then prompts are run. the results lead to a new set of arguments. Because prompts keep prompting until they get a valid valid
+   * we know that the result of running prompts cannot have any errors.
+   * The post-prompt parse results could be created but we do not need them
+   * Instead we can just finalize our arguments. They are the pre-prompt supplied merged (and overridden by) with the post-prompt supplied.
+   */
+  const argsResult = Args.parse(specsResult.specs, argInputsLine, argInputsEnvironment)
+  const prompts: ParameterSpec.Output[] = []
+  if (argInputsTTY) {
+    const basicSpecs = specsResult.specs.filter((_): _ is ParameterSpec.Output.Basic => _._tag === `Basic`)
+    for (const s of basicSpecs) {
+      if (s.prompt !== false) {
+        let pattern: ParameterSpec.Output.EventPattern
+        if (s.prompt === true) {
+          // todo get default pattern from settings
+          pattern = `todo` as any
+        } else if (s.prompt === null) {
+          // todo get default from settings
+          pattern = `todo` as any
+        } else {
+          pattern = s.prompt
         }
-        return settings.defaults.prompt.constant.enabled
+        // todo break this logic out into a pattern matcher function
+        if (pattern.when.supplied) {
+          if (argsResult.args[s.name.canonical]) {
+            prompts.push(s)
+            continue
+          }
+        }
+        if (pattern.when.omitted) {
+          if (!argsResult.args[s.name.canonical]) {
+            if (s.optionality._tag !== `required`) {
+              // todo handle concept of matching any value
+              if (pattern.when.omitted.optionality === s.optionality._tag) {
+                prompts.push(s)
+                continue
+              }
+            }
+          }
+        }
+        if (pattern.when.rejected) {
+          const errorIndex = argsResult.errors.findIndex(
+            (error) =>
+              error.name === pattern.when.rejected!.name && error.spec.name.canonical === s.name.canonical
+          )
+          if (errorIndex !== -1) {
+            // The error should not be thrown anymore because we are going to prompt for it.
+            argsResult.errors.splice(errorIndex, 1)
+            prompts.push(s)
+            continue
+          }
+        }
       }
-    ) as any as [
-      (
-        | Errors.ErrorInvalidArgument
-        | Errors.ErrorMissingArgument
-        | ParameterSpec.Output.Basic
-        | ParameterSpec.Output.Union
-      )[],
-      (
-        | Errors.ErrorArgsToMultipleMutuallyExclusiveParameters
-        | Errors.ErrorMissingArgumentForMutuallyExclusiveParameters
-        | ParameterSpec.Output.Basic
-        | ParameterSpec.Output.Union
-      )[]
-    ]
-    argsResult.errors = unpromptableSpecsAndErrors.filter(
-      (
-        _
-      ): _ is
-        | Errors.ErrorArgsToMultipleMutuallyExclusiveParameters
-        | Errors.ErrorMissingArgumentForMutuallyExclusiveParameters => _ instanceof Error
-    )
-    prompts = promptableSpecsAndErrors.map((_) => (_ instanceof Error ? _.spec : _))
+    }
   }
   // dump(prompts)
   // dump(argsResult)

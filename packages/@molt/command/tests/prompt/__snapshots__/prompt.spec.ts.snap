@@ -1,22 +1,13 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`a parameter with prompt enabled given an invalid value at line does not prompt > args 1`] = `
-[ErrorInvalidArgument: Invalid argument for parameter: "a". The error was:
-Value is too short.]
-`;
-
-exports[`a parameter with prompt enabled given an invalid value at line does not prompt > tty 1`] = `[]`;
-
-exports[`a parameter with prompt enabled given an invalid value at line does not prompt > tty strip ansi 1`] = `[]`;
-
-exports[`a required parameter can be given at prompt > args 1`] = `
+exports[`parameter prompt config for when invalid input > args 1`] = `
 {
   "a": "foo",
   "help": false,
 }
 `;
 
-exports[`a required parameter can be given at prompt > tty 1`] = `
+exports[`parameter prompt config for when invalid input > tty 1`] = `
 [
   "[2m[90m1/1[39m[22m  [32ma[39m",
   "foo",
@@ -25,7 +16,7 @@ exports[`a required parameter can be given at prompt > tty 1`] = `
 ]
 `;
 
-exports[`a required parameter can be given at prompt > tty strip ansi 1`] = `
+exports[`parameter prompt config for when invalid input > tty strip ansi 1`] = `
 [
   "1/1  a",
   "foo",
@@ -33,97 +24,3 @@ exports[`a required parameter can be given at prompt > tty strip ansi 1`] = `
 ",
 ]
 `;
-
-exports[`a required parameter given by flag is not asked for in prompt > args 1`] = `
-{
-  "a": "foo",
-  "help": false,
-}
-`;
-
-exports[`a required parameter given by flag is not asked for in prompt > tty 1`] = `[]`;
-
-exports[`a required parameter given by flag is not asked for in prompt > tty strip ansi 1`] = `[]`;
-
-exports[`a required parameter opted out of prompt is not prompted for > args 1`] = `[ErrorMissingArgument: Missing argument for flag "a".]`;
-
-exports[`a required parameter opted out of prompt is not prompted for > tty 1`] = `[]`;
-
-exports[`a required parameter opted out of prompt is not prompted for > tty strip ansi 1`] = `[]`;
-
-exports[`an optional parameter can be skipped at prompt > args 1`] = `
-{
-  "a": undefined,
-  "help": false,
-}
-`;
-
-exports[`an optional parameter can be skipped at prompt > tty 1`] = `[]`;
-
-exports[`an optional parameter can be skipped at prompt > tty strip ansi 1`] = `[]`;
-
-exports[`by default parameter prompt is disabled > args 1`] = `[ErrorMissingArgument: Missing argument for flag "a".]`;
-
-exports[`by default parameter prompt is disabled > tty 1`] = `[]`;
-
-exports[`by default parameter prompt is disabled > tty strip ansi 1`] = `[]`;
-
-exports[`prompt input is validated > args 1`] = `
-{
-  "a": "xx",
-  "help": false,
-}
-`;
-
-exports[`prompt input is validated > tty 1`] = `
-[
-  "[2m[90m1/1[39m[22m  [32ma[39m",
-  "x",
-  "     [31mInvalid value: Value is too short.[39m",
-  "xx",
-  "
-",
-]
-`;
-
-exports[`prompt input is validated > tty strip ansi 1`] = `
-[
-  "1/1  a",
-  "x",
-  "     Invalid value: Value is too short.",
-  "xx",
-  "
-",
-]
-`;
-
-exports[`shows progress gutter even when there is only one thing to prompt > args 1`] = `
-{
-  "a": "foo",
-  "help": false,
-}
-`;
-
-exports[`shows progress gutter even when there is only one thing to prompt > tty 1`] = `
-[
-  "[2m[90m1/1[39m[22m  [32ma[39m",
-  "foo",
-  "
-",
-]
-`;
-
-exports[`shows progress gutter even when there is only one thing to prompt > tty strip ansi 1`] = `
-[
-  "1/1  a",
-  "foo",
-  "
-",
-]
-`;
-
-exports[`when there is no tty then prompt is skipped > args 1`] = `[ErrorMissingArgument: Missing argument for flag "a".]`;
-
-exports[`when there is no tty then prompt is skipped > tty 1`] = `[]`;
-
-exports[`when there is no tty then prompt is skipped > tty strip ansi 1`] = `[]`;

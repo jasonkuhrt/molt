@@ -21,10 +21,14 @@ interface Parameter<State extends State.Base = State.BaseEmpty> {
   <NameExpression extends string, Schema        extends ParameterConfiguration['schema']>(name:State.ValidateNameExpression<State,NameExpression>, schema:Schema               ): RootBuilder<State.AddParameter<State,NameExpression,{schema:Schema}>>
 }
 
+export type SomeParametersConfigSchema = Record<string, ParameterConfiguration['schema']>
+// prettier-ignore
+export type SomeParametersConfig       = Record<string,{schema:ParameterConfiguration['schema'];prompt?:ParameterSpec.Input.Prompt}>
+
 // prettier-ignore
 interface Parameters<State extends State.Base = State.BaseEmpty> {
-  <ParametersSchemaObject extends Record<string,ParameterConfiguration['schema']>>(schema:ParametersSchemaObject):                    RootBuilder<State.AddParametersObject<State,{[k in keyof ParametersSchemaObject]:{schema:ParametersSchemaObject[k]}}>>
-  <ParametersObject       extends Record<string,{schema:ParameterConfiguration['schema'];prompt?:boolean}>>(schema:ParametersObject): RootBuilder<State.AddParametersObject<State,ParametersObject>>
+  <ParametersConfigSchema extends SomeParametersConfigSchema> (schema:ParametersConfigSchema):  RootBuilder<State.AddParametersConfig<State,{[k in keyof ParametersConfigSchema]:{schema:ParametersConfigSchema[k]}}>>
+  <ParametersConfig       extends SomeParametersConfig>       (config:ParametersConfig):        RootBuilder<State.AddParametersConfig<State,ParametersConfig>>
 }
 
 // prettier-ignore

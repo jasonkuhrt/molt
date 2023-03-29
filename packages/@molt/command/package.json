@@ -32,6 +32,11 @@
         "types": "./build/esm/index.d.ts",
         "default": "./build/esm/index.js"
       }
+    },
+    "./types": {
+      "import": {
+        "types": "./build/esm/entrypoints/types.d.ts"
+      }
     }
   },
   "keywords": [],

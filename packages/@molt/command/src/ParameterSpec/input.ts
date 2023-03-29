@@ -1,13 +1,40 @@
-import type { ArgumentValueScalar, SomeBasicType, SomeExclusiveZodType, SomeUnionType } from './types.js'
+import type { Errors } from '../Errors/index.js'
+import type { Output } from './output.js'
+import type {
+  ArgumentValue,
+  ArgumentValueScalar,
+  SomeBasicType,
+  SomeExclusiveZodType,
+  SomeUnionType,
+} from './types.js'
 
 export type Input = Input.Basic | Input.Exclusive | Input.Union
 
 export namespace Input {
+  export interface EventPattern {
+    when: {
+      rejected?: {
+        // todo more errors, like duplicate
+        name: (Errors.ErrorMissingArgument | Errors.ErrorInvalidArgument)['name']
+      }
+      supplied?: {
+        // todo value should be type safe according to passed generic
+        value: ArgumentValue
+      }
+      // todo this field should only be allowed if the parameter spec is optional or has a default
+      omitted?: {
+        optionality: Omit<Output.BasicOptionality['_tag'], 'required'>
+      }
+    }
+  }
+
+  export type Prompt = null | boolean | EventPattern
+
   export interface Basic {
     _tag: 'Basic'
     nameExpression: string
     type: SomeBasicType
-    prompt: null | boolean
+    prompt: Prompt
   }
 
   export interface Exclusive {
