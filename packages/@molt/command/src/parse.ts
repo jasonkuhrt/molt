@@ -88,7 +88,10 @@ export const parse = (
         if (pattern.when.rejected) {
           const errorIndex = argsResult.errors.findIndex(
             (error) =>
-              error.name === pattern.when.rejected!.name && error.spec.name.canonical === s.name.canonical
+              error.name !== `ErrorUnknownFlag` &&
+              checkMatches(pattern.when.rejected!.name, error.name) &&
+              `spec` in error &&
+              error.spec.name.canonical === s.name.canonical
           )
           if (errorIndex !== -1) {
             // The error should not be thrown anymore because we are going to prompt for it.
@@ -163,4 +166,11 @@ const partition = <T extends [...unknown[]]>(
     }
   }
   return [xs1, xs2]
+}
+
+const checkMatches = (pattern: ParameterSpec.Pattern.ExactOrAnyOf<unknown>, value: unknown): boolean => {
+  if (Array.isArray(pattern)) {
+    return pattern.some((_) => checkMatches(_, value))
+  }
+  return pattern === value
 }

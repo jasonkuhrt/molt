@@ -9,30 +9,36 @@ export class ErrorUnknownFlag extends Error {
     this.name = `ErrorUnknownFlag`
   }
 }
-export class ErrorDuplicateFlag extends Error {
+export class ErrorDuplicateLineArg extends Error {
+  public spec: ParameterSpec.Output
   public override name: 'ErrorDuplicateFlag'
-  constructor(params: { flagName: string }) {
-    const message = `Duplicate flag "${params.flagName}"`
+  constructor(params: { spec: ParameterSpec.Output; flagName: string }) {
+    const message = `The parameter "${params.flagName}" was passed an argument multiple times via flags.`
     super(message)
     this.name = `ErrorDuplicateFlag`
+    this.spec = params.spec
   }
 }
 
-export class ErrorDuplicateArgument extends Error {
-  public override name: 'ErrorDuplicateArgument'
+export class ErrorDuplicateEnvArg extends Error {
+  public spec: ParameterSpec.Output
+  public override name: 'ErrorDuplicateEnvArg'
   constructor(params: { spec: ParameterSpec.Output }) {
-    const message = `Duplicate argument for parameter "${params.spec.name.canonical}"`
+    const message = `The parameter "${params.spec.name.canonical}" was passed an argument multiple times via different parameter aliases in the environment.`
     super(message)
-    this.name = `ErrorDuplicateArgument`
+    this.name = `ErrorDuplicateEnvArg`
+    this.spec = params.spec
   }
 }
 
 export class ErrorFailedToGetParameterDefault extends Error {
+  public spec: ParameterSpec.Output
   public override name: 'ErrorFailedToGetParameterDefault'
   constructor(params: { spec: ParameterSpec.Output; cause: Error }) {
     const message = `Failed to get default value for ${params.spec.name.canonical}`
     super(message, { cause: params.cause })
     this.name = `ErrorFailedToGetParameterDefault`
+    this.spec = params.spec
   }
 }
 
@@ -48,7 +54,7 @@ export class ErrorMissingArgument extends Error {
 }
 
 export class ErrorMissingArgumentForMutuallyExclusiveParameters extends Error {
-  public spec: ParameterSpec.Output.ExclusiveGroup
+  public group: ParameterSpec.Output.ExclusiveGroup
   public override name: 'ErrorMissingArgumentForMutuallyExclusiveParameters'
   constructor(params: { group: ParameterSpec.Output.ExclusiveGroup }) {
     const message = `Missing argument for one of the following parameters: ${Object.values(
@@ -57,20 +63,20 @@ export class ErrorMissingArgumentForMutuallyExclusiveParameters extends Error {
       .map((_) => _.name.canonical)
       .join(`, `)}`
     super(message)
-    this.spec = params.group
+    this.group = params.group
     this.name = `ErrorMissingArgumentForMutuallyExclusiveParameters`
   }
 }
 
 export class ErrorArgsToMultipleMutuallyExclusiveParameters extends Error {
-  public spec: ParameterSpec.Output.ExclusiveGroup
+  public group: ParameterSpec.Output.ExclusiveGroup
   public override name: 'ErrorArgsToMultipleMutuallyExclusiveParameters'
   constructor(params: { offenses: { spec: ParameterSpec.Output.Exclusive; arg: Args.Argument }[] }) {
     const message = `Arguments given to multiple mutually exclusive parameters: ${params.offenses
       .map((_) => _.spec.name.canonical)
       .join(`, `)}`
     super(message)
-    this.spec = params.offenses[0]!.spec.group
+    this.group = params.offenses[0]!.spec.group
     this.name = `ErrorArgsToMultipleMutuallyExclusiveParameters`
   }
 }

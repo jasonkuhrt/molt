@@ -10,12 +10,16 @@ import type {
 
 export type Input = Input.Basic | Input.Exclusive | Input.Union
 
+export namespace Pattern {
+  export type ExactOrAnyOf<T> = T | T[]
+}
+
 export namespace Input {
   export interface EventPattern {
     when: {
       rejected?: {
         // todo more errors, like duplicate
-        name: (Errors.ErrorMissingArgument | Errors.ErrorInvalidArgument)['name']
+        name: Pattern.ExactOrAnyOf<(Errors.ErrorMissingArgument | Errors.ErrorInvalidArgument)['name']>
       }
       supplied?: {
         // todo value should be type safe according to passed generic

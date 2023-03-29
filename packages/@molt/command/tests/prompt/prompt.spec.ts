@@ -3,16 +3,35 @@ import { Command } from '../../src/index.js'
 import { s, tryCatch } from '../_/helpers.js'
 import { tty } from '../_/mocks/tty.js'
 import stripAnsi from 'strip-ansi'
-import { expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 let parameters: Methods.Parameters.InputAsConfig
 let ttyReadsScript: string[]
 let line: string[]
 
-it(`parameter prompt config for when invalid input`, () => {
+it(`parameter prompt config for when missing input`, () => {
   parameters = { a: { schema: s.min(2), prompt: { when: { rejected: { name: `ErrorMissingArgument` } } } } }
   ttyReadsScript = [`foo`]
   line = []
+  doIt()
+})
+
+it(`parameter prompt config for when invalid input`, () => {
+  parameters = { a: { schema: s.min(2), prompt: { when: { rejected: { name: `ErrorInvalidArgument` } } } } }
+  ttyReadsScript = [`foo`]
+  line = [`-a`, `1`]
+  doIt()
+})
+
+it(`parameter prompt config for when invalid input OR missing input`, () => {
+  parameters = {
+    a: {
+      schema: s.min(2),
+      prompt: { when: { rejected: { name: [`ErrorInvalidArgument`, `ErrorMissingArgument`] } } },
+    },
+  }
+  ttyReadsScript = [`foo`]
+  line = [`-a`, `1`]
   doIt()
 })
 
@@ -27,6 +46,24 @@ const doIt = () => {
   expect(tty.state.history.full).toMatchSnapshot(`tty`)
   expect(tty.state.history.full.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)
 }
+
+describe(`types`, () => {
+  it(`rejected name must be a valid string literal`, () => {
+    parameters = {
+      a: {
+        schema: s.min(2),
+        prompt: {
+          when: {
+            rejected: {
+              // @ts-expect-error invalid type
+              name: `bad`,
+            },
+          },
+        },
+      },
+    }
+  })
+})
 
 // it.each(
 //   // prettier-ignore

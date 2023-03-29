@@ -7,7 +7,10 @@ import camelCase from 'lodash.camelcase'
 
 export type RawInputs = string[]
 
-export type LineParseError = Errors.ErrorUnknownFlag | Errors.ErrorMissingArgument | Errors.ErrorDuplicateFlag
+export type LineParseError =
+  | Errors.ErrorUnknownFlag
+  | Errors.ErrorMissingArgument
+  | Errors.ErrorDuplicateLineArg
 
 export const parse = (
   rawLineInputs: RawInputs,
@@ -76,7 +79,12 @@ export const parse = (
         // TODO Handle once we support multiple values (arrays).
         // TODO richer structured info about the duplication. For example if
         // duplicated across aliases, make it easy to report a nice message explaining that.
-        errors.push(new Errors.ErrorDuplicateFlag({ flagName: flagNameNoDashPrefixNoNegate }))
+        errors.push(
+          new Errors.ErrorDuplicateLineArg({
+            spec,
+            flagName: flagNameNoDashPrefixNoNegate,
+          })
+        )
         continue
       }
 

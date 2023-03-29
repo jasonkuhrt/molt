@@ -20,7 +20,7 @@ export type ParseError =
   | Errors.ErrorFailedToGetParameterDefault
   | Errors.ErrorMissingArgumentForMutuallyExclusiveParameters
   | Errors.ErrorInvalidArgument
-  | Errors.ErrorDuplicateArgument
+  | Errors.ErrorDuplicateEnvArg
   | Errors.ErrorArgsToMultipleMutuallyExclusiveParameters
   | LineParseError
 
@@ -67,8 +67,10 @@ export const parse = (
         errors.push(...arg.errors)
         continue
       }
+      // TODO duplicates is in arguments report but only filled for environment arg parsing.
+      // make all arg parsers consistent.
       if (arg.duplicates.length > 0) {
-        errors.push(new Errors.ErrorDuplicateArgument({ spec }))
+        errors.push(new Errors.ErrorDuplicateEnvArg({ spec }))
         continue
       }
 
