@@ -590,14 +590,14 @@ Here's how it works:
       patterns: [
         {
           $name: 'always',
-          accepted: any,
-          omitted: any,
-          rejected: any,
+          accepted: '*',
+          omitted: '*',
+          rejected: '*',
         },
         {
           $name: 'omitted',
           omitted: {
-            optionality: any('optional', 'default'),
+            optionality: ['optional', 'default'],
           },
         },
         {
@@ -615,7 +615,7 @@ Here's how it works:
         {
           $name: 'rejectedMissingOrInvalid',
           rejected: {
-            type: any('missing', 'invalid'),
+            type: ['missing', 'invalid'],
           },
         },
       ],
