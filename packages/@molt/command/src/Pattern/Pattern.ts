@@ -1,55 +1,74 @@
 import type { Any } from 'ts-toolbelt'
 
-type SomePattern = Pattern<object>
+export const _ = `*`
 
-type SomeData = object
+// type SomePattern = Pattern<SomeData>
+
+export type SomeData = SomeDataObject | SomeDataScalar
 
 type SomeDataObject = object
 
-export type Pattern<Data extends SomeData> = boolean | PatternForDataObject<Data>
+type SomeDataScalar = number | string | boolean | null
+
+// prettier-ignore
+export type Pattern<Data extends SomeData> =
+	IsOrIsAny<
+		Data extends SomeDataScalar ?
+			Data :
+			PatternForDataObject<Data>
+	>
 
 // prettier-ignore
 type PatternForDataObject<Data extends SomeData> = {
 		[K in keyof Data]?:
-			| boolean 
-			| (Data[K] extends SomeDataObject ?
-					IsOrIsAny<PatternForDataObject<Data[K]>> :
-					Any.Compute<IsOrIsAny<Data[K]>>
-				)
+			Data[K] extends SomeDataObject ?
+				IsOrIsAny<PatternForDataObject<Data[K]>> :
+				Any.Compute<IsOrIsAny<Data[K]>>
 	}
 
-type IsOrIsAny<T> = T | T[]
+// prettier-ignore
+type IsOrIsAny<T> =
+	// T extends true 			? true :
+	// T extends null 			? null :
+	// T extends false 		? false :
+	// T extends boolean 	? boolean :
+												(T | [T, T, ...T[]])
 
-export const checkMatches = (pattern: SomePattern | undefined, value: unknown): boolean => {
-  if (Array.isArray(pattern)) {
-    return pattern.some((_) => checkMatches(_, value))
+export const checkMatches = <D extends SomeData, P extends Pattern<D> | undefined>(
+  data: D,
+  pattern: P
+): boolean => {
+  if (pattern === _) {
+    return true
   }
 
-  if (pattern === undefined) {
+  if (Array.isArray(pattern)) {
+    return pattern.some((_) => checkMatches(data, _))
+  }
+
+  const patternType = typeof pattern
+
+  if (patternType === `undefined` || patternType === `function`) {
     return false
   }
 
   if (typeof pattern === `object` && pattern !== null) {
-    if (!(typeof value === `object` && value !== null)) {
+    if (!(typeof data === `object` && data !== null)) {
       return false
     }
     const valuePatterns = Object.entries(pattern)
     if (valuePatterns.length === 0) {
-      return false
+      return true
     }
     return valuePatterns
       .map(([key, valuePattern]) => {
-        if (!(key in value)) {
+        if (!(key in data)) {
           return false
         }
-        return checkMatches(valuePattern, (value as any)[key])
+        return checkMatches((data as any)[key], valuePattern)
       })
       .reduce((all, next) => all && next, true)
   }
 
-  if (pattern === true) {
-    return true
-  }
-
-  return pattern === value
+  return pattern === (data as boolean)
 }

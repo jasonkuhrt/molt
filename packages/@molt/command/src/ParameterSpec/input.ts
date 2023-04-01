@@ -14,18 +14,13 @@ export type Input = Input.Basic | Input.Exclusive | Input.Union
 export namespace Input {
   export interface EventPattern {
     when: {
-      rejected?: Pattern<{
-        // todo more errors, like duplicate
-        name: (Errors.ErrorMissingArgument | Errors.ErrorInvalidArgument)['name']
-      }>
-      supplied?: Pattern<{
-        // todo value should be type safe according to passed generic
-        value: ArgumentValue
-      }>
+      // prettier-ignore
+      // todo more errors, like duplicate
+      rejected?: Pattern<Pick<Errors.ErrorMissingArgument|Errors.ErrorInvalidArgument, 'name'>>
+      // todo value should be type safe according to passed generic
+      supplied?: Pattern<{ value: ArgumentValue }>
       // todo this field should only be allowed if the parameter spec is optional or has a default
-      omitted?: Pattern<{
-        optionality: Exclude<Output.BasicOptionality['_tag'], 'required'>
-      }>
+      omitted?: Pattern<{ optionality: Exclude<Output.BasicOptionality['_tag'], 'required'> }>
     }
   }
 

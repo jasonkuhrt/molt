@@ -78,16 +78,10 @@ export const parse = (
         if (pattern.when.omitted) {
           if (!argsResult.args[s.name.canonical]) {
             if (s.optionality._tag !== `required`) {
-              // prettier-ignore
-              if (
-                  pattern.when.omitted === true ||
-                  pattern.when.omitted.optionality === true ||
-                  (Array.isArray(pattern.when.omitted.optionality) && pattern.when.omitted.optionality.includes(s.optionality._tag)) ||
-                  pattern.when.omitted.optionality === s.optionality._tag
-                ) {
-                  prompts.push(s)
-                  continue
-                }
+              if (checkMatches({ optionality: s.optionality._tag }, pattern.when.omitted)) {
+                prompts.push(s)
+                continue
+              }
             }
           }
         }
@@ -95,7 +89,8 @@ export const parse = (
           const errorIndex = argsResult.errors.findIndex((error) => {
             return (
               error.name !== `ErrorUnknownFlag` &&
-              checkMatches(pattern.when.rejected, error) &&
+              // @ts-expect-error too dynamic here, unit test this area.
+              checkMatches(error, pattern.when.rejected) &&
               `spec` in error &&
               error.spec.name.canonical === s.name.canonical
             )

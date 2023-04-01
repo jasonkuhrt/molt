@@ -75,56 +75,6 @@ exports[`prompt can be configured at the parameter level > prompt when missing i
 ]
 `;
 
-exports[`prompt can be configured at the parameter level > prompt when omitted (match optionality via wildcard) > args 1`] = `
-{
-  "a": "foo",
-  "help": false,
-}
-`;
-
-exports[`prompt can be configured at the parameter level > prompt when omitted (match optionality via wildcard) > tty 1`] = `
-[
-  "[2m[90m1/1[39m[22m  [32ma[39m",
-  "foo",
-  "
-",
-]
-`;
-
-exports[`prompt can be configured at the parameter level > prompt when omitted (match optionality via wildcard) > tty strip ansi 1`] = `
-[
-  "1/1  a",
-  "foo",
-  "
-",
-]
-`;
-
-exports[`prompt can be configured at the parameter level > prompt when omitted (match via wildcard) > args 1`] = `
-{
-  "a": "foo",
-  "help": false,
-}
-`;
-
-exports[`prompt can be configured at the parameter level > prompt when omitted (match via wildcard) > tty 1`] = `
-[
-  "[2m[90m1/1[39m[22m  [32ma[39m",
-  "foo",
-  "
-",
-]
-`;
-
-exports[`prompt can be configured at the parameter level > prompt when omitted (match via wildcard) > tty strip ansi 1`] = `
-[
-  "1/1  a",
-  "foo",
-  "
-",
-]
-`;
-
 exports[`prompt can be configured at the parameter level > prompt when omitted > args 1`] = `
 {
   "a": "foo",

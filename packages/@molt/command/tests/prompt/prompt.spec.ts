@@ -41,30 +41,7 @@ describe(`prompt can be configured at the parameter level`, () => {
     parameters = {
       a: {
         schema: s.min(2).optional(),
-        prompt: { when: { omitted: { optionality: [`optional`, `default`] } } },
-      },
-    }
-    ttyReadsScript = [`foo`]
-    line = []
-    run()
-  })
-  // todo the two tests below should be moved to pattern library tests
-  it(`prompt when omitted (match optionality via wildcard)`, () => {
-    parameters = {
-      a: {
-        schema: s.min(2).optional(),
-        prompt: { when: { omitted: { optionality: true } } },
-      },
-    }
-    ttyReadsScript = [`foo`]
-    line = []
-    run()
-  })
-  it(`prompt when omitted (match via wildcard)`, () => {
-    parameters = {
-      a: {
-        schema: s.min(2).optional(),
-        prompt: { when: { omitted: true } },
+        prompt: { when: { omitted: { optionality: [`default`, `optional`] } } },
       },
     }
     ttyReadsScript = [`foo`]
@@ -102,8 +79,8 @@ describe(`types`, () => {
         schema: s.min(2),
         prompt: {
           when: {
+            // @ts-expect-error invalid type
             rejected: {
-              // @ts-expect-error invalid type
               name: `bad`,
             },
           },
