@@ -91,6 +91,7 @@ export const parse = (
               error.name !== `ErrorUnknownFlag` &&
               // @ts-expect-error too dynamic here, unit test this area.
               checkMatches(error, pattern.when.rejected) &&
+              // todo run matcher last?
               `spec` in error &&
               error.spec.name.canonical === s.name.canonical
             )
