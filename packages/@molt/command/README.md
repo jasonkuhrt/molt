@@ -590,9 +590,9 @@ Here's how it works:
       patterns: [
         {
           $name: 'always',
-          accepted: '*',
-          omitted: '*',
-          rejected: '*',
+          accepted: true,
+          omitted: true,
+          rejected: true,
         },
         {
           $name: 'omitted',

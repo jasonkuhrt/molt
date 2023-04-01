@@ -4,6 +4,7 @@ import { Help } from './Help/index.js'
 import { getLowerCaseEnvironment, lowerCaseObjectKeys } from './helpers.js'
 import type { Settings } from './index.js'
 import { ParameterSpec } from './ParameterSpec/index.js'
+import { checkMatches } from './Pattern/Pattern.js'
 import { prompt } from './prompt.js'
 import * as ReadLineSync from 'readline-sync'
 
@@ -77,22 +78,28 @@ export const parse = (
         if (pattern.when.omitted) {
           if (!argsResult.args[s.name.canonical]) {
             if (s.optionality._tag !== `required`) {
-              // todo handle concept of matching any value
-              if (pattern.when.omitted.optionality === s.optionality._tag) {
-                prompts.push(s)
-                continue
-              }
+              // prettier-ignore
+              if (
+                  pattern.when.omitted === true ||
+                  pattern.when.omitted.optionality === true ||
+                  (Array.isArray(pattern.when.omitted.optionality) && pattern.when.omitted.optionality.includes(s.optionality._tag)) ||
+                  pattern.when.omitted.optionality === s.optionality._tag
+                ) {
+                  prompts.push(s)
+                  continue
+                }
             }
           }
         }
         if (pattern.when.rejected) {
-          const errorIndex = argsResult.errors.findIndex(
-            (error) =>
+          const errorIndex = argsResult.errors.findIndex((error) => {
+            return (
               error.name !== `ErrorUnknownFlag` &&
-              checkMatches(pattern.when.rejected!.name, error.name) &&
+              checkMatches(pattern.when.rejected, error) &&
               `spec` in error &&
               error.spec.name.canonical === s.name.canonical
-          )
+            )
+          })
           if (errorIndex !== -1) {
             // The error should not be thrown anymore because we are going to prompt for it.
             argsResult.errors.splice(errorIndex, 1)
@@ -166,11 +173,4 @@ const partition = <T extends [...unknown[]]>(
     }
   }
   return [xs1, xs2]
-}
-
-const checkMatches = (pattern: ParameterSpec.Pattern.ExactOrAnyOf<unknown>, value: unknown): boolean => {
-  if (Array.isArray(pattern)) {
-    return pattern.some((_) => checkMatches(_, value))
-  }
-  return pattern === value
 }

@@ -88,6 +88,7 @@ importers:
       strip-ansi: ^7.0.1
       ts-toolbelt: ^9.6.0
       tsd: 0.25.0
+      type-fest: ^3.7.2
       vitest: 0.29.2
       vitest-mock-process: ^1.0.4
       zod: ^3.20.6
@@ -101,6 +102,7 @@ importers:
       string-length: 5.0.1
       strip-ansi: 7.0.1
       ts-toolbelt: 9.6.0
+      type-fest: 3.7.2
       zod: 3.20.6
     devDependencies:
       '@types/lodash.camelcase': 4.3.7
@@ -3121,6 +3123,11 @@ packages:
     resolution: {integrity: sha512-4dbzIzqvjtgiM5rw1k5rEHtBANKmdudhGyBEajN01fEyhaAIhsoKNy6y7+IN93IfpFtwY9iqi7kD+xwKhQsNJA==}
     engines: {node: '>=8'}
     dev: true
+
+  /type-fest/3.7.2:
+    resolution: {integrity: sha512-f9BHrLjRJ4MYkfOsnC/53PNDzZJcVo14MqLp2+hXE39p5bgwqohxR5hDZztwxlbxmIVuvC2EFAKrAkokq23PLA==}
+    engines: {node: '>=14.16'}
+    dev: false
 
   /typedarray/0.0.6:
     resolution: {integrity: sha512-/aCDEGatGvZ2BIk+HmLf4ifCJFwvKFNb9/JeZPMulfgFracn9QFcAf5GO8B/mweUjSoblS5In0cWhqpfs/5PQA==}

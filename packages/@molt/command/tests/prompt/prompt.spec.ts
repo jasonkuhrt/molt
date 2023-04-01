@@ -1,4 +1,4 @@
-import type { Methods } from '../../src/entrypoints/types.js'
+import type { Methods, Settings } from '../../src/entrypoints/types.js'
 import { Command } from '../../src/index.js'
 import { s, tryCatch } from '../_/helpers.js'
 import { tty } from '../_/mocks/tty.js'
@@ -8,6 +8,7 @@ import { describe, expect, it } from 'vitest'
 let parameters: Methods.Parameters.InputAsConfig
 let ttyReadsScript: string[]
 let line: string[]
+const settings: Settings.Input = {}
 
 describe(`prompt can be configured at the parameter level`, () => {
   it(`prompt when missing input`, () => {
@@ -35,13 +36,58 @@ describe(`prompt can be configured at the parameter level`, () => {
     line = [`-a`, `1`]
     run()
   })
+
+  it(`prompt when omitted`, () => {
+    parameters = {
+      a: {
+        schema: s.min(2).optional(),
+        prompt: { when: { omitted: { optionality: [`optional`, `default`] } } },
+      },
+    }
+    ttyReadsScript = [`foo`]
+    line = []
+    run()
+  })
+  // todo the two tests below should be moved to pattern library tests
+  it(`prompt when omitted (match optionality via wildcard)`, () => {
+    parameters = {
+      a: {
+        schema: s.min(2).optional(),
+        prompt: { when: { omitted: { optionality: true } } },
+      },
+    }
+    ttyReadsScript = [`foo`]
+    line = []
+    run()
+  })
+  it(`prompt when omitted (match via wildcard)`, () => {
+    parameters = {
+      a: {
+        schema: s.min(2).optional(),
+        prompt: { when: { omitted: true } },
+      },
+    }
+    ttyReadsScript = [`foo`]
+    line = []
+    run()
+  })
 })
+
+// describe(`the default prompt can be configured at the command level`, () => {
+//   it(``, () => {
+//     parameters = { a: { schema: s.min(2) } }
+//     settings = { prompt: { patterns: { $name: 'x', rejected: { name: [`ErrorInvalidArgument`, `ErrorMissingArgument`] } }} }
+//     ttyReadsScript = [`foo`]
+//     line = []
+//     run()
+//   })
+// })
 
 const run = () => {
   tty.script.userInputs(ttyReadsScript)
   const args = tryCatch(() =>
     Command.parameters(parameters)
-      .settings({ onError: `throw`, helpOnError: false })
+      .settings({ onError: `throw`, helpOnError: false, ...settings })
       .parse({ line, tty: tty.interface })
   )
   expect(args).toMatchSnapshot(`args`)

@@ -1,4 +1,5 @@
 import type { Errors } from '../Errors/index.js'
+import type { Pattern } from '../Pattern/Pattern.js'
 import type { Output } from './output.js'
 import type {
   ArgumentValue,
@@ -10,25 +11,21 @@ import type {
 
 export type Input = Input.Basic | Input.Exclusive | Input.Union
 
-export namespace Pattern {
-  export type ExactOrAnyOf<T> = T | T[]
-}
-
 export namespace Input {
   export interface EventPattern {
     when: {
-      rejected?: {
+      rejected?: Pattern<{
         // todo more errors, like duplicate
-        name: Pattern.ExactOrAnyOf<(Errors.ErrorMissingArgument | Errors.ErrorInvalidArgument)['name']>
-      }
-      supplied?: {
+        name: (Errors.ErrorMissingArgument | Errors.ErrorInvalidArgument)['name']
+      }>
+      supplied?: Pattern<{
         // todo value should be type safe according to passed generic
         value: ArgumentValue
-      }
+      }>
       // todo this field should only be allowed if the parameter spec is optional or has a default
-      omitted?: {
-        optionality: Omit<Output.BasicOptionality['_tag'], 'required'>
-      }
+      omitted?: Pattern<{
+        optionality: Exclude<Output.BasicOptionality['_tag'], 'required'>
+      }>
     }
   }
 
