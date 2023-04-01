@@ -9,33 +9,35 @@ let parameters: Methods.Parameters.InputAsConfig
 let ttyReadsScript: string[]
 let line: string[]
 
-it(`parameter prompt config for when missing input`, () => {
-  parameters = { a: { schema: s.min(2), prompt: { when: { rejected: { name: `ErrorMissingArgument` } } } } }
-  ttyReadsScript = [`foo`]
-  line = []
-  doIt()
+describe(`prompt can be configured at the parameter level`, () => {
+  it(`prompt when missing input`, () => {
+    parameters = { a: { schema: s.min(2), prompt: { when: { rejected: { name: `ErrorMissingArgument` } } } } }
+    ttyReadsScript = [`foo`]
+    line = []
+    run()
+  })
+
+  it(`prompt when invalid input`, () => {
+    parameters = { a: { schema: s.min(2), prompt: { when: { rejected: { name: `ErrorInvalidArgument` } } } } }
+    ttyReadsScript = [`foo`]
+    line = [`-a`, `1`]
+    run()
+  })
+
+  it(`prompt when invalid input OR missing input`, () => {
+    parameters = {
+      a: {
+        schema: s.min(2),
+        prompt: { when: { rejected: { name: [`ErrorInvalidArgument`, `ErrorMissingArgument`] } } },
+      },
+    }
+    ttyReadsScript = [`foo`]
+    line = [`-a`, `1`]
+    run()
+  })
 })
 
-it(`parameter prompt config for when invalid input`, () => {
-  parameters = { a: { schema: s.min(2), prompt: { when: { rejected: { name: `ErrorInvalidArgument` } } } } }
-  ttyReadsScript = [`foo`]
-  line = [`-a`, `1`]
-  doIt()
-})
-
-it(`parameter prompt config for when invalid input OR missing input`, () => {
-  parameters = {
-    a: {
-      schema: s.min(2),
-      prompt: { when: { rejected: { name: [`ErrorInvalidArgument`, `ErrorMissingArgument`] } } },
-    },
-  }
-  ttyReadsScript = [`foo`]
-  line = [`-a`, `1`]
-  doIt()
-})
-
-const doIt = () => {
+const run = () => {
   tty.script.userInputs(ttyReadsScript)
   const args = tryCatch(() =>
     Command.parameters(parameters)

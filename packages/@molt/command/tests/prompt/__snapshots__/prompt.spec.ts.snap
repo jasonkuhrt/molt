@@ -1,13 +1,13 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`parameter prompt config for when invalid input > args 1`] = `
+exports[`prompt can be configured at the parameter level > prompt when invalid input > args 1`] = `
 {
   "a": "foo",
   "help": false,
 }
 `;
 
-exports[`parameter prompt config for when invalid input > tty 1`] = `
+exports[`prompt can be configured at the parameter level > prompt when invalid input > tty 1`] = `
 [
   "[2m[90m1/1[39m[22m  [32ma[39m",
   "foo",
@@ -16,7 +16,7 @@ exports[`parameter prompt config for when invalid input > tty 1`] = `
 ]
 `;
 
-exports[`parameter prompt config for when invalid input > tty strip ansi 1`] = `
+exports[`prompt can be configured at the parameter level > prompt when invalid input > tty strip ansi 1`] = `
 [
   "1/1  a",
   "foo",
@@ -25,14 +25,14 @@ exports[`parameter prompt config for when invalid input > tty strip ansi 1`] = `
 ]
 `;
 
-exports[`parameter prompt config for when invalid input OR missing input > args 1`] = `
+exports[`prompt can be configured at the parameter level > prompt when invalid input OR missing input > args 1`] = `
 {
   "a": "foo",
   "help": false,
 }
 `;
 
-exports[`parameter prompt config for when invalid input OR missing input > tty 1`] = `
+exports[`prompt can be configured at the parameter level > prompt when invalid input OR missing input > tty 1`] = `
 [
   "[2m[90m1/1[39m[22m  [32ma[39m",
   "foo",
@@ -41,7 +41,7 @@ exports[`parameter prompt config for when invalid input OR missing input > tty 1
 ]
 `;
 
-exports[`parameter prompt config for when invalid input OR missing input > tty strip ansi 1`] = `
+exports[`prompt can be configured at the parameter level > prompt when invalid input OR missing input > tty strip ansi 1`] = `
 [
   "1/1  a",
   "foo",
@@ -50,14 +50,14 @@ exports[`parameter prompt config for when invalid input OR missing input > tty s
 ]
 `;
 
-exports[`parameter prompt config for when missing input > args 1`] = `
+exports[`prompt can be configured at the parameter level > prompt when missing input > args 1`] = `
 {
   "a": "foo",
   "help": false,
 }
 `;
 
-exports[`parameter prompt config for when missing input > tty 1`] = `
+exports[`prompt can be configured at the parameter level > prompt when missing input > tty 1`] = `
 [
   "[2m[90m1/1[39m[22m  [32ma[39m",
   "foo",
@@ -66,7 +66,7 @@ exports[`parameter prompt config for when missing input > tty 1`] = `
 ]
 `;
 
-exports[`parameter prompt config for when missing input > tty strip ansi 1`] = `
+exports[`prompt can be configured at the parameter level > prompt when missing input > tty strip ansi 1`] = `
 [
   "1/1  a",
   "foo",
