@@ -34,16 +34,13 @@ type IsOrIsAny<T> =
 	// T extends boolean 	? boolean :
 												(T | [T, T, ...T[]])
 
-export const checkMatches = <D extends SomeData, P extends Pattern<D> | undefined>(
-  data: D,
-  pattern: P
-): boolean => {
+export const match = <D extends SomeData, P extends Pattern<D> | undefined>(data: D, pattern: P): boolean => {
   if (pattern === _) {
     return true
   }
 
   if (Array.isArray(pattern)) {
-    return pattern.some((_) => checkMatches(data, _))
+    return pattern.some((_) => match(data, _))
   }
 
   const patternType = typeof pattern
@@ -65,7 +62,7 @@ export const checkMatches = <D extends SomeData, P extends Pattern<D> | undefine
         if (!(key in data)) {
           return false
         }
-        return checkMatches((data as any)[key], valuePattern)
+        return match((data as any)[key], valuePattern)
       })
       .reduce((all, next) => all && next, true)
   }

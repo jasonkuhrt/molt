@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import { _, checkMatches } from '../../src/Pattern/Pattern.js'
+import { _, match } from '../../src/Pattern/Pattern.js'
 import { expect, it } from 'vitest'
 
 it.each([
@@ -32,56 +32,56 @@ it.each([
   [{ a: { b: 2 } }, _, true],
   [{ a: { b: 2 } }, { a: { b: _ } }, true],
 ])(`%s %s %s`, (data, pattern, expected) => {
-  expect(checkMatches(data, pattern as any)).toBe(expected)
+  expect(match(data, pattern as any)).toBe(expected)
 })
 
 // scalar
 // @ts-expect-error
-checkMatches(1, '1')
-checkMatches(1, 1)
+match(1, '1')
+match(1, 1)
 // @ts-expect-error
-checkMatches('a', 'b')
-checkMatches('a', 'a')
+match('a', 'b')
+match('a', 'a')
 // @ts-expect-error
-checkMatches(true, false)
-checkMatches(true, true)
+match(true, false)
+match(true, true)
 
 // scalar non-deterministic
 // @ts-expect-error
-checkMatches(1, [])
+match(1, [])
 // @ts-expect-error
-checkMatches(1, [1])
-checkMatches(1, [1, 1])
+match(1, [1])
+match(1, [1, 1])
 // // @ts-expect-error
 // checkMatches(null, [null])
 // // @ts-expect-error
 // checkMatches(true, [true])
 // @ts-expect-error
-checkMatches('a', ['a', 'b'])
-checkMatches('a', ['a', 'a'])
+match('a', ['a', 'b'])
+match('a', ['a', 'a'])
 
 // shallow object
 // @ts-expect-error
-checkMatches({ a: 1 }, { a: `1` })
-checkMatches({ a: 1 }, { a: 1 })
+match({ a: 1 }, { a: `1` })
+match({ a: 1 }, { a: 1 })
 // shallow object non-deterministic
 // @ts-expect-error
-checkMatches({ a: 1 }, [{ a: '1' }])
-checkMatches({ a: 1 }, [{ a: 1 }, { a: 2 }])
-checkMatches({ a: 1 }, { a: [1, 2] })
+match({ a: 1 }, [{ a: '1' }])
+match({ a: 1 }, [{ a: 1 }, { a: 2 }])
+match({ a: 1 }, { a: [1, 2] })
 
 // deep object
 // @ts-expect-error
-checkMatches({ a: { b1: 2, b2: 3 } }, { a: { b1: 'a' } })
-checkMatches({ a: { b1: 2, b2: 3 } }, { a: { b1: 2 } })
-checkMatches({ a: { b1: 2, b2: 3 } }, { a: {} })
+match({ a: { b1: 2, b2: 3 } }, { a: { b1: 'a' } })
+match({ a: { b1: 2, b2: 3 } }, { a: { b1: 2 } })
+match({ a: { b1: 2, b2: 3 } }, { a: {} })
 // deep object non-deterministic
 // @ts-expect-error
-checkMatches({ a: { b1: 2, b2: 3 } }, { a: [{ b1: 2 }, { b2: '3' }] })
-checkMatches({ a: { b1: 2, b2: 3 } }, { a: [{ b1: 2 }, { b2: 3 }] })
-checkMatches({ a: { b1: 2, b2: 3 } }, [{ a: { b1: 2 } }, {}])
+match({ a: { b1: 2, b2: 3 } }, { a: [{ b1: 2 }, { b2: '3' }] })
+match({ a: { b1: 2, b2: 3 } }, { a: [{ b1: 2 }, { b2: 3 }] })
+match({ a: { b1: 2, b2: 3 } }, [{ a: { b1: 2 } }, {}])
 // todo this is a silly pattern and should be rejected
-checkMatches({ a: { b1: 2, b2: 3 } }, { a: [{}, {}] })
+match({ a: { b1: 2, b2: 3 } }, { a: [{}, {}] })
 
 // with unions
-checkMatches({ a: 1 as 1 | 2 }, { a: [1, 2] })
+match({ a: 1 as 1 | 2 }, { a: [1, 2] })

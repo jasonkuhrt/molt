@@ -15,23 +15,77 @@ const errorFromUnknown = (x: unknown): Error => {
   return new Error(String(x))
 }
 
-export type ParseError =
+export type ParseErrorGlobal = Errors.ErrorUnknownFlag
+
+export type ParseErrorBasic =
   | Errors.ErrorMissingArgument
-  | Errors.ErrorFailedToGetParameterDefault
-  | Errors.ErrorMissingArgumentForMutuallyExclusiveParameters
   | Errors.ErrorInvalidArgument
+  | Errors.ErrorFailedToGetDefaultArgument
   | Errors.ErrorDuplicateEnvArg
-  | Errors.ErrorArgsToMultipleMutuallyExclusiveParameters
+  | Errors.ErrorDuplicateLineArg
+
+export type ParseErrorExclusiveGroup =
+  | Errors.ErrorArgumentsToMutuallyExclusiveParameters
+  | Errors.ErrorMissingArgumentForMutuallyExclusiveParameters
+
+export type ParseError =
+  | ParseErrorBasic
+  | ParseErrorExclusiveGroup
+  | Errors.ErrorDuplicateEnvArg
   | LineParseError
+
+export type ParseResultBasicSupplied = {
+  _tag: 'supplied'
+  spec: Exclude<ParameterSpec.Output, ParameterSpec.Output.Exclusive>
+  value: ParameterSpec.ArgumentValue
+}
+
+export type ParseResultBasic =
+  | ParseResultBasicSupplied
+  | {
+      _tag: 'omitted'
+      spec: Exclude<ParameterSpec.Output, ParameterSpec.Output.Exclusive>
+    }
+  | {
+      _tag: 'error'
+      spec: Exclude<ParameterSpec.Output, ParameterSpec.Output.Exclusive>
+      errors: ParseErrorBasic[]
+    }
+
+export type ParseResultExclusiveGroupSupplied = {
+  _tag: 'supplied'
+  spec: ParameterSpec.Output.ExclusiveGroup
+  parameter: ParameterSpec.Output.Exclusive
+  value: ParameterSpec.ArgumentValueMutuallyExclusive
+}
+
+export type ParseResultExclusiveGroup =
+  | ParseResultExclusiveGroupSupplied
+  | {
+      _tag: 'omitted'
+      spec: ParameterSpec.Output.ExclusiveGroup
+    }
+  | {
+      _tag: 'error'
+      spec: ParameterSpec.Output.ExclusiveGroup
+      errors: ParseErrorExclusiveGroup[]
+    }
+
+type ParseResult = {
+  errors: ParseErrorGlobal[]
+  basicParameters: Record<string, ParseResultBasic>
+  mutuallyExclusiveParameters: Record<string, ParseResultExclusiveGroup>
+}
 
 export const parse = (
   specs: ParameterSpec.Output[],
   argInputsLine: Line.RawInputs,
   argInputsEnvironment: Environment.RawInputs
-): {
-  args: Record<string, ParameterSpec.ArgumentValue>
-  errors: ParseError[]
-} => {
+): ParseResult => {
+  // {
+  //   args: Record<string, ParameterSpec.ArgumentValue>
+  //   errors: ParseError[]
+  // }
   const errors: ParseError[] = []
   const argsOutput: Record<string, ParameterSpec.ArgumentValue> = {}
   const env = Environment.parse(argInputsEnvironment, specs)
@@ -101,7 +155,7 @@ export const parse = (
         argsOutput[spec.name.canonical] = spec.optionality.getValue()
       } catch (error) {
         errors.push(
-          new Errors.ErrorFailedToGetParameterDefault({
+          new Errors.ErrorFailedToGetDefaultArgument({
             spec,
             cause: errorFromUnknown(error),
           })
@@ -162,7 +216,7 @@ export const parse = (
 
     if (argsToGroup.length > 1) {
       errors.push(
-        new Errors.ErrorArgsToMultipleMutuallyExclusiveParameters({
+        new Errors.ErrorArgumentsToMutuallyExclusiveParameters({
           offenses: argsToGroup.map((_) => ({ spec: _.spec as ParameterSpec.Output.Exclusive, arg: _ })),
         })
       )

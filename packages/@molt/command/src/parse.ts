@@ -1,10 +1,16 @@
+import type {
+  ParseResultBasic,
+  ParseResultBasicSupplied,
+  ParseResultExclusiveGroupSupplied,
+} from './Args/Args.js'
 import { Args } from './Args/index.js'
 import type { RawArgInputs } from './Builder/root/types.js'
 import { Help } from './Help/index.js'
 import { getLowerCaseEnvironment, lowerCaseObjectKeys } from './helpers.js'
 import type { Settings } from './index.js'
 import { ParameterSpec } from './ParameterSpec/index.js'
-import { checkMatches } from './Pattern/Pattern.js'
+import { process } from './ParameterSpec/ParametersSpec.js'
+import { match } from './Pattern/Pattern.js'
 import { prompt } from './prompt.js'
 import * as ReadLineSync from 'readline-sync'
 
@@ -56,52 +62,48 @@ export const parse = (
   const prompts: ParameterSpec.Output[] = []
   if (argInputsTTY) {
     const basicSpecs = specsResult.specs.filter((_): _ is ParameterSpec.Output.Basic => _._tag === `Basic`)
-    for (const s of basicSpecs) {
-      if (s.prompt !== false) {
+    for (const spec of basicSpecs) {
+      if (spec.prompt !== false) {
         let pattern: ParameterSpec.Output.EventPattern
-        if (s.prompt === true) {
+        if (spec.prompt === true) {
           // todo get default pattern from settings
           pattern = `todo` as any
-        } else if (s.prompt === null) {
+        } else if (spec.prompt === null) {
           // todo get default from settings
           pattern = `todo` as any
         } else {
-          pattern = s.prompt
+          pattern = spec.prompt
         }
-        // todo break this logic out into a pattern matcher function
-        if (pattern.when.supplied) {
-          if (argsResult.args[s.name.canonical]) {
-            prompts.push(s)
+
+        const result = argsResult.basicParameters[spec.name.canonical]
+        if (!result) throw new Error(`something went wrong, could not get arg parse result`)
+
+        if (pattern.when.supplied && result._tag === `supplied`) {
+          if (match({ value: result.value }, pattern.when.supplied)) {
+            prompts.push(spec)
             continue
           }
         }
-        if (pattern.when.omitted) {
-          if (!argsResult.args[s.name.canonical]) {
-            if (s.optionality._tag !== `required`) {
-              if (checkMatches({ optionality: s.optionality._tag }, pattern.when.omitted)) {
-                prompts.push(s)
-                continue
-              }
-            }
-          }
-        }
-        if (pattern.when.rejected) {
-          const errorIndex = argsResult.errors.findIndex((error) => {
-            return (
-              error.name !== `ErrorUnknownFlag` &&
-              // @ts-expect-error too dynamic here, unit test this area.
-              checkMatches(error, pattern.when.rejected) &&
-              // todo run matcher last?
-              `spec` in error &&
-              error.spec.name.canonical === s.name.canonical
-            )
-          })
-          if (errorIndex !== -1) {
-            // The error should not be thrown anymore because we are going to prompt for it.
-            argsResult.errors.splice(errorIndex, 1)
-            prompts.push(s)
+        if (pattern.when.omitted && result._tag === `omitted`) {
+          if (match({ optionality: spec.optionality._tag }, pattern.when.omitted)) {
+            prompts.push(spec)
             continue
           }
+        }
+        if (pattern.when.rejected && result._tag === `error`) {
+          // @ts-expect-error too dynamic here, unit test this area.
+          if (result.errors.some((_) => match(_, pattern.when.rejected))) {
+            prompts.push(spec)
+            continue
+          }
+          // todo find replacement for this logic
+          // when checking to see if errors have happened, need to subtract out the errors that are going to be prompted for
+          // if (errorIndex !== -1) {
+          //   // The error should not be thrown anymore because we are going to prompt for it.
+          //   argsResult.errors.splice(errorIndex, 1)
+          //   prompts.push(spec)
+          //   continue
+          // }
         }
       }
     }
@@ -148,7 +150,16 @@ export const parse = (
   const argsFromPrompt = argInputsTTY ? prompt(prompts, argInputsTTY) : {}
 
   const args = {
-    ...argsResult.args,
+    ...Object.fromEntries(
+      Object.values(argsResult.basicParameters)
+        .filter((_): _ is ParseResultBasicSupplied => _._tag === `supplied`)
+        .map((v) => [v.spec.name.canonical, v.value])
+    ),
+    ...Object.fromEntries(
+      Object.values(argsResult.mutuallyExclusiveParameters)
+        .filter((_): _ is ParseResultExclusiveGroupSupplied => _._tag === `supplied`)
+        .map((v) => [v.spec.label, v.value])
+    ),
     ...argsFromPrompt,
   }
 
