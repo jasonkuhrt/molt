@@ -9,7 +9,6 @@ import { Help } from './Help/index.js'
 import { getLowerCaseEnvironment, lowerCaseObjectKeys } from './helpers.js'
 import type { Settings } from './index.js'
 import { ParameterSpec } from './ParameterSpec/index.js'
-import { process } from './ParameterSpec/ParametersSpec.js'
 import { match } from './Pattern/Pattern.js'
 import { prompt } from './prompt.js'
 import * as ReadLineSync from 'readline-sync'
@@ -84,7 +83,8 @@ export const parse = (
             continue
           }
         }
-        if (pattern.when.omitted && result._tag === `omitted`) {
+        if (pattern.when.omitted && result._tag === `omitted` && spec.optionality._tag !== `required`) {
+          // @ts-expect-error too dynamic
           if (match({ optionality: spec.optionality._tag }, pattern.when.omitted)) {
             prompts.push(spec)
             continue

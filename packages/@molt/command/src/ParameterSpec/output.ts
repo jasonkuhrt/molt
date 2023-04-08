@@ -1,11 +1,13 @@
+import type { ParameterSpec } from './index.js'
 import type { Input } from './input.js'
 import type { ArgumentValueScalar, SomeBasicType, Type } from './types.js'
 
 export type Output = Output.Exclusive | Output.Basic | Output.Union
 
 export namespace Output {
-  export type Prompt = Input.Prompt
-  export type EventPattern = Input.EventPattern
+  export type Prompt<S extends ParameterSpec.Input.Schema = ParameterSpec.Input.Schema> = Input.Prompt<S>
+  export type EventPattern<S extends ParameterSpec.Input.Schema = ParameterSpec.Input.Schema> =
+    Input.EventPattern<S>
 
   export interface Basic {
     _tag: 'Basic'
@@ -14,7 +16,7 @@ export namespace Output {
     optionality: BasicOptionality
     description: null | string
     environment: Environment
-    prompt: Prompt
+    prompt: Prompt<ParameterSpec.SomeBasicType>
   }
 
   export interface Union {

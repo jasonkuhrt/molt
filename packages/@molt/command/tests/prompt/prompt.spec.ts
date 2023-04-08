@@ -1,11 +1,13 @@
-import type { Methods, Settings } from '../../src/entrypoints/types.js'
+import type { Schema } from '../../src/Builder/root/types.js'
+import type { Settings } from '../../src/entrypoints/types.js'
+import { Methods } from '../../src/entrypoints/types.js'
 import { Command } from '../../src/index.js'
 import { s, tryCatch } from '../_/helpers.js'
 import { tty } from '../_/mocks/tty.js'
 import stripAnsi from 'strip-ansi'
 import { describe, expect, it } from 'vitest'
 
-let parameters: Methods.Parameters.InputAsConfig
+let parameters: Methods.Parameters.InputAsConfig<Schema>
 let ttyReadsScript: string[]
 let line: string[]
 const settings: Settings.Input = {}
@@ -38,15 +40,39 @@ describe(`prompt can be configured at the parameter level`, () => {
   })
 
   it(`prompt when omitted`, () => {
-    parameters = {
+    parameters = Methods.Parameters.parameters({
       a: {
         schema: s.min(2).optional(),
         prompt: { when: { omitted: { optionality: [`default`, `optional`] } } },
       },
-    }
+    })
     ttyReadsScript = [`foo`]
     line = []
     run()
+  })
+  it(`static error to match on omitted event on required parameter`, () => {
+    // @ts-expect-error not available
+    Command.parameters({
+      a: {
+        schema: s,
+        prompt: {
+          when: {
+            omitted: {},
+          },
+        },
+      },
+    })
+    // There is a nice string literal type giving guidance though!
+    parameters = {
+      a: {
+        schema: s,
+        prompt: {
+          when: {
+            omitted: `Not Available. Only when parameter optional or has default.`,
+          },
+        },
+      },
+    }
   })
 })
 

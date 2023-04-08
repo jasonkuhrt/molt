@@ -2,6 +2,8 @@ import { ZodHelpers } from '../lib/zodHelpers/index.js'
 import { stripOptionalAndDefault } from '../lib/zodHelpers/index_.js'
 import type { z } from 'zod'
 
+export type SomeBasicParameterType = SomeBasicType | SomeUnionType
+
 export type SomeBasicType =
   | SomeBasicTypeScalar
   | z.ZodOptional<z.ZodString | z.ZodBoolean | z.ZodNumber | z.ZodEnum<[string, ...string[]]>>
