@@ -1,4 +1,4 @@
-import type { Value } from './Args/types.js'
+import type { Value } from './OpeningArgs/types.js'
 import type { ParameterSpec } from './ParameterSpec/index.js'
 import { Alge } from 'alge'
 import camelCase from 'lodash.camelcase'

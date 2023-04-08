@@ -1,13 +1,12 @@
-import type {
-  ParseResultBasic,
-  ParseResultBasicSupplied,
-  ParseResultExclusiveGroupSupplied,
-} from './Args/Args.js'
-import { Args } from './Args/index.js'
 import type { RawArgInputs } from './Builder/root/types.js'
 import { Help } from './Help/index.js'
 import { getLowerCaseEnvironment, lowerCaseObjectKeys } from './helpers.js'
 import type { Settings } from './index.js'
+import { OpeningArgs } from './OpeningArgs/index.js'
+import type {
+  ParseResultBasicSupplied,
+  ParseResultExclusiveGroupSupplied,
+} from './OpeningArgs/OpeningArgs.js'
 import { ParameterSpec } from './ParameterSpec/index.js'
 import { match } from './Pattern/Pattern.js'
 import { prompt } from './prompt.js'
@@ -57,7 +56,11 @@ export const parse = (
    * The post-prompt parse results could be created but we do not need them
    * Instead we can just finalize our arguments. They are the pre-prompt supplied merged (and overridden by) with the post-prompt supplied.
    */
-  const argsResult = Args.parse(specsResult.specs, argInputsLine, argInputsEnvironment)
+  const openingArgsResult = OpeningArgs.parse({
+    specs: specsResult.specs,
+    line: argInputsLine,
+    environment: argInputsEnvironment,
+  })
   const prompts: ParameterSpec.Output[] = []
   if (argInputsTTY) {
     const basicSpecs = specsResult.specs.filter((_): _ is ParameterSpec.Output.Basic => _._tag === `Basic`)
@@ -74,7 +77,7 @@ export const parse = (
           pattern = spec.prompt
         }
 
-        const result = argsResult.basicParameters[spec.name.canonical]
+        const result = openingArgsResult.basicParameters[spec.name.canonical]
         if (!result) throw new Error(`something went wrong, could not get arg parse result`)
 
         if (pattern.when.supplied && result._tag === `supplied`) {
@@ -113,7 +116,7 @@ export const parse = (
 
   // eslint-disable-next-line
   // @ts-expect-error
-  const askedForHelp = `help` in argsResult.args && argsResult.args.help === true
+  const askedForHelp = `help` in openingArgsResult.args && openingArgsResult.args.help === true
 
   if (askedForHelp) {
     settings.onOutput(Help.render(specsResult.specs, settings) + `\n`)
@@ -121,11 +124,11 @@ export const parse = (
     return undefined as never // When testing, with process.exit mock, we will reach this case
   }
 
-  if (argsResult.errors.length > 0) {
+  if (openingArgsResult.globalErrors.length > 0) {
     if (settings.helpOnError) {
       const message =
         `Cannot run command, you made some mistakes:\n\n` +
-        argsResult.errors.map((_) => _.message).join(`\nX `) +
+        openingArgsResult.globalErrors.map((_) => _.message).join(`\nX `) +
         `\n\nHere are the docs for this command:\n`
       settings.onOutput(message + `\n`)
       settings.onOutput(Help.render(specsResult.specs, settings) + `\n`)
@@ -134,14 +137,14 @@ export const parse = (
       process.exit(1)
       return undefined as never // When testing, with process.exit mock, we will reach this case
     }
-    if (argsResult.errors.length > 1) {
-      throw new AggregateError(argsResult.errors)
+    if (openingArgsResult.globalErrors.length > 1) {
+      throw new AggregateError(openingArgsResult.globalErrors)
     } else {
-      throw argsResult.errors[0]!
+      throw openingArgsResult.globalErrors[0]!
     }
   }
 
-  if (settings.helpOnNoArguments && Object.values(argsResult.args).length === 0) {
+  if (settings.helpOnNoArguments && Object.values(openingArgsResult.args).length === 0) {
     settings.onOutput(Help.render(specsResult.specs, settings) + `\n`)
     if (!testDebuggingNoExit) process.exit(0)
     throw new Error(`missing args`) // When testing, with process.exit mock, we will reach this case
@@ -151,12 +154,12 @@ export const parse = (
 
   const args = {
     ...Object.fromEntries(
-      Object.values(argsResult.basicParameters)
+      Object.values(openingArgsResult.basicParameters)
         .filter((_): _ is ParseResultBasicSupplied => _._tag === `supplied`)
         .map((v) => [v.spec.name.canonical, v.value])
     ),
     ...Object.fromEntries(
-      Object.values(argsResult.mutuallyExclusiveParameters)
+      Object.values(openingArgsResult.mutuallyExclusiveParameters)
         .filter((_): _ is ParseResultExclusiveGroupSupplied => _._tag === `supplied`)
         .map((v) => [v.spec.label, v.value])
     ),
@@ -166,18 +169,18 @@ export const parse = (
   return args
 }
 
-const partition = <T extends [...unknown[]]>(
-  xs: T,
-  fn: (x: T[number]) => boolean
-): [T[number][], T[number][]] => {
-  const xs1: T[number][] = []
-  const xs2: T[number][] = []
-  for (const x of xs) {
-    if (fn(x)) {
-      xs1.push(x)
-    } else {
-      xs2.push(x)
-    }
-  }
-  return [xs1, xs2]
-}
+// const partition = <T extends [...unknown[]]>(
+//   xs: T,
+//   fn: (x: T[number]) => boolean
+// ): [T[number][], T[number][]] => {
+//   const xs1: T[number][] = []
+//   const xs2: T[number][] = []
+//   for (const x of xs) {
+//     if (fn(x)) {
+//       xs1.push(x)
+//     } else {
+//       xs2.push(x)
+//     }
+//   }
+//   return [xs1, xs2]
+// }

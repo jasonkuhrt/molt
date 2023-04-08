@@ -1,4 +1,4 @@
-import type { Args } from '../Args/index.js'
+import type { OpeningArgs } from '../OpeningArgs/index.js'
 import type { ParameterSpec } from '../ParameterSpec/index.js'
 
 export class ErrorUnknownFlag extends Error {
@@ -65,7 +65,7 @@ export class ErrorMissingArgumentForMutuallyExclusiveParameters extends Error {
 export class ErrorArgumentsToMutuallyExclusiveParameters extends Error {
   public override name: 'ErrorArgumentsToMutuallyExclusiveParameters' = `ErrorArgumentsToMutuallyExclusiveParameters`
   public group: ParameterSpec.Output.ExclusiveGroup
-  constructor(params: { offenses: { spec: ParameterSpec.Output.Exclusive; arg: Args.Argument }[] }) {
+  constructor(params: { offenses: { spec: ParameterSpec.Output.Exclusive; arg: OpeningArgs.Argument }[] }) {
     const message = `Arguments given to multiple mutually exclusive parameters: ${params.offenses
       .map((_) => _.spec.name.canonical)
       .join(`, `)}`
@@ -77,10 +77,12 @@ export class ErrorArgumentsToMutuallyExclusiveParameters extends Error {
 export class ErrorInvalidArgument extends Error {
   public override name: 'ErrorInvalidArgument' = `ErrorInvalidArgument`
   public spec: ParameterSpec.Output
+  public value: unknown
   constructor(params: {
     spec: ParameterSpec.Output
     environmentVariableName?: string
     validationErrors: string[]
+    value: unknown
   }) {
     const message = `Invalid argument${
       params.environmentVariableName
@@ -89,5 +91,6 @@ export class ErrorInvalidArgument extends Error {
     }for parameter: "${params.spec.name.canonical}". The error was:\n${params.validationErrors.join(`\n`)}`
     super(message)
     this.spec = params.spec
+    this.value = params.value
   }
 }

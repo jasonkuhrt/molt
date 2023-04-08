@@ -1,4 +1,4 @@
-import type { Args } from '../../Args/index.js'
+import type { OpeningArgs } from '../../OpeningArgs/index.js'
 import type { ParameterSpec } from '../../ParameterSpec/index.js'
 import type { TTY } from '../../prompt.js'
 import type { Settings } from '../../Settings/index.js'
@@ -95,11 +95,9 @@ export interface RootBuilder<State extends State.Base = State.BaseEmpty> {
 }
 
 export type RawArgInputs = {
-  line?: Args.Line.RawInputs
-  environment?: Args.Environment.RawInputs
+  line?: OpeningArgs.Line.RawInputs
+  environment?: OpeningArgs.Environment.RawInputs
   tty?: TTY
 }
 
 export type SomeArgsNormalized = Record<string, unknown>
-
-type NoInfer<T> = [T][T extends unknown ? 0 : never]

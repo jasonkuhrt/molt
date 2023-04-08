@@ -7,17 +7,16 @@ import camelCase from 'lodash.camelcase'
 
 export type RawInputs = string[]
 
-export type LineParseError =
-  | Errors.ErrorUnknownFlag
-  | Errors.ErrorMissingArgument
-  | Errors.ErrorDuplicateLineArg
+export type GlobalErrors = Errors.ErrorUnknownFlag
+
+export type LocalErrors = Errors.ErrorMissingArgument | Errors.ErrorDuplicateLineArg
 
 export const parse = (
   rawLineInputs: RawInputs,
   specs: ParameterSpec.Output[]
-): { errors: LineParseError[]; line: Index<ArgumentReport> } => {
+): { globalErrors: GlobalErrors[]; line: Index<ArgumentReport> } => {
   // dump(specs)
-  const errors: LineParseError[] = []
+  const globalErrors: GlobalErrors[] = []
 
   const rawLineInputsPrepared = rawLineInputs
     .flatMap((lineInput) => {
@@ -70,7 +69,7 @@ export const parse = (
       const flagNameNoDashPrefixNoNegate = stripeNegatePrefixLoose(flagNameNoDashPrefixCamel)
       const spec = ParameterSpec.findByName(flagNameNoDashPrefixCamel, specs)
       if (!spec) {
-        errors.push(new Errors.ErrorUnknownFlag({ flagName: flagNameNoDashPrefixNoNegate }))
+        globalErrors.push(new Errors.ErrorUnknownFlag({ flagName: flagNameNoDashPrefixNoNegate }))
         continue
       }
 
@@ -79,7 +78,7 @@ export const parse = (
         // TODO Handle once we support multiple values (arrays).
         // TODO richer structured info about the duplication. For example if
         // duplicated across aliases, make it easy to report a nice message explaining that.
-        errors.push(
+        existing.errors.push(
           new Errors.ErrorDuplicateLineArg({
             spec,
             flagName: flagNameNoDashPrefixNoNegate,
@@ -92,7 +91,6 @@ export const parse = (
         spec,
         errors: [],
         value: PENDING_VALUE, // eslint-disable-line
-        duplicates: [],
         source: {
           _tag: `line`,
           name: flagNameNoDashPrefix,
@@ -120,7 +118,7 @@ export const parse = (
 
   // dump({ reports })
   return {
-    errors,
+    globalErrors,
     line: reports,
   }
 }

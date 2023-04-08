@@ -1,7 +1,7 @@
-import { defaultParameterNamePrefixes } from '../Args/Environment/Environment.js'
 import type { State } from '../Builder/State.js'
 import type { Errors } from '../Errors/index.js'
 import { parseEnvironmentVariableBooleanOrThrow } from '../helpers.js'
+import { defaultParameterNamePrefixes } from '../OpeningArgs/Environment/Environment.js'
 import type { ParameterSpec } from '../ParameterSpec/index.js'
 import type { FlagName } from '@molt/types'
 import snakeCase from 'lodash.snakecase'

@@ -2,6 +2,11 @@ export type Index<T> = Record<string, T>
 
 import { inspect } from 'node:util'
 
+export const errorFromUnknown = (x: unknown): Error => {
+  if (x instanceof Error) return x
+  return new Error(String(x))
+}
+
 export const dump = (...args: unknown[]) =>
   console.log(...args.map((arg) => inspect(arg, { depth: Infinity, colors: true })))
 

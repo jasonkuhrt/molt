@@ -76,6 +76,8 @@ describe(`prompt can be configured at the parameter level`, () => {
   })
 })
 
+// todo: need to implement the ParseResult type in code
+
 // describe(`the default prompt can be configured at the command level`, () => {
 //   it(``, () => {
 //     parameters = { a: { schema: s.min(2) } }
