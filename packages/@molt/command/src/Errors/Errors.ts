@@ -1,6 +1,16 @@
 import type { OpeningArgs } from '../OpeningArgs/index.js'
 import type { ParameterSpec } from '../ParameterSpec/index.js'
 
+export class ErrorUnknownParameterViaEnvironment extends Error {
+  public override name: 'ErrorUnknownParameterViaEnvironment' = `ErrorUnknownParameterViaEnvironment`
+  public prefix: null | string
+  constructor(params: { flagName: string; prefix: null | string }) {
+    const message = `Unknown parameter "${params.flagName}"`
+    super(message)
+    this.prefix = params.prefix
+  }
+}
+
 export class ErrorUnknownFlag extends Error {
   public override name: 'ErrorUnknownFlag' = `ErrorUnknownFlag`
   constructor(params: { flagName: string }) {
@@ -8,6 +18,7 @@ export class ErrorUnknownFlag extends Error {
     super(message)
   }
 }
+
 export class ErrorDuplicateLineArg extends Error {
   public override name: 'ErrorDuplicateFlag' = `ErrorDuplicateFlag`
   public spec: ParameterSpec.Output
@@ -21,10 +32,15 @@ export class ErrorDuplicateLineArg extends Error {
 export class ErrorDuplicateEnvArg extends Error {
   public override name: 'ErrorDuplicateEnvArg' = `ErrorDuplicateEnvArg`
   public spec: ParameterSpec.Output
-  constructor(params: { spec: ParameterSpec.Output }) {
+  public instances: { value: string; name: string; prefix: string | null }[]
+  constructor(params: {
+    spec: ParameterSpec.Output
+    instances: { value: string; name: string; prefix: string | null }[]
+  }) {
     const message = `The parameter "${params.spec.name.canonical}" was passed an argument multiple times via different parameter aliases in the environment.`
     super(message)
     this.spec = params.spec
+    this.instances = params.instances
   }
 }
 

@@ -1,10 +1,17 @@
 import type { Errors } from '../Errors/index.js'
 import type { ParameterSpec } from '../ParameterSpec/index.js'
-import type { LocalErrors } from './Line/Line.js'
+import type { Environment } from './Environment/index.js'
+import type { LocalParseErrors } from './Line/Line.js'
+
+export interface EnvironmentArgumentReport<Spec extends ParameterSpec.Output = ParameterSpec.Output>
+  extends Argument {
+  spec: Spec
+  errors: Environment.LocalParseErrors[]
+}
 
 export interface ArgumentReport<Spec extends ParameterSpec.Output = ParameterSpec.Output> extends Argument {
   spec: Spec
-  errors: LocalErrors[]
+  errors: LocalParseErrors[]
 }
 
 export interface Argument {
@@ -30,7 +37,7 @@ interface EnvironmentSource {
   namespace: null | string
 }
 
-export type ParseErrorGlobal = Errors.ErrorUnknownFlag
+export type ParseErrorGlobal = Errors.ErrorUnknownFlag | Errors.ErrorUnknownParameterViaEnvironment
 
 export type ParseErrorBasic =
   | Errors.ErrorMissingArgument
@@ -48,7 +55,7 @@ export type ParseError =
   | ParseErrorBasic
   | ParseErrorExclusiveGroup
   | Errors.ErrorDuplicateEnvArg
-  | LocalErrors
+  | LocalParseErrors
 
 export type ParseResultBasicSupplied = {
   _tag: 'supplied'

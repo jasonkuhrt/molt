@@ -144,12 +144,6 @@ export const parse = (
     }
   }
 
-  if (settings.helpOnNoArguments && Object.values(openingArgsResult.args).length === 0) {
-    settings.onOutput(Help.render(specsResult.specs, settings) + `\n`)
-    if (!testDebuggingNoExit) process.exit(0)
-    throw new Error(`missing args`) // When testing, with process.exit mock, we will reach this case
-  }
-
   const argsFromPrompt = argInputsTTY ? prompt(prompts, argInputsTTY) : {}
 
   const args = {
@@ -164,6 +158,12 @@ export const parse = (
         .map((v) => [v.spec.label, v.value])
     ),
     ...argsFromPrompt,
+  }
+
+  if (settings.helpOnNoArguments && Object.values(args).length === 0) {
+    settings.onOutput(Help.render(specsResult.specs, settings) + `\n`)
+    if (!testDebuggingNoExit) process.exit(0)
+    throw new Error(`missing args`) // When testing, with process.exit mock, we will reach this case
   }
 
   return args

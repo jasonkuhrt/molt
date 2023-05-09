@@ -7,16 +7,18 @@ import camelCase from 'lodash.camelcase'
 
 export type RawInputs = string[]
 
-export type GlobalErrors = Errors.ErrorUnknownFlag
+export type GlobalParseErrors = Errors.ErrorUnknownFlag
 
-export type LocalErrors = Errors.ErrorMissingArgument | Errors.ErrorDuplicateLineArg
+export type LocalParseErrors = Errors.ErrorMissingArgument | Errors.ErrorDuplicateLineArg
 
-export const parse = (
-  rawLineInputs: RawInputs,
-  specs: ParameterSpec.Output[]
-): { globalErrors: GlobalErrors[]; line: Index<ArgumentReport> } => {
+interface ParsedInputs {
+  globalErrors: GlobalParseErrors[]
+  reports: Index<ArgumentReport>
+}
+
+export const parse = (rawLineInputs: RawInputs, specs: ParameterSpec.Output[]): ParsedInputs => {
   // dump(specs)
-  const globalErrors: GlobalErrors[] = []
+  const globalErrors: GlobalParseErrors[] = []
 
   const rawLineInputsPrepared = rawLineInputs
     .flatMap((lineInput) => {
@@ -119,7 +121,7 @@ export const parse = (
   // dump({ reports })
   return {
     globalErrors,
-    line: reports,
+    reports: reports,
   }
 }
 

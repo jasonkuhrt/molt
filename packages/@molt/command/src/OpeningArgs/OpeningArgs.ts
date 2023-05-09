@@ -23,10 +23,10 @@ export const parse = ({
     basicParameters: {},
     mutuallyExclusiveParameters: {},
   }
-  const env = Environment.parse(environment, specs)
+  const envParseResult = Environment.parse(environment, specs)
   const lineParseResult = Line.parse(line, specs)
 
-  result.globalErrors.push(...lineParseResult.globalErrors)
+  result.globalErrors.push(...lineParseResult.globalErrors, ...envParseResult.globalErrors)
   // Object.entries(lineParseResult.line).map(_=>)
 
   // dump({ lineParseResult })
@@ -55,9 +55,9 @@ export const parse = ({
      * No matter, we can just ignore the possibility to use arg.spec here anyways.
      */
 
-    // todo, we are ignoring errors from env parsing, when line is present
-    // In strict mode, do not ignore
-    const argReport = lineParseResult.line[spec.name.canonical] ?? env[spec.name.canonical]
+    // todo, a strict mode where errors are NOT ignored from env parsing when line is present
+    const argReport =
+      lineParseResult.reports[spec.name.canonical] ?? envParseResult.reports[spec.name.canonical]
 
     /**
      * An opening argument was given. Process it.
@@ -174,7 +174,7 @@ export const parse = ({
   for (const specs of Object.values(exclusiveGroupSpecsByGroupLabel)) {
     const group = specs[0]!.group // eslint-disable-line
     const argsToGroup = specs
-      .map((_) => lineParseResult.line[_.name.canonical] ?? env[_.name.canonical])
+      .map((_) => lineParseResult.reports[_.name.canonical] ?? envParseResult.reports[_.name.canonical])
       .filter((_): _ is ArgumentReport<ParameterSpec.Output.Exclusive> => _ !== undefined)
 
     if (argsToGroup.length === 0) {
