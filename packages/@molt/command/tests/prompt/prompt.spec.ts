@@ -8,21 +8,21 @@ import stripAnsi from 'strip-ansi'
 import { describe, expect, it } from 'vitest'
 
 let parameters: Methods.Parameters.InputAsConfig<Schema>
-let ttyReadsScript: string[]
+let ttyMockDataInputs: string[]
 let line: string[]
 const settings: Settings.Input = {}
 
 describe(`prompt can be configured at the parameter level`, () => {
   it(`prompt when missing input`, () => {
     parameters = { a: { schema: s.min(2), prompt: { when: { rejected: { name: `ErrorMissingArgument` } } } } }
-    ttyReadsScript = [`foo`]
+    ttyMockDataInputs = [`foo`]
     line = []
     run()
   })
 
   it(`prompt when invalid input`, () => {
     parameters = { a: { schema: s.min(2), prompt: { when: { rejected: { name: `ErrorInvalidArgument` } } } } }
-    ttyReadsScript = [`foo`]
+    ttyMockDataInputs = [`foo`]
     line = [`-a`, `1`]
     run()
   })
@@ -34,7 +34,7 @@ describe(`prompt can be configured at the parameter level`, () => {
         prompt: { when: { rejected: { name: [`ErrorInvalidArgument`, `ErrorMissingArgument`] } } },
       },
     }
-    ttyReadsScript = [`foo`]
+    ttyMockDataInputs = [`foo`]
     line = [`-a`, `1`]
     run()
   })
@@ -46,7 +46,7 @@ describe(`prompt can be configured at the parameter level`, () => {
         prompt: { when: { omitted: { optionality: [`default`, `optional`] } } },
       },
     })
-    ttyReadsScript = [`foo`]
+    ttyMockDataInputs = [`foo`]
     line = []
     run()
   })
@@ -89,15 +89,15 @@ describe(`prompt can be configured at the parameter level`, () => {
 // })
 
 const run = () => {
-  tty.script.userInputs(ttyReadsScript)
+  tty.mock.input.add(ttyMockDataInputs)
   const args = tryCatch(() =>
     Command.parameters(parameters)
       .settings({ onError: `throw`, helpOnError: false, ...settings })
       .parse({ line, tty: tty.interface })
   )
   expect(args).toMatchSnapshot(`args`)
-  expect(tty.state.history.full).toMatchSnapshot(`tty`)
-  expect(tty.state.history.full.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)
+  expect(tty.history.all).toMatchSnapshot(`tty`)
+  expect(tty.history.all.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)
 }
 
 describe(`types`, () => {

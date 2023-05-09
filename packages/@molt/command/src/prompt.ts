@@ -4,8 +4,8 @@ import { ParameterSpec } from './ParameterSpec/index.js'
 import { Term } from './term.js'
 
 export interface TTY {
-  write: (text: string) => void
-  read: (params: { prompt: string }) => string
+  output: (text: string) => void
+  input: (params: { prompt: string }) => string
 }
 
 /**
@@ -26,18 +26,18 @@ export const prompt = (specs: ParameterSpec.Output[], tty: TTY): Record<string, 
             .block((spec.description && Term.colors.dim(spec.description)) ?? null)
         )
       .render()
-    tty.write(question)
+    tty.output(question)
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      const arg = tty.read({ prompt: `${Text.pad(`left`, gutterWidth, Text.chars.space, `❯ `)}` })
+      const arg = tty.input({ prompt: `${Text.pad(`left`, gutterWidth, Text.chars.space, `❯ `)}` })
       const validationResult = ParameterSpec.validate(spec, arg)
       if (validationResult._tag === `Success`) {
         args[spec.name.canonical] = validationResult.value
-        tty.write(Text.chars.newline)
+        tty.output(Text.chars.newline)
         indexCurrent++
         break
       } else {
-        tty.write(
+        tty.output(
           Text.pad(
             `left`,
             gutterWidth,
@@ -54,36 +54,44 @@ export const prompt = (specs: ParameterSpec.Output[], tty: TTY): Record<string, 
 
 export const createMockTTY = () => {
   const state: {
-    readScript: string[]
+    inputScript: string[]
     history: {
-      writes: string[]
-      full: string[]
+      output: string[]
+      input: string[]
+      all: string[]
     }
   } = {
-    readScript: [],
+    inputScript: [],
     history: {
-      writes: [],
-      full: [],
+      input: [],
+      output: [],
+      all: [],
     },
   }
   const tty: TTY = {
-    write: (value) => {
-      state.history.writes.push(value), state.history.full.push(value)
+    output: (value) => {
+      state.history.output.push(value)
+      state.history.all.push(value)
     },
-    read: () => {
-      const value = state.readScript.shift()
+    input: () => {
+      const value = state.inputScript.shift()
       if (value === undefined) {
         throw new Error(`No more values in read script.`)
       }
-      state.history.full.push(value)
+      state.history.input.push(value)
+      state.history.all.push(value)
       return value
     },
   }
   return {
-    state,
-    script: {
-      userInputs: (values: string[]) => {
-        state.readScript.push(...values)
+    // state,
+    history: state.history,
+    mock: {
+      input: {
+        add: (values: string[]) => {
+          state.inputScript.push(...values)
+        },
+        get: () => state.inputScript,
       },
     },
     interface: tty,

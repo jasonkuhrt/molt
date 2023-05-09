@@ -22,8 +22,8 @@ export const parse = (
     argInputs?.tty ??
     (process.stdout.isTTY
       ? {
-          write: console.log,
-          read: (params) => ReadLineSync.question(params.prompt),
+          output: console.log,
+          input: (params) => ReadLineSync.question(params.prompt),
         }
       : null)
   const argInputsLine = argInputs?.line ?? process.argv.slice(2)
@@ -115,8 +115,10 @@ export const parse = (
   // dump(argsResult)
 
   // eslint-disable-next-line
-  // @ts-expect-error
-  const askedForHelp = `help` in openingArgsResult.args && openingArgsResult.args.help === true
+  const askedForHelp =
+    `help` in openingArgsResult.basicParameters &&
+    openingArgsResult.basicParameters['help']._tag === 'supplied' &&
+    openingArgsResult.basicParameters['help'].value === true
 
   if (askedForHelp) {
     settings.onOutput(Help.render(specsResult.specs, settings) + `\n`)

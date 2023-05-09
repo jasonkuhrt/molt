@@ -9,5 +9,5 @@ beforeEach(() => {
 })
 
 afterEach(() => {
-  expect(tty.state.readScript).toEqual([])
+  expect(tty.mock.input.get()).toEqual([])
 })
