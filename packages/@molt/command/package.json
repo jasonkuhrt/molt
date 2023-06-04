@@ -44,7 +44,7 @@
     "lodash.camelcase": "^4.3.0",
     "lodash.snakecase": "^4.1.1",
     "readline-sync": "^1.4.10",
-    "string-length": "^5.0.1",
+    "string-length": "^6.0.0",
     "strip-ansi": "^7.0.1",
     "ts-toolbelt": "^9.6.0",
     "zod": "^3.20.6"
