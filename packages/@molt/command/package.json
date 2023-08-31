@@ -54,7 +54,7 @@
     "@types/lodash.snakecase": "^4.1.7",
     "@types/readline-sync": "^1.4.4",
     "conditional-type-checks": "1.0.6",
-    "execa": "7.0.0",
+    "execa": "8.0.1",
     "fast-glob": "3.2.12",
     "fs-jetpack": "5.1.0",
     "tsd": "0.25.0",
