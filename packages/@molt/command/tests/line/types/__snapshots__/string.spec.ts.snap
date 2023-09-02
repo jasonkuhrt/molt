@@ -4,9 +4,9 @@ exports[`errors > when argument missing (last position) 1`] = `"Missing argument
 
 exports[`errors > when argument missing (non-last position) 1`] = `"Missing argument for flag \\"name\\"."`;
 
-exports[`errors > when flag passed twice 1`] = `"Duplicate flag \\"name\\""`;
+exports[`errors > when flag passed twice 1`] = `"The parameter \\"name\\" was passed an argument multiple times via flags."`;
 
-exports[`errors > when long and short flag passed  1`] = `"Duplicate flag \\"n\\""`;
+exports[`errors > when long and short flag passed  1`] = `"The parameter \\"n\\" was passed an argument multiple times via flags."`;
 
 exports[`is not trimmed by default 1`] = `
 {

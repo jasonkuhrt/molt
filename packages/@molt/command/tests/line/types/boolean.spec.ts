@@ -31,12 +31,12 @@ describe(`when a parameter default is specified`, () => {
 })
 
 describe(`when parameter is optional`, () => {
-  it(`allows no input to be given, resulting in undefined internally`, () => {
+  it(`allows no input to be given, resulting in omitted key`, () => {
     const args = Command.parameters({ '--verbose': z.boolean().optional() })
       .settings({ helpOnNoArguments: false })
       .parse({ line: [] })
     assert<IsExact<{ verbose: boolean | undefined }, typeof args>>(true)
-    expect(args).toMatchObject({ verbose: undefined })
+    expect(Object.keys(args)).not.toContain(`verbose`)
   })
   it(`input can be given`, () => {
     const args = Command.parameters({ '--verbose': z.boolean().optional() }).parse({ line: [`--verbose`] })

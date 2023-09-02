@@ -63,16 +63,18 @@ export type ParseResultBasicSupplied = {
   value: ParameterSpec.ArgumentValue
 }
 
+export type ParseResultBasicError = {
+  _tag: 'error'
+  spec: Exclude<ParameterSpec.Output, ParameterSpec.Output.Exclusive>
+  errors: ParseErrorBasic[]
+}
+
 export type ParseResultBasic =
   | ParseResultBasicSupplied
+  | ParseResultBasicError
   | {
       _tag: 'omitted'
       spec: Exclude<ParameterSpec.Output, ParameterSpec.Output.Exclusive>
-    }
-  | {
-      _tag: 'error'
-      spec: Exclude<ParameterSpec.Output, ParameterSpec.Output.Exclusive>
-      errors: ParseErrorBasic[]
     }
 
 export type ParseResultExclusiveGroupSupplied = {

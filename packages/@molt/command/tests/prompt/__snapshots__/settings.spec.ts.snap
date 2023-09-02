@@ -1,0 +1,11 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`parameter settings overrides default settings > args 1`] = `[ErrorMissingArgument: Missing argument for flag "a".]`;
+
+exports[`prompt can be toggled by check on error > toggle to disabled > check does match > args 1`] = `[TypeError: Cannot read properties of undefined (reading 'supplied')]`;
+
+exports[`prompt can be toggled by check on error > toggle to disabled > check does not match > args 1`] = `[TypeError: Cannot read properties of undefined (reading 'supplied')]`;
+
+exports[`prompt can be toggled by check on error > toggle to enabled > check does not match > args 1`] = `[TypeError: Cannot read properties of undefined (reading 'supplied')]`;
+
+exports[`prompt is disabled by default > args 1`] = `[TypeError: Cannot read properties of undefined (reading 'supplied')]`;

@@ -1,6 +1,7 @@
 import { Tex } from './lib/Tex/index_.js'
 import { Text } from './lib/Text/index.js'
 import { ParameterSpec } from './ParameterSpec/index.js'
+import type { ParseProgressPostPrompt, ParseProgressPostPromptAnnotation } from './parse.js'
 import { Term } from './term.js'
 
 export interface TTY {
@@ -11,8 +12,17 @@ export interface TTY {
 /**
  * Get args from the user interactively via the console for the given parameters.
  */
-export const prompt = (specs: ParameterSpec.Output[], tty: TTY): Record<string, any> => {
+// export const prompt = (specs: ParameterSpec.Output[], tty: TTY): Record<string, any> => {
+export const prompt = (
+  parseProgress: ParseProgressPostPromptAnnotation,
+  tty: null | TTY,
+): ParseProgressPostPrompt => {
+  if (tty === null) return parseProgress as ParseProgressPostPrompt
+
   const args: Record<string, any> = {}
+  const specs = Object.entries(parseProgress.basicParameters)
+    .filter((_) => _[1].prompt.enabled)
+    .map((_) => _[1].spec)
   const indexTotal = specs.length
   let indexCurrent = 1
   const gutterWidth = String(indexTotal).length * 2 + 3
@@ -42,16 +52,26 @@ export const prompt = (specs: ParameterSpec.Output[], tty: TTY): Record<string, 
             `left`,
             gutterWidth,
             ` `,
-            Term.colors.alert(`Invalid value: ${validationResult.errors.join(`, `)}`)
-          )
+            Term.colors.alert(`Invalid value: ${validationResult.errors.join(`, `)}`),
+          ),
         )
       }
     }
   }
 
-  return args
+  // todo do not mutate
+  const parseProgressPostPrompt = parseProgress as ParseProgressPostPrompt
+  for (const [parameterName, arg] of Object.entries(args)) {
+    parseProgressPostPrompt.basicParameters[parameterName]!.prompt.arg = arg
+  }
+
+  return parseProgressPostPrompt
 }
 
+/**
+ * A utility for testing prompts. It allows programmatic control of
+ * the input and capturing of the output of a prompts session.
+ */
 export const createMockTTY = () => {
   const state: {
     inputScript: string[]
