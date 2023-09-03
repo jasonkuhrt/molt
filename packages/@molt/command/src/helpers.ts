@@ -60,7 +60,7 @@ const stripeNamespace = (name: string, spec: ParameterSpec.Output): string => {
 
 export const parseRawValue = (
   value: string,
-  spec: ParameterSpec.Output
+  spec: ParameterSpec.Output,
 ): null | boolean | number | string => {
   return Alge.match(spec)
     .Union((spec) => {
@@ -77,7 +77,7 @@ export const parseRawValue = (
         `TypeEnum`,
       ]
       const types = spec.types.sort(
-        (a, b) => variantOrder.indexOf(a.type._tag) - variantOrder.indexOf(b.type._tag)
+        (a, b) => variantOrder.indexOf(a.type._tag) - variantOrder.indexOf(b.type._tag),
       )
       return (
         types
@@ -90,7 +90,7 @@ export const parseRawValue = (
                 const result = Number(value)
                 return isNaN(result) ? null : result
               })
-              .done()
+              .done(),
           )
           .find((parsedValue) => parsedValue !== null) ?? null
       )
@@ -101,7 +101,7 @@ export const parseRawValue = (
         .TypeEnum(() => value)
         .TypeBoolean(() => parseEnvironmentVariableBoolean(value))
         .TypeNumber(() => Number(value))
-        .done()
+        .done(),
     )
 }
 

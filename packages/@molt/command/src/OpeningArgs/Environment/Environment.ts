@@ -5,6 +5,7 @@ import { ParameterSpec } from '../../ParameterSpec/index.js'
 import type { EnvironmentArgumentReport } from '../types.js'
 import camelCase from 'lodash.camelcase'
 import snakecase from 'lodash.snakecase'
+import { env } from 'process'
 
 export const defaultParameterNamePrefixes = [`cli_parameter`, `cli_param`]
 
@@ -61,7 +62,7 @@ export const parse = (environment: RawInputs, specs: ParameterSpec.Output[]): Pa
       }
 
       // Case 3
-      const value = parseRawInput(match.name, match.value, spec)
+      const value = parseRawInput(match.nameWithNegation, match.value, spec)
       result.reports[spec.name.canonical] = {
         spec,
         value,
@@ -194,6 +195,7 @@ type ParameterSpecOutputWithEnvironment = RequireField<ParameterSpec.Output, 'en
 interface Match {
   namespace: null | string
   name: string
+  nameWithNegation: string
   negated: boolean
   value: string
 }
@@ -207,19 +209,22 @@ const checkInputMatch = (envar: Envar, spec: ParameterSpecOutputWithEnvironment)
     if (spec.environment.namespaces.length > 0) {
       for (const namespace of spec.environment.namespaces) {
         const nameNamespaced = camelCase(`${namespace}_${name}`)
+
         if (nameNamespaced === envar.name.camel) {
           return {
             name,
+            nameWithNegation: name,
             namespace,
             negated: false,
             value: envar.value,
           }
         }
         const negateParsed = parseNegated(envar.name.camel)
-        if (nameNamespaced === negateParsed.name) {
+        if (name === negateParsed.name) {
           return {
             name,
             namespace,
+            nameWithNegation: negateParsed.nameWithNegation,
             negated: true,
             value: envar.value,
           }
@@ -229,6 +234,7 @@ const checkInputMatch = (envar: Envar, spec: ParameterSpecOutputWithEnvironment)
       if (envar.name.camel === name) {
         return {
           name,
+          nameWithNegation: name,
           namespace: null,
           negated: false,
           value: envar.value,
@@ -237,7 +243,8 @@ const checkInputMatch = (envar: Envar, spec: ParameterSpecOutputWithEnvironment)
       const negateParsed = parseNegated(envar.name.camel)
       if (negateParsed.name === name) {
         return {
-          name,
+          name: negateParsed.name,
+          nameWithNegation: negateParsed.nameWithNegation,
           namespace: null,
           negated: true,
           value: envar.value,
@@ -249,12 +256,17 @@ const checkInputMatch = (envar: Envar, spec: ParameterSpecOutputWithEnvironment)
 }
 
 const parseNegated = (string: string) => {
-  const match = string.match(/^no([A-Z].*)$/)?.[1]
+  // When there is a namespace then, in camel case format, the negate word can begin with a capital letter
+  const match = string.match(/(?:^n|N)o([A-Z].*)$/)?.[1]
   return {
     negated: Boolean(match),
-    name: match ?? string,
+    nameWithNegation: match ? `no${match}` : string,
+    name: match ? lowercaseFirst(match) : string,
   }
 }
+
+const lowercaseFirst = (string: string) =>
+  string.length === 0 ? string : string[0]!.toLowerCase() + string.slice(1)
 
 interface Envar {
   name: {
