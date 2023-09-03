@@ -12,6 +12,7 @@ import type {
 import { ParameterSpec } from './ParameterSpec/index.js'
 import { match } from './Pattern/Pattern.js'
 import { prompt } from './prompt.js'
+import console from 'console'
 import * as ReadLineSync from 'readline-sync'
 
 export interface ParseProgressPostPromptAnnotation {
