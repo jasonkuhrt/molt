@@ -5,7 +5,7 @@ exports[`default environment argument parameter name prefix > when both argument
   [
     "Cannot run command, you made some mistakes:
 
-Duplicate argument for parameter \\"foo\\"
+The parameter \\"foo\\" was passed an argument multiple times via different parameter aliases in the environment.
 
 Here are the docs for this command:
 
@@ -37,8 +37,8 @@ exports[`error > when using multiple prefixes and args passed for all param vari
   [
     "Cannot run command, you made some mistakes:
 
-Duplicate argument for parameter \\"foo\\"
-X Duplicate argument for parameter \\"bar\\"
+The parameter \\"foo\\" was passed an argument multiple times via different parameter aliases in the environment.
+X The parameter \\"bar\\" was passed an argument multiple times via different parameter aliases in the environment.
 
 Here are the docs for this command:
 

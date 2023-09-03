@@ -84,17 +84,19 @@ export type ParseResultExclusiveGroupSupplied = {
   value: ParameterSpec.ArgumentValueMutuallyExclusive
 }
 
+export type ParseResultExclusiveGroupError = {
+  _tag: 'error'
+  spec: ParameterSpec.Output.ExclusiveGroup
+  errors: ParseErrorExclusiveGroup[]
+}
+
 export type ParseResultExclusiveGroup =
   | ParseResultExclusiveGroupSupplied
   | {
       _tag: 'omitted'
       spec: ParameterSpec.Output.ExclusiveGroup
     }
-  | {
-      _tag: 'error'
-      spec: ParameterSpec.Output.ExclusiveGroup
-      errors: ParseErrorExclusiveGroup[]
-    }
+  | ParseResultExclusiveGroupError
 
 export type ParseResult = {
   globalErrors: ParseErrorGlobal[]

@@ -3,7 +3,12 @@ import { Help } from './Help/index.js'
 import { getLowerCaseEnvironment, lowerCaseObjectKeys } from './helpers.js'
 import type { Settings } from './index.js'
 import { OpeningArgs } from './OpeningArgs/index.js'
-import type { ParseResultBasicError, ParseResultExclusiveGroupSupplied } from './OpeningArgs/OpeningArgs.js'
+import type {
+  ParseResultBasicError,
+  ParseResultExclusiveGroup,
+  ParseResultExclusiveGroupError,
+  ParseResultExclusiveGroupSupplied,
+} from './OpeningArgs/OpeningArgs.js'
 import { ParameterSpec } from './ParameterSpec/index.js'
 import { match } from './Pattern/Pattern.js'
 import { prompt } from './prompt.js'
@@ -186,11 +191,20 @@ export const parse = (
    *
    * Likewise if there are argument errors that are NOT going to be prompted for, we must abort too.
    */
-  const argumentErrors = Object.entries(parseProgressPostPromptAnnotation.basicParameters)
-    .map(([_, v]): null | ParseResultBasicError => {
-      return v.prompt.enabled === false && v.openingParseResult._tag === `error` ? v.openingParseResult : null
-    })
-    .filter((_): _ is ParseResultBasicError => _ !== null)
+  const argumentErrors = [
+    ...Object.entries(parseProgressPostPromptAnnotation.basicParameters)
+      .map(([_, v]): null | ParseResultBasicError => {
+        return v.prompt.enabled === false && v.openingParseResult._tag === `error`
+          ? v.openingParseResult
+          : null
+      })
+      .filter((_): _ is ParseResultBasicError => _ !== null),
+    ...Object.entries(parseProgressPostPromptAnnotation.mutuallyExclusiveParameters)
+      .map(([_, v]): null | ParseResultExclusiveGroupError => {
+        return v._tag === `error` ? v : null
+      })
+      .filter((_): _ is ParseResultExclusiveGroupError => _ !== null),
+  ]
 
   if (parseProgressPostPromptAnnotation.globalErrors.length > 0 || argumentErrors.length > 0) {
     if (settings.helpOnError) {

@@ -28,14 +28,16 @@ export const parse = (environment: RawInputs, specs: ParameterSpec.Output[]): Pa
   const envars = normalizeEnvironment(environment)
 
   const specsWithEnvironmentSupport = specs.filter(
-    (spec): spec is ParameterSpecOutputWithEnvironment => spec.environment !== null
+    (spec): spec is ParameterSpecOutputWithEnvironment => spec.environment !== null,
   )
 
   for (const envar of envars) {
     for (const spec of specsWithEnvironmentSupport) {
+      // Case 1
       const match = checkInputMatch(envar, spec)
       if (!match) continue
 
+      // Case 2
       // Check for multiple envars pointing to the same parameter.
       const report = result.reports[spec.name.canonical]
       if (report) {
@@ -52,11 +54,13 @@ export const parse = (environment: RawInputs, specs: ParameterSpec.Output[]): Pa
             new Errors.ErrorDuplicateEnvArg({
               spec,
               instances: [instance],
-            })
+            }),
           )
         }
+        continue
       }
 
+      // Case 3
       const value = parseRawInput(match.name, match.value, spec)
       result.reports[spec.name.canonical] = {
         spec,
@@ -158,7 +162,7 @@ export const parse = (environment: RawInputs, specs: ParameterSpec.Output[]): Pa
 export const lookupEnvironmentVariableArgument = (
   prefixes: string[],
   environment: Record<string, string | undefined>,
-  parameterName: string
+  parameterName: string,
 ): null | { name: string; value: string } => {
   const parameterNameSnakeCase = snakecase(parameterName)
   const parameterNames =
@@ -175,7 +179,7 @@ export const lookupEnvironmentVariableArgument = (
 
   if (args.length > 1)
     throw new Error(
-      `Multiple environment variables found for same parameter "${parameterName}": ${args.join(`, `)}`
+      `Multiple environment variables found for same parameter "${parameterName}": ${args.join(`, `)}`,
     )
 
   // dump(prefixes, environment, parameterName)
@@ -271,7 +275,7 @@ const normalizeEnvironment = (environment: RawInputs): Envar[] => {
               raw: name,
               camel: camelCase(name),
             },
-          }
+          },
     )
     .filter((envar): envar is Envar => envar !== undefined)
 }
