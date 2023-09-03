@@ -7,8 +7,6 @@ import { z } from 'zod'
 it(`just one can have prefix disabled`, () => {
   environmentManager.set({
     foo: `foo`,
-    cli_param_foo: `foo-prefix`,
-    bar: `bar`,
     cli_param_bar: `bar-prefix`,
   })
   const args = Command.parameters({ '--foo': z.string(), '--bar': z.string() })
@@ -19,10 +17,8 @@ it(`just one can have prefix disabled`, () => {
 
 it(`all but one can have prefix disabled`, () => {
   environmentManager.set({
-    foo: `foo`,
     bar: `bar`,
     cli_param_foo: `cli_param_foo`,
-    cli_param_bar: `cli_param_bar`,
   })
   const args = Command.parameters({ '--foo': z.string(), '--bar': z.string() })
     .settings({

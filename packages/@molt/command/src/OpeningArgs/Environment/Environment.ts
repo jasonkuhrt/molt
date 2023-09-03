@@ -34,8 +34,9 @@ export const parse = (environment: RawInputs, specs: ParameterSpec.Output[]): Pa
 
   for (const envar of envars) {
     for (const spec of specsWithEnvironmentSupport) {
-      // Case 1
       const match = checkInputMatch(envar, spec)
+
+      // Case 1
       if (!match) continue
 
       // Case 2
