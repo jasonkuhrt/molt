@@ -139,7 +139,7 @@ export const parse = (
         let pattern: ParameterSpec.Output.EventPattern
         if (spec.prompt === true) {
           // todo get default pattern from settings
-          pattern = `todo` as any
+          pattern = settings.defaults.prompt.conditional`todo` as any
         } else if (spec.prompt === null) {
           // todo get default from settings
           pattern = `todo` as any

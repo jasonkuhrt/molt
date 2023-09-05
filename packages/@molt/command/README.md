@@ -30,8 +30,9 @@
     - [Union](#union)
   - [Parameter Prompts](#parameter-prompts)
     - [Configuration](#configuration)
+    - [Enable Prompt Per Parameter](#enable-prompt-per-parameter)
+    - [Enable Prompt at Instance Scope](#enable-prompt-at-instance-scope)
     - [Behavior](#behavior)
-    - [Examples](#examples)
   - [Line Arguments](#line-arguments)
     - [Parameter Argument Separator](#parameter-argument-separator)
     - [Stacked Short Flags](#stacked-short-flags)
@@ -514,7 +515,7 @@ args.force === true
         z.string().description('Blah blah blah string.'),
         z.number().description('Blah blah blah number.'),
       ])
-      .description('Blah blah blah Overview')
+      .description('Blah blah blah Overview'),
   )
   ```
 
@@ -567,82 +568,73 @@ args.force === true
 
 ### Parameter Prompts
 
-You can make Molt Command interactively prompt users for arguments. This enables richer experiences for your users, like:
+You can make Molt Command interactively _prompt_ users for arguments. This enables richer experiences for your users, like:
 
 - Graceful recovery from invalid up front arguments.
 - Guided argument passing meaning no need to know ahead of time the required parameters, just follow the prompts.
 
-Here's how it works:
-
 #### Configuration
 
-- You can enable prompt on basic parameters ([mutually exclusive parameters](#mutually-exclusive-parameters) are not supported yet.).
-- You specify event patterns that upon matching enable the prompt.
-- Patterns can be named, stored, and reused.
-- There are built in patterns. Defining your own patterns is addidative to these.
-- A pattern can be made to be the "default" which means that the shorthand of `true` will refer to it.
-- The default prompt behavior is to be disabled. You can change that to any pattern (or set of patterns).
-- Type safety underpins this system, so you can always learn/refresh by rapid trial in error in your IDE.
-- The default defaults are:
+- By default prompts are disabled.
+- You can enable prompts for basic parameters only ([mutually exclusive parameters](#mutually-exclusive-parameters) are not supported yet.).
+- You can enable prompts _conditionally_ via _pattern matching_ on _events_.
+- Common patterns are built-in and ready to be referenced in your configuration.
+- You can define your own patterns, too. They are type safe.
+- There is a default pattern. You can change it.
+- The built in event patterns at `Command.eventPatterns` are:
+
+```ts
+{
+  always: {
+    accepted: {},
+    omitted: {},
+    rejected: {},
+  },
+  omitted: {
+    omitted: {
+      optionality: ['optional', 'default'],
+    },
+  },
+  omittedWithoutDefault: {
+    omitted: {
+      optionality: 'optional',
+    },
+  },
+  omittedWithDefault: {
+    omitted: {
+      optionality: 'default',
+    },
+  },
+  rejectedMissingOrInvalid: {
+    rejected: {
+      type: ['missing', 'invalid'],
+    },
+  }
+}
+```
+
+- The default settings are:
   ```ts
   Command.settings({
     prompt: {
-      patterns: [
-        {
-          $name: 'always',
-          accepted: {},
-          omitted: {},
-          rejected: {},
-        },
-        {
-          $name: 'omitted',
-          omitted: {
-            optionality: ['optional', 'default'],
-          },
-        },
-        {
-          $name: 'omittedWithoutDefault',
-          omitted: {
-            optionality: 'optional',
-          },
-        },
-        {
-          $name: 'omittedWithDefault',
-          omitted: {
-            optionality: 'default',
-          },
-        },
-        {
-          $name: 'rejectedMissingOrInvalid',
-          rejected: {
-            type: ['missing', 'invalid'],
-          },
-        },
-      ],
-      defaultPattern: 'rejectedMissingOrInvalid'
-      default: false,
+      enabled: false,
+      when: Command.eventPatterns.rejectedMissingOrInvalid,
     },
   })
   ```
 
-#### Behavior
+#### Enable Prompt Per Parameter
 
-- When there is no `TTY` (`process.stdout.isTTY === false`) then prompt is always disabled.
-- Arguments are validated just like they are when given "up front". However, when invalid, the user will be shown an error message and re-prompted, instead of the process exiting non-zero.
-- Prompts are _synchronously_ executed allowing them to be used without forcing your users to write async CLI code.
-  - > 💡 This is achieved via the [`readline-sync`](https://github.com/anseki/readline-sync). That project's repository is archived and the package not maintained. We may try [prompt-sync](`https://github.com/heapwolf/prompt-sync`) but it also does not look actively maintained. Worst case Molt Command will need its own implementation or move to an async API.
+You can enable prompt on a per-parameter level.
 
-#### Examples
+##### For the Default Event Pattern
 
-##### Prompt relying on default (uses pattern `rejectedMissingOrInvalid`).
+Passing `true` will enable using the default event pattern.
 
 ```ts
 // prettier-ignore
 const args = Command
-  .parameter(`filePath`, {
-    schema: z.string(),
-    prompt: true,
-  })
+  .parameter(`filePath`, z.string())
   .parameter(`to`, {
     schema: z.enum([`json`, `yaml`, `toml`]),
     prompt: true,
@@ -650,140 +642,123 @@ const args = Command
   .parse()
 ```
 
+Example usage:
+
 ```
-$ mybin
+$ mybin --filePath ./a/b/c.yaml
 
-1/2  filePath
-     ❯ ./a/b/c.yaml
-
-2/2  to
+1/1  to
      ❯ jsonn
      Invalid value: Value is not a member of the enum.
      ❯ json
 ```
 
-##### Prompt when argument missing, parameter configuration.
+##### For Particular Event(s)
+
+You can enable prompt when one of the built-in event patterns occur:
+
+```ts
+// prettier-ignore
+const args = Command.parameter(`filePath`, z.string())
+  .parameter(`to`, {
+    schema: z.enum([`json`, `yaml`, `toml`]),
+    prompt: Command.EventPatterns.rejectedMissingOrInvalid
+  })
+  .parse()
+```
+
+Or when one of multiple events occurs:
+
+```ts
+// prettier-ignore
+const args = Command.parameter(`filePath`, z.string())
+  .parameter(`to`, {
+    schema: z.enum([`json`, `yaml`, `toml`]),
+    prompt: [Command.EventPatterns.rejectedMissingOrInvalid, Command.EventPatterns.omittedWithoutDefault],
+  })
+  .parse()
+```
+
+##### For a Custom Event Pattern
+
+You can enable prompt when your given _event pattern_ occurs.
+
+```ts
+// prettier-ignore
+const args = Command.parameter(`filePath`, z.string())
+  .parameter(`to`, {
+    schema: z.enum([`json`, `yaml`, `toml`]),
+    prompt: {
+      rejected: {
+        type: 'missing',
+      },
+    },
+  })
+  .parse()
+```
+
+#### Enable Prompt at Instance Scope
+
+You can configure prompts for the entire instance in the settings. The configuration mirrors the parameter scope. Parameter scope overrides instance scope.
+
+Enable explicitly with shorthand approach using a `boolean`:
 
 ```ts
 // prettier-ignore
 const args = Command
-  .parameter(`filePath`, {
-    schema: z.string(),
+  .parameter(`filePath`, z.string())
+  .parameter(`to`, z.enum([`json`, `yaml`, `toml`]))
+  .settings({ prompt: true })
+  .parse()
+```
+
+Enable explicitly with longhand approach using the `enabled` nested property.
+
+```ts
+// prettier-ignore
+const args = Command
+  .parameter(`filePath`, z.string())
+  .parameter(`to`, z.enum([`json`, `yaml`, `toml`]))
+  .settings({ prompt: { enabled: true } })
+  .parse()
+```
+
+Enable implicitly by passing an object that does not specify `enabled`.
+
+```ts
+// prettier-ignore
+const args = Command
+  .parameter(`filePath`, z.string())
+  .parameter(`to`, z.enum([`json`, `yaml`, `toml`]))
+  .settings({ prompt: {} })
+  .parse()
+```
+
+Enable for event pattern of missing arguments to required parameters.
+
+```ts
+// prettier-ignore
+const args = Command
+  .parameter(`filePath`, z.string())
+  .parameter(`to`, z.enum([`json`, `yaml`, `toml`]))
+  .settings({
     prompt: {
       when: {
         rejected: {
-          type: 'missing'
+          type: 'missing',
         },
-      } 
-    },
-  })
-  .parameter(`to`, {
-    schema: z.enum([`json`, `yaml`, `toml`]),
-    prompt: {
-      when: {
-        rejected: {
-          type: 'missing'
-        },
-      } 
+      },
     },
   })
   .parse()
 ```
 
-##### Prompt when argument missing, pattern configuration.
+#### Behavior
 
-```ts
-const args = Command.parameter(`filePath`, {
-  schema: z.string(),
-  prompt: 'missing',
-})
-  .parameter(`to`, {
-    schema: z.enum([`json`, `yaml`, `toml`]),
-    prompt: 'missing',
-  })
-  .settings({
-    prompt: {
-      patterns: [
-        {
-          $name: 'missing',
-          rejected: {
-            type: 'missing',
-          },
-        },
-      ],
-    },
-  })
-  .parse()
-```
-
-##### Prompt when argument missing, default pattern configuration.
-
-```ts
-const args = Command.parameter(`filePath`, {
-  schema: z.string(),
-  prompt: true,
-})
-  .parameter(`to`, {
-    schema: z.enum([`json`, `yaml`, `toml`]),
-    prompt: true,
-  })
-  .settings({
-    prompt: {
-      defaultPattern: 'missing',
-      patterns: [
-        {
-          $name: 'missing',
-          rejected: {
-            type: 'missing',
-          },
-        },
-      ],
-    },
-  })
-  .parse()
-```
-
-##### Prompt when argument missing or invalid or omitted without having default, using built in patterns.
-
-```ts
-const args = Command.parameter(`filePath`, {
-  schema: z.string(),
-})
-  .parameter(`to`, {
-    schema: z.enum([`json`, `yaml`, `toml`]),
-  })
-  .settings({
-    prompt: {
-      default: ['rejectedMissingOrInvalid', 'omittedWithoutDefault'],
-    },
-  })
-  .parse()
-```
-
-##### Prompt when argument missing, default configuration.
-
-```ts
-const args = Command.parameter(`filePath`, {
-  schema: z.string(),
-})
-  .parameter(`to`, {
-    schema: z.enum([`json`, `yaml`, `toml`]),
-  })
-  .settings({
-    prompt: {
-      default: 'missing',
-      patterns: [
-        {
-          $name: 'missing',
-          rejected: {
-            type: 'missing',
-          },
-        },
-      ],
-    },
-  })
-  .parse()
-```
+- When there is no `TTY` (`process.stdout.isTTY === false`) then prompts are always disabled.
+- Arguments are validated just like they are when given "up front". However, when invalid, the user will be shown an error message and re-prompted, instead of the process exiting non-zero.
+- Prompts are _synchronously_ executed allowing them to be used without forcing your users to write async CLI code.
+  - > 💡 This is achieved via the [`readline-sync`](https://github.com/anseki/readline-sync). That project's repository is archived and the package not maintained. We may try [prompt-sync](`https://github.com/heapwolf/prompt-sync`) but it also does not look actively maintained. Worst case Molt Command will need its own implementation or move to an async API.
 
 ### Line Arguments
 
@@ -1136,7 +1111,7 @@ You can give your command a description similar to how you can give each of your
 
 ```ts
 const args = Command.description(
-  'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.'
+  'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.',
 ).parameters({
   // ...
 })
@@ -1182,3 +1157,7 @@ Molt Command is composed from multiple distinct layers that execute in a flow:
 1. Prompt Plan (prompt matchers executed, matches mean prompt should run)
 1. Prompt Apply or Mistake Reporter (if not all mistakes recovered as prompts)
 1. Prompt/Up Front Arguments Merger (prompt overrides up front)
+
+```
+
+```

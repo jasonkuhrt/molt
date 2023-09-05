@@ -46,6 +46,7 @@ export interface Input<ParametersObject extends State.ParametersSchemaObjectBase
   defaults?: {
     prompt?: InputDefaultsPrompt
   }
+  // prompt?:
   parameters?: {
     // prettier-ignore
     environment?:
