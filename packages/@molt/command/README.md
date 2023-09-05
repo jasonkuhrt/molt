@@ -581,38 +581,7 @@ You can make Molt Command interactively _prompt_ users for arguments. This enabl
 - Common patterns are built-in and ready to be referenced in your configuration.
 - You can define your own patterns, too. They are type safe.
 - There is a default pattern. You can change it.
-- The built in event patterns at `Command.eventPatterns` are:
-
-```ts
-{
-  always: {
-    accepted: {},
-    omitted: {},
-    rejected: {},
-  },
-  omitted: {
-    omitted: {
-      optionality: ['optional', 'default'],
-    },
-  },
-  omittedWithoutDefault: {
-    omitted: {
-      optionality: 'optional',
-    },
-  },
-  omittedWithDefault: {
-    omitted: {
-      optionality: 'default',
-    },
-  },
-  rejectedMissingOrInvalid: {
-    rejected: {
-      type: ['missing', 'invalid'],
-    },
-  }
-}
-```
-
+- The built-in event patterns at `Command.eventPatterns` are defined [here](./src/eventPatterns.ts).
 - The default settings are:
   ```ts
   Command.settings({
