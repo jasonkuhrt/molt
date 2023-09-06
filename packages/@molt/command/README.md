@@ -631,7 +631,9 @@ You can enable prompt when one of the built-in event patterns occur:
 const args = Command.parameter(`filePath`, z.string())
   .parameter(`to`, {
     schema: z.enum([`json`, `yaml`, `toml`]),
-    prompt: Command.EventPatterns.rejectedMissingOrInvalid
+    prompt: {
+      when: Command.EventPatterns.rejectedMissingOrInvalid
+    }
   })
   .parse()
 ```
@@ -643,7 +645,9 @@ Or when one of multiple events occurs:
 const args = Command.parameter(`filePath`, z.string())
   .parameter(`to`, {
     schema: z.enum([`json`, `yaml`, `toml`]),
-    prompt: [Command.EventPatterns.rejectedMissingOrInvalid, Command.EventPatterns.omittedWithoutDefault],
+    prompt: {
+      when: [Command.EventPatterns.rejectedMissingOrInvalid, Command.EventPatterns.omittedWithoutDefault],
+    }
   })
   .parse()
 ```
@@ -658,9 +662,11 @@ const args = Command.parameter(`filePath`, z.string())
   .parameter(`to`, {
     schema: z.enum([`json`, `yaml`, `toml`]),
     prompt: {
-      rejected: {
-        type: 'missing',
-      },
+      when: {
+        rejected: {
+          reason: 'missing',
+        },
+      }
     },
   })
   .parse()
@@ -681,29 +687,9 @@ const args = Command
   .parse()
 ```
 
-Enable explicitly with longhand approach using the `enabled` nested property.
+Enable explicitly with longhand approach using the `enabled` nested property and include a condition.
 
-```ts
-// prettier-ignore
-const args = Command
-  .parameter(`filePath`, z.string())
-  .parameter(`to`, z.enum([`json`, `yaml`, `toml`]))
-  .settings({ prompt: { enabled: true } })
-  .parse()
-```
-
-Enable implicitly by passing an object that does not specify `enabled`.
-
-```ts
-// prettier-ignore
-const args = Command
-  .parameter(`filePath`, z.string())
-  .parameter(`to`, z.enum([`json`, `yaml`, `toml`]))
-  .settings({ prompt: {} })
-  .parse()
-```
-
-Enable for event pattern of missing arguments to required parameters.
+Note that in the following `enabled` could be omitted because passing an object implies `enabled: true` by default.
 
 ```ts
 // prettier-ignore
@@ -712,9 +698,10 @@ const args = Command
   .parameter(`to`, z.enum([`json`, `yaml`, `toml`]))
   .settings({
     prompt: {
+      enabled: true,
       when: {
         rejected: {
-          type: 'missing',
+          reason: 'missing',
         },
       },
     },

@@ -1,16 +1,15 @@
-import type { RawArgInputs } from './Builder/root/types.js'
-import { Help } from './Help/index.js'
-import { getLowerCaseEnvironment, lowerCaseObjectKeys } from './helpers.js'
-import type { Settings } from './index.js'
-import { OpeningArgs } from './OpeningArgs/index.js'
+import type { RawArgInputs } from '../Builder/root/types.js'
+import { Help } from '../Help/index.js'
+import { getLowerCaseEnvironment, lowerCaseObjectKeys } from '../helpers.js'
+import type { Settings } from '../index.js'
+import { OpeningArgs } from '../OpeningArgs/index.js'
 import type {
   ParseResultBasicError,
-  ParseResultExclusiveGroup,
   ParseResultExclusiveGroupError,
   ParseResultExclusiveGroupSupplied,
-} from './OpeningArgs/OpeningArgs.js'
-import { ParameterSpec } from './ParameterSpec/index.js'
-import { match } from './Pattern/Pattern.js'
+} from '../OpeningArgs/OpeningArgs.js'
+import { ParameterSpec } from '../ParameterSpec/index.js'
+import { match } from '../Pattern/Pattern.js'
 import { prompt } from './prompt.js'
 import console from 'console'
 import * as ReadLineSync from 'readline-sync'
@@ -132,40 +131,30 @@ export const parse = (
       }),
     ),
   }
+
   if (argInputsTTY) {
     const basicSpecs = specsResult.specs.filter((_): _ is ParameterSpec.Output.Basic => _._tag === `Basic`)
     for (const spec of basicSpecs) {
-      if (spec.prompt !== false) {
-        let pattern: ParameterSpec.Output.EventPattern
-        if (spec.prompt === true) {
-          // todo get default pattern from settings
-          pattern = settings.defaults.prompt.conditional`todo` as any
-        } else if (spec.prompt === null) {
-          // todo get default from settings
-          pattern = `todo` as any
-        } else {
-          pattern = spec.prompt
-        }
-
+      const eventPatterns = spec.prompt.when ?? settings.prompt.when
+      if (eventPatterns) {
         const result = openingArgsResult.basicParameters[spec.name.canonical]
         if (!result) throw new Error(`something went wrong, could not get arg parse result`)
 
-        if (pattern.when.supplied && result._tag === `supplied`) {
-          if (match({ value: result.value }, pattern.when.supplied)) {
+        if (eventPatterns.accepted && result._tag === `supplied`) {
+          if (match({ value: result.value }, eventPatterns.accepted)) {
             parseProgressPostPromptAnnotation.basicParameters[spec.name.canonical]!.prompt.enabled = true
             continue
           }
         }
-        if (pattern.when.omitted && result._tag === `omitted` && spec.optionality._tag !== `required`) {
-          // @ts-expect-error too dynamic
-          if (match({ optionality: spec.optionality._tag }, pattern.when.omitted)) {
+        if (eventPatterns.omitted && result._tag === `omitted` && spec.optionality._tag !== `required`) {
+          if (match({ optionality: spec.optionality._tag }, eventPatterns.omitted)) {
             parseProgressPostPromptAnnotation.basicParameters[spec.name.canonical]!.prompt.enabled = true
             continue
           }
         }
-        if (pattern.when.rejected && result._tag === `error`) {
+        if (eventPatterns.rejected && result._tag === `error`) {
           // @ts-expect-error too dynamic here, unit test this area.
-          if (result.errors.some((_) => match(_, pattern.when.rejected))) {
+          if (result.errors.some((_) => match(_, eventPatterns.rejected))) {
             parseProgressPostPromptAnnotation.basicParameters[spec.name.canonical]!.prompt.enabled = true
             continue
           }
@@ -269,19 +258,3 @@ export const parse = (
 
   return args
 }
-
-// const partition = <T extends [...unknown[]]>(
-//   xs: T,
-//   fn: (x: T[number]) => boolean
-// ): [T[number][], T[number][]] => {
-//   const xs1: T[number][] = []
-//   const xs2: T[number][] = []
-//   for (const x of xs) {
-//     if (fn(x)) {
-//       xs1.push(x)
-//     } else {
-//       xs2.push(x)
-//     }
-//   }
-//   return [xs1, xs2]
-// }

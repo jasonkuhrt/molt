@@ -18,7 +18,7 @@ it(`prompt is disabled by default`, () => {
 
 it.only(`prompt can be enabled by default`, () => {
   tty.mock.input.add([`foo`])
-  const settings: Settings.InputDefaultsPrompt = { enabled: true }
+  const settings: Settings.InputPrompt = { enabled: true }
   const args = tryCatch(() =>
     Command.parameters({ a: { schema: s } })
       .settings({ onError: `throw`, helpOnError: false, defaults: { prompt: settings } })
@@ -30,7 +30,7 @@ it.only(`prompt can be enabled by default`, () => {
 })
 
 it(`parameter settings overrides default settings`, () => {
-  const settings: Settings.InputDefaultsPrompt = { enabled: true }
+  const settings: Settings.InputPrompt = { enabled: true }
   const args = tryCatch(() =>
     Command.parameters({ a: { schema: s, prompt: false } })
       .settings({ onError: `throw`, helpOnError: false, defaults: { prompt: settings } })
@@ -43,7 +43,7 @@ it(`parameter settings overrides default settings`, () => {
 
 describe(`prompt can be toggled by check on error`, () => {
   describe(`toggle to disabled`, () => {
-    const settings: Settings.InputDefaultsPrompt = {
+    const settings: Settings.InputPrompt = {
       enabled: false,
       when: (ctx) => ctx.error?.name === `ErrorMissingArgument`,
     }
@@ -70,7 +70,7 @@ describe(`prompt can be toggled by check on error`, () => {
     })
   })
   describe(`toggle to enabled`, () => {
-    const settings: Settings.InputDefaultsPrompt = {
+    const settings: Settings.InputPrompt = {
       enabled: true,
       when: (ctx) => ctx.error?.name === `ErrorMissingArgument`,
     }
@@ -99,7 +99,7 @@ describe(`prompt can be toggled by check on error`, () => {
 })
 
 it(`can default to prompt on parameter spec condition`, () => {
-  const settings: Settings.InputDefaultsPrompt = {
+  const settings: Settings.InputPrompt = {
     enabled: true,
     when: (ctx) => ctx.parameter.optionality._tag === `required`,
   }
@@ -115,7 +115,7 @@ it(`can default to prompt on parameter spec condition`, () => {
 })
 
 it(`default can be stack of conditional prompts`, () => {
-  const settings: Settings.InputDefaultsPrompt = [
+  const settings: Settings.InputPrompt = [
     {
       enabled: true,
       when: (ctx) => ctx.error?.name === `ErrorInvalidArgument`,

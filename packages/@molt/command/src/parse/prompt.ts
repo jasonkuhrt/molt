@@ -1,8 +1,8 @@
-import { Tex } from './lib/Tex/index_.js'
-import { Text } from './lib/Text/index.js'
-import { ParameterSpec } from './ParameterSpec/index.js'
+import { Tex } from '../lib/Tex/index_.js'
+import { Text } from '../lib/Text/index.js'
+import { ParameterSpec } from '../ParameterSpec/index.js'
+import { Term } from '../term.js'
 import type { ParseProgressPostPrompt, ParseProgressPostPromptAnnotation } from './parse.js'
-import { Term } from './term.js'
 
 export interface TTY {
   output: (text: string) => void

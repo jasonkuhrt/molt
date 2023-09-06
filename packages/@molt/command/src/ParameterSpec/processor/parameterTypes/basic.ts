@@ -9,7 +9,7 @@ import { analyzeZodTypeScalar } from '../helpers/type.js'
 export const processBasic = (
   expression: string,
   input: Input.Basic,
-  settings: Settings.Output
+  settings: Settings.Output,
 ): Output.Basic => {
   const name = processName(expression)
   const environment = processEnvironment(settings, name)
@@ -19,7 +19,18 @@ export const processBasic = (
     description: typeAnalysis.description,
     type: typeAnalysis.type,
     optionality: typeAnalysis.optionality,
-    prompt: input.prompt,
+    prompt: {
+      enabled:
+        input.prompt === true
+          ? true
+          : input.prompt === false
+          ? false
+          : input.prompt === null
+          ? null
+          : input.prompt.enabled ?? null,
+      when:
+        input.prompt === null ? null : typeof input.prompt === `object` ? input.prompt.when ?? null : null,
+    },
     environment,
     name,
   } satisfies Output.Basic

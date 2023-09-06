@@ -1,6 +1,6 @@
 import type { OpeningArgs } from '../../OpeningArgs/index.js'
 import type { ParameterSpec } from '../../ParameterSpec/index.js'
-import type { TTY } from '../../prompt.js'
+import type { TTY } from '../../parse/prompt.js'
 import type { Settings } from '../../Settings/index.js'
 import type {
   BuilderAfterSettings,

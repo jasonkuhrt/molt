@@ -1,13 +1,14 @@
+import type { EventPatternsInput } from '../eventPatterns.js'
 import type { ParameterSpec } from './index.js'
-import type { Input } from './input.js'
 import type { ArgumentValueScalar, SomeBasicType, Type } from './types.js'
 
 export type Output = Output.Exclusive | Output.Basic | Output.Union
 
 export namespace Output {
-  export type Prompt<S extends ParameterSpec.Input.Schema = ParameterSpec.Input.Schema> = Input.Prompt<S>
-  export type EventPattern<S extends ParameterSpec.Input.Schema = ParameterSpec.Input.Schema> =
-    Input.EventPattern<S>
+  export type Prompt<S extends ParameterSpec.Input.Schema = ParameterSpec.Input.Schema> = {
+    enabled: boolean | null
+    when: EventPatternsInput<S> | null
+  }
 
   export interface Basic {
     _tag: 'Basic'
