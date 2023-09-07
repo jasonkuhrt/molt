@@ -14,14 +14,18 @@ const settings: Settings.Input = {}
 
 describe(`prompt can be configured at the parameter level`, () => {
   it(`prompt when missing input`, () => {
-    parameters = { a: { schema: s.min(2), prompt: { when: { rejected: { name: `ErrorMissingArgument` } } } } }
+    parameters = {
+      a: { schema: s.min(2), prompt: { when: { result: `rejected`, error: `ErrorMissingArgument` } } },
+    }
     ttyMockDataInputs = [`foo`]
     line = []
     run()
   })
 
   it(`prompt when invalid input`, () => {
-    parameters = { a: { schema: s.min(2), prompt: { when: { rejected: { name: `ErrorInvalidArgument` } } } } }
+    parameters = {
+      a: { schema: s.min(2), prompt: { when: { result: `rejected`, error: `ErrorInvalidArgument` } } },
+    }
     ttyMockDataInputs = [`foo`]
     line = [`-a`, `1`]
     run()
@@ -31,7 +35,7 @@ describe(`prompt can be configured at the parameter level`, () => {
     parameters = {
       a: {
         schema: s.min(2),
-        prompt: { when: { rejected: { name: [`ErrorInvalidArgument`, `ErrorMissingArgument`] } } },
+        prompt: { when: { result: `rejected`, error: [`ErrorInvalidArgument`, `ErrorMissingArgument`] } },
       },
     }
     ttyMockDataInputs = [`foo`]
@@ -43,7 +47,7 @@ describe(`prompt can be configured at the parameter level`, () => {
     parameters = Methods.Parameters.parameters({
       a: {
         schema: s.min(2).optional(),
-        prompt: { when: { omitted: { optionality: [`default`, `optional`] } } },
+        prompt: { when: { result: `omitted`, spec: { optionality: [`default`, `optional`] } } },
       },
     })
     ttyMockDataInputs = [`foo`]
@@ -57,7 +61,7 @@ describe(`prompt can be configured at the parameter level`, () => {
         schema: s,
         prompt: {
           when: {
-            omitted: {},
+            result: `omitted`,
           },
         },
       },
@@ -68,7 +72,8 @@ describe(`prompt can be configured at the parameter level`, () => {
         schema: s,
         prompt: {
           when: {
-            omitted: `Not Available. Only when parameter optional or has default.`,
+            // @ts-expect-error
+            result: `omitted`,
           },
         },
       },
