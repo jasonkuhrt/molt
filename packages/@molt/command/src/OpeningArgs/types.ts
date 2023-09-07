@@ -37,7 +37,9 @@ interface EnvironmentSource {
   namespace: null | string
 }
 
-export type ParseErrorGlobal = Errors.ErrorUnknownFlag | Errors.ErrorUnknownParameterViaEnvironment
+export type ParseErrorGlobal =
+  | Errors.Global.ErrorUnknownFlag
+  | Errors.Global.ErrorUnknownParameterViaEnvironment
 
 export type ParseErrorBasic =
   | Errors.ErrorMissingArgument
@@ -59,23 +61,21 @@ export type ParseError =
 
 export type ParseResultBasicSupplied = {
   _tag: 'supplied'
-  spec: Exclude<ParameterSpec.Output, ParameterSpec.Output.Exclusive>
+  spec: ParameterSpec.Output.Basic
   value: ParameterSpec.ArgumentValue
 }
 
 export type ParseResultBasicError = {
   _tag: 'error'
-  spec: Exclude<ParameterSpec.Output, ParameterSpec.Output.Exclusive>
+  spec: ParameterSpec.Output.Basic
   errors: ParseErrorBasic[]
 }
+export type ParseResultBasicOmitted = {
+  _tag: 'omitted'
+  spec: ParameterSpec.Output.Basic
+}
 
-export type ParseResultBasic =
-  | ParseResultBasicSupplied
-  | ParseResultBasicError
-  | {
-      _tag: 'omitted'
-      spec: Exclude<ParameterSpec.Output, ParameterSpec.Output.Exclusive>
-    }
+export type ParseResultBasic = ParseResultBasicSupplied | ParseResultBasicError | ParseResultBasicOmitted
 
 export type ParseResultExclusiveGroupSupplied = {
   _tag: 'supplied'

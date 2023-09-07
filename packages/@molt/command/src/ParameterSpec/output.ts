@@ -17,7 +17,17 @@ export namespace Output {
     optionality: BasicOptionality
     description: null | string
     environment: Environment
-    prompt: Prompt<ParameterSpec.SomeBasicType>
+    prompt: Prompt
+  }
+
+  export interface BasicData {
+    _tag: 'BasicData'
+    name: Name
+    type: Type
+    optionality: BasicOptionality['_tag']
+    description: null | string
+    environment: Environment
+    prompt: Prompt
   }
 
   export interface Union {

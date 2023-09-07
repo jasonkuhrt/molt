@@ -17,7 +17,6 @@ export const prompt = (
   parseProgress: ParseProgressPostPromptAnnotation,
   tty: null | TTY,
 ): ParseProgressPostPrompt => {
-  console.log(tty)
   if (tty === null) return parseProgress as ParseProgressPostPrompt
 
   const args: Record<string, any> = {}
@@ -39,10 +38,8 @@ export const prompt = (
       .render()
     tty.output(question)
     // eslint-disable-next-line no-constant-condition
-    console.log(1)
     while (true) {
       const arg = tty.input({ prompt: `${Text.pad(`left`, gutterWidth, Text.chars.space, `❯ `)}` })
-      console.log(arg)
       const validationResult = ParameterSpec.validate(spec, arg)
       if (validationResult._tag === `Success`) {
         args[spec.name.canonical] = validationResult.value

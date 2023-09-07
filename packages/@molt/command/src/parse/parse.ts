@@ -1,4 +1,5 @@
 import type { RawArgInputs } from '../Builder/root/types.js'
+import { BasicParameterParseEvent, createEvent } from '../eventPatterns.js'
 import { Help } from '../Help/index.js'
 import { getLowerCaseEnvironment, lowerCaseObjectKeys } from '../helpers.js'
 import type { Settings } from '../index.js'
@@ -11,7 +12,6 @@ import type {
 import { ParameterSpec } from '../ParameterSpec/index.js'
 import { match } from '../Pattern/Pattern.js'
 import { prompt } from './prompt.js'
-import console from 'console'
 import * as ReadLineSync from 'readline-sync'
 
 export interface ParseProgressPostPromptAnnotation {
@@ -135,29 +135,19 @@ export const parse = (
   if (argInputsTTY) {
     const basicSpecs = specsResult.specs.filter((_): _ is ParameterSpec.Output.Basic => _._tag === `Basic`)
     for (const spec of basicSpecs) {
-      const eventPatterns = spec.prompt.when ?? settings.prompt.when
-      if (eventPatterns) {
-        const result = openingArgsResult.basicParameters[spec.name.canonical]
-        if (!result) throw new Error(`something went wrong, could not get arg parse result`)
+      const parseResult = openingArgsResult.basicParameters[spec.name.canonical]
+      if (!parseResult) throw new Error(`something went wrong, could not get arg parse result`)
 
-        if (eventPatterns.accepted && result._tag === `supplied`) {
-          if (match({ value: result.value }, eventPatterns.accepted)) {
-            parseProgressPostPromptAnnotation.basicParameters[spec.name.canonical]!.prompt.enabled = true
-            continue
-          }
-        }
-        if (eventPatterns.omitted && result._tag === `omitted` && spec.optionality._tag !== `required`) {
-          if (match({ optionality: spec.optionality._tag }, eventPatterns.omitted)) {
-            parseProgressPostPromptAnnotation.basicParameters[spec.name.canonical]!.prompt.enabled = true
-            continue
-          }
-        }
-        if (eventPatterns.rejected && result._tag === `error`) {
-          // @ts-expect-error too dynamic here, unit test this area.
-          if (result.errors.some((_) => match(_, eventPatterns.rejected))) {
-            parseProgressPostPromptAnnotation.basicParameters[spec.name.canonical]!.prompt.enabled = true
-            continue
-          }
+      const event = createEvent(parseResult)
+      // We cannot prompt for this parameter
+      if (event === null) continue
+
+      const eventPatterns_ = spec.prompt.when ?? settings.prompt.when
+      const eventPatterns = Array.isArray(eventPatterns_) ? eventPatterns_ : [eventPatterns_]
+      for (const pattern of eventPatterns) {
+        if (match(event, pattern)) {
+          parseProgressPostPromptAnnotation.basicParameters[spec.name.canonical]!.prompt.enabled = true
+          continue
         }
       }
     }

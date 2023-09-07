@@ -5,6 +5,10 @@ import { tty } from '../_/mocks/tty.js'
 import stripAnsi from 'strip-ansi'
 import { describe, expect, it } from 'vitest'
 
+// TODO check the snapshots for this test suite. Validate every test case.
+
+const S = (settings: Settings.InputPrompt) => settings
+
 it(`prompt is disabled by default`, () => {
   const args = tryCatch(() =>
     Command.parameters({ a: { schema: s } })
@@ -16,12 +20,12 @@ it(`prompt is disabled by default`, () => {
   expect(tty.history.all.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)
 })
 
-it.only(`prompt can be enabled by default`, () => {
+it(`prompt can be enabled by default`, () => {
   tty.mock.input.add([`foo`])
-  const settings: Settings.InputPrompt = { enabled: true }
+  const settings = S({ enabled: true })
   const args = tryCatch(() =>
     Command.parameters({ a: { schema: s } })
-      .settings({ onError: `throw`, helpOnError: false, defaults: { prompt: settings } })
+      .settings({ onError: `throw`, helpOnError: false, prompt: settings })
       .parse({ line: [], tty: tty.interface }),
   )
   expect(args).toMatchSnapshot(`args`)
@@ -30,10 +34,10 @@ it.only(`prompt can be enabled by default`, () => {
 })
 
 it(`parameter settings overrides default settings`, () => {
-  const settings: Settings.InputPrompt = { enabled: true }
+  const settings = S({ enabled: true })
   const args = tryCatch(() =>
     Command.parameters({ a: { schema: s, prompt: false } })
-      .settings({ onError: `throw`, helpOnError: false, defaults: { prompt: settings } })
+      .settings({ onError: `throw`, helpOnError: false, prompt: settings })
       .parse({ line: [], tty: tty.interface }),
   )
   expect(args).toMatchSnapshot(`args`)
@@ -43,15 +47,18 @@ it(`parameter settings overrides default settings`, () => {
 
 describe(`prompt can be toggled by check on error`, () => {
   describe(`toggle to disabled`, () => {
-    const settings: Settings.InputPrompt = {
+    const settings = S({
       enabled: false,
-      when: (ctx) => ctx.error?.name === `ErrorMissingArgument`,
-    }
+      when: {
+        result: `rejected`,
+        error: `ErrorMissingArgument`,
+      },
+    })
 
     it(`check does match`, () => {
       const args = tryCatch(() =>
         Command.parameters({ a: { schema: s } })
-          .settings({ onError: `throw`, helpOnError: false, defaults: { prompt: settings } })
+          .settings({ onError: `throw`, helpOnError: false, prompt: settings })
           .parse({ line: [], tty: tty.interface }),
       )
       expect(args).toMatchSnapshot(`args`)
@@ -61,7 +68,7 @@ describe(`prompt can be toggled by check on error`, () => {
     it(`check does not match`, () => {
       const args = tryCatch(() =>
         Command.parameters({ a: { schema: s } })
-          .settings({ onError: `throw`, helpOnError: false, defaults: { prompt: settings } })
+          .settings({ onError: `throw`, helpOnError: false, prompt: settings })
           .parse({ line: [], tty: tty.interface }),
       )
       expect(args).toMatchSnapshot(`args`)
@@ -70,15 +77,15 @@ describe(`prompt can be toggled by check on error`, () => {
     })
   })
   describe(`toggle to enabled`, () => {
-    const settings: Settings.InputPrompt = {
+    const settings = S({
       enabled: true,
-      when: (ctx) => ctx.error?.name === `ErrorMissingArgument`,
-    }
+      when: { result: `rejected`, error: `ErrorMissingArgument` },
+    })
     it(`check does match`, () => {
       tty.mock.input.add([`foo`])
       const args = tryCatch(() =>
         Command.parameters({ a: { schema: s } })
-          .settings({ onError: `throw`, helpOnError: false, defaults: { prompt: settings } })
+          .settings({ onError: `throw`, helpOnError: false, prompt: settings })
           .parse({ line: [], tty: tty.interface }),
       )
       expect(args).toMatchSnapshot(`args`)
@@ -88,7 +95,7 @@ describe(`prompt can be toggled by check on error`, () => {
     it(`check does not match`, () => {
       const args = tryCatch(() =>
         Command.parameters({ a: { schema: s } })
-          .settings({ onError: `throw`, helpOnError: false, defaults: { prompt: settings } })
+          .settings({ onError: `throw`, helpOnError: false, prompt: settings })
           .parse({ line: [], tty: tty.interface }),
       )
       expect(args).toMatchSnapshot(`args`)
@@ -99,14 +106,17 @@ describe(`prompt can be toggled by check on error`, () => {
 })
 
 it(`can default to prompt on parameter spec condition`, () => {
-  const settings: Settings.InputPrompt = {
+  const settings = S({
     enabled: true,
-    when: (ctx) => ctx.parameter.optionality._tag === `required`,
-  }
+    when: {
+      result: `rejected`,
+      spec: { optionality: `required` },
+    },
+  })
   tty.mock.input.add([`foo`])
   const args = tryCatch(() =>
     Command.parameters({ a: { schema: s } })
-      .settings({ onError: `throw`, helpOnError: false, defaults: { prompt: settings } })
+      .settings({ onError: `throw`, helpOnError: false, prompt: settings })
       .parse({ line: [], tty: tty.interface }),
   )
   expect(args).toMatchSnapshot(`args`)
@@ -115,23 +125,23 @@ it(`can default to prompt on parameter spec condition`, () => {
 })
 
 it(`default can be stack of conditional prompts`, () => {
-  const settings: Settings.InputPrompt = [
-    {
-      enabled: true,
-      when: (ctx) => ctx.error?.name === `ErrorInvalidArgument`,
-    },
-    {
-      enabled: true,
-      when: (ctx) => {
-        console.log(ctx)
-        return ctx.parameter.optionality._tag === `optional` && ctx.argument === `1`
+  const settings = S({
+    enabled: true,
+    when: [
+      {
+        error: `ErrorInvalidArgument`,
       },
-    },
-  ]
+      {
+        result: `accepted`,
+        spec: { optionality: `optional` },
+        value: `1`,
+      },
+    ],
+  })
   tty.mock.input.add([`foo`])
   const args = tryCatch(() =>
     Command.parameters({ a: { schema: s.optional() } })
-      .settings({ onError: `throw`, helpOnError: false, defaults: { prompt: settings } })
+      .settings({ onError: `throw`, helpOnError: false, prompt: settings })
       .parse({ line: [`-a`, `1`], tty: tty.interface }),
   )
   expect(args).toMatchSnapshot(`args`)

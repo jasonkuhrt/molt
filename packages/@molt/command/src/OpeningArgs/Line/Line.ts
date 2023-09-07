@@ -7,7 +7,7 @@ import camelCase from 'lodash.camelcase'
 
 export type RawInputs = string[]
 
-export type GlobalParseErrors = Errors.ErrorUnknownFlag
+export type GlobalParseErrors = Errors.Global.ErrorUnknownFlag
 
 export type LocalParseErrors = Errors.ErrorMissingArgument | Errors.ErrorDuplicateLineArg
 
@@ -71,7 +71,7 @@ export const parse = (rawLineInputs: RawInputs, specs: ParameterSpec.Output[]): 
       const flagNameNoDashPrefixNoNegate = stripeNegatePrefixLoose(flagNameNoDashPrefixCamel)
       const spec = ParameterSpec.findByName(flagNameNoDashPrefixCamel, specs)
       if (!spec) {
-        globalErrors.push(new Errors.ErrorUnknownFlag({ flagName: flagNameNoDashPrefixNoNegate }))
+        globalErrors.push(new Errors.Global.ErrorUnknownFlag({ flagName: flagNameNoDashPrefixNoNegate }))
         continue
       }
 
@@ -84,7 +84,7 @@ export const parse = (rawLineInputs: RawInputs, specs: ParameterSpec.Output[]): 
           new Errors.ErrorDuplicateLineArg({
             spec,
             flagName: flagNameNoDashPrefixNoNegate,
-          })
+          }),
         )
         continue
       }

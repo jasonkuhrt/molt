@@ -5,7 +5,6 @@ import { ParameterSpec } from '../../ParameterSpec/index.js'
 import type { EnvironmentArgumentReport } from '../types.js'
 import camelCase from 'lodash.camelcase'
 import snakecase from 'lodash.snakecase'
-import { env } from 'process'
 
 export const defaultParameterNamePrefixes = [`cli_parameter`, `cli_param`]
 
@@ -13,7 +12,7 @@ export type RawInputs = Record<string, string | undefined>
 
 export type LocalParseErrors = Errors.ErrorDuplicateEnvArg
 
-export type GlobalParseErrors = Errors.ErrorUnknownParameterViaEnvironment
+export type GlobalParseErrors = Errors.Global.ErrorUnknownParameterViaEnvironment
 
 export interface ParsedInputs {
   globalErrors: GlobalParseErrors[]

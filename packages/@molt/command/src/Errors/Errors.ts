@@ -1,21 +1,23 @@
 import type { OpeningArgs } from '../OpeningArgs/index.js'
 import type { ParameterSpec } from '../ParameterSpec/index.js'
 
-export class ErrorUnknownParameterViaEnvironment extends Error {
-  public override name: 'ErrorUnknownParameterViaEnvironment' = `ErrorUnknownParameterViaEnvironment`
-  public prefix: null | string
-  constructor(params: { flagName: string; prefix: null | string }) {
-    const message = `Unknown parameter "${params.flagName}"`
-    super(message)
-    this.prefix = params.prefix
+export namespace Global {
+  export class ErrorUnknownParameterViaEnvironment extends Error {
+    public override name: 'ErrorUnknownParameterViaEnvironment' = `ErrorUnknownParameterViaEnvironment`
+    public prefix: null | string
+    constructor(params: { flagName: string; prefix: null | string }) {
+      const message = `Unknown parameter "${params.flagName}"`
+      super(message)
+      this.prefix = params.prefix
+    }
   }
-}
 
-export class ErrorUnknownFlag extends Error {
-  public override name: 'ErrorUnknownFlag' = `ErrorUnknownFlag`
-  constructor(params: { flagName: string }) {
-    const message = `Unknown flag "${params.flagName}"`
-    super(message)
+  export class ErrorUnknownFlag extends Error {
+    public override name: 'ErrorUnknownFlag' = `ErrorUnknownFlag`
+    constructor(params: { flagName: string }) {
+      const message = `Unknown flag "${params.flagName}"`
+      super(message)
+    }
   }
 }
 
@@ -69,7 +71,7 @@ export class ErrorMissingArgumentForMutuallyExclusiveParameters extends Error {
   public group: ParameterSpec.Output.ExclusiveGroup
   constructor(params: { group: ParameterSpec.Output.ExclusiveGroup }) {
     const message = `Missing argument for one of the following parameters: ${Object.values(
-      params.group.parameters
+      params.group.parameters,
     )
       .map((_) => _.name.canonical)
       .join(`, `)}`
