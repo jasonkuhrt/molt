@@ -23,7 +23,7 @@ export type TableMethodArgs =
   | [NodeImplementor<TableBuilder>]
 
 export const resolveTableMethodArgs = (
-  args: TableMethodArgs
+  args: TableMethodArgs,
 ): { parameters: TableParameters | null; child: null | Table } => {
   const childrenish = args.length === 1 ? args[0] : args[1]
   const parameters = args.length === 1 ? null : args[0]
@@ -46,8 +46,8 @@ const resolveChildrenish = (childrenish: (Childish[] | null)[]): Block[][] => {
             ? new Block(new Leaf(cell))
             : cell instanceof Block
             ? cell
-            : toInternalBuilder(cell)._.node
-        )
+            : toInternalBuilder(cell)._.node,
+        ),
     )
 
   return resolved
@@ -77,7 +77,7 @@ export const createTableBuilder = (): TableBuilder => {
             ? new Block(new Leaf(cell))
             : cell instanceof Block
             ? cell
-            : toInternalBuilder(cell)._.node
+            : toInternalBuilder(cell)._.node,
         )
       if (cellsNormalized.length > 0) {
         parentNode.rows.push(cellsNormalized)

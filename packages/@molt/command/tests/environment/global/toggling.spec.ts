@@ -52,7 +52,7 @@ it(`environment supersedes settings`, () => {
       .parse({
         line: [],
         environment: { ClI_settings_READ_arguments_FROM_ENVIRONMENT: `false`, cli_param_foo: `bar` },
-      })
+      }),
   ).toThrowErrorMatchingSnapshot()
   expect(output.value).toMatchSnapshot()
 })

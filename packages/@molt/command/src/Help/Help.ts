@@ -25,7 +25,7 @@ interface RenderSettings {
 export const render = (
   specs_: ParameterSpec.Output[],
   settings: Settings.Output,
-  _settings?: RenderSettings
+  _settings?: RenderSettings,
 ) => {
   const allSpecs = specs_
   const specsWithDescription = allSpecs.filter((_) => _.description !== null)
@@ -40,7 +40,7 @@ export const render = (
           : -1
         : _.optionality._tag === `optional`
         ? 1
-        : -1
+        : -1,
     )
 
   const basicAndUnionSpecsWithoutHelp = basicAndUnionSpecs
@@ -60,7 +60,7 @@ export const render = (
   }
 
   const mexGroups = Object.values(groupBy(specsByKind.Exclusive ?? [], (_) => _.group.label)).map(
-    (_) => _[0]!.group // eslint-disable-line
+    (_) => _[0]!.group, // eslint-disable-line
   )
 
   const noteItems: (Tex.Block | string | null)[] = []
@@ -71,7 +71,7 @@ export const render = (
 
   if (isAcceptsAnyMutuallyExclusiveParameters) {
     noteItems.push(
-      `This is a set of mutually exclusive parameters. Only one can be provided at a time. If more than one is provided, execution will fail with an input error.`
+      `This is a set of mutually exclusive parameters. Only one can be provided at a time. If more than one is provided, execution will fail with an input error.`,
     )
   }
 
@@ -80,7 +80,7 @@ export const render = (
       if (!settings.description) return null
       return $.block({ padding: { top: 1, bottom: 1 } }, `ABOUT`).block(
         { padding: { left: 2 } },
-        settings.description
+        settings.description,
       )
     })
     .block({ padding: { top: 1, bottom: 1 } }, title(`PARAMETERS`))
@@ -92,18 +92,18 @@ export const render = (
               minWidth: 8,
               padding: { right: 5 },
             },
-            chalk.underline(Term.colors.mute(columnTitles.typeDescription))
+            chalk.underline(Term.colors.mute(columnTitles.typeDescription)),
           )
           .header({ padding: { right: 4 } }, chalk.underline(Term.colors.mute(columnTitles.default)))
           .header(
-            columnTitles.environment ? chalk.underline(Term.colors.mute(columnTitles.environment)) : null
+            columnTitles.environment ? chalk.underline(Term.colors.mute(columnTitles.environment)) : null,
           )
           .rows([
             ...basicAndUnionSpecsWithoutHelp.map((spec) => [
               parameterName(spec),
               Tex.block(
                 { maxWidth: 40, padding: { right: 9, bottom: 1 } },
-                parameterTypeAndDescription(settings, spec)
+                parameterTypeAndDescription(settings, spec),
               ),
               Tex.block({ maxWidth: 24 }, parameterDefault(spec)),
               ...(isEnvironmentEnabled ? [parameterEnvironment(spec, settings)] : []),
@@ -119,7 +119,7 @@ export const render = (
                 [
                   Tex.block(
                     { border: { left: Term.colors.dim(`┌`) } },
-                    Term.colors.dim(`─${mexGroup.label} ${`(2)`}`)
+                    Term.colors.dim(`─${mexGroup.label} ${`(2)`}`),
                   ),
                   ``,
                   default_,
@@ -133,7 +133,7 @@ export const render = (
                 [Tex.block({ border: { left: Term.colors.dim(`└`) } }, Term.colors.dim(`─`))],
               ]
             }),
-          ])
+          ]),
       ).block({ color: Term.colors.dim }, ($) => {
         if (noteItems.length === 0) {
           return null
@@ -144,9 +144,9 @@ export const render = (
               graphic: (index) => `(${index + 1})`,
             },
           },
-          noteItems
+          noteItems,
         )
-      })
+      }),
     )
     .render()
 
@@ -160,8 +160,8 @@ const environmentNote = (specs: ParameterSpec.Output[], settings: Settings.Outpu
       .filter(
         (_) =>
           _.environment!.namespaces.filter((_) =>
-            settings.parameters.environment.$default.prefix.map(camelCase).includes(_)
-          ).length !== _.environment!.namespaces.length
+            settings.parameters.environment.$default.prefix.map(camelCase).includes(_),
+          ).length !== _.environment!.namespaces.length,
       ).length > 0
 
   let content = ``
@@ -175,15 +175,15 @@ const environmentNote = (specs: ParameterSpec.Output[], settings: Settings.Outpu
       content += `By default they must be prefixed with`
       content += ` ${Text.joinListEnglish(
         settings.parameters.environment.$default.prefix.map((_) =>
-          Term.colors.secondary(Text.toEnvarNameCase(_) + `_`)
-        )
+          Term.colors.secondary(Text.toEnvarNameCase(_) + `_`),
+        ),
       )} (case insensitive), though some parameters deviate (shown in docs). `
     } else {
       content += `They must be prefixed with`
       content += ` ${Text.joinListEnglish(
         settings.parameters.environment.$default.prefix.map((_) =>
-          Term.colors.secondary(Text.toEnvarNameCase(_) + `_`)
-        )
+          Term.colors.secondary(Text.toEnvarNameCase(_) + `_`),
+        ),
       )} (case insensitive). `
     }
   } else {
@@ -200,9 +200,9 @@ const environmentNote = (specs: ParameterSpec.Output[], settings: Settings.Outpu
     .map((_) =>
       _.environment!.namespaces.length > 0
         ? `${Term.colors.secondary(
-            Text.toEnvarNameCase(_.environment!.namespaces[0]!) + `_`
+            Text.toEnvarNameCase(_.environment!.namespaces[0]!) + `_`,
           )}${Term.colors.positive(Text.toEnvarNameCase(_.name.canonical))}`
-        : Term.colors.positive(Text.toEnvarNameCase(_.name.canonical))
+        : Term.colors.positive(Text.toEnvarNameCase(_.name.canonical)),
     )
     .map((_) => `${_}="..."`)
 
@@ -214,8 +214,8 @@ const environmentNote = (specs: ParameterSpec.Output[], settings: Settings.Outpu
           graphic: Text.chars.arrowRight,
         },
       },
-      examples
-    )
+      examples,
+    ),
   )
 }
 
@@ -267,11 +267,11 @@ const parameterName = (spec: ParameterSpec.Output) => {
 
   return Tex.block(parameters, (__) =>
     __.block(
-      isRequired ? Term.colors.positiveBold(spec.name.canonical) : Term.colors.positive(spec.name.canonical)
+      isRequired ? Term.colors.positiveBold(spec.name.canonical) : Term.colors.positive(spec.name.canonical),
     )
       .block(Term.colors.dim(spec.name.aliases.long.join(`, `)) || null)
       .block(Term.colors.dim(spec.name.short ?? ``) || null)
-      .block(Term.colors.dim(spec.name.aliases.long.join(`, `)) || null)
+      .block(Term.colors.dim(spec.name.aliases.long.join(`, `)) || null),
   )
 }
 
@@ -292,17 +292,17 @@ const parameterTypeAndDescription = (settings: Settings.Output, spec: ParameterS
                 `${index === 0 ? unionMemberIcon : Term.colors.dim(Text.chars.borders.vertical)} `,
             },
           },
-          (__) => __.block(typeScalar(_.type)).block(_.description)
+          (__) => __.block(typeScalar(_.type)).block(_.description),
         )
       })
       return Tex.block((__) =>
         __.block(Term.colors.dim(Text.chars.borders.leftTop + Text.chars.borders.horizontal + `union`))
           .block(
             { padding: { bottom: 1 }, border: { left: `${Term.colors.dim(Text.chars.borders.vertical)} ` } },
-            spec.description
+            spec.description,
           )
           .block(types)
-          .block(Term.colors.dim(Text.chars.borders.leftBottom + Text.chars.borders.horizontal))
+          .block(Term.colors.dim(Text.chars.borders.leftBottom + Text.chars.borders.horizontal)),
       )
     } else {
       const types = spec.types.map((_) => typeTagsToTypeScriptName[_.type._tag]).join(` | `)
@@ -312,7 +312,7 @@ const parameterTypeAndDescription = (settings: Settings.Output, spec: ParameterS
 
   // const maybeZodEnum = ZodHelpers.getEnum(spec.zodType)
   return Tex.block({ padding: { bottom: spec._tag === `Exclusive` ? 0 : 1 } }, ($) =>
-    $.block(typeScalar(spec.type)).block(spec.description)
+    $.block(typeScalar(spec.type)).block(spec.description),
   )
 }
 
@@ -324,13 +324,13 @@ const parameterEnvironment = (spec: ParameterSpec.Output, settings: Settings.Out
           : spec.environment.enabled &&
             spec.environment.namespaces.filter(
               // TODO settings normalized should store prefix in camel case
-              (_) => !settings.parameters.environment.$default.prefix.includes(snakeCase(_))
+              (_) => !settings.parameters.environment.$default.prefix.includes(snakeCase(_)),
             ).length > 0
           ? ` ` +
             Term.colors.dim(
               spec.environment.namespaces
                 .map((_) => `${Text.toEnvarNameCase(_)}_${Text.toEnvarNameCase(spec.name.canonical)}`)
-                .join(` ${Text.chars.pipe} `)
+                .join(` ${Text.chars.pipe} `),
             )
           : ``)
     : Term.colors.dim(Text.chars.x)

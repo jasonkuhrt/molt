@@ -83,12 +83,12 @@ const validateType = <T>(type: Type, value: T): Result<T> => {
     .TypeBoolean(() =>
       typeof value === `boolean`
         ? Result.Success.create({ value })
-        : Result.Failure.create({ value, errors: [`Value is not a boolean.`] })
+        : Result.Failure.create({ value, errors: [`Value is not a boolean.`] }),
     )
     .TypeEnum((type) =>
       type.members.includes(value as any)
         ? Result.Success.create({ value })
-        : Result.Failure.create({ value, errors: [`Value is not a member of the enum.`] })
+        : Result.Failure.create({ value, errors: [`Value is not a member of the enum.`] }),
     )
     .TypeNumber((type) => {
       const errors = []

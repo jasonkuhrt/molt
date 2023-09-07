@@ -13,10 +13,10 @@ describe(`zod`, () => {
         [`multipleOf`,              { name: z.number().multipleOf(5) },                          { line: [`--name`, `2`] }],
         // TOOD allow expressing infinity on CLI???
         // [`finite`,                     { name: z.number().finite() },                                  { line: [`--name`, `5`] }],
-      ]
+      ],
     )(`%s`, (_, parameters, input) => {
       expect(() =>
-        Command.parameters(parameters).settings({ onError: `throw`, helpOnError: false }).parse(input)
+        Command.parameters(parameters).settings({ onError: `throw`, helpOnError: false }).parse(input),
       ).toThrowErrorMatchingSnapshot()
     })
   })

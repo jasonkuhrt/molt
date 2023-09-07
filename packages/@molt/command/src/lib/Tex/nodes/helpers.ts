@@ -23,7 +23,7 @@ export interface Shape {
 export const applyPadding = (
   value: string,
   padding: Exclude<BlockParameters['padding'], undefined>,
-  context: Pick<RenderContext, 'index'>
+  context: Pick<RenderContext, 'index'>,
 ) => {
   value =
     padding.topBetween && !context.index.isFirst

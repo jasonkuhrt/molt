@@ -93,7 +93,7 @@ const run = () => {
   const args = tryCatch(() =>
     Command.parameters(parameters)
       .settings({ onError: `throw`, helpOnError: false, ...settings })
-      .parse({ line, tty: tty.interface })
+      .parse({ line, tty: tty.interface }),
   )
   expect(args).toMatchSnapshot(`args`)
   expect(tty.history.all).toMatchSnapshot(`tty`)

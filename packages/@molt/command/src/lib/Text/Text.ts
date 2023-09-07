@@ -34,7 +34,7 @@ export const minSpan = (alignContent: 'left' | 'right', width: number, content: 
     alignContent === `left` ? `right` : `left`,
     Math.max(0, width - getLength(content)),
     chars.space,
-    content
+    content,
   )
 }
 
@@ -88,7 +88,7 @@ export const row = (columns: ColSpec[]): string => {
       }))
       .reduce(
         (line, col, currentLine) => (currentLine === 0 ? col.content : line + col.separator + col.content),
-        ``
+        ``,
       )
     lines.push(line)
     currentLine++
@@ -148,11 +148,11 @@ export const toLines = (text: string): Column => {
 
 export const indentColumn = (
   column: Column,
-  symbolOrSymbolMaker: string | ((lineNumber: number) => string) = ` `
+  symbolOrSymbolMaker: string | ((lineNumber: number) => string) = ` `,
 ): Column => {
   return column.map(
     (line, index) =>
-      (typeof symbolOrSymbolMaker === `string` ? symbolOrSymbolMaker : symbolOrSymbolMaker(index)) + line
+      (typeof symbolOrSymbolMaker === `string` ? symbolOrSymbolMaker : symbolOrSymbolMaker(index)) + line,
   )
 }
 

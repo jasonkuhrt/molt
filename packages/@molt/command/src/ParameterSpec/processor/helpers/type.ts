@@ -32,80 +32,86 @@ export const analyzeZodTypeScalar = (zodType: SomeBasicType) => {
 
 const mapZodNumberChecks = (checks: z.ZodNumberCheck[]) => {
   return checks
-    .map((_): ZodNumberCheck => ({ _tag: _.kind, ..._ } as any))
-    .reduce((acc, check) => {
-      return Alge.match(check)
-        .int(() => ({ ...acc, int: true }))
-        .min((check) => ({
-          min: check.value,
-        }))
-        .max((check) => ({
-          max: check.value,
-        }))
-        .finite(() => ({
-          finite: true,
-        }))
-        .multipleOf((check) => ({
-          multipleOf: check.value,
-        }))
-        .done()
-    }, {} as Omit<TypeNumber, '_tag'>)
-}
-
-const mapZodStringChecks = (checks: z.ZodStringCheck[]): Omit<TypeString, '_tag'> => {
-  return checks
-    .map((_): ZodStringCheck => ({ _tag: _.kind, ..._ } as any))
-    .reduce<Omit<TypeString, '_tag'>>((acc, check) => {
-      return {
-        ...acc,
-        ...Alge.match(check)
-          .regex((check) => ({
-            regex: check.regex,
-          }))
+    .map((_): ZodNumberCheck => ({ _tag: _.kind, ..._ }) as any)
+    .reduce(
+      (acc, check) => {
+        return Alge.match(check)
+          .int(() => ({ ...acc, int: true }))
           .min((check) => ({
             min: check.value,
           }))
           .max((check) => ({
             max: check.value,
           }))
-          .url((check) => ({
-            pattern: { type: check._tag },
+          .finite(() => ({
+            finite: true,
           }))
-          .cuid((check) => ({
-            pattern: { type: check._tag },
+          .multipleOf((check) => ({
+            multipleOf: check.value,
           }))
-          .cuid2(() => ({
-            pattern: { type: `cuid2` as const },
-          }))
-          .uuid((check) => ({
-            pattern: { type: check._tag },
-          }))
-          .datetime((check) => ({
-            pattern: {
-              type: `dateTime` as const,
-              offset: check.offset,
-              precision: check.precision,
-            },
-          }))
-          .email((check) => ({
-            pattern: { type: check._tag },
-          }))
-          .endsWith((check) => ({
-            endsWith: check.value,
-          }))
-          .startsWith((check) => ({
-            startsWith: check.value,
-          }))
-          .length((check) => ({
-            length: check.value,
-          }))
-          .trim(() => ({
-            transformations: {
-              ...acc.transformations,
-              trim: true,
-            },
-          }))
-          .done(),
-      }
-    }, {} as Omit<TypeString, '_tag'>)
+          .done()
+      },
+      {} as Omit<TypeNumber, '_tag'>,
+    )
+}
+
+const mapZodStringChecks = (checks: z.ZodStringCheck[]): Omit<TypeString, '_tag'> => {
+  return checks
+    .map((_): ZodStringCheck => ({ _tag: _.kind, ..._ }) as any)
+    .reduce<Omit<TypeString, '_tag'>>(
+      (acc, check) => {
+        return {
+          ...acc,
+          ...Alge.match(check)
+            .regex((check) => ({
+              regex: check.regex,
+            }))
+            .min((check) => ({
+              min: check.value,
+            }))
+            .max((check) => ({
+              max: check.value,
+            }))
+            .url((check) => ({
+              pattern: { type: check._tag },
+            }))
+            .cuid((check) => ({
+              pattern: { type: check._tag },
+            }))
+            .cuid2(() => ({
+              pattern: { type: `cuid2` as const },
+            }))
+            .uuid((check) => ({
+              pattern: { type: check._tag },
+            }))
+            .datetime((check) => ({
+              pattern: {
+                type: `dateTime` as const,
+                offset: check.offset,
+                precision: check.precision,
+              },
+            }))
+            .email((check) => ({
+              pattern: { type: check._tag },
+            }))
+            .endsWith((check) => ({
+              endsWith: check.value,
+            }))
+            .startsWith((check) => ({
+              startsWith: check.value,
+            }))
+            .length((check) => ({
+              length: check.value,
+            }))
+            .trim(() => ({
+              transformations: {
+                ...acc.transformations,
+                trim: true,
+              },
+            }))
+            .done(),
+        }
+      },
+      {} as Omit<TypeString, '_tag'>,
+    )
 }

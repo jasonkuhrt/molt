@@ -10,7 +10,7 @@ import { analyzeZodTypeScalar } from '../helpers/type.js'
 export const processUnion = (
   nameExpression: string,
   input: Input.Union,
-  settings: Settings.Output
+  settings: Settings.Output,
 ): Output.Union => {
   const name = processName(nameExpression)
   const environment = processEnvironment(settings, name)

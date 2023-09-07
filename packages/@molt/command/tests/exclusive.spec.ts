@@ -10,7 +10,7 @@ const settings: Settings.Input = { onError: `throw`, helpOnError: false }
 describe(`optional`, () => {
   it(`leads to optional type`, () => {
     c = Command.parametersExclusive(`method`, ($$) =>
-      $$.parameter(`v version`, s).parameter(`b bump`, e).optional()
+      $$.parameter(`v version`, s).parameter(`b bump`, e).optional(),
     ).parse({ line: [`-v`, `1.0.0`] })
 
     expectType<typeof c>(
@@ -24,32 +24,32 @@ describe(`optional`, () => {
               _tag: 'bump'
               value: 'major' | 'minor' | 'patch'
             }
-      }>()
+      }>(),
     )
   })
 
   it(`can accept line arg`, () => {
     c = Command.parametersExclusive(`method`, ($$) =>
-      $$.parameter(`v version`, s).parameter(`b bump`, e).optional()
+      $$.parameter(`v version`, s).parameter(`b bump`, e).optional(),
     ).parse({ line: [`-v`, `1.0.0`] })
     expect(c).toMatchObject({ method: { _tag: `version`, value: `1.0.0` } })
   })
 
   it(`can accept env arg`, () => {
     c = Command.parametersExclusive(`method`, ($$) =>
-      $$.parameter(`v version`, s).parameter(`b bump`, e).optional()
+      $$.parameter(`v version`, s).parameter(`b bump`, e).optional(),
     ).parse({ environment: { cli_param_v: `1.0.0` } })
     expect(c).toMatchObject({ method: { _tag: `version`, value: `1.0.0` } })
   })
   it(`can accept nothing`, () => {
     c = Command.parametersExclusive(`method`, ($$) =>
-      $$.parameter(`v version`, s).parameter(`b bump`, e).optional()
+      $$.parameter(`v version`, s).parameter(`b bump`, e).optional(),
     ).parse()
     expect(`method` in c).toBe(false)
   })
   it(`if two args then error`, () => {
     const c = Command.parametersExclusive(`method`, ($$) =>
-      $$.parameter(`v version`, s).parameter(`b bump`, e).optional()
+      $$.parameter(`v version`, s).parameter(`b bump`, e).optional(),
     ).settings(settings)
     expect(() => c.parse({ line: [`-v`, `1.0.0`, `-b`, `major`] })).toThrowErrorMatchingSnapshot()
   })
@@ -58,13 +58,13 @@ describe(`optional`, () => {
 describe(`required`, () => {
   it(`if no arg given then error`, () => {
     const c = Command.parametersExclusive(`method`, ($$) =>
-      $$.parameter(`v version`, s).parameter(`b bump`, e)
+      $$.parameter(`v version`, s).parameter(`b bump`, e),
     ).settings(settings)
     expect(c.parse).toThrowErrorMatchingSnapshot()
   })
   it(`if two args then error`, () => {
     const c = Command.parametersExclusive(`method`, ($$) =>
-      $$.parameter(`v version`, s).parameter(`b bump`, e)
+      $$.parameter(`v version`, s).parameter(`b bump`, e),
     ).settings(settings)
     expect(() => c.parse({ line: [`-v`, `1.0.0`, `-b`, `major`] })).toThrowErrorMatchingSnapshot()
   })
@@ -86,7 +86,7 @@ describe(`default`, () => {
   })
   it(`leads to non-optional type`, () => {
     const a = Command.parametersExclusive(`method`, ($$) =>
-      $$.parameter(`v version`, s).parameter(`b bump`, e).default(`bump`, `major`)
+      $$.parameter(`v version`, s).parameter(`b bump`, e).default(`bump`, `major`),
     )
       .settings(settings)
       .parse()
@@ -101,12 +101,12 @@ describe(`default`, () => {
               _tag: 'bump'
               value: 'major' | 'minor' | 'patch'
             }
-      }>()
+      }>(),
     )
   })
   it(`used if nothing passed for group`, () => {
     const a = Command.parametersExclusive(`method`, ($$) =>
-      $$.parameter(`v version`, s).parameter(`b bump`, e).default(`bump`, `patch`)
+      $$.parameter(`v version`, s).parameter(`b bump`, e).default(`bump`, `patch`),
     )
       .settings(settings)
       .parse()

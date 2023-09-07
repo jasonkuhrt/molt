@@ -12,13 +12,13 @@ describe(`block`, () => {
       `can flow horizontally`,
       Tex.Tex({ flow: `horizontal` })
         .block(($) => $.block(`1aaaaa`).block(`1b`).block(`1ccccc`))
-        .block(($) => $.block(`2aaaa`).block(`2b`).block(`2ccccc`))
+        .block(($) => $.block(`2aaaa`).block(`2b`).block(`2ccccc`)),
     )
     $(
       `ansi does not contribute to column width calculation`,
       Tex.Tex({ flow: `horizontal` })
         .block(($) => $.block(`1a`).block(chalk.red(`1b`)).block(`1c`))
-        .block(($) => $.block(`2aaaa`).block(`2b`).block(`2ccccc`))
+        .block(($) => $.block(`2aaaa`).block(`2b`).block(`2ccccc`)),
     )
   })
   describe(`width`, () => {
@@ -27,7 +27,7 @@ describe(`block`, () => {
         `100%`,
         Tex.Tex({ maxWidth: 100 })
           .block(`foo bar`)
-          .block({ border: { top: `-` }, width: `100%` }, `foo`)
+          .block({ border: { top: `-` }, width: `100%` }, `foo`),
       )
     })
   })
@@ -40,11 +40,11 @@ describe(`block`, () => {
   describe(`builder`, () => {
     $(
       `can render a line`,
-      Tex.Tex().block(($) => $.text(`foo`))
+      Tex.Tex().block(($) => $.text(`foo`)),
     )
     $(
       `can render nothing via null`,
-      Tex.Tex().block(() => null)
+      Tex.Tex().block(() => null),
     )
   })
   describe(`padding`, () => {
@@ -52,7 +52,7 @@ describe(`block`, () => {
     $(`bottom`, Tex.Tex().block({ padding: { bottom: 2 } }, `foo`))
     $(
       `left`,
-      Tex.Tex().block(($) => $.set({ padding: { left: 2 } }).text(`foo`))
+      Tex.Tex().block(($) => $.set({ padding: { left: 2 } }).text(`foo`)),
     )
     $(
       `left multi line`,
@@ -60,8 +60,8 @@ describe(`block`, () => {
         $.set({ padding: { left: 2 } })
           .block(`foo`)
           .block(`bar`)
-          .block(`qux`)
-      )
+          .block(`qux`),
+      ),
     )
   })
   describe(`border`, () => {
@@ -74,8 +74,8 @@ describe(`block`, () => {
           $.set({ border: { right: `|` } })
             .block(`alpha`)
             .block(`bravo bravo`)
-            .block(`charlie charlie charlie`)
-        )
+            .block(`charlie charlie charlie`),
+        ),
     )
     $(`bottom`, Tex.Tex().block({ border: { bottom: `-` } }, `foo`))
     $(`left`, Tex.Tex().block({ border: { left: `|` } }, `foo`))
@@ -89,9 +89,9 @@ describe(`block`, () => {
       Tex.Tex().block(($) =>
         $.set({ border: { right: `|`, left: `|`, top: `-`, bottom: `-` } }).block(
           { border: { right: `|`, left: `|`, top: `-`, bottom: `-` } },
-          `abc`
-        )
-      )
+          `abc`,
+        ),
+      ),
     )
     describe(`corners`, () => {
       $(`top`, Tex.Tex().block({ border: { corners: `o`, bottom: `-` } }, `foo`))
@@ -100,16 +100,16 @@ describe(`block`, () => {
       $(`left`, Tex.Tex().block({ border: { corners: `o`, left: `|` } }, `foo`))
       $(
         `all`,
-        Tex.Tex().block({ border: { corners: `o`, top: `-`, right: `|`, bottom: `-`, left: `|` } }, `foo`)
+        Tex.Tex().block({ border: { corners: `o`, top: `-`, right: `|`, bottom: `-`, left: `|` } }, `foo`),
       )
       $(
         `all-nested`,
         Tex.Tex().block(($) =>
           $.set({ border: { corners: `o`, right: `|`, left: `|`, top: `-`, bottom: `-` } }).block(
             { border: { corners: `o`, right: `|`, left: `|`, top: `-`, bottom: `-` } },
-            `abc`
-          )
-        )
+            `abc`,
+          ),
+        ),
       )
     })
   })
@@ -119,13 +119,13 @@ describe(`block`, () => {
         .block(($) =>
           $.set({ border: { corners: `o`, right: `|`, left: `|`, top: `-`, bottom: `-` } }).block(
             { border: { corners: `o`, right: `|`, left: `|`, top: `-`, bottom: `-` } },
-            `abc`
-          )
+            `abc`,
+          ),
         )
         .render()
       const b = Tex.Tex()
         .block({ border: { corners: `o`, right: `|`, left: `|`, top: `-`, bottom: `-` } }, ($) =>
-          $.block({ border: { corners: `o`, right: `|`, left: `|`, top: `-`, bottom: `-` } }, `abc`)
+          $.block({ border: { corners: `o`, right: `|`, left: `|`, top: `-`, bottom: `-` } }, `abc`),
         )
         .render()
       expect(a).toEqual(b)
@@ -146,18 +146,18 @@ describe(`list`, () => {
   $(`can have custom bullet`, Tex.Tex().list({ bullet: { graphic: `-` } }, [`foo`, `zod`]))
   $(
     `can have custom bullet function`,
-    Tex.Tex().list({ bullet: { graphic: (i) => `(${i})` } }, [`foo`, `zod`])
+    Tex.Tex().list({ bullet: { graphic: (i) => `(${i})` } }, [`foo`, `zod`]),
   )
   $(
     `the gutter of bullets is left aligned by default`,
-    Tex.Tex().list({ bullet: { graphic: (i) => String(i) } }, `abcdefghijklmnopqrstuvwxyz`.split(``))
+    Tex.Tex().list({ bullet: { graphic: (i) => String(i) } }, `abcdefghijklmnopqrstuvwxyz`.split(``)),
   )
   $(
     `the gutter of bullets can be right aligned`,
     Tex.Tex().list(
       { bullet: { graphic: (i) => String(i), align: { horizontal: `right` } } },
-      `abcdefghijklmnopqrstuvwxyz`.split(``)
-    )
+      `abcdefghijklmnopqrstuvwxyz`.split(``),
+    ),
   )
   // prettier-ignore
   describe(`builder`, () => {
@@ -188,11 +188,11 @@ describe(`table`, () => {
   describe(`headers`, () => {
     $(
       `can be passed as an array`,
-      Tex.Tex().table(($) => $.headers([`alpha`, `bravo`]))
+      Tex.Tex().table(($) => $.headers([`alpha`, `bravo`])),
     )
     $(
       `if exceed column count of the actual given data they are rendered with empty column cells`,
-      Tex.Tex().table(($) => $.headers([`alpha`, `bravo`, `charlie`]).row(`a`, `b`))
+      Tex.Tex().table(($) => $.headers([`alpha`, `bravo`, `charlie`]).row(`a`, `b`)),
     )
     $(
       `can be a block`,
@@ -200,28 +200,28 @@ describe(`table`, () => {
         $.table(($) =>
           $.header(new Tex.Block({ padding: { right: 10 } }, `alpha`))
             .header(new Tex.Block({ border: { bottom: `~` } }, `bravo`))
-            .row(`a`, `b`)
-        )
-      )
+            .row(`a`, `b`),
+        ),
+      ),
     )
   })
   describe(`builder`, () => {
     describe(`row`, () => {
       $(
         `can have a row`,
-        Tex.Tex().table(($) => $.headers([`alpha`, `bravo`]).row(`a`, `b`))
+        Tex.Tex().table(($) => $.headers([`alpha`, `bravo`]).row(`a`, `b`)),
       )
       $(
         `if a row has columns exceeding the headers they render with empty header cells`,
-        Tex.Tex().table(($) => $.headers([`alpha`, `bravo`]).row(`a`, `b`, `c`))
+        Tex.Tex().table(($) => $.headers([`alpha`, `bravo`]).row(`a`, `b`, `c`)),
       )
       $(
         `null is not rendered`,
-        Tex.Tex().table(($) => $.row(`a1`, `b1`).row(null).row(`a3`, `b3`))
+        Tex.Tex().table(($) => $.row(`a1`, `b1`).row(null).row(`a3`, `b3`)),
       )
       $(
         `null cell is not rendered`,
-        Tex.Tex().table(($) => $.row(`a1`, `b1`).row(`a2`, null, `c2`))
+        Tex.Tex().table(($) => $.row(`a1`, `b1`).row(`a2`, null, `c2`)),
       )
     })
     describe(`rows`, () => {
@@ -232,11 +232,11 @@ describe(`table`, () => {
       })
       $(
         `pure null rows are not rendered`,
-        Tex.Tex().table(($) => $.rows([`a1`, `b1`]).rows(null).rows([`a3`, `b3`]))
+        Tex.Tex().table(($) => $.rows([`a1`, `b1`]).rows(null).rows([`a3`, `b3`])),
       )
       $(
         `null rows are not rendered`,
-        Tex.Tex().table(($) => $.rows([`a1`, `b1`], null, [`a3`, `b3`]))
+        Tex.Tex().table(($) => $.rows([`a1`, `b1`], null, [`a3`, `b3`])),
       )
     })
   })
@@ -247,8 +247,8 @@ describe(`table`, () => {
       $.headers([`alpha`, `bravo`, `charlieeeeeeeeeeeeeeeeeee`, `delta`])
         .row(`a1`, `b1`, `c1`, `d1`)
         .row(`a222222222222222`, `b2`, `c2`, `d2`)
-        .row(`a3`, `b333333333333333333`, `c3`, `d3`)
-    )
+        .row(`a3`, `b333333333333333333`, `c3`, `d3`),
+    ),
   )
   $(
     `data column width equals widest cell (multi-line)`,
@@ -256,12 +256,12 @@ describe(`table`, () => {
       $.headers([`alpha`, `bravo`, `charlieeeeeeeeeeeeeeeeeee`, `delta`])
         .row(`a1`, `b1`, `c1`, `d1`)
         .row(`a222222222222222\na2`, `b2`, `c2`, `d2`)
-        .row(`a3`, `b333333333333333333`, `c3`, `d3`)
-    )
+        .row(`a3`, `b333333333333333333`, `c3`, `d3`),
+    ),
   )
   $(
     `cell text is vertically aligned top`,
-    Tex.Tex().table(($) => $.row(`alpha\napple\nankle`, `beta\nbanana`))
+    Tex.Tex().table(($) => $.row(`alpha\napple\nankle`, `beta\nbanana`)),
   )
 
   describe(`set`, () => {
@@ -270,16 +270,16 @@ describe(`table`, () => {
       Tex.Tex().table(($) =>
         $.set({ separators: { row: ` ` } })
           .headers([`alpha`, `bravo`, `charlie`])
-          .row(`a`, `b`)
-      )
+          .row(`a`, `b`),
+      ),
     )
     $(
       `custom vertical separator`,
       Tex.Tex().table(($) =>
         $.set({ separators: { column: ` ` } })
           .headers([`alpha`, `bravo`, `charlie`])
-          .row(`a`, `b`)
-      )
+          .row(`a`, `b`),
+      ),
     )
   })
 })

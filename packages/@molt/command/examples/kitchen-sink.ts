@@ -2,7 +2,7 @@ import { Command } from '../src/index.js'
 import { z } from 'zod'
 
 const args = Command.description(
-  `This is a so-called "kitchen-sink" Molt Command example. Many features are demonstrated here though the overall CLI itself makes no sense. Take a look around, see how the help renders, try running with different inputs, etc.`
+  `This is a so-called "kitchen-sink" Molt Command example. Many features are demonstrated here though the overall CLI itself makes no sense. Take a look around, see how the help renders, try running with different inputs, etc.`,
 )
   .parameters({
     badDefault: z.string().default(() => {
@@ -46,13 +46,13 @@ const args = Command.description(
       `cake`,
       z
         .enum([`chocolate`, `vanilla`, `strawberry`])
-        .describe(`An indulgent treat to celebrate peak moments in life!`)
+        .describe(`An indulgent treat to celebrate peak moments in life!`),
     ).parameter(
       `fruit`,
       z
         .enum([`apple`, `banana`, `orange`])
-        .describe(`A sustainable snack for everyday happiness and delight!`)
-    )
+        .describe(`A sustainable snack for everyday happiness and delight!`),
+    ),
   )
   .settings({
     parameters: {

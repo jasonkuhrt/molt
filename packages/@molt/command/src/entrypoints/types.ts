@@ -6,7 +6,7 @@ export namespace Methods {
   export namespace Parameters {
     export type InputAsSchema = SomeParametersConfigSchema
     export const parameters = <T extends Schema>(
-      parameters: SomeParametersConfig<T>
+      parameters: SomeParametersConfig<T>,
     ): SomeParametersConfig<T> => parameters
     export type InputAsConfig<T extends Schema> = SomeParametersConfig<T>
     // export type Input = SomeParametersConfigSchema | SomeParametersConfig

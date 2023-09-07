@@ -34,14 +34,14 @@ const getExtension = (mode: Mode) => {
 const changeImportFilePathMode = (mode: Mode, string: string) => {
   return string.replace(
     new RegExp(`\\.${getOppositeExtension(mode).node}'$`, `gm`),
-    `.${getExtension(mode).node}'`
+    `.${getExtension(mode).node}'`,
   )
 }
 
 const changeFilePathMode = (mode: Mode, string: string) => {
   return string.replace(
     new RegExp(`\\.${getOppositeExtension(mode).ts}$`, `g`),
-    `.${typeScriptExtensions[mode].ts}`
+    `.${typeScriptExtensions[mode].ts}`,
   )
 }
 
@@ -63,7 +63,7 @@ await Promise.all(
     const oldFileContents = Fs.read(newFilePath)!
     const newFileContents = changeImportFilePathMode(mode, oldFileContents)
     await Fs.writeAsync(newFilePath, newFileContents)
-  })
+  }),
 )
 
 await execaCommand(`pnpm tsc --project tsconfig.${mode}.json`, { stdio: `inherit` })
@@ -77,5 +77,5 @@ await Promise.all(
     const newFileContents = Fs.read(oldFilePath)!
     const oldFileContents = changeImportFilePathMode(oppositeMode[mode], newFileContents)
     await Fs.writeAsync(oldFilePath, oldFileContents)
-  })
+  }),
 )

@@ -64,7 +64,7 @@ export const isOrHasType = (spec: Output, typeTag: Type['_tag']): boolean => {
 const parameterSpecHasNameDo = (
   spec: Output,
   name: string,
-  negated: boolean
+  negated: boolean,
 ): null | { kind: 'long' | 'longAlias'; negated: boolean } | { kind: 'short' | 'shortAlias' } => {
   return spec.name.long === name
     ? { kind: `long`, negated }

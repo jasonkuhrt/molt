@@ -33,7 +33,7 @@ $.only = (description: string, builder: RootBuilder<any>) => {
 
 $(
   `if command has description it is shown`,
-  Command.description(`Blah blah blah`).parameters({ foo: s.optional() })
+  Command.description(`Blah blah blah`).parameters({ foo: s.optional() }),
 )
 
 it(`if there is optional param it is shown`, () => {
@@ -223,7 +223,7 @@ describe(`exclusive`, () => {
   describe(`default`, () => {
     it(`shows the group default`, () => {
       Command.parametersExclusive(`foo`, (_) =>
-        _.parameter(`b bar`, s).parameter(`z baz`, s).default(`bar`, `bar_default`)
+        _.parameter(`b bar`, s).parameter(`z baz`, s).default(`bar`, `bar_default`),
       )
         .settings({ onOutput })
         .parse({
@@ -236,7 +236,7 @@ describe(`exclusive`, () => {
   describe(`default with long value`, () => {
     it(`shows the group default`, () => {
       Command.parametersExclusive(`foo`, (_) =>
-        _.parameter(`b bar`, s).parameter(`z baz`, s).default(`bar`, `bar_defaulttttttttttttttttttttt`)
+        _.parameter(`b bar`, s).parameter(`z baz`, s).default(`bar`, `bar_defaulttttttttttttttttttttt`),
       )
         .settings({ onOutput })
         .parse({
@@ -249,7 +249,7 @@ describe(`exclusive`, () => {
   describe(`with environment disabled`, () => {
     it(`shows the group default`, () => {
       Command.parametersExclusive(`foo`, (_) =>
-        _.parameter(`b bar`, s).parameter(`z baz`, s).default(`bar`, `bar_default`)
+        _.parameter(`b bar`, s).parameter(`z baz`, s).default(`bar`, `bar_default`),
       )
         .settings({ onOutput, parameters: { environment: false } })
         .parse({
@@ -296,7 +296,7 @@ describe(`union parameter`, () => {
         z.union([
           z.string().describe(`Blah blah blah string.`),
           z.number().describe(`Blah blah blah number.`),
-        ])
+        ]),
       )
         .settings({ onOutput })
         .parse({
@@ -322,7 +322,7 @@ describe(`union parameter`, () => {
             z.string().describe(`Blah blah blah string.`),
             z.number().describe(`Blah blah blah number.`),
           ])
-          .describe(`Blah blah blah overall.`)
+          .describe(`Blah blah blah overall.`),
       )
         .settings({ onOutput })
         .parse({
@@ -338,7 +338,7 @@ describe(`union parameter`, () => {
       z
         .union([z.string().describe(`Blah blah blah string.`), z.number().describe(`Blah blah blah number.`)])
         .default(1)
-        .describe(`Blah blah blah overall.`)
+        .describe(`Blah blah blah overall.`),
     )
       .settings({ onOutput })
       .parse({
@@ -353,7 +353,7 @@ describe(`union parameter`, () => {
       z
         .union([z.string().describe(`Blah blah blah string.`), z.number().describe(`Blah blah blah number.`)])
         .optional()
-        .describe(`Blah blah blah overall.`)
+        .describe(`Blah blah blah overall.`),
     )
       .settings({ onOutput })
       .parse({
