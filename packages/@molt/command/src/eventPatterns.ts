@@ -34,11 +34,19 @@ export interface BasicParameterParseEventRejected {
 }
 
 export const createEvent = (parseResult: OpeningArgs.ParseResultBasic) => {
-  const specData: ParameterSpec.Output.BasicData = {
-    ...parseResult.spec,
-    _tag: `BasicData` as const,
-    optionality: parseResult.spec.optionality[`_tag`],
-  }
+  const specData: ParameterSpec.Output.BasicData | ParameterSpec.Output.UnionData =
+    parseResult.spec._tag === `Basic`
+      ? {
+          ...parseResult.spec,
+          _tag: `BasicData` as const,
+          optionality: parseResult.spec.optionality[`_tag`],
+        }
+      : {
+          ...parseResult.spec,
+          _tag: `UnionData` as const,
+          optionality: parseResult.spec.optionality[`_tag`],
+          types: parseResult.spec.types.map(({ zodType: _, ...rest }) => rest),
+        }
   return parseResult._tag === `supplied`
     ? { result: `accepted`, spec: specData, value: parseResult.value }
     : parseResult._tag === `omitted`

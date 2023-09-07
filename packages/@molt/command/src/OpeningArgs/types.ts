@@ -61,18 +61,18 @@ export type ParseError =
 
 export type ParseResultBasicSupplied = {
   _tag: 'supplied'
-  spec: ParameterSpec.Output.Basic
+  spec: ParameterSpec.Output.Basic | ParameterSpec.Output.Union
   value: ParameterSpec.ArgumentValue
 }
 
 export type ParseResultBasicError = {
   _tag: 'error'
-  spec: ParameterSpec.Output.Basic
+  spec: ParameterSpec.Output.Basic | ParameterSpec.Output.Union
   errors: ParseErrorBasic[]
 }
 export type ParseResultBasicOmitted = {
   _tag: 'omitted'
-  spec: ParameterSpec.Output.Basic
+  spec: ParameterSpec.Output.Basic | ParameterSpec.Output.Union
 }
 
 export type ParseResultBasic = ParseResultBasicSupplied | ParseResultBasicError | ParseResultBasicOmitted

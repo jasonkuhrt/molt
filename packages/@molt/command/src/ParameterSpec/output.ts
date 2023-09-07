@@ -20,14 +20,9 @@ export namespace Output {
     prompt: Prompt
   }
 
-  export interface BasicData {
+  export type BasicData = Omit<Basic, '_tag' | 'optionality'> & {
     _tag: 'BasicData'
-    name: Name
-    type: Type
     optionality: BasicOptionality['_tag']
-    description: null | string
-    environment: Environment
-    prompt: Prompt
   }
 
   export interface Union {
@@ -41,6 +36,14 @@ export namespace Output {
     optionality: BasicOptionality
     description: null | string
     environment: Environment
+  }
+  export type UnionData = Omit<Union, '_tag' | 'optionality' | 'types'> & {
+    _tag: 'UnionData'
+    optionality: BasicOptionality['_tag']
+    types: {
+      type: Type
+      description: null | string
+    }[]
   }
 
   export interface Exclusive {
