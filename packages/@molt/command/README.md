@@ -29,10 +29,9 @@
     - [Enum](#enum)
     - [Union](#union)
   - [Parameter Prompts](#parameter-prompts)
-    - [Configuration](#configuration)
+    - [Overview](#overview)
     - [Enable Prompt Per Parameter](#enable-prompt-per-parameter)
-    - [Enable Prompt at Instance Scope](#enable-prompt-at-instance-scope)
-    - [Behavior](#behavior)
+    - [Enable Prompt on Command Level](#enable-prompt-on-command-level)
   - [Line Arguments](#line-arguments)
     - [Parameter Argument Separator](#parameter-argument-separator)
     - [Stacked Short Flags](#stacked-short-flags)
@@ -573,15 +572,27 @@ You can make Molt Command interactively _prompt_ users for arguments. This enabl
 - Graceful recovery from invalid up front arguments.
 - Guided argument passing meaning no need to know ahead of time the required parameters, just follow the prompts.
 
-#### Configuration
+Example:
 
-- By default prompts are disabled.
-- You can enable prompts for basic parameters only ([mutually exclusive parameters](#mutually-exclusive-parameters) are not supported yet.).
-- You can enable prompts _conditionally_ via _pattern matching_ on _events_.
-- Common patterns are built-in and ready to be referenced in your configuration.
-- You can define your own patterns, too. They are type safe.
-- There is a default pattern. You can change it.
-- The built-in event patterns at `Command.eventPatterns` are defined [here](./src/eventPatterns.ts).
+```
+$ mybin --filePath ./a/b/c.yaml
+
+1/1  to
+     ❯ jsonn
+     Invalid value: Value is not a member of the enum.
+     ❯ json
+```
+
+#### Overview
+
+- By default, disabled.
+- Can be configured at parameter level _or_ command level. Parameter level overrides command level.
+- Only _basic_ parameters support prompting (so e.g. not [mutually exclusive parameters](#mutually-exclusive-parameters)).
+- Can be enabled _conditionally_ via _pattern matching_ on _events_.
+- Common patterns have been pre-defined and exported at `Command.eventPatterns` for you.
+- Custom patterns may be defined in a type-safe way.
+- When enabled, a default pattern is used when none explicitly set.
+- The default pattern may be changed.
 - The default settings are:
   ```ts
   Command.settings({
@@ -591,6 +602,10 @@ You can make Molt Command interactively _prompt_ users for arguments. This enabl
     },
   })
   ```
+- When there is no `TTY` (`process.stdout.isTTY === false`) then prompts are always disabled.
+- Arguments are validated just like they are when given "up front". However, when invalid, the user will be shown an error message and re-prompted, instead of the process exiting non-zero.
+- Prompts are _synchronously_ executed allowing them to be used without forcing your users to write async CLI code.
+  - > 💡 This is achieved via the [`readline-sync`](https://github.com/anseki/readline-sync). That project's repository is archived and the package not maintained. We may try [prompt-sync](`https://github.com/heapwolf/prompt-sync`) but it also does not look actively maintained. Worst case Molt Command will need its own implementation or move to an async API.
 
 #### Enable Prompt Per Parameter
 
@@ -609,17 +624,6 @@ const args = Command
     prompt: true,
   })
   .parse()
-```
-
-Example usage:
-
-```
-$ mybin --filePath ./a/b/c.yaml
-
-1/1  to
-     ❯ jsonn
-     Invalid value: Value is not a member of the enum.
-     ❯ json
 ```
 
 ##### For Particular Event(s)
@@ -672,9 +676,9 @@ const args = Command.parameter(`filePath`, z.string())
   .parse()
 ```
 
-#### Enable Prompt at Instance Scope
+#### Enable Prompt on Command Level
 
-You can configure prompts for the entire instance in the settings. The configuration mirrors the parameter scope. Parameter scope overrides instance scope.
+You can configure prompts for the entire instance in the settings. The configuration mirrors the parameter level. Parameter level overrides command level.
 
 Enable explicitly with shorthand approach using a `boolean`:
 
@@ -708,13 +712,6 @@ const args = Command
   })
   .parse()
 ```
-
-#### Behavior
-
-- When there is no `TTY` (`process.stdout.isTTY === false`) then prompts are always disabled.
-- Arguments are validated just like they are when given "up front". However, when invalid, the user will be shown an error message and re-prompted, instead of the process exiting non-zero.
-- Prompts are _synchronously_ executed allowing them to be used without forcing your users to write async CLI code.
-  - > 💡 This is achieved via the [`readline-sync`](https://github.com/anseki/readline-sync). That project's repository is archived and the package not maintained. We may try [prompt-sync](`https://github.com/heapwolf/prompt-sync`) but it also does not look actively maintained. Worst case Molt Command will need its own implementation or move to an async API.
 
 ### Line Arguments
 
