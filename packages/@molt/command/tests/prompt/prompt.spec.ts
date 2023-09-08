@@ -57,28 +57,9 @@ describe(`prompt can be configured at the parameter level`, () => {
 
   it(`static error to match on omitted event on required parameter`, () => {
     // @ts-expect-error not available
-    Command.parameters({
-      a: {
-        schema: s,
-        prompt: {
-          when: {
-            result: `omitted`,
-          },
-        },
-      },
-    })
-    // There is a nice string literal type giving guidance though!
-    parameters = {
-      a: {
-        schema: s,
-        prompt: {
-          when: {
-            // @ts-expect-error
-            result: `omitted`,
-          },
-        },
-      },
-    }
+    Command.parameters({ a: { schema: s, prompt: { when: { result: `omitted` } } } })
+    // Is fine, because parameter is optional.
+    Command.parameters({ a: { schema: s.optional(), prompt: { when: { result: `omitted` } } } })
   })
 })
 

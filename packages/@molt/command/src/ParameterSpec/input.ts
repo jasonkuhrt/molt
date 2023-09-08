@@ -6,7 +6,13 @@ export type Input = Input.Basic | Input.Exclusive | Input.Union
 export namespace Input {
   export type Schema = SomeBasicType | SomeUnionType
 
-  export type Prompt<S extends Schema> = null | boolean | { enabled?: boolean; when?: EventPatternsInput<S> }
+  export type Prompt<S extends Schema> =
+    | null
+    | boolean
+    | {
+        enabled?: boolean
+        when?: EventPatternsInput<S>
+      }
 
   export interface Basic {
     _tag: 'Basic'

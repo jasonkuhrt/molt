@@ -6,7 +6,6 @@ import type { z } from 'zod'
 
 // prettier-ignore
 export type EventPatternsInput<Schema extends ParameterSpec.Input.Schema = ParameterSpec.Input.Schema> =
-  Schema 										 extends any 																  ? Pattern<BasicParameterParseEvent> :
   Schema['_def']['typeName'] extends z.ZodFirstPartyTypeKind.ZodOptional 	? Pattern<BasicParameterParseEvent> :
   Schema['_def']['typeName'] extends z.ZodFirstPartyTypeKind.ZodDefault   ? Pattern<BasicParameterParseEvent> :
                                                                             Pattern<BasicParameterParseEventAccepted | BasicParameterParseEventRejected>
