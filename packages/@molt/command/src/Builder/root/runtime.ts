@@ -1,6 +1,6 @@
 import { getLowerCaseEnvironment, lowerCaseObjectKeys } from '../../helpers.js'
 import { ParameterSpec } from '../../ParameterSpec/index.js'
-import { parse } from '../../parse.js'
+import { parse } from '../../parse/parse.js'
 import { Settings } from '../../Settings/index.js'
 import * as ExclusiveBuilder from '../exclusive/constructor.js'
 import type { ParameterConfiguration, RawArgInputs, RootBuilder } from './types.js'
@@ -14,7 +14,7 @@ const create = () => {
 
   const $$ = {
     addParameterBasicOrUnion: (nameExpression: string, configuration: ParameterConfiguration) => {
-      const prompt = configuration.prompt ?? false
+      const prompt = configuration.prompt ?? null
       const parameter = ParameterSpec.isUnionType(configuration.schema)
         ? ({
             _tag: `Union`,
@@ -68,7 +68,7 @@ const create = () => {
         ...Settings.getDefaults(argInputsEnvironment),
       }
       $.newSettingsBuffer.forEach((newSettings) =>
-        Settings.change($.settings!, newSettings, argInputsEnvironment)
+        Settings.change($.settings!, newSettings, argInputsEnvironment),
       )
       return parse($.settings, $.parameterSpecInputs, argInputs)
     },

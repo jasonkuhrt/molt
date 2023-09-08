@@ -1,6 +1,8 @@
 import { ZodHelpers } from '../lib/zodHelpers/index.js'
 import { stripOptionalAndDefault } from '../lib/zodHelpers/index_.js'
-import type { z } from 'zod'
+import { z } from 'zod'
+
+export type SomeBasicParameterType = SomeBasicType | SomeUnionType
 
 export type SomeBasicType =
   | SomeBasicTypeScalar
@@ -24,7 +26,7 @@ export type SomeBasicTypeScalar =
 
 export const isUnionType = (type: SomeBasicType | SomeUnionType): type is SomeUnionType => {
   const type_ = stripOptionalAndDefault(type)
-  const isUnion = type_._def.typeName === `ZodUnion`
+  const isUnion = type_._def.typeName === z.ZodFirstPartyTypeKind.ZodUnion
   return isUnion
 }
 

@@ -1,6 +1,6 @@
-import type { Args } from '../../Args/index.js'
+import type { OpeningArgs } from '../../OpeningArgs/index.js'
 import type { ParameterSpec } from '../../ParameterSpec/index.js'
-import type { TTY } from '../../prompt.js'
+import type { TTY } from '../../parse/prompt.js'
 import type { Settings } from '../../Settings/index.js'
 import type {
   BuilderAfterSettings,
@@ -10,8 +10,10 @@ import type {
 // eslint-disable-next-line
 import { State } from '../State.js'
 
+export type Schema = ParameterSpec.SomeBasicType | ParameterSpec.SomeUnionType
+
 export interface ParameterConfiguration {
-  schema: ParameterSpec.SomeBasicType | ParameterSpec.SomeUnionType
+  schema: Schema
   prompt?: boolean
 }
 
@@ -21,10 +23,65 @@ interface Parameter<State extends State.Base = State.BaseEmpty> {
   <NameExpression extends string, Schema        extends ParameterConfiguration['schema']>(name:State.ValidateNameExpression<State,NameExpression>, schema:Schema               ): RootBuilder<State.AddParameter<State,NameExpression,{schema:Schema}>>
 }
 
+export interface SomeParameterConfig<S extends Schema> {
+  schema: S
+  prompt?: ParameterSpec.Input.Prompt<S>
+}
+
+export type SomeParametersConfigSchema = Record<string, ParameterConfiguration['schema']>
+
+// prettier-ignore
+export type SomeParametersConfig<S extends Schema> = {
+  [parameterNameExpression:string]: SomeParameterConfig<S>
+}
+
+// interface A<Foo extends string = string> {
+//   foo: Foo
+//   bar: `Depends on ${NoInfer<Foo>}`
+// }
+
+// declare const c: <A_ extends string>(a: A<A_>) => void
+// c({ foo: `beep3`, bar: `Depends on beep3` })
+
+// declare const d: <X extends ParameterSpec.SomeBasicType>(x: SomeParameterConfig<X>) => void
+// d({
+//   schema: z.string().optional(),
+//   prompt: { when: { omitted: { optionality: `optional` } } },
+// })
+
+// interface Alpha<Foo extends string> {
+//   foo: Foo
+//   bar: `Depends on ${NoInfer<Foo>}`
+// }
+
+// declare const bravo: <T extends Record<keyof T,  string>>(xs: {[k in keyof T]: Alpha<T[k]>}) => void
+
+// bravo({
+//   one: { foo: `1`, bar: `Depends on 1` }, // ok
+//   oneX: { foo: `1x`, bar: `Depends on 1x` }, // wrong, should be type error, 1 !== 1x
+//   two: { foo: `2`, bar: `Depends on 2` }, // ok
+//   twoX: { foo: `2x`, bar: `Depends on 2x` }, // wrong, should be type error, 2 !== 2x
+// })
+
+// declare const e: <C extends Record<keyof C, ParameterSpec.SomeBasicParameterType>>(xs: {
+//   [k in keyof C]: SomeParameterConfig<C[k]>
+// }) => {
+//   [k in keyof C]: SomeParameterConfig<C[k]>
+// }
+// // prettier-ignore
+// const x = e({
+//   alpha:   { schema: z.string()  },
+//   bravo:   { schema: z.number()  },
+//   charlie: { schema: z.boolean(), prompt: {when:{omitted:`Not Available. Only when parameter optional or has default.`}} },
+//   delta:   { schema: z.boolean().optional(), prompt: {when:{omitted:{optionality:`default`}}} }
+// })
+
+// x.charlie.prompt
+
 // prettier-ignore
 interface Parameters<State extends State.Base = State.BaseEmpty> {
-  <ParametersSchemaObject extends Record<string,ParameterConfiguration['schema']>>(schema:ParametersSchemaObject):                    RootBuilder<State.AddParametersObject<State,{[k in keyof ParametersSchemaObject]:{schema:ParametersSchemaObject[k]}}>>
-  <ParametersObject       extends Record<string,{schema:ParameterConfiguration['schema'];prompt?:boolean}>>(schema:ParametersObject): RootBuilder<State.AddParametersObject<State,ParametersObject>>
+  <C       extends Record<keyof C, ParameterSpec.SomeBasicParameterType>>       (config: {[k in keyof C]: SomeParameterConfig<C[k]>}):        RootBuilder<State.AddParametersConfig<State,{[k in keyof C]:SomeParameterConfig<C[k]>}>>
+  <CSchema extends SomeParametersConfigSchema>                                  (schema:CSchema):                                             RootBuilder<State.AddParametersConfig<State,{[k in keyof CSchema]:{schema:CSchema[k]}}>>
 }
 
 // prettier-ignore
@@ -38,8 +95,8 @@ export interface RootBuilder<State extends State.Base = State.BaseEmpty> {
 }
 
 export type RawArgInputs = {
-  line?: Args.Line.RawInputs
-  environment?: Args.Environment.RawInputs
+  line?: OpeningArgs.Line.RawInputs
+  environment?: OpeningArgs.Environment.RawInputs
   tty?: TTY
 }
 

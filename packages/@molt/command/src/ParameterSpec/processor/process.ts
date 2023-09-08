@@ -22,7 +22,7 @@ export const process = (inputs: Record<string, Input>, settings: Settings.Output
       .Basic((_) => [processBasic(expression, _, settings)])
       .Union((_) => [processUnion(expression, _, settings)])
       .Exclusive((_) => processExclusive(expression, _, settings))
-      .done()
+      .done(),
   )
 
   // dump({ outputs })

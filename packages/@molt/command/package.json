@@ -32,6 +32,11 @@
         "types": "./build/esm/index.d.ts",
         "default": "./build/esm/index.js"
       }
+    },
+    "./types": {
+      "import": {
+        "types": "./build/esm/entrypoints/types.d.ts"
+      }
     }
   },
   "keywords": [],
@@ -47,6 +52,7 @@
     "string-length": "^6.0.0",
     "strip-ansi": "^7.0.1",
     "ts-toolbelt": "^9.6.0",
+    "type-fest": "^3.7.2",
     "zod": "^3.20.6"
   },
   "devDependencies": {

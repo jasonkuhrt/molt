@@ -1,8 +1,15 @@
-import type { ArgumentValue, SomeBasicType, Type } from './types.js'
+import type { EventPatternsInput } from '../eventPatterns.js'
+import type { ParameterSpec } from './index.js'
+import type { ArgumentValueScalar, SomeBasicType, Type } from './types.js'
 
 export type Output = Output.Exclusive | Output.Basic | Output.Union
 
 export namespace Output {
+  export type Prompt<S extends ParameterSpec.Input.Schema = ParameterSpec.Input.Schema> = {
+    enabled: boolean | null
+    when: EventPatternsInput<S> | null
+  }
+
   export interface Basic {
     _tag: 'Basic'
     name: Name
@@ -10,7 +17,12 @@ export namespace Output {
     optionality: BasicOptionality
     description: null | string
     environment: Environment
-    prompt: boolean
+    prompt: Prompt
+  }
+
+  export type BasicData = Omit<Basic, '_tag' | 'optionality'> & {
+    _tag: 'BasicData'
+    optionality: BasicOptionality['_tag']
   }
 
   export interface Union {
@@ -24,6 +36,14 @@ export namespace Output {
     optionality: BasicOptionality
     description: null | string
     environment: Environment
+  }
+  export type UnionData = Omit<Union, '_tag' | 'optionality' | 'types'> & {
+    _tag: 'UnionData'
+    optionality: BasicOptionality['_tag']
+    types: {
+      type: Type
+      description: null | string
+    }[]
   }
 
   export interface Exclusive {
@@ -39,12 +59,12 @@ export namespace Output {
   export type BasicOptionality = 
     | { _tag: 'required' }
     | { _tag: 'optional' }
-    | { _tag: 'default', getValue: () => ArgumentValue }
+    | { _tag: 'default', getValue: () => ArgumentValueScalar }
 
   export type ExclusiveOptionality =
     | { _tag: 'required' }
     | { _tag: 'optional' }
-    | { _tag: 'default'; tag: string; getValue: () => ArgumentValue }
+    | { _tag: 'default'; tag: string; getValue: () => ArgumentValueScalar }
 
   export type Environment = null | { enabled: boolean; namespaces: string[] }
 

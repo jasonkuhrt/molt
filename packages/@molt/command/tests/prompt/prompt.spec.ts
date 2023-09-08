@@ -1,43 +1,104 @@
+import type { Schema } from '../../src/Builder/root/types.js'
+import type { Settings } from '../../src/entrypoints/types.js'
+import { Methods } from '../../src/entrypoints/types.js'
 import { Command } from '../../src/index.js'
 import { s, tryCatch } from '../_/helpers.js'
 import { tty } from '../_/mocks/tty.js'
 import stripAnsi from 'strip-ansi'
 import { expect, it } from 'vitest'
 
-it.each(
-  // prettier-ignore
-  [
-    [`a required parameter can be given at prompt`,                                               { a: { schema: s, prompt: true } },             [], [`foo`]],
-    [`a required parameter given by flag is not asked for in prompt`,                             { a: { schema: s, prompt: true } },             [`-a`,`foo`], []],
-    [`a required parameter opted out of prompt is not prompted for`,                              { a: { schema: s, prompt: false } },            [], []],
-    [`an optional parameter can be skipped at prompt`,                                            { a: { schema: s.optional(), prompt: true } },  [], []],
-    [`by default parameter prompt is disabled`,                                                   { a: { schema: s } },                           [], []],
-    [`prompt input is validated`,                                                                 { a: { schema: s.min(2), prompt:true } },       [], [`x`,`xx`]],
-    // todo we may want to change this behavior
-    [`a parameter with prompt enabled given an invalid value at line does not prompt`,            { a: { schema: s.min(2), prompt: true } },      [`-a`,`x`], []],
-    [`shows progress gutter even when there is only one thing to prompt`,                         { a: { schema: s, prompt: true } },             [], [`foo`]],
-  ] satisfies [description: string, config:any, line:string[], tty:string[]][]
-)(`%s`, (_, parameters, line, ttyReadsScript) => {
-  tty.script.reads(ttyReadsScript)
-  const args = tryCatch(() =>
-    Command.parameters(parameters)
-      .settings({ onError: `throw`, helpOnError: false })
-      .parse({ line, tty: tty.interface })
-  )
-  expect(args).toMatchSnapshot(`args`)
-  expect(tty.state.history.full).toMatchSnapshot(`tty`)
-  expect(tty.state.history.full.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)
+let parameters: Methods.Parameters.InputAsConfig<Schema>
+let ttyInputs: string[]
+let line: string[]
+const settings: Settings.Input = {}
+
+it(`can be explicitly disabled`, () => {
+  parameters = {
+    a: {
+      schema: s,
+      prompt: { enabled: false },
+    },
+  }
+  ttyInputs = []
+  line = []
+  run()
 })
 
-it(`when there is no tty then prompt is skipped`, () => {
-  // When running in Vitest it is already false
-  // process.stdout.isTTY = false
+it(`can be explicitly disabled with a "when" condition present`, () => {
+  parameters = {
+    a: {
+      schema: s.min(2),
+      prompt: { enabled: false, when: { result: `rejected`, error: `ErrorMissingArgument` } },
+    },
+  }
+  ttyInputs = []
+  line = []
+  run()
+})
+
+it(`prompt when missing input`, () => {
+  parameters = {
+    a: { schema: s.min(2), prompt: { when: { result: `rejected`, error: `ErrorMissingArgument` } } },
+  }
+  ttyInputs = [`foo`]
+  line = []
+  run()
+})
+
+it(`prompt when invalid input`, () => {
+  parameters = {
+    a: { schema: s.min(2), prompt: { when: { result: `rejected`, error: `ErrorInvalidArgument` } } },
+  }
+  ttyInputs = [`foo`]
+  line = [`-a`, `1`]
+  run()
+})
+
+it(`prompt when invalid input OR missing input`, () => {
+  parameters = {
+    a: {
+      schema: s.min(2),
+      prompt: { when: { result: `rejected`, error: [`ErrorInvalidArgument`, `ErrorMissingArgument`] } },
+    },
+  }
+  ttyInputs = [`foo`]
+  line = [`-a`, `1`]
+  run()
+})
+
+it(`prompt when omitted`, () => {
+  parameters = Methods.Parameters.parameters({
+    a: {
+      schema: s.min(2).optional(),
+      prompt: { when: { result: `omitted`, spec: { optionality: [`default`, `optional`] } } },
+    },
+  })
+  ttyInputs = [`foo`]
+  line = []
+  run()
+})
+
+it(`static error to match on omitted event on required parameter`, () => {
+  // @ts-expect-error not available
+  Command.parameters({ a: { schema: s, prompt: { when: { result: `omitted` } } } })
+  // Is fine, because parameter is optional.
+  Command.parameters({ a: { schema: s.optional(), prompt: { when: { result: `omitted` } } } })
+})
+
+/**
+ *
+ * Helpers
+ *
+ */
+
+const run = () => {
+  tty.mock.input.add(ttyInputs)
   const args = tryCatch(() =>
-    Command.parameters({ a: { schema: s, prompt: true } })
-      .settings({ onError: `throw`, helpOnError: false })
-      .parse({ line: [] })
+    Command.parameters(parameters)
+      .settings({ onError: `throw`, helpOnError: false, ...settings })
+      .parse({ line, tty: tty.interface }),
   )
   expect(args).toMatchSnapshot(`args`)
-  expect(tty.state.history.full).toMatchSnapshot(`tty`)
-  expect(tty.state.history.full.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)
-})
+  expect(tty.history.all).toMatchSnapshot(`tty`)
+  expect(tty.history.all.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)
+}

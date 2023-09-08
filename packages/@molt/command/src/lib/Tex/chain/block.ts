@@ -74,8 +74,8 @@ export const createBlockBuilder = (params?: { getSuperChain: () => any }): Block
           ? null
           : new List(
               childrenish.map((_) =>
-                typeof _ === `string` ? (_ === null ? null : new Block(new Leaf(_))) : _
-              )
+                typeof _ === `string` ? (_ === null ? null : new Block(new Leaf(_))) : _,
+              ),
             )
       if (child) {
         parentNode.addChild(child)
@@ -109,7 +109,7 @@ export const block = (...args: BlockMethodArgs) => {
 }
 
 export const resolveBlockMethodArgs = (
-  args: BlockMethodArgs
+  args: BlockMethodArgs,
 ): { parameters: BlockParameters | null; child: Block | null } => {
   const parameters = args.length === 1 ? null : args[0]
   const childrenInput = args.length === 1 ? args[0] : args[1]
@@ -133,9 +133,9 @@ export const resolveBlockMethodArgs = (
               ? _
               : typeof _ === `string`
               ? new Leaf(_)
-              : toInternalBuilder(_)?._.node ?? null
+              : toInternalBuilder(_)?._.node ?? null,
           )
-          .filter((_): _ is Block => _ !== null)
+          .filter((_): _ is Block => _ !== null),
       )
     } else {
       child = toInternalBuilder(childrenInput)._.node

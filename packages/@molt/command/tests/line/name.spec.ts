@@ -47,8 +47,8 @@ describe(`boolean`, () => {
 
 describe(`stacked short flags`, () => {
   test.each([
-    [[`-abc`], { a: true, b: true, c: true, d: undefined }],
-    [[`-ac`], { a: true, b: false, c: true, d: undefined }],
+    [[`-abc`], { a: true, b: true, c: true }],
+    [[`-ac`], { a: true, b: false, c: true }],
     [[`-abcd`, `foo`], { a: true, b: true, c: true, d: `foo` }],
   ])(`stacked short flag input of %s becomes %s`, (input, expectedArgs) => {
     const args = Command.parameters({

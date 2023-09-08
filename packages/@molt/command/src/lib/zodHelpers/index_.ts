@@ -13,7 +13,7 @@ export type ZodPrimitive = 'ZodBoolean' | 'ZodNumber' | 'ZodString' | 'ZodEnum'
 export type Primitive = 'boolean' | 'number' | 'string'
 
 export const stripOptionalAndDefault = <T extends z.ZodFirstPartySchemaTypes>(
-  type: T
+  type: T,
 ): Exclude<T, z.ZodOptional<any> | z.ZodDefault<any>> => {
   if (type instanceof z.ZodOptional) {
     return stripOptionalAndDefault(type._def.innerType)
@@ -26,7 +26,7 @@ export const stripOptionalAndDefault = <T extends z.ZodFirstPartySchemaTypes>(
 
 export const isUnion = (type: z.ZodFirstPartySchemaTypes) => {
   const type_ = stripOptionalAndDefault(type)
-  const isUnion = type_._def.typeName === `ZodUnion`
+  const isUnion = type_._def.typeName === z.ZodFirstPartyTypeKind.ZodUnion
   return isUnion
 }
 

@@ -126,7 +126,7 @@ export class Block extends Node {
         // TODO minWidth should be passed down to children?
         if (this.parameters.minWidth !== undefined) {
           rendered.value = Text.mapLines(rendered.value, (_) =>
-            Text.minSpan(`left`, this.parameters.minWidth!, _)
+            Text.minSpan(`left`, this.parameters.minWidth!, _),
           )
         }
         intrinsicWidth = Math.max(intrinsicWidth, rendered.shape.intrinsicWidth)
@@ -142,7 +142,7 @@ export class Block extends Node {
           renderings.map((_) => ({
             lines: _.split(`\n`),
             separator: ``,
-          }))
+          })),
         )
 
         width = Text.measure(joined).maxWidth

@@ -12,19 +12,19 @@ describe(`errors`, () => {
       [`when argument missing (non-last position)`, { name: z.string(), age: z.number() },  { line: [`--name`, `--age`, `1`] }],
       [`when flag passed twice`,                    { '--name': z.string() },               { line: [`--name`, `1`, `--name`, `1`] }],
       [`when long and short flag passed `,          { '--name -n': z.string() },            { line: [`--name`, `1`, `-n`, `1`] }],
-    ]
+    ],
   )(`%s`, (_, parameters, input) => {
     expect(() =>
-      Command.parameters(parameters).settings({ onError: `throw`, helpOnError: false }).parse(input)
+      Command.parameters(parameters).settings({ onError: `throw`, helpOnError: false }).parse(input),
     ).toThrowErrorMatchingSnapshot()
   })
 })
 
 describe(`optional`, () => {
-  it(`specified input can be omitted, undefined is possible`, () => {
+  it(`specified input can be omitted, missing key is possible`, () => {
     const args = Command.parameters({ '--foo': z.string().optional() }).parse({ line: [] })
     assert<IsExact<{ foo: string | undefined }, typeof args>>(true)
-    expect(args).toMatchObject({ foo: undefined })
+    expect(Object.keys(args)).not.toContain(`foo`)
   })
   it(`input can be given`, () => {
     const args = Command.parameters({ '--foo': z.string().optional() }).parse({ line: [`--foo`, `bar`] })

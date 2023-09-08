@@ -5,7 +5,7 @@ exports[`errors > is validated 1`] = `
   [
     "Cannot run command, you made some mistakes:
 
-Invalid value for mode:
+Invalid argument for parameter: \\"mode\\". The error was:
 Value is not a member of the enum.
 
 Here are the docs for this command:
@@ -38,7 +38,7 @@ exports[`errors > when argument missing (last position) 1`] = `
   [
     "Cannot run command, you made some mistakes:
 
-Missing argument
+Missing argument for flag \\"mode\\".
 
 Here are the docs for this command:
 
@@ -70,7 +70,7 @@ exports[`errors > when argument missing (non-last position) 1`] = `
   [
     "Cannot run command, you made some mistakes:
 
-Missing argument
+Missing argument for flag \\"mode\\".
 
 Here are the docs for this command:
 

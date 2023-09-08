@@ -1,21 +1,21 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`zod > validation > int 1`] = `
-"Invalid value for name:
+"Invalid argument for parameter: \\"name\\". The error was:
 Value is not an integer."
 `;
 
 exports[`zod > validation > max 1`] = `
-"Invalid value for name:
+"Invalid argument for parameter: \\"name\\". The error was:
 value must be smaller than 1."
 `;
 
 exports[`zod > validation > min 1`] = `
-"Invalid value for name:
+"Invalid argument for parameter: \\"name\\". The error was:
 value must be bigger than 5."
 `;
 
 exports[`zod > validation > multipleOf 1`] = `
-"Invalid value for name:
+"Invalid argument for parameter: \\"name\\". The error was:
 Value is not a multiple of 5."
 `;

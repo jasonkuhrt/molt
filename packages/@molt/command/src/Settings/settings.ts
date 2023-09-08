@@ -1,10 +1,19 @@
-import { defaultParameterNamePrefixes } from '../Args/Environment/Environment.js'
 import type { State } from '../Builder/State.js'
+import type { EventPatternsInput } from '../eventPatterns.js'
+import { eventPatterns } from '../eventPatterns.js'
 import { parseEnvironmentVariableBooleanOrThrow } from '../helpers.js'
+import { defaultParameterNamePrefixes } from '../OpeningArgs/Environment/Environment.js'
 import type { FlagName } from '@molt/types'
 import snakeCase from 'lodash.snakecase'
 
 export type OnErrorReaction = 'exit' | 'throw'
+
+export type InputPrompt =
+  | boolean
+  | {
+      enabled?: boolean
+      when?: EventPatternsInput
+    }
 
 // eslint-disable-next-line
 export interface Input<ParametersObject extends State.ParametersSchemaObjectBase = {}> {
@@ -19,6 +28,8 @@ export interface Input<ParametersObject extends State.ParametersSchemaObjectBase
   }
   onError?: OnErrorReaction
   onOutput?: (output: string, defaultHandler: (output: string) => void) => void
+  prompt?: InputPrompt
+  // prompt?:
   parameters?: {
     // prettier-ignore
     environment?:
@@ -32,6 +43,10 @@ export interface Input<ParametersObject extends State.ParametersSchemaObjectBase
 }
 
 export interface Output {
+  prompt: {
+    enabled: boolean
+    when: EventPatternsInput
+  }
   description?: string | undefined
   help: boolean
   helpOnNoArguments: boolean
@@ -72,6 +87,15 @@ interface Environment {
 
 // eslint-disable-next-line
 export const change = (current: Output, input: Input<{}>, environment: Environment): void => {
+  if (input.prompt !== undefined) {
+    if (typeof input.prompt === `boolean`) {
+      current.prompt.enabled = input.prompt
+    } else {
+      if (input.prompt.enabled !== undefined) current.prompt.enabled = input.prompt.enabled
+      if (input.prompt.when !== undefined) current.prompt.when = input.prompt.when
+    }
+  }
+
   current.onError = input.onError ?? current.onError
 
   current.description = input.description ?? current.description
@@ -176,6 +200,10 @@ const isEnvironmentEnabled = (lowercaseEnv: NodeJS.ProcessEnv) => {
 
 export const getDefaults = (lowercaseEnv: NodeJS.ProcessEnv): Output => {
   return {
+    prompt: {
+      enabled: false,
+      when: eventPatterns.rejectedMissingOrInvalid,
+    },
     help: true,
     helpOnNoArguments: true,
     helpOnError: true,

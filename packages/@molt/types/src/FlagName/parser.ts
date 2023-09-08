@@ -71,7 +71,7 @@ type SomeLimitsNone = {
 export type Parse<
   E extends string,
   limits extends SomeLimits = SomeLimitsNone,
-  names extends FlagNames = FlagNamesEmpty
+  names extends FlagNames = FlagNamesEmpty,
 > = ParseFlagNameDo<E, limits, names>
 
 //prettier-ignore

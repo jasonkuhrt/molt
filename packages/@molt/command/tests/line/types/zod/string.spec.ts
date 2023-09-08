@@ -8,7 +8,7 @@ describe(`zod`, () => {
       // prettier-ignore
       [
         [`trim`,                   { name: z.string().trim() },                         { line: [`--name`, `foobar   `] }],
-      ]
+      ],
     )(`%s`, (_, parameters, input) => {
       expect(Command.parameters(parameters).parse(input)).toMatchSnapshot()
     })
@@ -31,10 +31,10 @@ describe(`zod`, () => {
         [`datetime`,                { foo: z.string().datetime() },                              { line: [`--foo`, `BAD`] }],
         [`datetime no offset`,      { foo: z.string().datetime({offset:false}) },                { line: [`--foo`, `2023-02-25T08:01:28.364-05:00`] }],
         [`datetime precision 1`,    { foo: z.string().datetime({precision:1}) },                 { line: [`--foo`, `2023-02-25T08:01:28.364Z`] }],
-      ]
+      ],
     )(`%s`, (_, parameters, input) => {
       expect(() =>
-        Command.parameters(parameters).settings({ onError: `throw`, helpOnError: false }).parse(input)
+        Command.parameters(parameters).settings({ onError: `throw`, helpOnError: false }).parse(input),
       ).toThrowErrorMatchingSnapshot()
     })
   })

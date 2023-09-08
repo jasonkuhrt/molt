@@ -9,7 +9,7 @@ import { Alge } from 'alge'
 export const processExclusive = (
   label: string,
   input: Input.Exclusive,
-  settings: Settings.Output
+  settings: Settings.Output,
 ): Output.Exclusive[] => {
   const parameters = input.parameters.map((_) => {
     const name = processName(_.nameExpression)
@@ -40,7 +40,7 @@ export const processExclusive = (
           _tag: `default`,
           tag: _.tag,
           getValue: () => (typeof _.value === `function` ? _.value() : _.value),
-        })
+        }),
       )
       .else((_) => _),
     parameters: {},

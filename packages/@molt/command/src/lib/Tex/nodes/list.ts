@@ -51,7 +51,7 @@ export class List extends Node {
       .map((_, index) => {
         return Text.joinColumns(
           [[Text.minSpan(bullet.align.horizontal, gutterWidth, bullets[index]!)], Text.toLines(_)],
-          ` `
+          ` `,
         )
       })
       .join(Text.chars.newline)

@@ -1,3 +1,4 @@
+import { Errors } from '../../Errors/index.js'
 import { isNegated, parseRawInput, stripeDashPrefix, stripeNegatePrefixLoose } from '../../helpers.js'
 import type { Index } from '../../lib/prelude.js'
 import { ParameterSpec } from '../../ParameterSpec/index.js'
@@ -6,12 +7,18 @@ import camelCase from 'lodash.camelcase'
 
 export type RawInputs = string[]
 
-export const parse = (
-  rawLineInputs: RawInputs,
-  specs: ParameterSpec.Output[]
-): { errors: Error[]; line: Index<ArgumentReport> } => {
+export type GlobalParseErrors = Errors.Global.ErrorUnknownFlag
+
+export type LocalParseErrors = Errors.ErrorMissingArgument | Errors.ErrorDuplicateLineArg
+
+interface ParsedInputs {
+  globalErrors: GlobalParseErrors[]
+  reports: Index<ArgumentReport>
+}
+
+export const parse = (rawLineInputs: RawInputs, specs: ParameterSpec.Output[]): ParsedInputs => {
   // dump(specs)
-  const errors: Error[] = []
+  const globalErrors: GlobalParseErrors[] = []
 
   const rawLineInputsPrepared = rawLineInputs
     .flatMap((lineInput) => {
@@ -47,7 +54,7 @@ export const parse = (
           negated: isNegated(camelCase(pendingReport.source.name)),
         }
       } else {
-        pendingReport.errors.push(new Error(`Missing argument`))
+        pendingReport.errors.push(new Errors.ErrorMissingArgument({ spec: pendingReport.spec }))
       }
     }
   }
@@ -64,7 +71,7 @@ export const parse = (
       const flagNameNoDashPrefixNoNegate = stripeNegatePrefixLoose(flagNameNoDashPrefixCamel)
       const spec = ParameterSpec.findByName(flagNameNoDashPrefixCamel, specs)
       if (!spec) {
-        errors.push(new Error(`Unknown flag "${flagNameNoDashPrefixNoNegate}"`))
+        globalErrors.push(new Errors.Global.ErrorUnknownFlag({ flagName: flagNameNoDashPrefixNoNegate }))
         continue
       }
 
@@ -73,7 +80,12 @@ export const parse = (
         // TODO Handle once we support multiple values (arrays).
         // TODO richer structured info about the duplication. For example if
         // duplicated across aliases, make it easy to report a nice message explaining that.
-        errors.push(new Error(`Duplicate flag "${flagNameNoDashPrefixNoNegate}"`))
+        existing.errors.push(
+          new Errors.ErrorDuplicateLineArg({
+            spec,
+            flagName: flagNameNoDashPrefixNoNegate,
+          }),
+        )
         continue
       }
 
@@ -81,7 +93,6 @@ export const parse = (
         spec,
         errors: [],
         value: PENDING_VALUE, // eslint-disable-line
-        duplicates: [],
         source: {
           _tag: `line`,
           name: flagNameNoDashPrefix,
@@ -109,8 +120,8 @@ export const parse = (
 
   // dump({ reports })
   return {
-    errors,
-    line: reports,
+    globalErrors,
+    reports: reports,
   }
 }
 
