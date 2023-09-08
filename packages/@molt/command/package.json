@@ -52,7 +52,7 @@
     "string-length": "^6.0.0",
     "strip-ansi": "^7.0.1",
     "ts-toolbelt": "^9.6.0",
-    "type-fest": "^3.7.2",
+    "type-fest": "^4.0.0",
     "zod": "^3.20.6"
   },
   "devDependencies": {

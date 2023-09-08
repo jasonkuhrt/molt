@@ -133,8 +133,8 @@ importers:
         specifier: ^9.6.0
         version: 9.6.0
       type-fest:
-        specifier: ^3.7.2
-        version: 3.7.2
+        specifier: ^4.0.0
+        version: 4.3.1
       zod:
         specifier: ^3.20.6
         version: 3.20.6
@@ -3268,9 +3268,9 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /type-fest@3.7.2:
-    resolution: {integrity: sha512-f9BHrLjRJ4MYkfOsnC/53PNDzZJcVo14MqLp2+hXE39p5bgwqohxR5hDZztwxlbxmIVuvC2EFAKrAkokq23PLA==}
-    engines: {node: '>=14.16'}
+  /type-fest@4.3.1:
+    resolution: {integrity: sha512-pphNW/msgOUSkJbH58x8sqpq8uQj6b0ZKGxEsLKMUnGorRcDjrUaLS+39+/ub41JNTwrrMyJcUB8+YZs3mbwqw==}
+    engines: {node: '>=16'}
     dev: false
 
   /typedarray@0.0.6:
