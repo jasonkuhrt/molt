@@ -5,12 +5,36 @@ import { Command } from '../../src/index.js'
 import { s, tryCatch } from '../_/helpers.js'
 import { tty } from '../_/mocks/tty.js'
 import stripAnsi from 'strip-ansi'
-import { describe, expect, it } from 'vitest'
+import { expect, it } from 'vitest'
 
 let parameters: Methods.Parameters.InputAsConfig<Schema>
 let ttyInputs: string[]
 let line: string[]
 const settings: Settings.Input = {}
+
+it(`can be explicitly disabled`, () => {
+  parameters = {
+    a: {
+      schema: s,
+      prompt: { enabled: false },
+    },
+  }
+  ttyInputs = []
+  line = []
+  run()
+})
+
+it(`can be explicitly disabled with a "when" condition present`, () => {
+  parameters = {
+    a: {
+      schema: s.min(2),
+      prompt: { enabled: false, when: { result: `rejected`, error: `ErrorMissingArgument` } },
+    },
+  }
+  ttyInputs = []
+  line = []
+  run()
+})
 
 it(`prompt when missing input`, () => {
   parameters = {

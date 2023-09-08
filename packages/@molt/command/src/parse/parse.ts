@@ -135,7 +135,9 @@ export const parse = (
   if (argInputsTTY) {
     const basicSpecs = specsResult.specs.filter((_): _ is ParameterSpec.Output.Basic => _._tag === `Basic`)
     for (const spec of basicSpecs) {
-      const promptEnabled = spec.prompt.when !== null || (spec.prompt.enabled ?? settings.prompt.enabled)
+      const promptEnabled =
+        (spec.prompt.when !== null && spec.prompt.enabled !== false) ||
+        (spec.prompt.enabled ?? settings.prompt.enabled)
       if (!promptEnabled) continue
 
       const parseResult = openingArgsResult.basicParameters[spec.name.canonical]
