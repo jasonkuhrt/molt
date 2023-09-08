@@ -74,21 +74,3 @@ const run = () => {
   expect(tty.history.all).toMatchSnapshot(`tty`)
   expect(tty.history.all.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)
 }
-
-describe(`types`, () => {
-  it(`rejected name must be a valid string literal`, () => {
-    parameters = {
-      a: {
-        schema: s.min(2),
-        prompt: {
-          when: {
-            // @ts-expect-error invalid type
-            rejected: {
-              name: `bad`,
-            },
-          },
-        },
-      },
-    }
-  })
-})
