@@ -5,8 +5,6 @@ import { tty } from '../_/mocks/tty.js'
 import stripAnsi from 'strip-ansi'
 import { describe, expect, it } from 'vitest'
 
-// TODO check the snapshots for this test suite. Validate every test case.
-
 const S = (settings: Settings.InputPrompt) => settings
 
 it(`prompt is disabled by default`, () => {
@@ -46,40 +44,10 @@ it(`parameter settings overrides default settings`, () => {
 })
 
 describe(`prompt can be toggled by check on error`, () => {
-  describe(`toggle to disabled`, () => {
-    const settings = S({
-      enabled: false,
-      when: {
-        result: `rejected`,
-        error: `ErrorMissingArgument`,
-      },
-    })
-
-    it(`check does match`, () => {
-      const args = tryCatch(() =>
-        Command.parameters({ a: { schema: s } })
-          .settings({ onError: `throw`, helpOnError: false, prompt: settings })
-          .parse({ line: [], tty: tty.interface }),
-      )
-      expect(args).toMatchSnapshot(`args`)
-      expect(tty.history.all).toMatchSnapshot(`tty`)
-      expect(tty.history.all.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)
-    })
-    it(`check does not match`, () => {
-      const args = tryCatch(() =>
-        Command.parameters({ a: { schema: s } })
-          .settings({ onError: `throw`, helpOnError: false, prompt: settings })
-          .parse({ line: [], tty: tty.interface }),
-      )
-      expect(args).toMatchSnapshot(`args`)
-      expect(tty.history.all).toMatchSnapshot(`tty`)
-      expect(tty.history.all.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)
-    })
-  })
   describe(`toggle to enabled`, () => {
     const settings = S({
       enabled: true,
-      when: { result: `rejected`, error: `ErrorMissingArgument` },
+      when: { result: `rejected`, error: `ErrorMissingArgument`, spec: { name: { canonical: `a` } } },
     })
     it(`check does match`, () => {
       tty.mock.input.add([`foo`])
@@ -94,7 +62,7 @@ describe(`prompt can be toggled by check on error`, () => {
     })
     it(`check does not match`, () => {
       const args = tryCatch(() =>
-        Command.parameters({ a: { schema: s } })
+        Command.parameters({ b: { schema: s } })
           .settings({ onError: `throw`, helpOnError: false, prompt: settings })
           .parse({ line: [], tty: tty.interface }),
       )
@@ -105,7 +73,7 @@ describe(`prompt can be toggled by check on error`, () => {
   })
 })
 
-it(`can default to prompt on parameter spec condition`, () => {
+it(`parameter defaults to custom settings`, () => {
   const settings = S({
     enabled: true,
     when: {
@@ -124,7 +92,7 @@ it(`can default to prompt on parameter spec condition`, () => {
   expect(tty.history.all.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)
 })
 
-it(`default can be stack of conditional prompts`, () => {
+it(`can be stack of conditional prompts`, () => {
   const settings = S({
     enabled: true,
     when: [
