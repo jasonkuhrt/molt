@@ -60,7 +60,7 @@ export namespace State {
     string,
     {
       schema: ParameterConfiguration['schema']
-      prompt?: ParameterSpec.Output.Prompt
+      prompt?: ParameterSpec.Input.Prompt<any>
     }
   >
 
