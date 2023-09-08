@@ -21,16 +21,11 @@ const args = Command
     z.boolean().default(false).describe(`Delete the original file after it has been converted.`)
   )
   .settings({
-    defaults: {
-      prompt: [
-        // { enabled: true },
-        {
-          when: (ctx) => ctx.parameter.optionality._tag === `required`,
-          enabled: true,
-        },
-        { enabled: true },
-      ]
-    },
+    prompt: {
+      when: {
+        spec: { optionality: `required` },
+      },
+    }
   })
   .parse()
 
