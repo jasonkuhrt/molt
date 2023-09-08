@@ -12,56 +12,60 @@ let ttyInputs: string[]
 let line: string[]
 const settings: Settings.Input = {}
 
-describe(`prompt can be configured at the parameter level`, () => {
-  it(`prompt when missing input`, () => {
-    parameters = {
-      a: { schema: s.min(2), prompt: { when: { result: `rejected`, error: `ErrorMissingArgument` } } },
-    }
-    ttyInputs = [`foo`]
-    line = []
-    run()
-  })
-
-  it(`prompt when invalid input`, () => {
-    parameters = {
-      a: { schema: s.min(2), prompt: { when: { result: `rejected`, error: `ErrorInvalidArgument` } } },
-    }
-    ttyInputs = [`foo`]
-    line = [`-a`, `1`]
-    run()
-  })
-
-  it(`prompt when invalid input OR missing input`, () => {
-    parameters = {
-      a: {
-        schema: s.min(2),
-        prompt: { when: { result: `rejected`, error: [`ErrorInvalidArgument`, `ErrorMissingArgument`] } },
-      },
-    }
-    ttyInputs = [`foo`]
-    line = [`-a`, `1`]
-    run()
-  })
-
-  it(`prompt when omitted`, () => {
-    parameters = Methods.Parameters.parameters({
-      a: {
-        schema: s.min(2).optional(),
-        prompt: { when: { result: `omitted`, spec: { optionality: [`default`, `optional`] } } },
-      },
-    })
-    ttyInputs = [`foo`]
-    line = []
-    run()
-  })
-
-  it(`static error to match on omitted event on required parameter`, () => {
-    // @ts-expect-error not available
-    Command.parameters({ a: { schema: s, prompt: { when: { result: `omitted` } } } })
-    // Is fine, because parameter is optional.
-    Command.parameters({ a: { schema: s.optional(), prompt: { when: { result: `omitted` } } } })
-  })
+it(`prompt when missing input`, () => {
+  parameters = {
+    a: { schema: s.min(2), prompt: { when: { result: `rejected`, error: `ErrorMissingArgument` } } },
+  }
+  ttyInputs = [`foo`]
+  line = []
+  run()
 })
+
+it(`prompt when invalid input`, () => {
+  parameters = {
+    a: { schema: s.min(2), prompt: { when: { result: `rejected`, error: `ErrorInvalidArgument` } } },
+  }
+  ttyInputs = [`foo`]
+  line = [`-a`, `1`]
+  run()
+})
+
+it(`prompt when invalid input OR missing input`, () => {
+  parameters = {
+    a: {
+      schema: s.min(2),
+      prompt: { when: { result: `rejected`, error: [`ErrorInvalidArgument`, `ErrorMissingArgument`] } },
+    },
+  }
+  ttyInputs = [`foo`]
+  line = [`-a`, `1`]
+  run()
+})
+
+it(`prompt when omitted`, () => {
+  parameters = Methods.Parameters.parameters({
+    a: {
+      schema: s.min(2).optional(),
+      prompt: { when: { result: `omitted`, spec: { optionality: [`default`, `optional`] } } },
+    },
+  })
+  ttyInputs = [`foo`]
+  line = []
+  run()
+})
+
+it(`static error to match on omitted event on required parameter`, () => {
+  // @ts-expect-error not available
+  Command.parameters({ a: { schema: s, prompt: { when: { result: `omitted` } } } })
+  // Is fine, because parameter is optional.
+  Command.parameters({ a: { schema: s.optional(), prompt: { when: { result: `omitted` } } } })
+})
+
+/**
+ *
+ * Helpers
+ *
+ */
 
 const run = () => {
   tty.mock.input.add(ttyInputs)
