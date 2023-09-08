@@ -5,6 +5,7 @@ import type { ArgumentValueScalar } from '../../types.js'
 import { processEnvironment } from '../helpers/environment.js'
 import { processName } from '../helpers/name.js'
 import { analyzeZodTypeScalar } from '../helpers/type.js'
+import { z } from 'zod'
 
 export const processBasic = (
   expression: string,
@@ -39,8 +40,8 @@ export const processBasic = (
 }
 
 export const analyzeZodType = (input: Input.Basic) => {
-  const isOptional = input.type._def.typeName === `ZodOptional`
-  const hasDefault = input.type._def.typeName === `ZodDefault`
+  const isOptional = input.type._def.typeName === z.ZodFirstPartyTypeKind.ZodOptional
+  const hasDefault = input.type._def.typeName === z.ZodFirstPartyTypeKind.ZodDefault
   // @ts-expect-error todo
   // eslint-disable-next-line
   const defaultGetter = hasDefault ? (input.type._def.defaultValue as DefaultGetter) : null

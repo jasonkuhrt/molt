@@ -1,5 +1,5 @@
 import type { RawArgInputs } from '../Builder/root/types.js'
-import { BasicParameterParseEvent, createEvent } from '../eventPatterns.js'
+import { createEvent } from '../eventPatterns.js'
 import { Help } from '../Help/index.js'
 import { getLowerCaseEnvironment, lowerCaseObjectKeys } from '../helpers.js'
 import type { Settings } from '../index.js'
@@ -233,7 +233,7 @@ export const parse = (
               : null,
           ]
         })
-        .filter(([k, v]) => v !== null),
+        .filter((kv): kv is [string, ParameterSpec.ArgumentValue] => kv[1] !== null),
     ),
     ...Object.fromEntries(
       Object.values(parseProgressPostPrompts.mutuallyExclusiveParameters)

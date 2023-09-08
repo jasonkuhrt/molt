@@ -2,13 +2,16 @@ import type { ZodNumberCheck, ZodStringCheck } from '../../../lib/zodHelpers/ind
 import type { SomeBasicType, Type, TypeNumber, TypeString } from '../../types.js'
 import { getBasicScalar } from '../../types.js'
 import { Alge } from 'alge'
-import type { z } from 'zod'
+import { z } from 'zod'
 
 export const analyzeZodTypeScalar = (zodType: SomeBasicType) => {
   let description = zodType.description ?? null
   let primitiveType = zodType
 
-  while (primitiveType._def.typeName === `ZodDefault` || primitiveType._def.typeName === `ZodOptional`) {
+  while (
+    primitiveType._def.typeName === z.ZodFirstPartyTypeKind.ZodDefault ||
+    primitiveType._def.typeName === z.ZodFirstPartyTypeKind.ZodOptional
+  ) {
     description = description ?? primitiveType._def.innerType.description ?? null
     primitiveType = primitiveType._def.innerType
   }
@@ -16,11 +19,11 @@ export const analyzeZodTypeScalar = (zodType: SomeBasicType) => {
   const zodTypeScalar = getBasicScalar(primitiveType)
 
   const type: Type =
-    zodTypeScalar._def.typeName === `ZodString`
+    zodTypeScalar._def.typeName === z.ZodFirstPartyTypeKind.ZodString
       ? { _tag: `TypeString`, ...mapZodStringChecks(zodTypeScalar._def.checks) }
-      : zodTypeScalar._def.typeName === `ZodBoolean`
+      : zodTypeScalar._def.typeName === z.ZodFirstPartyTypeKind.ZodBoolean
       ? { _tag: `TypeBoolean` }
-      : zodTypeScalar._def.typeName === `ZodNumber`
+      : zodTypeScalar._def.typeName === z.ZodFirstPartyTypeKind.ZodNumber
       ? { _tag: `TypeNumber`, ...mapZodNumberChecks(zodTypeScalar._def.checks) }
       : { _tag: `TypeEnum`, members: zodTypeScalar._def.values }
 

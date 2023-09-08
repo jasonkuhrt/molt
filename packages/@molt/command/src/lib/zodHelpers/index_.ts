@@ -26,7 +26,7 @@ export const stripOptionalAndDefault = <T extends z.ZodFirstPartySchemaTypes>(
 
 export const isUnion = (type: z.ZodFirstPartySchemaTypes) => {
   const type_ = stripOptionalAndDefault(type)
-  const isUnion = type_._def.typeName === `ZodUnion`
+  const isUnion = type_._def.typeName === z.ZodFirstPartyTypeKind.ZodUnion
   return isUnion
 }
 

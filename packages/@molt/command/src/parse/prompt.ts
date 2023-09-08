@@ -62,7 +62,7 @@ export const prompt = (
   // todo do not mutate
   const parseProgressPostPrompt = parseProgress as ParseProgressPostPrompt
   for (const [parameterName, arg] of Object.entries(args)) {
-    parseProgressPostPrompt.basicParameters[parameterName]!.prompt.arg = arg
+    parseProgressPostPrompt.basicParameters[parameterName]!.prompt.arg = arg // eslint-disable-line
   }
 
   return parseProgressPostPrompt

@@ -6,6 +6,7 @@ import { getUnionScalar } from '../../types.js'
 import { processEnvironment } from '../helpers/environment.js'
 import { processName } from '../helpers/name.js'
 import { analyzeZodTypeScalar } from '../helpers/type.js'
+import { z } from 'zod'
 
 export const processUnion = (
   nameExpression: string,
@@ -27,8 +28,8 @@ export const processUnion = (
 }
 
 const analyzeType = (input: Input.Union) => {
-  const isOptional = input.type._def.typeName === `ZodOptional`
-  const hasDefault = input.type._def.typeName === `ZodDefault`
+  const isOptional = input.type._def.typeName === z.ZodFirstPartyTypeKind.ZodOptional
+  const hasDefault = input.type._def.typeName === z.ZodFirstPartyTypeKind.ZodDefault
   // console.log(input.type, hasDefault)
   // @ts-expect-error todo
   // eslint-disable-next-line

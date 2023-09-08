@@ -62,6 +62,7 @@ export const match = <D extends SomeData, P extends Pattern<D> | undefined>(data
         if (!(key in data)) {
           return false
         }
+        // eslint-disable-next-line
         return match((data as any)[key], valuePattern)
       })
       .reduce((all, next) => all && next, true)
