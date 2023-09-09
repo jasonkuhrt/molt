@@ -89,7 +89,21 @@ it(`static error to match on omitted event on required parameter by .parameter(.
   // @ts-expect-error not available
   Command.parameter(`a`, { schema: s, prompt: { when: { result: `omitted` } } })
   // Is fine, because parameter is optional.
-  Command.parameter(`a`, { schema: s.optional(), prompt: { when: { result: `omitted` } } })
+  Command.parameter(`a`, {
+    schema: s.optional(),
+    prompt: { when: { result: `omitted` } },
+  })
+})
+
+it(`static error to match on omitted event on command level when no parameters have optional`, () => {
+  // @ts-expect-error not available
+  Command.parameter(`a`, { schema: s }).settings({ prompt: { when: { result: `omitted` } } })
+  // Is fine, because parameter is optional.
+  Command.parameter(`a`, { schema: s.optional() }).settings({ prompt: { when: { result: `omitted` } } })
+  // Is fine, because at least one parameter is optional.
+  Command.parameter(`a`, { schema: s.optional() })
+    .parameter(`b`, { schema: s })
+    .settings({ prompt: { when: { result: `omitted` } } })
 })
 
 /**

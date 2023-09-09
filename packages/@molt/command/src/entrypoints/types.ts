@@ -9,6 +9,5 @@ export namespace Methods {
       parameters: SomeParametersConfig<T>,
     ): SomeParametersConfig<T> => parameters
     export type InputAsConfig<T extends Schema> = SomeParametersConfig<T>
-    // export type Input = SomeParametersConfigSchema | SomeParametersConfig
   }
 }
