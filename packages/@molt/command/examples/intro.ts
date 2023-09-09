@@ -5,9 +5,6 @@ const args = Command.parameter(`filePath`, z.string().describe(`Path to the file
   .parameter(`to`, z.enum([`json`, `yaml`, `toml`]).describe(`Format to convert to.`))
   .parameter(`from`, {
     schema: z.enum([`json`, `yaml`, `toml`]).optional(),
-    prompt: {
-      when: { result: `omitted` },
-    },
   })
   .parameter(
     `verbose v`,
@@ -19,10 +16,15 @@ const args = Command.parameter(`filePath`, z.string().describe(`Path to the file
   )
   .settings({
     prompt: {
-      when: {
-        result: `rejected`,
-        spec: { optionality: `required` },
-      },
+      // TODO allow making parameter level opt-in or opt-out
+      // default: false,
+      when: [
+        {
+          result: `rejected`,
+          error: `ErrorMissingArgument`,
+        },
+        { result: `omitted` },
+      ],
     },
   })
   .parse()

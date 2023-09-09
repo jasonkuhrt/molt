@@ -94,7 +94,11 @@ export const change = (current: Output, input: Input<{}>, environment: Environme
       current.prompt.enabled = input.prompt
     } else {
       if (input.prompt.enabled !== undefined) current.prompt.enabled = input.prompt.enabled
-      if (input.prompt.when !== undefined) current.prompt.when = input.prompt.when
+      if (input.prompt.when !== undefined) {
+        current.prompt.when = input.prompt.when
+        // Passing object makes enabled default to true
+        if (input.prompt.enabled === undefined) current.prompt.enabled = true
+      }
     }
   }
 

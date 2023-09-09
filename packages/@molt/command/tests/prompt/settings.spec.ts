@@ -22,6 +22,18 @@ describe(`parameter level`, () => {
   })
 })
 
+describe(`command level`, () => {
+  it(`passing object makes enabled default to true`, () => {
+    tty.mock.input.add([`foo`])
+    const args = Command.parameters({ a: { schema: s } })
+      .settings({ onError: `throw`, helpOnError: false, prompt: { when: { result: `rejected` } } })
+      .parse({ line: [], tty: tty.interface })
+    expect(args).toMatchSnapshot(`args`)
+    expect(tty.history.all).toMatchSnapshot(`tty`)
+    expect(tty.history.all.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)
+  })
+})
+
 it(`prompt is disabled by default`, () => {
   const args = tryCatch(() =>
     Command.parameters({ a: { schema: s } })
