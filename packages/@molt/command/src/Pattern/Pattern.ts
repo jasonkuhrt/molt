@@ -1,8 +1,6 @@
-import type { Any } from 'ts-toolbelt'
+import type { Simplify } from 'type-fest'
 
 export const _ = `*`
-
-// type SomePattern = Pattern<SomeData>
 
 export type SomeData = SomeDataObject | SomeDataScalar
 
@@ -11,28 +9,24 @@ type SomeDataObject = object
 type SomeDataScalar = number | string | boolean | null
 
 // prettier-ignore
-export type Pattern<Data extends SomeData> =
-	IsOrIsAny<
-		Data extends SomeDataScalar ?
-			Data :
-			PatternForDataObject<Data>
-	>
+export type Pattern<Data extends SomeData, DiscriminantProperty extends null|keyof Data = null> =
+	Or<
+		Data extends SomeDataScalar ? Data :
+			                            PatternForObject<Exclude<Data, SomeDataScalar>, DiscriminantProperty>
+>
 
 // prettier-ignore
-type PatternForDataObject<Data extends SomeData> = {
-		[K in keyof Data]?:
-			Data[K] extends SomeDataObject ?
-				IsOrIsAny<PatternForDataObject<Data[K]>> :
-				Any.Compute<IsOrIsAny<Data[K]>>
-	}
+export type PatternForObject<Data extends SomeDataObject, DiscriminantProperty extends null|keyof Data = null> = {
+		[K in Exclude<keyof Data, DiscriminantProperty>]?:Simplify<
+			Data[K] extends Array<any>     ? Array<Pattern<Data[K][number]>> :
+			Data[K] extends SomeDataObject ? Or<PatternForObject<Data[K]>> :
+				                               Or<Data[K]>>
+	} & (
+    null extends DiscriminantProperty ? {} // eslint-disable-line
+                                      : { [K in Exclude<DiscriminantProperty,null>]: Data[K] }
+  )
 
-// prettier-ignore
-type IsOrIsAny<T> =
-	// T extends true 			? true :
-	// T extends null 			? null :
-	// T extends false 		? false :
-	// T extends boolean 	? boolean :
-												(T | [T, T, ...T[]])
+type Or<T> = T | T[]
 
 export const match = <D extends SomeData, P extends Pattern<D> | undefined>(data: D, pattern: P): boolean => {
   if (pattern === _) {

@@ -6,15 +6,15 @@ import type { z } from 'zod'
 
 // prettier-ignore
 export type EventPatternsInputAtLeastOne<Schema extends ParameterSpec.Input.Schema> =
-  z.ZodFirstPartyTypeKind.ZodOptional extends Schema['_def']['typeName']  	? Pattern<BasicParameterParseEvent> :
-  z.ZodFirstPartyTypeKind.ZodDefault  extends Schema['_def']['typeName']    ? Pattern<BasicParameterParseEvent> :
-                                                                              Pattern<BasicParameterParseEventAccepted | BasicParameterParseEventRejected>
+  z.ZodFirstPartyTypeKind.ZodOptional extends Schema['_def']['typeName']  	? Pattern<BasicParameterParseEvent,'result'> :
+  z.ZodFirstPartyTypeKind.ZodDefault  extends Schema['_def']['typeName']    ? Pattern<BasicParameterParseEvent,'result'> :
+                                                                              Pattern<BasicParameterParseEventAccepted | BasicParameterParseEventRejected,'result'>
 
 // prettier-ignore
 export type EventPatternsInput<Schema extends ParameterSpec.Input.Schema> =
-  Schema['_def']['typeName'] extends z.ZodFirstPartyTypeKind.ZodOptional  ? Pattern<BasicParameterParseEvent> :
-  Schema['_def']['typeName'] extends z.ZodFirstPartyTypeKind.ZodDefault   ? Pattern<BasicParameterParseEvent> :
-                                                                            Pattern<BasicParameterParseEventAccepted | BasicParameterParseEventRejected>
+  Schema['_def']['typeName'] extends z.ZodFirstPartyTypeKind.ZodOptional  ? Pattern<BasicParameterParseEvent,'result'> :
+  Schema['_def']['typeName'] extends z.ZodFirstPartyTypeKind.ZodDefault   ? Pattern<BasicParameterParseEvent,'result'> :
+                                                                            Pattern<BasicParameterParseEventAccepted | BasicParameterParseEventRejected,'result'>
 
 export type BasicParameterParseEvent =
   | BasicParameterParseEventAccepted
