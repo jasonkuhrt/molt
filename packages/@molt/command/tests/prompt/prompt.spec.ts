@@ -7,6 +7,8 @@ import { tty } from '../_/mocks/tty.js'
 import stripAnsi from 'strip-ansi'
 import { expect, it } from 'vitest'
 
+// TODO test that prompt order is based on order of parameter definition
+
 let parameters: Methods.Parameters.InputAsConfig<Schema>
 let ttyInputs: string[]
 let line: string[]

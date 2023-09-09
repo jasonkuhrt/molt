@@ -592,6 +592,7 @@ $ mybin --filePath ./a/b/c.yaml
 - Common patterns have been pre-defined and exported at `Command.eventPatterns` for you.
 - Custom patterns may be defined in a type-safe way.
 - When enabled, a default pattern is used when none explicitly set.
+- The order of prompts will match the order of your parameter definitions.
 - The default pattern may be changed.
 - The default settings are:
   ```ts
