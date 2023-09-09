@@ -35,49 +35,6 @@ export type SomeParametersConfig<S extends Schema> = {
   [parameterNameExpression:string]: SomeParameterConfig<S>
 }
 
-// interface A<Foo extends string = string> {
-//   foo: Foo
-//   bar: `Depends on ${NoInfer<Foo>}`
-// }
-
-// declare const c: <A_ extends string>(a: A<A_>) => void
-// c({ foo: `beep3`, bar: `Depends on beep3` })
-
-// declare const d: <X extends ParameterSpec.SomeBasicType>(x: SomeParameterConfig<X>) => void
-// d({
-//   schema: z.string().optional(),
-//   prompt: { when: { omitted: { optionality: `optional` } } },
-// })
-
-// interface Alpha<Foo extends string> {
-//   foo: Foo
-//   bar: `Depends on ${NoInfer<Foo>}`
-// }
-
-// declare const bravo: <T extends Record<keyof T,  string>>(xs: {[k in keyof T]: Alpha<T[k]>}) => void
-
-// bravo({
-//   one: { foo: `1`, bar: `Depends on 1` }, // ok
-//   oneX: { foo: `1x`, bar: `Depends on 1x` }, // wrong, should be type error, 1 !== 1x
-//   two: { foo: `2`, bar: `Depends on 2` }, // ok
-//   twoX: { foo: `2x`, bar: `Depends on 2x` }, // wrong, should be type error, 2 !== 2x
-// })
-
-// declare const e: <C extends Record<keyof C, ParameterSpec.SomeBasicParameterType>>(xs: {
-//   [k in keyof C]: SomeParameterConfig<C[k]>
-// }) => {
-//   [k in keyof C]: SomeParameterConfig<C[k]>
-// }
-// // prettier-ignore
-// const x = e({
-//   alpha:   { schema: z.string()  },
-//   bravo:   { schema: z.number()  },
-//   charlie: { schema: z.boolean(), prompt: {when:{omitted:`Not Available. Only when parameter optional or has default.`}} },
-//   delta:   { schema: z.boolean().optional(), prompt: {when:{omitted:{optionality:`default`}}} }
-// })
-
-// x.charlie.prompt
-
 // prettier-ignore
 interface Parameters<State extends State.Base = State.BaseEmpty> {
   <C       extends Record<keyof C, ParameterSpec.SomeBasicParameterType>>       (config: {[k in keyof C]: SomeParameterConfig<C[k]>}):        RootBuilder<State.AddParametersConfig<State,{[k in keyof C]:SomeParameterConfig<C[k]>}>>
