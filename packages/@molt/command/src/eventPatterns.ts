@@ -5,10 +5,19 @@ import type { Pattern } from './Pattern/Pattern.js'
 import type { z } from 'zod'
 
 // prettier-ignore
-export type EventPatternsInput<Schema extends ParameterSpec.Input.Schema = ParameterSpec.Input.Schema> =
-  Schema['_def']['typeName'] extends z.ZodFirstPartyTypeKind.ZodOptional 	? Pattern<BasicParameterParseEvent> :
-  Schema['_def']['typeName'] extends z.ZodFirstPartyTypeKind.ZodDefault   ? Pattern<BasicParameterParseEvent> :
+export type EventPatternsInputAtLeastOne<Schema extends ParameterSpec.Input.Schema> =
+z.ZodFirstPartyTypeKind.ZodOptional extends Schema['_def']['typeName']  	? Pattern<BasicParameterParseEvent> :
+z.ZodFirstPartyTypeKind.ZodDefault  extends Schema['_def']['typeName']    ? Pattern<BasicParameterParseEvent> :
+// Schema['_def']['typeName'] extends z.ZodFirstPartyTypeKind.ZodOptional   	? Pattern<BasicParameterParseEvent> :
+// Schema['_def']['typeName'] extends z.ZodFirstPartyTypeKind.ZodDefault     ? Pattern<BasicParameterParseEvent> :
+
                                                                             Pattern<BasicParameterParseEventAccepted | BasicParameterParseEventRejected>
+export type EventPatternsInput<Schema extends ParameterSpec.Input.Schema> =
+  Schema['_def']['typeName'] extends z.ZodFirstPartyTypeKind.ZodOptional
+    ? Pattern<BasicParameterParseEvent>
+    : Schema['_def']['typeName'] extends z.ZodFirstPartyTypeKind.ZodDefault
+    ? Pattern<BasicParameterParseEvent>
+    : Pattern<BasicParameterParseEventAccepted | BasicParameterParseEventRejected>
 
 export type BasicParameterParseEvent =
   | BasicParameterParseEventAccepted

@@ -1,18 +1,20 @@
 import type { State } from '../Builder/State.js'
-import type { EventPatternsInput } from '../eventPatterns.js'
+import type { EventPatternsInput, EventPatternsInputAtLeastOne } from '../eventPatterns.js'
 import { eventPatterns } from '../eventPatterns.js'
+import type { Values } from '../helpers.js'
 import { parseEnvironmentVariableBooleanOrThrow } from '../helpers.js'
 import { defaultParameterNamePrefixes } from '../OpeningArgs/Environment/Environment.js'
+import type { ParameterSpec } from '../ParameterSpec/index.js'
 import type { FlagName } from '@molt/types'
 import snakeCase from 'lodash.snakecase'
 
 export type OnErrorReaction = 'exit' | 'throw'
 
-export type InputPrompt =
+export type InputPrompt<S extends ParameterSpec.Input.Schema> =
   | boolean
   | {
       enabled?: boolean
-      when?: EventPatternsInput
+      when?: EventPatternsInputAtLeastOne<S>
     }
 
 // eslint-disable-next-line
@@ -28,7 +30,7 @@ export interface Input<ParametersObject extends State.ParametersSchemaObjectBase
   }
   onError?: OnErrorReaction
   onOutput?: (output: string, defaultHandler: (output: string) => void) => void
-  prompt?: InputPrompt
+  prompt?: InputPrompt<Values<ParametersObject>>
   // prompt?:
   parameters?: {
     // prettier-ignore
@@ -45,7 +47,7 @@ export interface Input<ParametersObject extends State.ParametersSchemaObjectBase
 export interface Output {
   prompt: {
     enabled: boolean
-    when: EventPatternsInput
+    when: EventPatternsInput<ParameterSpec.Input.Schema>
   }
   description?: string | undefined
   help: boolean
