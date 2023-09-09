@@ -47,9 +47,7 @@ match(true, false)
 match(true, true)
 
 // scalar non-deterministic
-// @ts-expect-error
 match(1, [])
-// @ts-expect-error
 match(1, [1])
 match(1, [1, 1])
 // // @ts-expect-error

@@ -125,6 +125,7 @@ it(`can be stack of conditional prompts`, () => {
     enabled: true,
     when: [
       {
+        result: `rejected`,
         error: `ErrorInvalidArgument`,
       },
       {

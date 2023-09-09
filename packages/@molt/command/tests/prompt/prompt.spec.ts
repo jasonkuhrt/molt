@@ -97,15 +97,38 @@ it(`static error to match on omitted event on required parameter by .parameter(.
   })
 })
 
+it(`can pass just one pattern in multiple pattern syntax`, () => {
+  Command.parameter(`a`, s).settings({ prompt: { when: [{ result: `accepted` }] } })
+})
+
 it(`static error to match on omitted event on command level when no parameters have optional`, () => {
   // @ts-expect-error not available
-  Command.parameter(`a`, { schema: s }).settings({ prompt: { when: { result: `omitted` } } })
+  Command.parameter(`a`, s).settings({ prompt: { when: { result: `omitted` } } })
   // Is fine, because parameter is optional.
-  Command.parameter(`a`, { schema: s.optional() }).settings({ prompt: { when: { result: `omitted` } } })
+  Command.parameter(`a`, s.optional()).settings({ prompt: { when: { result: `omitted` } } })
   // Is fine, because at least one parameter is optional.
-  Command.parameter(`a`, { schema: s.optional() })
-    .parameter(`b`, { schema: s })
+  Command.parameter(`a`, s.optional())
+    .parameter(`b`, s)
     .settings({ prompt: { when: { result: `omitted` } } })
+})
+
+it(`static error when fields from different event types matched in single pattern`, () => {
+  // @ts-expect-error "value" is not available on "rejected" event
+  Command.parameter(`a`, s).settings({ prompt: { when: { result: `rejected`, value: 1 } } })
+  // TODO excess properties should be an error in the pattern match but for some reason are not being here.
+  Command.parameter(`a`, {
+    schema: s,
+    prompt: {
+      when: {
+        result: `rejected`,
+        error: `ErrorInvalidArgument`,
+        value: 1,
+        foo: 2,
+        blah: 3,
+        '........ :(': 1,
+      },
+    },
+  })
 })
 
 /**
