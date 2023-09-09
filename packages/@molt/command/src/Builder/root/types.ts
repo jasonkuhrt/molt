@@ -12,9 +12,9 @@ import { State } from '../State.js'
 
 export type Schema = ParameterSpec.SomeBasicType | ParameterSpec.SomeUnionType
 
-export interface ParameterConfiguration<S extends Schema = Schema> {
-  schema: S
-  prompt?: ParameterSpec.Input.Prompt<S>
+export interface ParameterConfiguration {
+  schema: Schema
+  prompt?: ParameterSpec.Input.Prompt<this['schema']>
 }
 
 // prettier-ignore
