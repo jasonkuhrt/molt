@@ -18,11 +18,11 @@ const args = Command.parameter(`filePath`, z.string().describe(`Path to the file
     prompt: {
       // TODO allow making parameter level opt-in or opt-out
       // default: false,
+      // when: [{ result: `rejected`, error: `ErrorMissingArgument` }, { result: `omitted` }],
       when: [
-        {
-          result: `rejected`,
-          error: `ErrorMissingArgument`,
-        },
+        { result: `rejected`, spec: { name: { aliases: { long: [`a`, `b`] } } } },
+        // @ts-expect-error
+        { result: `omitted`, error: `ErrorMissingArgument` },
         { result: `omitted` },
       ],
     },

@@ -2,6 +2,7 @@ import type { Schema } from '../../src/Builder/root/types.js'
 import type { Settings } from '../../src/entrypoints/types.js'
 import { Methods } from '../../src/entrypoints/types.js'
 import { Command } from '../../src/index.js'
+import { match } from '../../src/Pattern/Pattern.js'
 import { s, tryCatch } from '../_/helpers.js'
 import { tty } from '../_/mocks/tty.js'
 import stripAnsi from 'strip-ansi'
@@ -110,6 +111,31 @@ it(`static error to match on omitted event on command level when no parameters h
   Command.parameter(`a`, s.optional())
     .parameter(`b`, s)
     .settings({ prompt: { when: { result: `omitted` } } })
+})
+
+// TODO should be able match on common event properties _without_ specifying the event type...
+// Command.parameter(`a`, s).settings({
+//   prompt: { when: { spec: { name: { aliases: { long: [`a`, `b`] } } } } },
+// })
+
+// TODO already taken care of by match test suite?
+it(`array value`, () => {
+  // Can pass ONE literal match
+  Command.parameter(`a`, s).settings({
+    prompt: { when: { result: `accepted`, spec: { name: { aliases: { long: [`a`, `b`] } } } } },
+  })
+  // can pass an OR literal match
+  Command.parameter(`a`, s).settings({
+    prompt: { when: { result: `accepted`, spec: { name: { aliases: { long: [[`a`, `b`], [`c`]] } } } } },
+  })
+  Command.parameter(`a`, s).settings({
+    // @ts-expect-error Cannot pass the array member literal
+    prompt: { when: { result: `accepted`, spec: { name: { aliases: { long: `a` } } } } },
+  })
+  Command.parameter(`a`, s).settings({
+    // @ts-expect-error Cannot mix OR and ONE matches
+    prompt: { when: { result: `accepted`, spec: { name: { aliases: { long: [`a`, [`b`]] } } } } },
+  })
 })
 
 it(`static error when fields from different event types matched in single pattern`, () => {

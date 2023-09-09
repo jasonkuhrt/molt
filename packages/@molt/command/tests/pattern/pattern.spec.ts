@@ -31,9 +31,34 @@ it.each([
   [1, _, true],
   [{ a: { b: 2 } }, _, true],
   [{ a: { b: 2 } }, { a: { b: _ } }, true],
+  // array data
+  [{ x: [`1`] }, { x: [`1`] }, true],
+  [{ x: [`1`] }, { x: [[`1`]] }, true],
+  [{ x: [`1`] }, { x: [[`1`], ['2']] }, true],
+  [{ x: [`1`] }, { x: [`2`] }, false],
+  [{ x: [`1`] }, { x: [`1`, '2'] }, false],
+  // it(`match array`, () => {
+  //   type D = { x: string[] }
+  //   const d: D = expect(match(d, { x: [`1`] })).toBe(true)
+  //   expect(match(d, { x: [[`1`], [`2`]] })).toBe(true)
+  //   expect(match(d, { x: [`2`] })).toBe(false)
+  //   expect(match(d, { x: [`1`, `2`] })).toBe(false)
+  // }),
 ])(`%s %s %s`, (data, pattern, expected) => {
   expect(match(data, pattern as any)).toBe(expected)
 })
+
+// array data
+const d = { x: [`1`] }
+// OK
+match(d, { x: [`1`] })
+match(d, { x: [[`1`], [`2`]] })
+match(d, { x: [`2`] })
+match(d, { x: [`1`, `2`] })
+// @ts-expect-error
+match(d, { x: `1` })
+// @ts-expect-error
+match(d, { x: [['1'], '2'] })
 
 // scalar
 // @ts-expect-error
