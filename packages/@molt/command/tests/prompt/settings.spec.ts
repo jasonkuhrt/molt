@@ -7,6 +7,20 @@ import { describe, expect, it } from 'vitest'
 
 const S = (settings: Settings.InputPrompt) => settings
 
+describe(`parameter level`, () => {
+  it(`can be passed object`, () => {
+    tty.mock.input.add([`foo`])
+    const args = tryCatch(() =>
+      Command.parameters({ a: { schema: s, prompt: { enabled: true } } })
+        .settings({ onError: `throw`, helpOnError: false })
+        .parse({ line: [], tty: tty.interface }),
+    )
+    expect(args).toMatchSnapshot(`args`)
+    expect(tty.history.all).toMatchSnapshot(`tty`)
+    expect(tty.history.all.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)
+  })
+})
+
 it(`prompt is disabled by default`, () => {
   const args = tryCatch(() =>
     Command.parameters({ a: { schema: s } })

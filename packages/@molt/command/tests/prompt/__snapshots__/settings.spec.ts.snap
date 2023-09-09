@@ -50,6 +50,31 @@ exports[`parameter defaults to custom settings > tty strip ansi 1`] = `
 ]
 `;
 
+exports[`parameter level > can be passed object > args 1`] = `
+{
+  "a": "foo",
+  "help": false,
+}
+`;
+
+exports[`parameter level > can be passed object > tty 1`] = `
+[
+  "[2m[90m1/1[39m[22m  [32ma[39m",
+  "foo",
+  "
+",
+]
+`;
+
+exports[`parameter level > can be passed object > tty strip ansi 1`] = `
+[
+  "1/1  a",
+  "foo",
+  "
+",
+]
+`;
+
 exports[`parameter settings overrides default settings > args 1`] = `[ErrorMissingArgument: Missing argument for flag "a".]`;
 
 exports[`parameter settings overrides default settings > tty 1`] = `[]`;
