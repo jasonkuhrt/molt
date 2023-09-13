@@ -7,6 +7,7 @@ describe(`zod`, () => {
     it.each(
       // prettier-ignore
       [
+        [`literal int`,             { name: z.literal(1) },                                      { line: [`--name`, `2`] }],
         [`int`,                     { name: z.number().int() },                                  { line: [`--name`, `5.4`] }],
         [`min`,                     { name: z.number().min(5) },                                 { line: [`--name`, `1`] }],
         [`max`,                     { name: z.number().max(1) },                                 { line: [`--name`, `5`] }],

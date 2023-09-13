@@ -87,25 +87,6 @@ export const parse = (
   }
   // dump(specsResult)
 
-  /**
-   * todo make this data structure more sophisticated.
-   * Right now it splits into errors and args. Prompt makes things more complicated.
-   * We want to know for each parameter what happened in order to properly prompt.
-   * So the data structure should be a map of parameter names to results that indicate:
-   * 1. error
-   * 2. supplied
-   * 3. omitted
-   * This nicely maps to the events we have defined that prompts can match on.
-   * This data structure should be the "pre-prompt parse results".
-   *
-   * Then we match prompts. this leads to a data structure of specs-to-prompt.
-   * If there are still errors after matching, then we cannot continue.
-   * if all errors become prompts, we can continue.
-   * then prompts are run. the results lead to a new set of arguments. Because prompts keep prompting until they get a valid valid
-   * we know that the result of running prompts cannot have any errors.
-   * The post-prompt parse results could be created but we do not need them
-   * Instead we can just finalize our arguments. They are the pre-prompt supplied merged (and overridden by) with the post-prompt supplied.
-   */
   const openingArgsResult = OpeningArgs.parse({
     specs: specsResult.specs,
     line: argInputsLine,

@@ -83,6 +83,7 @@ export const parseRawValue = (
         types
           .map((_) =>
             Alge.match(_.type)
+              .TypeLiteral((_) => parseLiteral(_, value))
               .TypeString(() => value)
               .TypeEnum(() => value)
               .TypeBoolean(() => parseEnvironmentVariableBoolean(value))
@@ -97,6 +98,7 @@ export const parseRawValue = (
     })
     .else((spec) =>
       Alge.match(spec.type)
+        .TypeLiteral((_) => parseLiteral(_, value))
         .TypeString(() => value)
         .TypeEnum(() => value)
         .TypeBoolean(() => parseEnvironmentVariableBoolean(value))
@@ -104,13 +106,27 @@ export const parseRawValue = (
         .done(),
     )
 }
-
-export const environmentVariableBooleanLookup = {
-  '1': true,
-  '0': false,
+export const BooleanLookup = {
   true: true,
   false: false,
 } as const
+
+export const environmentVariableBooleanLookup = {
+  ...BooleanLookup,
+  '1': true,
+  '0': false,
+} as const
+
+export const parseLiteral = (spec: ParameterSpec.TypeLiteral, value: string): boolean | string | number => {
+  if (typeof spec.value === `string`) return value
+  if (typeof spec.value === `number`) return Number(value)
+  if (typeof spec.value === `boolean`) {
+    const v = (BooleanLookup as Record<string, boolean>)[value]
+    if (!v) throw new Error(`Invalid boolean literal value: ${value}`)
+    return v
+  }
+  return casesHandled(spec.value)
+}
 
 export const parseEnvironmentVariableBoolean = (value: string): boolean | null =>
   // @ts-expect-error ignore

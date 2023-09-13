@@ -80,6 +80,11 @@ const validateExclusive = <T>(_spec: Output.Exclusive, _value: T): Result<T> => 
 const validateType = <T>(type: Type, value: T): Result<T> => {
   // @ts-expect-error todo alge generics
   return Alge.match(type)
+    .TypeLiteral((_) =>
+      value === _.value
+        ? Result.Success.create({ value })
+        : Result.Failure.create({ value, errors: [`Value is not equal to literal.`] }),
+    )
     .TypeBoolean(() =>
       typeof value === `boolean`
         ? Result.Success.create({ value })

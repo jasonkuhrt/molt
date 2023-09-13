@@ -9,7 +9,12 @@ export type ArgumentValueMutuallyExclusive = {
 
 export type ArgumentValue = undefined | ArgumentValueScalar | ArgumentValueMutuallyExclusive
 
-export type Type = TypeEnum | TypeString | TypeNumber | TypeBoolean
+export type Type = TypeEnum | TypeString | TypeNumber | TypeBoolean | TypeLiteral
+
+export interface TypeLiteral {
+  _tag: 'TypeLiteral'
+  value: string | number | boolean
+}
 
 export interface TypeBoolean {
   _tag: 'TypeBoolean'

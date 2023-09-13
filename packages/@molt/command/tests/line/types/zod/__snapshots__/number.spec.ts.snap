@@ -5,6 +5,11 @@ exports[`zod > validation > int 1`] = `
 Value is not an integer."
 `;
 
+exports[`zod > validation > literal int 1`] = `
+"Invalid argument for parameter: \\"name\\". The error was:
+Value is not equal to literal."
+`;
+
 exports[`zod > validation > max 1`] = `
 "Invalid argument for parameter: \\"name\\". The error was:
 value must be smaller than 1."

@@ -23,6 +23,9 @@ export type SomeBasicTypeScalar =
   | z.ZodEnum<[string, ...string[]]>
   | z.ZodNumber
   | z.ZodBoolean
+  | z.ZodLiteral<number>
+  | z.ZodLiteral<string>
+  | z.ZodLiteral<boolean>
 
 export const isUnionType = (type: SomeBasicType | SomeUnionType): type is SomeUnionType => {
   const type_ = stripOptionalAndDefault(type)

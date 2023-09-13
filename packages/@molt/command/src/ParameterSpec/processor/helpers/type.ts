@@ -19,7 +19,9 @@ export const analyzeZodTypeScalar = (zodType: SomeBasicType) => {
   const zodTypeScalar = getBasicScalar(primitiveType)
 
   const type: Type =
-    zodTypeScalar._def.typeName === z.ZodFirstPartyTypeKind.ZodString
+    zodTypeScalar._def.typeName === z.ZodFirstPartyTypeKind.ZodLiteral
+      ? { _tag: `TypeLiteral`, value: zodTypeScalar._def.value }
+      : zodTypeScalar._def.typeName === z.ZodFirstPartyTypeKind.ZodString
       ? { _tag: `TypeString`, ...mapZodStringChecks(zodTypeScalar._def.checks) }
       : zodTypeScalar._def.typeName === z.ZodFirstPartyTypeKind.ZodBoolean
       ? { _tag: `TypeBoolean` }

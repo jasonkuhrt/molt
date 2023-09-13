@@ -358,6 +358,7 @@ const typeScalar = (type: ParameterSpec.Type): string => {
 }
 
 const typeTagsToTypeScriptName = {
+  TypeLiteral: `literal`,
   TypeString: `string`,
   TypeNumber: `number`,
   TypeEnum: `enum`,
