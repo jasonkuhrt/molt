@@ -42,13 +42,6 @@ const create = () => {
       $.newSettingsBuffer.push(newSettings)
       return chain
     },
-    parameters: (parametersConfigOrSchemaObject) => {
-      Object.entries(parametersConfigOrSchemaObject).forEach(([nameExpression, schemaOrConfig]) => {
-        const config = `schema` in schemaOrConfig ? schemaOrConfig : { schema: schemaOrConfig }
-        $$.addParameterBasicOrUnion(nameExpression, { schema: config.schema, prompt: config.prompt })
-      })
-      return chain
-    },
     parameter: (nameExpression, typeOrConfiguration) => {
       const configuration =
         `schema` in typeOrConfiguration ? typeOrConfiguration : { schema: typeOrConfiguration }
@@ -89,10 +82,6 @@ export const createViaParameter: RootBuilder['parameter'] = (...args) => create(
 // @ts-expect-error internal to external
 export const createViaDescription: RootBuilder['description'] = (...args) => create().description(...args)
 
-// prettier-ignore
-// @ts-expect-error internal to external
-export const createViaParameters: RootBuilder['parameters'] = (...args) => create().parameters(...args)
-
 //
 // Internal Types
 //
@@ -112,7 +101,6 @@ interface Parameter {
 interface InternalRootBuilder {
   description: (description: string) => InternalRootBuilder
   settings: (newSettings: Settings.Input) => InternalRootBuilder
-  parameters: (parametersObject: Record<string, ParameterConfiguration['schema']|{schema:ParameterConfiguration['schema'],prompt?:boolean}>) => InternalRootBuilder
   parameter: Parameter
   parametersExclusive: (label: string, builderContainer: any) => InternalRootBuilder
   parse: (args: RawArgInputs) => object

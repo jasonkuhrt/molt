@@ -65,13 +65,6 @@ export namespace State {
   >
 
   // prettier-ignore
-  export type AddParametersConfig<State extends Base, ParametersConfig extends ParametersConfigBase> =
-    // todo pass prompt through too
-    MergeIntoProperty<State, 'Parameters', {
-      [NameExpression in keyof ParametersConfig & string]: CreateParameter<State,NameExpression,{schema:ParametersConfig[NameExpression]['schema']}>
-    }>
-
-  // prettier-ignore
   export type SetExclusiveOptional<
     State extends Base,
     Label extends string,
@@ -111,7 +104,7 @@ export namespace State {
     }>
 
   // prettier-ignore
-  type CreateParameter<
+  export type CreateParameter<
     State           extends Base,
     NameExpression  extends string,
     Configuration   extends ParameterConfiguration,

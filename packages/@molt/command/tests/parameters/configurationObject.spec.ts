@@ -3,12 +3,6 @@ import { n, s } from '../_/helpers.js'
 import { expectType } from 'tsd'
 import { expect, it } from 'vitest'
 
-it(`parameters can receive configuration object`, () => {
-  const args = Command.parameters({ a: { schema: s.optional() } }).parse({ line: [] })
-  expectType<{ a?: string }>(args)
-  expect(args).toMatchObject({})
-})
-
 it(`parameter can receive configuration object`, () => {
   const args = Command.parameter(`a`, { schema: s.optional() }).parse({ line: [] })
   expectType<{ a?: string }>(args)

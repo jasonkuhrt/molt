@@ -1,4 +1,5 @@
 import { Command } from '../../../../src/index.js'
+import { s } from '../../../_/helpers.js'
 import { describe, expect, it } from 'vitest'
 import { z } from 'zod'
 
@@ -7,10 +8,19 @@ describe(`zod`, () => {
     it.each(
       // prettier-ignore
       [
-        [`trim`,                   { name: z.string().trim() },                         { line: [`--name`, `foobar   `] }],
+        [`trim`,                   { name: s.trim() },                         { line: [`--name`, `foobar   `] }],
       ],
     )(`%s`, (_, parameters, input) => {
-      expect(Command.parameters(parameters).parse(input)).toMatchSnapshot()
+      expect(
+        // eslint-disable-next-line
+        Object.entries(parameters)
+          //@ts-expect-error todo
+          .reduce((chain, data) => {
+            return chain.parameter(data[0] as any, data[1])
+          }, Command)
+          //@ts-expect-error todo
+          .parse(input),
+      ).toMatchSnapshot()
     })
   })
   describe(`validation`, () => {
@@ -33,9 +43,17 @@ describe(`zod`, () => {
         [`datetime precision 1`,    { foo: z.string().datetime({precision:1}) },                 { line: [`--foo`, `2023-02-25T08:01:28.364Z`] }],
       ],
     )(`%s`, (_, parameters, input) => {
-      expect(() =>
-        Command.parameters(parameters).settings({ onError: `throw`, helpOnError: false }).parse(input),
-      ).toThrowErrorMatchingSnapshot()
+      expect(() => {
+        // eslint-disable-next-line
+        Object.entries(parameters)
+          //@ts-expect-error todo
+          .reduce((chain, data) => {
+            return chain.parameter(data[0] as any, data[1])
+          }, Command)
+          //@ts-expect-error todo
+          .settings({ onError: `throw`, helpOnError: false })
+          .parse(input)
+      }).toThrowErrorMatchingSnapshot()
     })
   })
 })

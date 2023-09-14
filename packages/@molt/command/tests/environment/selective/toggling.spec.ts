@@ -1,15 +1,13 @@
 import { Command } from '../../../src/index.js'
+import { s } from '../../_/helpers.js'
 import { environmentManager } from '../__helpers__.js'
 import { describe, expect, it } from 'vitest'
-import { z } from 'zod'
 
 it(`can toggle environment on for one parameter`, () => {
   environmentManager.set(`cli_param_foo`, `env1`)
   environmentManager.set(`cli_param_bar`, `env2`)
-  const args = Command.parameters({
-    '--foo': z.string().default(`foo`),
-    '--bar': z.string().default(`bar`),
-  })
+  const args = Command.parameter(`--foo`, s.default(`foo`))
+    .parameter(`--bar`, s.default(`bar`))
     .settings({ parameters: { environment: { foo: true } } })
     .parse({ line: [] })
   expect(args).toMatchObject({ foo: `env1`, bar: `bar` })
@@ -18,10 +16,8 @@ it(`can toggle environment on for one parameter`, () => {
 it(`can change prefix for one parameter`, () => {
   environmentManager.set(`foo`, `foo_env`)
   environmentManager.set(`cli_param_bar`, `bar_env`)
-  const args = Command.parameters({
-    '--foo': z.string().default(`foo_default`),
-    '--bar': z.string().default(`bar_default`),
-  })
+  const args = Command.parameter(`--foo`, s.default(`foo_default`))
+    .parameter(`--bar`, s.default(`bar_default`))
     .settings({ parameters: { environment: { foo: { prefix: false }, bar: true } } })
     .parse({ line: [] })
   expect(args).toMatchObject({ foo: `foo_env`, bar: `bar_env` })
@@ -30,10 +26,8 @@ it(`can change prefix for one parameter`, () => {
 it(`can change default prefix and prefix for one parameter`, () => {
   environmentManager.set(`foo`, `foo_env`)
   environmentManager.set(`param_bar`, `bar_env`)
-  const args = Command.parameters({
-    '--foo': z.string().default(`default_foo`),
-    '--bar': z.string().default(`default_bar`),
-  })
+  const args = Command.parameter(`--foo`, s.default(`default_foo`))
+    .parameter(`--bar`, s.default(`default_bar`))
     .settings({
       parameters: {
         environment: {
@@ -49,11 +43,9 @@ it(`can change default prefix and prefix for one parameter`, () => {
 
 describe(`when configuring parameters, environment becomes opt-in`, () => {
   it(`with default not set`, () => {
-    const args = Command.parameters({
-      '--foo': z.string().default(`foo`),
-      '--bar': z.string().default(`bar`),
-      '--qux': z.string().default(`qux`),
-    })
+    const args = Command.parameter(`--foo`, s.default(`foo`))
+      .parameter(`--bar`, s.default(`bar`))
+      .parameter(`--qux`, s.default(`qux`))
       .settings({
         parameters: {
           environment: {
@@ -68,11 +60,9 @@ describe(`when configuring parameters, environment becomes opt-in`, () => {
     expect(args).toMatchObject({ foo: `foo_env`, bar: `bar`, qux: `qux` })
   })
   it(`even with default configured`, () => {
-    const args = Command.parameters({
-      '--foo': z.string().default(`foo`),
-      '--bar': z.string().default(`bar`),
-      '--qux': z.string().default(`qux`),
-    })
+    const args = Command.parameter(`--foo`, s.default(`foo`))
+      .parameter(`--bar`, s.default(`bar`))
+      .parameter(`--qux`, s.default(`qux`))
       .settings({
         parameters: {
           environment: {
@@ -87,22 +77,18 @@ describe(`when configuring parameters, environment becomes opt-in`, () => {
   describe(` unless...`, () => {
     it(`default is shorthand true`, () => {
       environmentManager.set({ moo_foo: `moo_foo_env`, cli_param_bar: `bar_env`, cli_param_qux: `qux_env` })
-      const args = Command.parameters({
-        '--foo': z.string().default(`foo`),
-        '--bar': z.string().default(`bar`),
-        '--qux': z.string().default(`qux`),
-      })
+      const args = Command.parameter(`--foo`, s.default(`foo`))
+        .parameter(`--bar`, s.default(`bar`))
+        .parameter(`--qux`, s.default(`qux`))
         .settings({ parameters: { environment: { $default: true, foo: { prefix: `MOO` } } } })
         .parse({ line: [] })
       expect(args).toMatchObject({ foo: `moo_foo_env`, bar: `bar_env`, qux: `qux_env` })
     })
     it(`default is longhand true`, () => {
       environmentManager.set({ moo_foo: `moo_foo_env`, cli_param_bar: `bar_env`, cli_param_qux: `qux_env` })
-      const args = Command.parameters({
-        '--foo': z.string().default(`foo`),
-        '--bar': z.string().default(`bar`),
-        '--qux': z.string().default(`qux`),
-      })
+      const args = Command.parameter(`--foo`, s.default(`foo`))
+        .parameter(`--bar`, s.default(`bar`))
+        .parameter(`--qux`, s.default(`qux`))
         .settings({ parameters: { environment: { $default: { enabled: true }, foo: { prefix: `MOO` } } } })
         .parse({ line: [] })
       expect(args).toMatchObject({ foo: `moo_foo_env`, bar: `bar_env`, qux: `qux_env` })

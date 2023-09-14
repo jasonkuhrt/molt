@@ -4,6 +4,7 @@ export const assertAssignable = <T>(_: T): [T] => 0 as any // eslint-disable-lin
 export const as = <T>(): T => undefined as any // eslint-disable-line
 export const n = z.number()
 export const s = z.string()
+export const b = z.boolean()
 export const l1 = z.literal(1)
 export const e = z.enum([`major`, `minor`, `patch`])
 export const tryCatch = <E extends Error, T>(fn: () => T): T | E => {
