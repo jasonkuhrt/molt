@@ -1,4 +1,4 @@
-# @molt/command
+# @molt/Command
 
 🌱 Type-safe CLI command definition and execution.
 
@@ -68,30 +68,23 @@ npm add @molt/command zod
 import { Command } from '../src/index.js'
 import { z } from 'zod'
 
-// prettier-ignore
-const args = Command
-  .parameter(`filePath`, z
-    .string()
-    .describe(`Path to the file to convert.`)
+const args = Command.create()
+  .parameter(`filePath`, z.string().describe(`Path to the file to convert.`))
+  .parameter(`to`, z.enum([`json`, `yaml`, `toml`]).describe(`Format to convert to.`))
+  .parameter(
+    `from`,
+    z
+      .enum([`json`, `yaml`, `toml`])
+      .optional()
+      .describe(`Format to convert from. By default inferred from the file extension.`),
   )
-  .parameter(`to`, z
-     .enum([`json`, `yaml`, `toml`])
-     .describe(`Format to convert to.`)
+  .parameter(
+    `verbose v`,
+    z.boolean().default(false).describe(`Log detailed progress as conversion executes.`),
   )
-  .parameter(`from`, z
-     .enum([`json`, `yaml`, `toml`])
-     .optional()
-     .describe(`Format to convert from. By default inferred from the file extension.`)
-  )
-  .parameter(`verbose v`, z
-     .boolean()
-     .default(false)
-     .describe(`Log detailed progress as conversion executes.`)
-  )
-  .parameter(`move m`, z
-    .boolean()
-    .default(false)
-    .describe(`Delete the original file after it has been converted.`)
+  .parameter(
+    `move m`,
+    z.boolean().default(false).describe(`Delete the original file after it has been converted.`),
   )
   .parse()
 ```
@@ -266,14 +259,13 @@ args.quxLot === 'zoo'
 Duplicate parameter names will be caught statically via TypeScript.
 
 ```ts
-// prettier-ignore
-const args = Command
+const args = Command.create()
   .parameter('f foo bar', z.string())
-  .parameter('bar', z.string()) // <-- TS error: already taken
-  .parameter('f', z.string()) //   <-- TS error: already taken
-  .parameter('foo', z.string()) // <-- TS error: already taken
+  .parameter('bar', z.string()) //  <-- TS error: already taken
+  .parameter('f', z.string()) //    <-- TS error: already taken
+  .parameter('foo', z.string()) //  <-- TS error: already taken
   .parameter('help', z.string()) // <-- TS error: reserved name
-  .parameter('h', z.string()) // <-- TS error: reserved name
+  .parameter('h', z.string()) //    <-- TS error: reserved name
   .parse()
 ```
 
@@ -553,14 +545,13 @@ All you need to do is pass a _pattern_ to `prompt` either at the parameter level
 Each event type share some core properties but also have their own unique fields. For example with `Accepted` you can match against what the value given was and with `Rejected` you can match against the specific error that occurred.
 
 ```ts
-// prettier-ignore
-const args = Command
+const args = Command.create()
   .parameter(`filePath`, z.string())
   .parameter(`to`, {
     schema: z.enum([`json`, `yaml`, `toml`]),
     prompt: {
       result: 'rejected',
-      error: 'ErrorMissingArgument'
+      error: 'ErrorMissingArgument',
     },
   })
   .parse()
@@ -575,8 +566,7 @@ The pattern matching library will be open-sourced and thoroughly documented in t
 Passing `true` will enable using the default event pattern.
 
 ```ts
-// prettier-ignore
-const args = Command
+const args = Command.create()
   .parameter(`filePath`, z.string())
   .parameter(`to`, {
     schema: z.enum([`json`, `yaml`, `toml`]),
@@ -590,13 +580,13 @@ const args = Command
 You can enable prompt when one of the built-in event patterns occur:
 
 ```ts
-// prettier-ignore
-const args = Command.create().parameter(`filePath`, z.string())
+const args = Command.create()
+  .parameter(`filePath`, z.string())
   .parameter(`to`, {
     schema: z.enum([`json`, `yaml`, `toml`]),
     prompt: {
-      when: Command.EventPatterns.rejectedMissingOrInvalid
-    }
+      when: Command.EventPatterns.rejectedMissingOrInvalid,
+    },
   })
   .parse()
 ```
@@ -604,13 +594,13 @@ const args = Command.create().parameter(`filePath`, z.string())
 Or when one of multiple events occurs:
 
 ```ts
-// prettier-ignore
-const args = Command.create().parameter(`filePath`, z.string())
+const args = Command.create()
+  .parameter(`filePath`, z.string())
   .parameter(`to`, {
     schema: z.enum([`json`, `yaml`, `toml`]),
     prompt: {
       when: [Command.EventPatterns.rejectedMissingOrInvalid, Command.EventPatterns.omittedWithoutDefault],
-    }
+    },
   })
   .parse()
 ```
@@ -620,8 +610,8 @@ const args = Command.create().parameter(`filePath`, z.string())
 You can enable prompt when your given _event pattern_ occurs.
 
 ```ts
-// prettier-ignore
-const args = Command.create().parameter(`filePath`, z.string())
+const args = Command.create()
+  .parameter(`filePath`, z.string())
   .parameter(`to`, {
     schema: z.enum([`json`, `yaml`, `toml`]),
     prompt: {
@@ -629,7 +619,7 @@ const args = Command.create().parameter(`filePath`, z.string())
         rejected: {
           reason: 'missing',
         },
-      }
+      },
     },
   })
   .parse()
@@ -642,8 +632,7 @@ You can configure prompts for the entire instance in the settings. The configura
 Enable explicitly with shorthand approach using a `boolean`:
 
 ```ts
-// prettier-ignore
-const args = Command
+const args = Command.create()
   .parameter(`filePath`, z.string())
   .parameter(`to`, z.enum([`json`, `yaml`, `toml`]))
   .settings({ prompt: true })
@@ -655,8 +644,7 @@ Enable explicitly with longhand approach using the `enabled` nested property and
 Note that in the following `enabled` could be omitted because passing an object implies `enabled: true` by default.
 
 ```ts
-// prettier-ignore
-const args = Command
+const args = Command.create()
   .parameter(`filePath`, z.string())
   .parameter(`to`, z.enum([`json`, `yaml`, `toml`]))
   .settings({
@@ -946,7 +934,7 @@ Here is an example where you might want this feature. You are building a CLI for
 
 ```ts
 // prettier-ignore
-const args = Command
+const args = Command.create()
   .parametersExclusive(`method`, (_) =>
     _.parameter(`v version`, z.string().regex(semverRegex()))
      .parameter(`b bump`, z.enum([`major`, `minor`, `patch`]))
@@ -985,7 +973,7 @@ By default, input for a group of mutually exclusive parameters is required. You 
 
 ```ts
 // prettier-ignore
-const args = Command
+const args = Command.create()
   .parametersExclusive(`method`, (_) =>
     _.parameter(`v version`, z.string().regex(semverRegex()))
      .parameter(`b bump`, z.enum([`major`, `minor`, `patch`]))
@@ -999,7 +987,7 @@ By default, input for a group of mutually exclusive parameters is required. You 
 
 ```ts
 // prettier-ignore
-const args = Command
+const args = Command.create()
   .parametersExclusive(`method`, (_) =>
     _.parameter(`v version`, z.string().regex(semverRegex()))
      .parameter(`b bump`, z.enum([`major`, `minor`, `patch`]))
