@@ -120,6 +120,7 @@ const mapZodStringChecks = (checks: z.ZodStringCheck[]): Omit<TypeString, '_tag'
                 trim: true,
               },
             }))
+            .
             .done(),
         }
       },

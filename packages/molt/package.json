@@ -7,7 +7,7 @@
   "scripts": {
     "clean": "tsc --build --clean",
     "build": "pnpm clean && pnpm build:cjs && pnpm build:esm",
-    "build:cjs": "ts-node scripts/build-cjs.ts",
+    "build:cjs": "tsc --project tsconfig.cjs.json && echo '{\"type\":\"commonjs\"}' > build/cjs/package.json",
     "build:esm": "pnpm tsc --project tsconfig.esm.json"
   },
   "files": [
@@ -31,11 +31,11 @@
   "license": "MIT",
   "dependencies": {
     "@molt/types": "../types",
-    "zod": "^3.19.1"
+    "zod": "^3.22.2"
   },
   "devDependencies": {
     "execa": "8.0.1",
-    "fast-glob": "3.2.12",
+    "fast-glob": "3.3.1",
     "fs-jetpack": "5.1.0"
   }
 }
