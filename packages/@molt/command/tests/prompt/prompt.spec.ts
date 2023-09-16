@@ -37,7 +37,7 @@ it(`can be explicitly disabled with a "when" condition present`, () => {
   run()
 })
 
-it.only(`prompt when missing input`, () => {
+it(`prompt when missing input`, () => {
   parameters = {
     a: { schema: s.min(2), prompt: { when: { result: `rejected`, error: `ErrorMissingArgument` } } },
   }
