@@ -24,23 +24,23 @@ export interface SomeParameterConfig<S extends Schema> {
 
 // prettier-ignore
 export interface RootBuilder<State extends State.Base = State.BaseEmpty> {
-  description                                                                               (description:string):
+  description                                                                               (this:void, description:string):
     RootBuilder<State>
-  parameter<NameExpression extends string, Configuration extends ParameterConfiguration>    (name:State.ValidateNameExpression<State,NameExpression>, configuration:Configuration):
+  parameter<NameExpression extends string, Configuration extends ParameterConfiguration>    (this:void, name:State.ValidateNameExpression<State,NameExpression>, configuration:Configuration):
     RootBuilder<{
       ParametersExclusive: State['ParametersExclusive']
       Parameters         : State['Parameters'] & { [_ in NameExpression]: State.CreateParameter<State,NameExpression,Configuration> }
     }>
-  parameter<NameExpression extends string, S extends Schema>                                (name:State.ValidateNameExpression<State,NameExpression>, schema:S):
+  parameter<NameExpression extends string, S extends Schema>                                (this:void, name:State.ValidateNameExpression<State,NameExpression>, schema:S):
     RootBuilder<{
       ParametersExclusive: State['ParametersExclusive']
       Parameters         : State['Parameters'] & { [_ in NameExpression]: State.CreateParameter<State,NameExpression,{schema:S}> }
     }>
-  parametersExclusive<Label extends string, BuilderExclusive extends SomeBuilderExclusive>  (label:Label, ExclusiveBuilderContainer: (builder:BuilderExclusiveInitial<State,Label>) => BuilderExclusive):
+  parametersExclusive<Label extends string, BuilderExclusive extends SomeBuilderExclusive>  (this:void, label:Label, ExclusiveBuilderContainer: (builder:BuilderExclusiveInitial<State,Label>) => BuilderExclusive):
     RootBuilder<BuilderExclusive['_']['typeState']>
-  settings                                                                                  (newSettings:Settings.Input<State.ToSchema<State>>):
+  settings                                                                                  (this:void, newSettings:Settings.Input<State.ToSchema<State>>):
     BuilderAfterSettings<State>
-  parse                                                                                     (inputs?:RawArgInputs):
+  parse                                                                                     (this:void, inputs?:RawArgInputs):
     State.ToArgs<State>
 }
 

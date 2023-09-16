@@ -3,7 +3,6 @@ import { b, s } from '../_/helpers.js'
 import type { IsExact } from 'conditional-type-checks'
 import { assert } from 'conditional-type-checks'
 import { describe, expect, test } from 'vitest'
-import { z } from 'zod'
 
 describe(`errors`, () => {
   test.todo(`when a flag and an alias of it are given there is an error`)
