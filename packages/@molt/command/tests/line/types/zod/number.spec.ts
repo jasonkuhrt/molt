@@ -17,10 +17,13 @@ describe(`zod`, () => {
       ],
     )(`%s`, (_, parameters, input) => {
       expect(() => {
+        // eslint-disable-next-line
         Object.entries(parameters)
+          // @ts-expect-error todo
           .reduce((chain, data) => {
             return chain.parameter(data[0] as any, data[1])
           }, Command.create())
+          // @ts-expect-error todo
           .settings({ onError: `throw`, helpOnError: false })
           .parse(input)
       }).toThrowErrorMatchingSnapshot()

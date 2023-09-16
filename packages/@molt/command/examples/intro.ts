@@ -1,7 +1,7 @@
 import { Command } from '../src/index.js'
 import { z } from 'zod'
 
-const args = Command.create()
+const args = await Command.create()
   .parameter(`filePath`, z.string().describe(`Path to the file to convert.`))
   .parameter(`to`, z.enum([`json`, `yaml`, `toml`]).describe(`Format to convert to.`))
   .parameter(`from`, {

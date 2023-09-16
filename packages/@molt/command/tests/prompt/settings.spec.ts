@@ -9,9 +9,9 @@ import { describe, expect, it } from 'vitest'
 const S = <S extends ParameterSpec.Input.Schema>(settings: Settings.InputPrompt<S>) => settings
 
 describe(`parameter level`, () => {
-  it(`can be passed object`, () => {
+  it(`can be passed object`, async () => {
     tty.mock.input.add([`foo`])
-    const args = tryCatch(() =>
+    const args = await tryCatch(() =>
       Command.create()
         .parameter(`a`, { schema: s, prompt: { enabled: true } })
         .settings({ onError: `throw`, helpOnError: false })
@@ -24,9 +24,10 @@ describe(`parameter level`, () => {
 })
 
 describe(`command level`, () => {
-  it(`passing object makes enabled default to true`, () => {
+  it(`passing object makes enabled default to true`, async () => {
     tty.mock.input.add([`foo`])
-    const args = Command.create()
+    // eslint-disable-next-line
+    const args = await Command.create()
       .parameter(`a`, { schema: s })
       .settings({ onError: `throw`, helpOnError: false, prompt: { when: { result: `rejected` } } })
       .parse({ line: [], tty: tty.interface })
@@ -48,9 +49,9 @@ it(`prompt is disabled by default`, () => {
   expect(tty.history.all.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)
 })
 
-it(`prompt can be enabled by default`, () => {
+it(`prompt can be enabled by default`, async () => {
   tty.mock.input.add([`foo`])
-  const args = tryCatch(() =>
+  const args = await tryCatch(() =>
     Command.create()
       .parameter(`a`, { schema: s })
       .settings({ onError: `throw`, helpOnError: false, prompt: { enabled: true } })
@@ -79,9 +80,10 @@ describe(`prompt can be toggled by check on error`, () => {
       enabled: true,
       when: { result: `rejected`, error: `ErrorMissingArgument`, spec: { name: { canonical: `a` } } },
     })
-    it(`check does match`, () => {
+    it(`check does match`, async () => {
       tty.mock.input.add([`foo`])
-      const args = tryCatch(() =>
+      // eslint-disable-next-line
+      const args = await tryCatch(() =>
         Command.create()
           .parameter(`a`, { schema: s })
           .settings({ onError: `throw`, helpOnError: false, prompt: settings })
@@ -105,9 +107,9 @@ describe(`prompt can be toggled by check on error`, () => {
   })
 })
 
-it(`parameter defaults to custom settings`, () => {
+it(`parameter defaults to custom settings`, async () => {
   tty.mock.input.add([`foo`])
-  const args = tryCatch(() =>
+  const args = await tryCatch(() =>
     Command.create()
       .parameter(`a`, { schema: s })
       .settings({
@@ -128,7 +130,7 @@ it(`parameter defaults to custom settings`, () => {
   expect(tty.history.all.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)
 })
 
-it(`can be stack of conditional prompts`, () => {
+it(`can be stack of conditional prompts`, async () => {
   const settings = S({
     enabled: true,
     when: [
@@ -144,7 +146,8 @@ it(`can be stack of conditional prompts`, () => {
     ],
   })
   tty.mock.input.add([`foo`])
-  const args = tryCatch(() =>
+  // eslint-disable-next-line
+  const args = await tryCatch(() =>
     Command.create()
       .parameter(`a`, { schema: s.optional() })
       .settings({ onError: `throw`, helpOnError: false, prompt: settings })
