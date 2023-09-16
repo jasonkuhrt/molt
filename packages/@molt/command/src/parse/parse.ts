@@ -197,40 +197,50 @@ export const parse = (
     }
   }
 
+  const hasPrompt =
+    Object.values(parseProgressPostPromptAnnotation.basicParameters).some((_) => _.prompt.enabled) &&
+    argInputsTTY
+
   /**
    * Progress to the next parse stage wherein we will execute prompts.
    */
-  const parseProgressPostPrompts = prompt(parseProgressPostPromptAnnotation, argInputsTTY)
-  const args = {
-    ...Object.fromEntries(
-      Object.entries(parseProgressPostPrompts.basicParameters)
-        .map(([k, v]) => {
-          return [
-            k,
-            v.prompt.enabled
-              ? v.prompt.arg
-              : v.openingParseResult._tag === `supplied`
-              ? v.openingParseResult.value
-              : null,
-          ]
-        })
-        .filter((kv): kv is [string, ParameterSpec.ArgumentValue] => kv[1] !== null),
-    ),
-    ...Object.fromEntries(
-      Object.values(parseProgressPostPrompts.mutuallyExclusiveParameters)
-        .filter((_): _ is ParseResultExclusiveGroupSupplied => _._tag === `supplied`)
-        .map((v) => [v.spec.label, v.value]),
-    ),
+
+  const tail = (parseProgressPostPrompts: ParseProgressPostPrompt) => {
+    const args = {
+      ...Object.fromEntries(
+        Object.entries(parseProgressPostPrompts.basicParameters)
+          .map(([k, v]) => {
+            return [
+              k,
+              v.prompt.enabled
+                ? v.prompt.arg
+                : v.openingParseResult._tag === `supplied`
+                ? v.openingParseResult.value
+                : null,
+            ]
+          })
+          .filter((kv): kv is [string, ParameterSpec.ArgumentValue] => kv[1] !== null),
+      ),
+      ...Object.fromEntries(
+        Object.values(parseProgressPostPrompts.mutuallyExclusiveParameters)
+          .filter((_): _ is ParseResultExclusiveGroupSupplied => _._tag === `supplied`)
+          .map((v) => [v.spec.label, v.value]),
+      ),
+    }
+
+    /**
+     * Handle the distinct case of no arguments. Sometimes the CLI author wants this to mean "show help".
+     */
+    if (settings.helpOnNoArguments && Object.values(args).length === 0) {
+      settings.onOutput(Help.render(specsResult.specs, settings) + `\n`)
+      if (!testDebuggingNoExit) process.exit(0)
+      throw new Error(`missing args`) // When testing, with process.exit mock, we will reach this case
+    }
+
+    return args
   }
 
-  /**
-   * Handle the distinct case of no arguments. Sometimes the CLI author wants this to mean "show help".
-   */
-  if (settings.helpOnNoArguments && Object.values(args).length === 0) {
-    settings.onOutput(Help.render(specsResult.specs, settings) + `\n`)
-    if (!testDebuggingNoExit) process.exit(0)
-    throw new Error(`missing args`) // When testing, with process.exit mock, we will reach this case
-  }
-
-  return args
+  return hasPrompt
+    ? prompt(parseProgressPostPromptAnnotation, argInputsTTY).then(tail)
+    : tail(parseProgressPostPromptAnnotation as ParseProgressPostPrompt)
 }

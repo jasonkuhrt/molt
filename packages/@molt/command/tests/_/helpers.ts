@@ -1,3 +1,4 @@
+import { isPromiseLikeValue } from '../../src/lib/prelude.js'
 import { z } from 'zod'
 
 export const assertAssignable = <T>(_: T): [T] => 0 as any // eslint-disable-line
@@ -7,10 +8,38 @@ export const s = z.string()
 export const b = z.boolean()
 export const l1 = z.literal(1)
 export const e = z.enum([`major`, `minor`, `patch`])
-export const tryCatch = <E extends Error, T>(fn: () => T): T | E => {
+export const tryCatch = <T, E extends Error = Error>(
+  fn: () => T,
+): T extends Promise<any> ? Promise<Awaited<T> | E> : T | E => {
   try {
-    return fn()
+    const result = fn() as any // eslint-disable-line
+    if (isPromiseLikeValue(result)) {
+      return result.catch((error) => {
+        return errorFromMaybeError(error)
+      }) as any
+    }
+    return result
   } catch (error) {
-    return error as E
+    return errorFromMaybeError(error) as any
   }
+}
+
+/**
+ * Ensure that the given value is an error and return it. If it is not an error than
+ * wrap it in one, passing the given value as the error message.
+ */
+export const errorFromMaybeError = (maybeError: unknown): Error => {
+  if (maybeError instanceof Error) return maybeError
+
+  if (typeof maybeError === `object` && maybeError !== null) {
+    try {
+      // todo use isomorphic util inspect
+      // maybe https://www.npmjs.com/package/object-inspect?
+      return new Error(String(maybeError))
+    } catch {
+      // silently ignore
+    }
+  }
+
+  return new Error(String(maybeError))
 }

@@ -16,8 +16,8 @@ export interface TTY {
 export const prompt = (
   parseProgress: ParseProgressPostPromptAnnotation,
   tty: null | TTY,
-): ParseProgressPostPrompt => {
-  if (tty === null) return parseProgress as ParseProgressPostPrompt
+): Promise<ParseProgressPostPrompt> => {
+  if (tty === null) return Promise.resolve(parseProgress as ParseProgressPostPrompt)
 
   const args: Record<string, any> = {}
   const specs = Object.entries(parseProgress.basicParameters)
@@ -65,7 +65,7 @@ export const prompt = (
     parseProgressPostPrompt.basicParameters[parameterName]!.prompt.arg = arg // eslint-disable-line
   }
 
-  return parseProgressPostPrompt
+  return Promise.resolve(parseProgressPostPrompt)
 }
 
 /**

@@ -7,12 +7,14 @@ import type { Any } from 'ts-toolbelt'
 import type { z } from 'zod'
 
 export namespace State {
-  export type BaseEmpty = {
+  export interface BaseEmpty extends Base {
+    IsPromptEnabled: false
     ParametersExclusive: {} // eslint-disable-line
     Parameters: {} // eslint-disable-line
   }
 
   export type Base = {
+    IsPromptEnabled: boolean
     ParametersExclusive: {
       [label: string]: {
         Optional: boolean
@@ -44,15 +46,15 @@ export namespace State {
 
   export type GetUsedNames<State extends Base> = Values<State['Parameters']>['NameUnion']
 
-  // prettier-ignore
-  export type AddParameter<
-    State extends Base,
-    NameExpression extends string,
-    Configuration extends ParameterConfiguration
-  > =
-    Omit<State, 'Parameters'> & {
-      Parameters:  State['Parameters'] & { [_ in NameExpression]: CreateParameter<State,NameExpression,Configuration> }
-    }
+  // // prettier-ignore
+  // export type AddParameter<
+  //   State extends Base,
+  //   NameExpression extends string,
+  //   Configuration extends ParameterConfiguration
+  // > =
+  //   Omit<State, 'Parameters'> & {
+  //     Parameters:  State['Parameters'] & { [_ in NameExpression]: CreateParameter<State,NameExpression,Configuration> }
+  //   }
 
   export type ParametersSchemaObjectBase = Record<string, ParameterConfiguration['schema']>
 
@@ -70,6 +72,7 @@ export namespace State {
     Label extends string,
     Value extends boolean,
   > = {
+    IsPromptEnabled: State['IsPromptEnabled']
     Parameters: State['Parameters']
     ParametersExclusive: Omit<State['ParametersExclusive'], Label> & 
       {
@@ -116,6 +119,12 @@ export namespace State {
 
   // prettier-ignore
   export type ToArgs<State extends Base> =
+    State['IsPromptEnabled'] extends true
+      ? Promise<ToArgs_<State>>
+      : ToArgs_<State>
+
+  // prettier-ignore
+  type ToArgs_<State extends Base> =
     Any.Compute<
       {
         [Name in keyof State['Parameters'] & string as FlagName.Data.GetCanonicalName<State['Parameters'][Name]['NameParsed']>]:

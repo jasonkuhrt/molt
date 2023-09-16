@@ -510,7 +510,7 @@ $ mybin --filePath ./a/b/c.yaml
 - The default pattern may be changed.
 - The default settings are:
   ```ts
-  Command.settings({
+  Command.create().settings({
     prompt: {
       enabled: false,
       when: Command.eventPatterns.rejectedMissingOrInvalid,
@@ -519,8 +519,7 @@ $ mybin --filePath ./a/b/c.yaml
   ```
 - When there is no `TTY` (`process.stdout.isTTY === false`) then prompts are always disabled.
 - Arguments are validated just like they are when given "up front". However, when invalid, the user will be shown an error message and re-prompted, instead of the process exiting non-zero.
-- Prompts are _synchronously_ executed allowing them to be used without forcing your users to write async CLI code.
-  - > 💡 This is achieved via the [`readline-sync`](https://github.com/anseki/readline-sync). That project's repository is archived and the package not maintained. We may try [prompt-sync](`https://github.com/heapwolf/prompt-sync`) but it also does not look actively maintained. Worst case Molt Command will need its own implementation or move to an async API.
+- Prompts are _asynchronously_ executed so you must `await` the return of `.parse()`.
 
 #### Conditional
 
@@ -545,7 +544,7 @@ All you need to do is pass a _pattern_ to `prompt` either at the parameter level
 Each event type share some core properties but also have their own unique fields. For example with `Accepted` you can match against what the value given was and with `Rejected` you can match against the specific error that occurred.
 
 ```ts
-const args = Command.create()
+const args = await Command.create()
   .parameter(`filePath`, z.string())
   .parameter(`to`, {
     schema: z.enum([`json`, `yaml`, `toml`]),
@@ -566,7 +565,7 @@ The pattern matching library will be open-sourced and thoroughly documented in t
 Passing `true` will enable using the default event pattern.
 
 ```ts
-const args = Command.create()
+const args = await Command.create()
   .parameter(`filePath`, z.string())
   .parameter(`to`, {
     schema: z.enum([`json`, `yaml`, `toml`]),
@@ -580,7 +579,7 @@ const args = Command.create()
 You can enable prompt when one of the built-in event patterns occur:
 
 ```ts
-const args = Command.create()
+const args = await Command.create()
   .parameter(`filePath`, z.string())
   .parameter(`to`, {
     schema: z.enum([`json`, `yaml`, `toml`]),
@@ -594,7 +593,7 @@ const args = Command.create()
 Or when one of multiple events occurs:
 
 ```ts
-const args = Command.create()
+const args = await Command.create()
   .parameter(`filePath`, z.string())
   .parameter(`to`, {
     schema: z.enum([`json`, `yaml`, `toml`]),
@@ -610,7 +609,7 @@ const args = Command.create()
 You can enable prompt when your given _event pattern_ occurs.
 
 ```ts
-const args = Command.create()
+const args = await Command.create()
   .parameter(`filePath`, z.string())
   .parameter(`to`, {
     schema: z.enum([`json`, `yaml`, `toml`]),
@@ -632,7 +631,7 @@ You can configure prompts for the entire instance in the settings. The configura
 Enable explicitly with shorthand approach using a `boolean`:
 
 ```ts
-const args = Command.create()
+const args = await Command.create()
   .parameter(`filePath`, z.string())
   .parameter(`to`, z.enum([`json`, `yaml`, `toml`]))
   .settings({ prompt: true })
@@ -644,7 +643,7 @@ Enable explicitly with longhand approach using the `enabled` nested property and
 Note that in the following `enabled` could be omitted because passing an object implies `enabled: true` by default.
 
 ```ts
-const args = Command.create()
+const args = await Command.create()
   .parameter(`filePath`, z.string())
   .parameter(`to`, z.enum([`json`, `yaml`, `toml`]))
   .settings({
@@ -1023,7 +1022,7 @@ You can control certain settings about the command centrally using the `.setting
 Settings documentation is not co-located. Documentation for various features will mention when there are command level settings available.
 
 ```ts
-Command.settings({...})
+Command.create().settings({...})
 ```
 
 ## Recipes

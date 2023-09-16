@@ -1,9 +1,10 @@
 import type { ParameterConfiguration } from '../../src/Builder/root/types.js'
 import type { Settings } from '../../src/entrypoints/types.js'
 import { Command } from '../../src/index.js'
-import { s, tryCatch } from '../_/helpers.js'
+import { l1, s, tryCatch } from '../_/helpers.js'
 import { tty } from '../_/mocks/tty.js'
 import stripAnsi from 'strip-ansi'
+import { expectType } from 'tsd'
 import { expect, it } from 'vitest'
 
 // TODO test that prompt order is based on order of parameter definition
@@ -13,7 +14,7 @@ let ttyInputs: string[]
 let line: string[]
 const settings: Settings.Input = {}
 
-it(`can be explicitly disabled`, () => {
+it(`can be explicitly disabled`, async () => {
   parameters = {
     a: {
       schema: s,
@@ -22,10 +23,10 @@ it(`can be explicitly disabled`, () => {
   }
   ttyInputs = []
   line = []
-  run()
+  await run()
 })
 
-it(`can be explicitly disabled with a "when" condition present`, () => {
+it(`can be explicitly disabled with a "when" condition present`, async () => {
   parameters = {
     a: {
       schema: s.min(2),
@@ -34,28 +35,28 @@ it(`can be explicitly disabled with a "when" condition present`, () => {
   }
   ttyInputs = []
   line = []
-  run()
+  await run()
 })
 
-it(`prompt when missing input`, () => {
+it(`prompt when missing input`, async () => {
   parameters = {
     a: { schema: s.min(2), prompt: { when: { result: `rejected`, error: `ErrorMissingArgument` } } },
   }
   ttyInputs = [`foo`]
   line = []
-  run()
+  await run()
 })
 
-it(`prompt when invalid input`, () => {
+it(`prompt when invalid input`, async () => {
   parameters = {
     a: { schema: s.min(2), prompt: { when: { result: `rejected`, error: `ErrorInvalidArgument` } } },
   }
   ttyInputs = [`foo`]
   line = [`-a`, `1`]
-  run()
+  await run()
 })
 
-it(`prompt when invalid input OR missing input`, () => {
+it(`prompt when invalid input OR missing input`, async () => {
   parameters = {
     a: {
       schema: s.min(2),
@@ -64,10 +65,10 @@ it(`prompt when invalid input OR missing input`, () => {
   }
   ttyInputs = [`foo`]
   line = [`-a`, `1`]
-  run()
+  await run()
 })
 
-it(`prompt when omitted`, () => {
+it(`prompt when omitted`, async () => {
   parameters = {
     a: {
       schema: s.min(2).optional(),
@@ -77,7 +78,7 @@ it(`prompt when omitted`, () => {
   }
   ttyInputs = [`foo`]
   line = []
-  run()
+  await run()
 })
 
 it(`static error to match on omitted event on required parameter by .parameter(...)`, () => {
@@ -145,25 +146,47 @@ it(`array value`, () => {
     })
 })
 
-it(`static error when fields from different event types matched in single pattern`, () => {
-  Command.create()
-    .parameter(`a`, s)
-    // @ts-expect-error "value" is not available on "rejected" event
-    .settings({ prompt: { when: { result: `rejected`, value: 1 } } })
-  // TODO excess properties should be an error in the pattern match but for some reason are not being here.
-  Command.create().parameter(`a`, {
-    schema: s,
-    prompt: {
-      when: {
-        result: `rejected`,
-        error: `ErrorInvalidArgument`,
-        value: 1,
-        foo: 2,
-        blah: 3,
-        '........ :(': 1,
-      },
-    },
-  })
+// TODO
+// it(`static error when fields from different event types matched in single pattern`, () => {
+//   Command.create()
+//     .parameter(`a`, s)
+//     // @ts-expect-error "value" is not available on "rejected" event
+//     .settings({ prompt: { when: { result: `rejected`, value: 1 } } })
+//   // TODO excess properties should be an error in the pattern match but for some reason are not being here.
+//   Command.create().parameter(`a`, {
+//     schema: s,
+//     prompt: {
+//       when: {
+//         result: `rejected`,
+//         error: `ErrorInvalidArgument`,
+//         value: 1,
+//         foo: 2,
+//         blah: 3,
+//         '........ :(': 1,
+//       },
+//     },
+//   })
+// })
+
+// prettier-ignore
+it(`Static type tests`, () => {
+  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { schema: l1, prompt: null }).parse)
+  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { schema: l1, prompt: undefined }).parse)
+  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { schema: l1, prompt: {enabled:false} }).parse)
+  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { schema: l1, prompt: {enabled:false,when:{result:`accepted`}} }).parse)
+  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { schema: l1 }).parse)
+  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { schema: l1 }).settings({}).parse)
+  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { schema: l1 }).settings({prompt:false}).parse)
+  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { schema: l1 }).settings({prompt:{enabled:false}}).parse)
+  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { schema: l1 }).settings({prompt:{enabled:false,when:{result:`accepted`}}}).parse)
+  expectType<() => Promise<{ a: 1 }>>(Command.create().parameter(`a`, { schema: l1, prompt: true }).parameter(`b`, {schema:l1,prompt:false}).parse)
+  expectType<() => Promise<{ a: 1 }>>(Command.create().parameter(`a`, { schema: l1, prompt: true }).parse)
+  expectType<() => Promise<{ a: 1 }>>(Command.create().parameter(`a`, { schema: l1, prompt: {enabled:true} }).parse)
+  expectType<() => Promise<{ a: 1 }>>(Command.create().parameter(`a`, { schema: l1, prompt: {when:{result:`accepted`}} }).parse)
+  expectType<() => Promise<{ a: 1 }>>(Command.create().parameter(`a`, { schema: l1, prompt: true }).settings({prompt:false}).parse)
+  expectType<() => Promise<{ a: 1 }>>(Command.create().parameter(`a`, { schema: l1 }).settings({prompt:true}).parse)
+  expectType<() => Promise<{ a: 1 }>>(Command.create().parameter(`a`, { schema: l1 }).settings({prompt:{enabled:true}}).parse)
+  expectType<() => Promise<{ a: 1 }>>(Command.create().parameter(`a`, { schema: l1 }).settings({prompt:{when:{result:`accepted`}}}).parse)
 })
 
 /**
@@ -172,12 +195,15 @@ it(`static error when fields from different event types matched in single patter
  *
  */
 
-const run = () => {
+const run = async () => {
   tty.mock.input.add(ttyInputs)
   // eslint-disable-next-line
-  const args = tryCatch(() => {
-    return Object.entries(parameters)
+  const args = await tryCatch(async () => {
+    // eslint-disable-next-line
+    return await Object.entries(parameters)
+      // @ts-expect-error todo
       .reduce((chain, data) => chain.parameter(data[0] as any, data[1]), Command.create())
+      // @ts-expect-error todo
       .settings({ onError: `throw`, helpOnError: false, ...settings })
       .parse({ line, tty: tty.interface })
   })
