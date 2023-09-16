@@ -1,5 +1,5 @@
-import { Command } from '../../../../src/index.js'
-import { l1, n } from '../../../_/helpers.js'
+import { Command } from '../../../src/index.js'
+import { l1, n } from '../../_/helpers.js'
 import { describe, expect, it } from 'vitest'
 
 describe(`zod`, () => {

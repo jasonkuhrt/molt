@@ -1,4 +1,4 @@
-import { Command } from '../../src/index.js'
+import { Command } from '../../../src/index.js'
 import { expectType } from 'tsd'
 import { it } from 'vitest'
 import { z } from 'zod'
