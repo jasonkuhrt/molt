@@ -95,6 +95,23 @@ const mapZodStringChecks = (checks: z.ZodStringCheck[]): Omit<TypeString, '_tag'
             .uuid((check) => ({
               pattern: { type: check._tag },
             }))
+            .emoji((_) => ({
+              pattern: { type: _._tag },
+            }))
+            .ip((_) => ({
+              pattern: {
+                type: _._tag,
+                version: _.version
+                  ? Alge.match(_.version)
+                      .v4(() => 4 as const)
+                      .v6(() => 6 as const)
+                      .done()
+                  : null,
+              },
+            }))
+            .ulid((_) => ({
+              pattern: { type: _._tag },
+            }))
             .datetime((check) => ({
               pattern: {
                 type: `dateTime` as const,
@@ -114,10 +131,26 @@ const mapZodStringChecks = (checks: z.ZodStringCheck[]): Omit<TypeString, '_tag'
             .length((check) => ({
               length: check.value,
             }))
+            .includes((_) => ({
+              includes: _.value,
+            }))
+            // transformations
             .trim(() => ({
               transformations: {
                 ...acc.transformations,
                 trim: true,
+              },
+            }))
+            .toLowerCase(() => ({
+              transformations: {
+                ...acc.transformations,
+                toCase: `lower` as const,
+              },
+            }))
+            .toUpperCase(() => ({
+              transformations: {
+                ...acc.transformations,
+                toCase: `upper` as const,
               },
             }))
             .done(),

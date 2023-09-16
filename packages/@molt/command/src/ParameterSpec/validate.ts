@@ -141,6 +141,11 @@ const validateType = <T>(type: Type, value: T): Result<T> => {
           errors.push(`Value is too long.`)
         }
       }
+      if (type.includes) {
+        if (!value.includes(type.includes)) {
+          errors.push(`Value does not include ${type.includes}.`)
+        }
+      }
       if (type.pattern) {
         Alge.match(type.pattern)
           .cuid(() => {
@@ -165,6 +170,11 @@ const validateType = <T>(type: Type, value: T): Result<T> => {
               errors.push(`Value is not a uuid.`)
             }
           })
+          .ulid(() => {
+            if (!Patterns.ulid.test(value)) {
+              errors.push(`Value is not a ulid.`)
+            }
+          })
           .dateTime((type) => {
             if (!Patterns.dateTime({ offset: type.offset, precision: type.precision }).test(value)) {
               errors.push(`Value is not a conforming datetime.`)
@@ -173,6 +183,26 @@ const validateType = <T>(type: Type, value: T): Result<T> => {
           .cuid2(() => {
             if (!Patterns.cuid2.test(value)) {
               errors.push(`Value is not a cuid2.`)
+            }
+          })
+          .ip((type) => {
+            const ip4 = Patterns.ipv4.test(value)
+            if (type.version === 4 && !ip4) {
+              errors.push(`Value is not an ipv4 address.`)
+              return
+            }
+            const ip6 = Patterns.ipv6.test(value)
+            if (type.version === 6 && !ip6) {
+              errors.push(`Value is not an ipv6 address.`)
+              return
+            }
+            if (!ip4 && !ip6) {
+              errors.push(`Value is not an ipv4 or ipv6 address.`)
+            }
+          })
+          .emoji(() => {
+            if (!Patterns.emoji.test(value)) {
+              errors.push(`Value is not an emoji.`)
             }
           })
           .done()

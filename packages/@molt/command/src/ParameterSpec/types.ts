@@ -29,6 +29,7 @@ export interface TypeString {
   _tag: 'TypeString'
   transformations?: {
     trim?: boolean
+    toCase?: 'upper' | 'lower'
   }
   regex?: RegExp
   min?: number
@@ -51,12 +52,27 @@ export interface TypeString {
         type: 'cuid2'
       }
     | {
+        type: 'ulid'
+      }
+    | {
+        type: 'emoji'
+      }
+    | {
+        type: 'ip'
+        /**
+         * If `null` then either IPv4 or IPv6 is allowed.
+         */
+        version: 4 | 6 | null
+      }
+    | {
         type: 'dateTime'
         offset: boolean
         precision: null | number
       }
   startsWith?: string
   endsWith?: string
+  // new
+  includes?: string
 }
 
 export interface TypeNumber {

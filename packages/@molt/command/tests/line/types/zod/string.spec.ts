@@ -9,6 +9,8 @@ describe(`zod`, () => {
       // prettier-ignore
       [
         [`trim`,                   { name: s.trim() },                         { line: [`--name`, `foobar   `] }],
+        [`toLowerCase`,            { name: s.toLowerCase() },                  { line: [`--name`, `FOOBAR   `] }],
+        [`toUpperCase`,            { name: s.toUpperCase() },                  { line: [`--name`, `foobar   `] }],
       ],
     )(`%s`, (_, parameters, input) => {
       expect(
@@ -36,6 +38,12 @@ describe(`zod`, () => {
         [`datetime`,                { foo: z.string().datetime() },                              { line: [`--foo`, `BAD`] }],
         [`datetime no offset`,      { foo: z.string().datetime({offset:false}) },                { line: [`--foo`, `2023-02-25T08:01:28.364-05:00`] }],
         [`datetime precision 1`,    { foo: z.string().datetime({precision:1}) },                 { line: [`--foo`, `2023-02-25T08:01:28.364Z`] }],
+        [`includes`,                { foo: z.string().includes(`z`) },                           { line: [`--foo`, `BAD`] }],
+        [`emoji`,                   { foo: z.string().emoji() },                                 { line: [`--foo`, `BAD`] }],
+        [`ulid`,                    { foo: z.string().ulid() },                                  { line: [`--foo`, `BAD`] }],
+        [`ip`,                      { foo: z.string().ip() },                                    { line: [`--foo`, `BAD`] }],
+        [`ipv4`,                    { foo: z.string().ip({version:`v4`}) },                      { line: [`--foo`, `BAD`] }],
+        [`ipv6`,                    { foo: z.string().ip({version:`v6`}) },                      { line: [`--foo`, `BAD`] }],
       ],
     )(`%s`, (_, parameters, input) => {
       expect(() => {
