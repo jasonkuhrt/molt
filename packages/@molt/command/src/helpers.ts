@@ -66,3 +66,11 @@ export const invertTable = <T>(rows: T[][]): T[][] => {
   }
   return columns
 }
+
+export const entries = <O extends Record<string, unknown>>(
+  obj: O,
+): Exclude<{ [k in keyof O]: [k, O[k]] }[keyof O], undefined>[] => Object.entries(obj) as any
+
+export const casesExhausted = (_: never): never => {
+  throw new Error(`Cases exhausted: ${_}`)
+}

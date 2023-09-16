@@ -24,6 +24,7 @@
     - [String](#string)
     - [Number](#number)
     - [Enum](#enum)
+    - [Native Enum](#native-enum)
     - [Union](#union)
   - [Parameter Prompts](#parameter-prompts)
     - [Overview](#overview)
@@ -345,17 +346,30 @@ args.force === true
 - Flag expects an argument.
 - [Zod docs](https://github.com/colinhacks/zod#strings)
 
+##### Transformations
+
+- `trim`
+- `toLowerCase`
+- `toUpperCase`
+
 ##### Validations
 
-- `startsWith` - A prefix the value must be begin with.
-- `endsWith` - A suffix the value must end with.
+- `startsWith` - A prefix-string the value must be begin with.
+- `endsWith` - A suffix-string the value must end with.
+- `includes` - A sub-string the value must exactly contain.
 - `regex` - An arbitrary Regular Expression that the value must conform to.
 - `min` - The minimum allowed string length
 - `max` - The maximum allowed string length
 - `length` - An exact length the string must be
 - `pattern` - Different well known patterns that the value must conform to.
   - `email` - An email
+  - `ip` - An IP address. Can be configured:
+    - Version 4
+    - Version 6
+    - Accept any version
   - `url` - A URL
+  - `emoji` - An emoji
+  - `ulid` - A ULID
   - `uuid` - A [UUID](https://www.ietf.org/rfc/rfc4122.txt)
   - `cuid` - A [CUID](https://github.com/paralleldrive/cuid)
   - `cuid2` - A [CUID v2](https://github.com/paralleldrive/cuid2)
