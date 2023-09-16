@@ -7,22 +7,29 @@ import { assert } from 'conditional-type-checks'
 import { describe, expect, it } from 'vitest'
 
 it(`casts the input as a number`, () => {
-  const args = Command.parameter(`--age`, n).parse({ line: [`--age`, `1`] })
+  const args = Command.create()
+    .parameter(`--age`, n)
+    .parse({ line: [`--age`, `1`] })
   assert<IsExact<{ age: number }, typeof args>>(true)
   expect(args).toMatchObject({ age: 1 })
 })
 
 describe(`errors`, () => {
   it(`validates the  input`, () => {
-    Command.parameter(`--age`, n.int()).parse({ line: [`--age`, `1.1`] })
+    Command.create()
+      .parameter(`--age`, n.int())
+      .parse({ line: [`--age`, `1.1`] })
     expect(stdout.mock.calls).toMatchSnapshot()
   })
   it(`throws error when argument missing (last position)`, () => {
-    Command.parameter(`--age`, n).parse({ line: [`--age`] })
+    Command.create()
+      .parameter(`--age`, n)
+      .parse({ line: [`--age`] })
     expect(stdout.mock.calls).toMatchSnapshot()
   })
   it(`throws error when argument missing (non-last position)`, () => {
-    Command.parameter(`--name`, s)
+    Command.create()
+      .parameter(`--name`, s)
       .parameter(`--age`, n)
       .parse({
         line: [` --age`, `--name`, `joe`],

@@ -1,7 +1,8 @@
 import { Command } from '../src/index.js'
 import { z } from 'zod'
 
-const args = Command.parameter(`filePath`, z.string().describe(`Path to the file to convert.`))
+const args = Command.create()
+  .parameter(`filePath`, z.string().describe(`Path to the file to convert.`))
   .parameter(`to`, z.enum([`json`, `yaml`, `toml`]).describe(`Format to convert to.`))
   .parameter(`from`, {
     schema: z.enum([`json`, `yaml`, `toml`]).optional(),

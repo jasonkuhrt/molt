@@ -10,5 +10,5 @@ test.each([
   [`0`, { foo: false }],
 ])(`%s`, (value, expected) => {
   environmentManager.set(`cli_param_foo`, value)
-  expect(Command.parameter(`foo`, b).parse({ line: [] })).toMatchObject(expected)
+  expect(Command.create().parameter(`foo`, b).parse({ line: [] })).toMatchObject(expected)
 })

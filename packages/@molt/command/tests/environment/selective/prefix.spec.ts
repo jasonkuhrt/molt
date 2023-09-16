@@ -10,7 +10,8 @@ it(`just one can have prefix disabled`, () => {
     foo: `foo`,
     cli_param_bar: `bar-prefix`,
   })
-  const args = Command.parameter(`--foo`, s)
+  const args = Command.create()
+    .parameter(`--foo`, s)
     .parameter(`--bar`, z.string())
     .settings({ parameters: { environment: { $default: true, foo: { prefix: false } } } })
     .parse({ line: [] })
@@ -22,7 +23,8 @@ it(`all but one can have prefix disabled`, () => {
     bar: `bar`,
     cli_param_foo: `cli_param_foo`,
   })
-  const args = Command.parameter(`--foo`, s)
+  const args = Command.create()
+    .parameter(`--foo`, s)
     .parameter(`--bar`, s)
     .settings({
       parameters: { environment: { $default: { enabled: true, prefix: false }, foo: { prefix: true } } },

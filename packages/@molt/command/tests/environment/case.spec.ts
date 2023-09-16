@@ -6,12 +6,12 @@ import { it } from 'vitest'
 
 it(`snake case environment variables are matched to parameters`, () => {
   environmentManager.set(`cli_param_foo_bar`, `toto`)
-  const args = Command.parameter(`fooBar`, s).parse({ line: [] })
+  const args = Command.create().parameter(`fooBar`, s).parse({ line: [] })
   expect(args).toMatchObject({ fooBar: `toto` })
 })
 
 it(`environment variables are read case insensitive`, () => {
   environmentManager.set(`CLI_param_fOo_bAR`, `toto`)
-  const args = Command.parameter(`fooBar`, s).parse({ line: [] })
+  const args = Command.create().parameter(`fooBar`, s).parse({ line: [] })
   expect(args).toMatchObject({ fooBar: `toto` })
 })

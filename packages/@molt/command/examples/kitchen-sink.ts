@@ -1,9 +1,10 @@
 import { Command } from '../src/index.js'
 import { z } from 'zod'
 
-const args = Command.description(
-  `This is a so-called "kitchen-sink" Molt Command example. Many features are demonstrated here though the overall CLI itself makes no sense. Take a look around, see how the help renders, try running with different inputs, etc.`,
-)
+const args = Command.create()
+  .description(
+    `This is a so-called "kitchen-sink" Molt Command example. Many features are demonstrated here though the overall CLI itself makes no sense. Take a look around, see how the help renders, try running with different inputs, etc.`,
+  )
   .parameter(
     `badDefault`,
     z.string().default(() => {

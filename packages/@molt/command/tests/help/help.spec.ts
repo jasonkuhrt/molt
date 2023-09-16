@@ -7,24 +7,30 @@ const processExit = mockProcessExit()
 const processStdout = mockProcessStdout()
 
 test(`exits 0`, () => {
-  Command.parameter(`a`, s.optional()).parse({ line: [`-h`] })
+  Command.create()
+    .parameter(`a`, s.optional())
+    .parse({ line: [`-h`] })
   expect(processExit.mock.lastCall?.[0]).toBe(0)
 })
 
 test(`can be triggered by -h`, () => {
-  Command.parameter(`a`, s.optional()).parse({ line: [`-h`] })
+  Command.create()
+    .parameter(`a`, s.optional())
+    .parse({ line: [`-h`] })
   expect(processExit.mock.lastCall?.[0]).toBe(0)
   expect(processStdout.mock.calls[0]).toMatch(/parameters/i)
 })
 
 test(`can be triggered by --help`, () => {
-  Command.parameter(`a`, s.optional()).parse({ line: [`-h`] })
+  Command.create()
+    .parameter(`a`, s.optional())
+    .parse({ line: [`-h`] })
   expect(processExit.mock.lastCall?.[0]).toBe(0)
   expect(processStdout.mock.calls[0]).toMatch(/parameters/i)
 })
 
 test(`can be triggered by passing no arguments`, () => {
-  Command.parameter(`a`, s.optional()).parse({ line: [] })
+  Command.create().parameter(`a`, s.optional()).parse({ line: [] })
   expect(processExit.mock.lastCall?.[0]).toBe(0)
   expect(processStdout.mock.calls[0]).toMatch(/parameters/i)
 })

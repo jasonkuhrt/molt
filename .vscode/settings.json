@@ -13,5 +13,6 @@
     // Disable this because it will conflict with ESLint based import organizing.
     "source.organizeImports": false
   },
-  "vitest.commandLine": ""
+  "vitest.commandLine": "",
+  "eslint.enable": false
 }
