@@ -1,8 +1,8 @@
 import { Command } from '../../src/index.js'
+import { b, s } from '../_/helpers.js'
 import type { IsExact } from 'conditional-type-checks'
 import { assert } from 'conditional-type-checks'
 import { describe, expect, test } from 'vitest'
-import { z } from 'zod'
 
 describe(`errors`, () => {
   test.todo(`when a flag and an alias of it are given there is an error`)
@@ -20,7 +20,7 @@ describe(`string`, () => {
 		[`-v --ver`,        [`-v`, `foo`], 							{ ver: `foo` }],
 		[`-v`,              [`-v`, `foo`], 							{ v:   `foo` }],
 	])(`spec %s + input %s = internal %s`, (spec, input, expectedArgs) => {
-		const args = Command.parameters({ [spec]: z.string() }).parse({line:input})
+		const args = Command.parameter(spec as any, s).parse({line:input})
 		expect(args).toMatchObject(expectedArgs)
 	})
 })
@@ -40,7 +40,7 @@ describe(`boolean`, () => {
 		[`-v --ver`,        [`-v`], 							{ ver: true }],
 		[`-v`,              [`-v`], 							{ v:   true }],
 	])(`spec %s + input %s = internal %s`, (spec, input, expectedArgs) => {
-		const args = Command.parameters({ [spec]: z.boolean() }).parse({line:input})
+		const args = Command.parameter(spec as any, b).parse({line:input})
 		expect(args).toMatchObject(expectedArgs)
 	})
 })
@@ -51,12 +51,11 @@ describe(`stacked short flags`, () => {
     [[`-ac`], { a: true, b: false, c: true }],
     [[`-abcd`, `foo`], { a: true, b: true, c: true, d: `foo` }],
   ])(`stacked short flag input of %s becomes %s`, (input, expectedArgs) => {
-    const args = Command.parameters({
-      a: z.boolean().default(false),
-      b: z.boolean().default(false),
-      c: z.boolean().default(false),
-      d: z.string().optional(),
-    }).parse({ line: input })
+    const args = Command.parameter(`a`, b.default(false))
+      .parameter(`b`, b.default(false))
+      .parameter(`c`, b.default(false))
+      .parameter(`d`, s.optional())
+      .parse({ line: input })
     expect(args).toMatchObject(expectedArgs)
   })
 })
@@ -68,7 +67,7 @@ describe(`separator`, () => {
     [[`--foo= `, `bar`], { foo: `bar` }],
     [[`--foo`, `=bar`], { foo: `=bar` }],
   ])(`spec %s becomes %s`, (input, expectedArgs) => {
-    const args = Command.parameters({ foo: z.string() }).parse({ line: input })
+    const args = Command.parameter(`foo`, s).parse({ line: input })
     expect(args).toMatchObject(expectedArgs)
   })
 })
@@ -82,7 +81,7 @@ describe(`case`, () => {
       [`--fooBar`,  [`--fooBar`, `foo`], { fooBar: `foo` }],
       [`--fooBar`,  [`--foo-bar`, `foo`], { fooBar: `foo` }],
     ])(`spec %s + input %s = internal %s`, (spec, input, expectedArgs) => {
-      const args = Command.parameters({ [spec]: z.string() }).parse({line:input})
+      const args = Command.parameter(spec as any, s).parse({line:input})
       expect(args).toMatchObject(expectedArgs)
     })
   })
@@ -99,25 +98,25 @@ describe(`case`, () => {
       [`--fooBar`,  [`--noFooBar`],     { fooBar: false }],
       [`--fooBar`,  [`--no-foo-bar`],   { fooBar: false }],
     ])(`spec %s + input %s = internal %s`, (spec, input, expectedArgs) => {
-      const args = Command.parameters({ [spec]: z.boolean() }).parse({line:input})
+      const args = Command.parameter(spec as any, b).parse({line:input})
       expect(args).toMatchObject(expectedArgs)
     })
   })
 
   test(`kebab case param spec can be passed camel case parameter`, () => {
-    const args = Command.parameters({ '--foo-bar': z.string() }).parse({ line: [`--fooBar`, `foo`] })
+    const args = Command.parameter(`--foo-bar`, s).parse({ line: [`--fooBar`, `foo`] })
     assert<IsExact<{ fooBar: string }, typeof args>>(true)
   })
   test(`kebab case param spec can be passed kebab case parameter`, () => {
-    const args = Command.parameters({ '--foo-bar': z.string() }).parse({ line: [`--foo-bar`, `foo`] })
+    const args = Command.parameter(`--foo-bar`, s).parse({ line: [`--foo-bar`, `foo`] })
     assert<IsExact<{ fooBar: string }, typeof args>>(true)
   })
   test(`camel case param spec can be passed kebab case parameter`, () => {
-    const args = Command.parameters({ '--fooBar': z.string() }).parse({ line: [`--foo-bar`, `foo`] })
+    const args = Command.parameter(`--fooBar`, s).parse({ line: [`--foo-bar`, `foo`] })
     assert<IsExact<{ fooBar: string }, typeof args>>(true)
   })
   test(`camel case param spec can be passed camel case parameter`, () => {
-    const args = Command.parameters({ '--fooBar': z.string() }).parse({ line: [`--fooBar`, `foo`] })
+    const args = Command.parameter(`--fooBar`, s).parse({ line: [`--fooBar`, `foo`] })
     assert<IsExact<{ fooBar: string }, typeof args>>(true)
   })
 })

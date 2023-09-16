@@ -1,6 +1,5 @@
-import type { Schema } from '../../src/Builder/root/types.js'
+import type { ParameterConfiguration } from '../../src/Builder/root/types.js'
 import type { Settings } from '../../src/entrypoints/types.js'
-import { Methods } from '../../src/entrypoints/types.js'
 import { Command } from '../../src/index.js'
 import { s, tryCatch } from '../_/helpers.js'
 import { tty } from '../_/mocks/tty.js'
@@ -9,7 +8,7 @@ import { expect, it } from 'vitest'
 
 // TODO test that prompt order is based on order of parameter definition
 
-let parameters: Methods.Parameters.InputAsConfig<Schema>
+let parameters: Record<string, ParameterConfiguration>
 let ttyInputs: string[]
 let line: string[]
 const settings: Settings.Input = {}
@@ -69,22 +68,16 @@ it(`prompt when invalid input OR missing input`, () => {
 })
 
 it(`prompt when omitted`, () => {
-  parameters = Methods.Parameters.parameters({
+  parameters = {
     a: {
       schema: s.min(2).optional(),
+      // @ts-expect-error todo
       prompt: { when: { result: `omitted`, spec: { optionality: [`default`, `optional`] } } },
     },
-  })
+  }
   ttyInputs = [`foo`]
   line = []
   run()
-})
-
-it(`static error to match on omitted event on required parameter by .parameters(...)`, () => {
-  // @ts-expect-error not available
-  Command.parameters({ a: { schema: s, prompt: { when: { result: `omitted` } } } })
-  // Is fine, because parameter is optional.
-  Command.parameters({ a: { schema: s.optional(), prompt: { when: { result: `omitted` } } } })
 })
 
 it(`static error to match on omitted event on required parameter by .parameter(...)`, () => {
@@ -164,11 +157,20 @@ it(`static error when fields from different event types matched in single patter
 
 const run = () => {
   tty.mock.input.add(ttyInputs)
-  const args = tryCatch(() =>
-    Command.parameters(parameters)
-      .settings({ onError: `throw`, helpOnError: false, ...settings })
-      .parse({ line, tty: tty.interface }),
-  )
+  // eslint-disable-next-line
+  const args = tryCatch(() => {
+    return (
+      // eslint-disable-next-line
+      Object.entries(parameters)
+        // @ts-expect-error todo
+        .reduce((chain, data) => {
+          return chain.parameter(data[0] as any, data[1])
+        }, Command)
+        // @ts-expect-error todo
+        .settings({ onError: `throw`, helpOnError: false, ...settings })
+        .parse({ line, tty: tty.interface })
+    )
+  })
   expect(args).toMatchSnapshot(`args`)
   expect(tty.history.all).toMatchSnapshot(`tty`)
   expect(tty.history.all.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)

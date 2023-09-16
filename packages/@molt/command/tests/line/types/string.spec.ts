@@ -1,38 +1,46 @@
 import { Command } from '../../../src/index.js'
+import { n, s } from '../../_/helpers.js'
 import type { IsExact } from 'conditional-type-checks'
 import { assert } from 'conditional-type-checks'
 import { describe, expect, it } from 'vitest'
-import { z } from 'zod'
 
 describe(`errors`, () => {
   it.each(
     // prettier-ignore
     [
-      [`when argument missing (last position)`,     { name: z.string() },                   { line: [`--name`] }],
-      [`when argument missing (non-last position)`, { name: z.string(), age: z.number() },  { line: [`--name`, `--age`, `1`] }],
-      [`when flag passed twice`,                    { '--name': z.string() },               { line: [`--name`, `1`, `--name`, `1`] }],
-      [`when long and short flag passed `,          { '--name -n': z.string() },            { line: [`--name`, `1`, `-n`, `1`] }],
+      [`when argument missing (last position)`,     { name: s },                   { line: [`--name`] }],
+      [`when argument missing (non-last position)`, { name: s, age: n },  { line: [`--name`, `--age`, `1`] }],
+      [`when flag passed twice`,                    { '--name': s },               { line: [`--name`, `1`, `--name`, `1`] }],
+      [`when long and short flag passed `,          { '--name -n': s },            { line: [`--name`, `1`, `-n`, `1`] }],
     ],
   )(`%s`, (_, parameters, input) => {
-    expect(() =>
-      Command.parameters(parameters).settings({ onError: `throw`, helpOnError: false }).parse(input),
-    ).toThrowErrorMatchingSnapshot()
+    expect(() => {
+      // eslint-disable-next-line
+      Object.entries(parameters)
+        // @ts-expect-error todo
+        .reduce((chain, data) => {
+          return chain.parameter(data[0] as any, data[1])
+        }, Command)
+        // @ts-expect-error todo
+        .settings({ onError: `throw`, helpOnError: false })
+        .parse(input)
+    }).toThrowErrorMatchingSnapshot()
   })
 })
 
 describe(`optional`, () => {
   it(`specified input can be omitted, missing key is possible`, () => {
-    const args = Command.parameters({ '--foo': z.string().optional() }).parse({ line: [] })
+    const args = Command.parameter(`--foo`, s.optional()).parse({ line: [] })
     assert<IsExact<{ foo: string | undefined }, typeof args>>(true)
     expect(Object.keys(args)).not.toContain(`foo`)
   })
   it(`input can be given`, () => {
-    const args = Command.parameters({ '--foo': z.string().optional() }).parse({ line: [`--foo`, `bar`] })
+    const args = Command.parameter(`--foo`, s.optional()).parse({ line: [`--foo`, `bar`] })
     assert<IsExact<{ foo: string | undefined }, typeof args>>(true)
     expect(args).toMatchObject({ foo: `bar` })
   })
 })
 
 it(`is not trimmed by default`, () => {
-  expect(Command.parameters({ name: z.string() }).parse({ line: [`--name`, `foobar  `] })).toMatchSnapshot()
+  expect(Command.parameter(`name`, s).parse({ line: [`--name`, `foobar  `] })).toMatchSnapshot()
 })
