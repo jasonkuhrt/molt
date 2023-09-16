@@ -18,7 +18,7 @@ export const analyzeZodTypeScalar = (zodType: SomeBasicType) => {
 
   const zodTypeScalar = getBasicScalar(primitiveType)
 
-  const type: Type =
+  const type: null | Type =
     zodTypeScalar._def.typeName === z.ZodFirstPartyTypeKind.ZodLiteral
       ? { _tag: `TypeLiteral`, value: zodTypeScalar._def.value }
       : zodTypeScalar._def.typeName === z.ZodFirstPartyTypeKind.ZodString
@@ -27,7 +27,13 @@ export const analyzeZodTypeScalar = (zodType: SomeBasicType) => {
       ? { _tag: `TypeBoolean` }
       : zodTypeScalar._def.typeName === z.ZodFirstPartyTypeKind.ZodNumber
       ? { _tag: `TypeNumber`, ...mapZodNumberChecks(zodTypeScalar._def.checks) }
-      : { _tag: `TypeEnum`, members: zodTypeScalar._def.values }
+      : zodTypeScalar._def.typeName === z.ZodFirstPartyTypeKind.ZodNativeEnum
+      ? { _tag: `TypeEnum`, members: Object.values(zodTypeScalar._def.values) }
+      : zodTypeScalar._def.typeName === z.ZodFirstPartyTypeKind.ZodEnum
+      ? { _tag: `TypeEnum`, members: zodTypeScalar._def.values }
+      : null
+
+  if (!type) throw new Error(`Unsupported zod type: ${zodTypeScalar._def.typeName}`)
 
   return {
     description,

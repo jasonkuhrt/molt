@@ -5,7 +5,7 @@ import type { ArgumentValueScalar } from '../../types.js'
 import { getUnionScalar } from '../../types.js'
 import { processEnvironment } from '../helpers/environment.js'
 import { processName } from '../helpers/name.js'
-import { analyzeZodTypeScalar } from '../helpers/type.js'
+import { analyzeZodTypeScalar } from '../helpers/zod.js'
 import { z } from 'zod'
 
 export const processUnion = (

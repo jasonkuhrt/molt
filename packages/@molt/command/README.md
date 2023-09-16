@@ -281,6 +281,7 @@ Only the following set of Zod types are supported. In addition to the docs below
 z.boolean()
 z.string()
 z.enum(['...', '...'])
+z.nativeEnum({'...':'...', '...':'...'})
 z.number()
 z.union([...]) // where ... can be any other type above.
 ```
@@ -308,6 +309,7 @@ z.string().min(1).describe('...').optional()
 - Flag does not accept any arguments.
 - Environment variable accepts `"true"` or `"1"` for `true` and `"false"` or `"0"` for `false`.
 - Negated form of parameters automatically accepted.
+- [Zod docs](https://github.com/colinhacks/zod#booleans)
 
 Examples:
 
@@ -341,6 +343,7 @@ args.force === true
 #### String
 
 - Flag expects an argument.
+- [Zod docs](https://github.com/colinhacks/zod#strings)
 
 ##### Validations
 
@@ -364,6 +367,7 @@ args.force === true
 
 - Flag expects an argument.
 - Argument is cast via the `Number()` function.
+- [Zod docs](https://github.com/colinhacks/zod#numbers)
 
 ##### Validations
 
@@ -374,6 +378,12 @@ args.force === true
 
 #### Enum
 
+- Flag expects an argument.
+- [Zod docs](https://github.com/colinhacks/zod#zod-enums)
+
+#### Native Enum
+
+- [Zod docs](https://github.com/colinhacks/zod#native-enums)
 - Flag expects an argument.
 
 #### Union
@@ -399,6 +409,8 @@ args.force === true
   ```ts
   Command.create().parameter('xee', z.union([z.string(), z.number()]))
   ```
+
+- [Zod docs](https://github.com/colinhacks/zod#unions)
 
 ##### Help Rendering
 

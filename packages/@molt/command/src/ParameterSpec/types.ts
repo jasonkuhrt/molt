@@ -22,7 +22,7 @@ export interface TypeBoolean {
 
 export interface TypeEnum {
   _tag: 'TypeEnum'
-  members: string[]
+  members: (number | string)[]
 }
 
 export interface TypeString {
