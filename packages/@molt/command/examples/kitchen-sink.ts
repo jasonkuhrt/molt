@@ -82,6 +82,7 @@ const args = Command.create()
   .parse()
 
 args.filePath
+args.desert
 args.from
 args.move
 args.to

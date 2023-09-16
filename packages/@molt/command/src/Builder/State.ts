@@ -3,7 +3,7 @@ import type { ParameterSpec } from '../ParameterSpec/index.js'
 import type { ExclusiveParameterConfiguration } from './exclusive/types.js'
 import type { ParameterConfiguration } from './root/types.js'
 import type { FlagName } from '@molt/types'
-import type { Any } from 'ts-toolbelt'
+import type { Simplify } from 'type-fest'
 import type { z } from 'zod'
 
 export namespace State {
@@ -125,7 +125,8 @@ export namespace State {
 
   // prettier-ignore
   type ToArgs_<State extends Base> =
-    Any.Compute<
+    Simplify<
+    // Any.Compute<
       {
         [Name in keyof State['Parameters'] & string as FlagName.Data.GetCanonicalName<State['Parameters'][Name]['NameParsed']>]:
           z.infer<State['Parameters'][Name]['Schema']>
@@ -137,22 +138,22 @@ export namespace State {
         [Label in keyof State['ParametersExclusive'] & string]:
           State['ParametersExclusive'][Label]['Optional'] extends true
           ? { [_ in Label]?:
-              Values<{
+              Simplify<Values<{
                 [Name in keyof State['ParametersExclusive'][Label]['Parameters']]:
                   {
                     _tag: FlagName.Data.GetCanonicalName<State['ParametersExclusive'][Label]['Parameters'][Name]['NameParsed']>
                     value: z.infer<State['ParametersExclusive'][Label]['Parameters'][Name]['Schema']>
                   }
-              }>
+              }>>
             }
           : { [_ in Label]: 
-              Values<{
+              Simplify<Values<{
                 [Name in keyof State['ParametersExclusive'][Label]['Parameters']]:
                   {
                     _tag: FlagName.Data.GetCanonicalName<State['ParametersExclusive'][Label]['Parameters'][Name]['NameParsed']>
                     value: z.infer<State['ParametersExclusive'][Label]['Parameters'][Name]['Schema']>
                   }
-              }>
+              }>>
             }
           
       }>>

@@ -1,12 +1,12 @@
 import type { RenameKey } from '../prelude.js'
-import type { Any } from 'ts-toolbelt'
+import type { Simplify } from 'type-fest'
 import { z } from 'zod'
 
-export type ZodDateCheck = Any.Compute<RenameKey<z.ZodDateCheck, 'kind', '_tag'>>
+export type ZodDateCheck = Simplify<RenameKey<z.ZodDateCheck, 'kind', '_tag'>>
 
-export type ZodNumberCheck = Any.Compute<RenameKey<z.ZodNumberCheck, 'kind', '_tag'>>
+export type ZodNumberCheck = Simplify<RenameKey<z.ZodNumberCheck, 'kind', '_tag'>>
 
-export type ZodStringCheck = Any.Compute<RenameKey<z.ZodStringCheck, 'kind', '_tag'>>
+export type ZodStringCheck = Simplify<RenameKey<z.ZodStringCheck, 'kind', '_tag'>>
 
 export type ZodPrimitive = 'ZodBoolean' | 'ZodNumber' | 'ZodString' | 'ZodEnum'
 
