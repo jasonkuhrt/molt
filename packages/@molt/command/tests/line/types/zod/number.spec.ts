@@ -7,13 +7,13 @@ describe(`zod`, () => {
     it.each(
       // prettier-ignore
       [
-        [`literal int`,             { name: l1 },                                      { line: [`--name`, `2`] }],
-        [`int`,                     { name: n.int() },                                  { line: [`--name`, `5.4`] }],
-        [`min`,                     { name: n.min(5) },                                 { line: [`--name`, `1`] }],
-        [`max`,                     { name: n.max(1) },                                 { line: [`--name`, `5`] }],
-        [`multipleOf`,              { name: n.multipleOf(5) },                          { line: [`--name`, `2`] }],
+        [`literal int`,             { a: l1 },                                      { line: [`-a`, `2`] }],
+        [`int`,                     { a: n.int() },                                 { line: [`-a`, `5.4`] }],
+        [`min`,                     { a: n.min(5) },                                { line: [`-a`, `1`] }],
+        [`max`,                     { a: n.max(1) },                                { line: [`-a`, `5`] }],
+        [`multipleOf`,              { a: n.multipleOf(5) },                         { line: [`-a`, `2`] }],
         // TOOD allow expressing infinity on CLI???
-        // [`finite`,                     { name: z.number().finite() },                                  { line: [`--name`, `5`] }],
+        // [`finite`,                     { a: z.number().finite() },                                  { line: [`-a`, `5`] }],
       ],
     )(`%s`, (_, parameters, input) => {
       expect(() => {

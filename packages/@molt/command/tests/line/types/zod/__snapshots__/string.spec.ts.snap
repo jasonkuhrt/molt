@@ -2,121 +2,121 @@
 
 exports[`zod > transformations > toLowerCase 1`] = `
 {
+  "a": "abar   ",
   "help": false,
-  "name": "foobar   ",
 }
 `;
 
 exports[`zod > transformations > toUpperCase 1`] = `
 {
+  "a": "ABAR   ",
   "help": false,
-  "name": "FOOBAR   ",
 }
 `;
 
 exports[`zod > transformations > trim 1`] = `
 {
+  "a": "abar",
   "help": false,
-  "name": "foobar",
 }
 `;
 
 exports[`zod > validation > cuid 1`] = `
-"Invalid argument for parameter: \\"foo\\". The error was:
+"Invalid argument for parameter: \\"a\\". The error was:
 Value is not a cuid."
 `;
 
 exports[`zod > validation > cuid2 1`] = `
-"Invalid argument for parameter: \\"foo\\". The error was:
+"Invalid argument for parameter: \\"a\\". The error was:
 Value is not a cuid2."
 `;
 
 exports[`zod > validation > datetime 1`] = `
-"Invalid argument for parameter: \\"foo\\". The error was:
+"Invalid argument for parameter: \\"a\\". The error was:
 Value is not a conforming datetime."
 `;
 
 exports[`zod > validation > datetime no offset 1`] = `
-"Invalid argument for parameter: \\"foo\\". The error was:
+"Invalid argument for parameter: \\"a\\". The error was:
 Value is not a conforming datetime."
 `;
 
 exports[`zod > validation > datetime precision 1 1`] = `
-"Invalid argument for parameter: \\"foo\\". The error was:
+"Invalid argument for parameter: \\"a\\". The error was:
 Value is not a conforming datetime."
 `;
 
 exports[`zod > validation > email 1`] = `
-"Invalid argument for parameter: \\"foo\\". The error was:
+"Invalid argument for parameter: \\"a\\". The error was:
 Value is not an email address."
 `;
 
 exports[`zod > validation > emoji 1`] = `
-"Invalid argument for parameter: \\"foo\\". The error was:
+"Invalid argument for parameter: \\"a\\". The error was:
 Value is not an emoji."
 `;
 
 exports[`zod > validation > endsWith 1`] = `
-"Invalid argument for parameter: \\"foo\\". The error was:
+"Invalid argument for parameter: \\"a\\". The error was:
 Value does not end with x."
 `;
 
 exports[`zod > validation > includes 1`] = `
-"Invalid argument for parameter: \\"foo\\". The error was:
+"Invalid argument for parameter: \\"a\\". The error was:
 Value does not include z."
 `;
 
 exports[`zod > validation > ip 1`] = `
-"Invalid argument for parameter: \\"foo\\". The error was:
+"Invalid argument for parameter: \\"a\\". The error was:
 Value is not an ipv4 or ipv6 address."
 `;
 
 exports[`zod > validation > ipv4 1`] = `
-"Invalid argument for parameter: \\"foo\\". The error was:
+"Invalid argument for parameter: \\"a\\". The error was:
 Value is not an ipv4 address."
 `;
 
 exports[`zod > validation > ipv6 1`] = `
-"Invalid argument for parameter: \\"foo\\". The error was:
+"Invalid argument for parameter: \\"a\\". The error was:
 Value is not an ipv6 address."
 `;
 
 exports[`zod > validation > length 1`] = `
-"Invalid argument for parameter: \\"foo\\". The error was:
+"Invalid argument for parameter: \\"a\\". The error was:
 Value does not have the length 1."
 `;
 
 exports[`zod > validation > max 1`] = `
-"Invalid argument for parameter: \\"foo\\". The error was:
+"Invalid argument for parameter: \\"a\\". The error was:
 Value is too long."
 `;
 
 exports[`zod > validation > min 1`] = `
-"Invalid argument for parameter: \\"foo\\". The error was:
+"Invalid argument for parameter: \\"a\\". The error was:
 Value is too short."
 `;
 
 exports[`zod > validation > regex 1`] = `
-"Invalid argument for parameter: \\"foo\\". The error was:
+"Invalid argument for parameter: \\"a\\". The error was:
 Value does not conform to Regular Expression."
 `;
 
 exports[`zod > validation > startsWith 1`] = `
-"Invalid argument for parameter: \\"foo\\". The error was:
+"Invalid argument for parameter: \\"a\\". The error was:
 Value does not start with y."
 `;
 
 exports[`zod > validation > ulid 1`] = `
-"Invalid argument for parameter: \\"foo\\". The error was:
+"Invalid argument for parameter: \\"a\\". The error was:
 Value is not a ulid."
 `;
 
 exports[`zod > validation > url 1`] = `
-"Invalid argument for parameter: \\"foo\\". The error was:
+"Invalid argument for parameter: \\"a\\". The error was:
 Value is not a URL."
 `;
 
 exports[`zod > validation > uuid 1`] = `
-"Invalid argument for parameter: \\"foo\\". The error was:
+"Invalid argument for parameter: \\"a\\". The error was:
 Value is not a uuid."
 `;
