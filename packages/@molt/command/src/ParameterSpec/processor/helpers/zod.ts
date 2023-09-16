@@ -144,13 +144,13 @@ const mapZodStringChecks = (checks: z.ZodStringCheck[]): Omit<TypeString, '_tag'
             .toLowerCase(() => ({
               transformations: {
                 ...acc.transformations,
-                toCase: 'lower' as const,
+                toCase: `lower` as const,
               },
             }))
             .toUpperCase(() => ({
               transformations: {
                 ...acc.transformations,
-                toCase: 'upper' as const,
+                toCase: `upper` as const,
               },
             }))
             .done(),

@@ -72,5 +72,5 @@ export const entries = <O extends Record<string, unknown>>(
 ): Exclude<{ [k in keyof O]: [k, O[k]] }[keyof O], undefined>[] => Object.entries(obj) as any
 
 export const casesExhausted = (_: never): never => {
-  throw new Error(`Cases exhausted: ${_}`)
+  throw new Error(`Cases exhausted: ${_}`) // eslint-disable-line
 }

@@ -42,8 +42,8 @@ describe(`zod`, () => {
         [`emoji`,                   { foo: z.string().emoji() },                                 { line: [`--foo`, `BAD`] }],
         [`ulid`,                    { foo: z.string().ulid() },                                  { line: [`--foo`, `BAD`] }],
         [`ip`,                      { foo: z.string().ip() },                                    { line: [`--foo`, `BAD`] }],
-        [`ipv4`,                    { foo: z.string().ip({version:'v4'}) },                      { line: [`--foo`, `BAD`] }],
-        [`ipv6`,                    { foo: z.string().ip({version:'v6'}) },                      { line: [`--foo`, `BAD`] }],
+        [`ipv4`,                    { foo: z.string().ip({version:`v4`}) },                      { line: [`--foo`, `BAD`] }],
+        [`ipv6`,                    { foo: z.string().ip({version:`v6`}) },                      { line: [`--foo`, `BAD`] }],
       ],
     )(`%s`, (_, parameters, input) => {
       expect(() => {

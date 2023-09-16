@@ -18,10 +18,10 @@ const transformBasic = (spec: Output.Basic, value: unknown): any => {
     if (typeof value === `string`) {
       if (spec.type.transformations) {
         entries(spec.type.transformations ?? {}).reduce((v, t) => {
-          return t[0] === 'trim'
+          return t[0] === `trim`
             ? v.trim()
-            : t[0] === 'toCase'
-            ? t[1] === 'upper'
+            : t[0] === `toCase`
+            ? t[1] === `upper`
               ? v.toUpperCase()
               : v.toLowerCase()
             : casesExhausted(t[0])
