@@ -14,7 +14,7 @@
     "release:@molt/command": "pnpm release --package @molt/command",
     "release:@molt/types": "pnpm release --package @molt/types",
     "release:molt": "pnpm release --package molt",
-    "release": "ts-node scripts/release.ts"
+    "release": "tsx scripts/release.ts"
   },
   "devDependencies": {
     "@octokit/core": "^5.0.0",
@@ -43,7 +43,7 @@
     "prettier": "3.0.3",
     "semver": "^7.5.4",
     "semver-regex": "4.0.5",
-    "ts-node": "10.9.1",
+    "tsx": "^3.12.10",
     "typescript": "5.2.2",
     "vitest": "0.34.4",
     "zod": "3.22.2"
