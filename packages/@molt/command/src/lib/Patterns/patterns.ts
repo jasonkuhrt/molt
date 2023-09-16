@@ -1,7 +1,7 @@
 export const cuid = /^c[^\s-]{8,}$/i
 
 /**
- * @see https://github.com/colinhacks/zod/blob/28c19273658b164c53c149785fa7a8187c428ad4/src/types.ts#L550C19-L550C43
+ * @see https://github.com/ulid/javascript
  */
 export const ulid = /[0-9A-HJKMNP-TV-Z]{26}/
 

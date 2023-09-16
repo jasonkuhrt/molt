@@ -369,7 +369,7 @@ args.force === true
     - Accept any version
   - `url` - A URL
   - `emoji` - An emoji
-  - `ulid` - A ULID
+  - `ulid` - [A ULID](https://github.com/ulid/javascript)
   - `uuid` - A [UUID](https://www.ietf.org/rfc/rfc4122.txt)
   - `cuid` - A [CUID](https://github.com/paralleldrive/cuid)
   - `cuid2` - A [CUID v2](https://github.com/paralleldrive/cuid2)
