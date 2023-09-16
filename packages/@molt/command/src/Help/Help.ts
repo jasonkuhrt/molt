@@ -342,7 +342,7 @@ const parameterEnvironment = (spec: ParameterSpec.Output, settings: Settings.Out
 const typeEnum = (type: ParameterSpec.TypeEnum) => {
   const separator = Term.colors.accent(` ${Text.chars.pipe} `)
   const members = Object.values(type.members)
-  const lines = members.map((member) => Term.colors.positive(member)).join(separator)
+  const lines = members.map((member) => Term.colors.positive(String(member))).join(separator)
 
   // eslint-disable-next-line
   return members.length > 1 ? lines : `${lines} ${Term.colors.dim(`(enum)`)}`

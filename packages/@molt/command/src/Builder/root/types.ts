@@ -48,8 +48,6 @@ export interface RootBuilder<State extends State.Base = State.BaseEmpty> {
   description                                                                               (this:void, description:string):
     RootBuilder<State>
   parameter<NameExpression extends string, const Configuration extends ParameterConfiguration>    (this:void, name:State.ValidateNameExpression<State,NameExpression>, configuration:Configuration):
-    // {x:IsPromptEnabledInConfiguration<Configuration>,y:Configuration}
-
     RootBuilder<{
       IsPromptEnabled    : State['IsPromptEnabled'] extends true ? true : IsPromptEnabledInParameterSettings<Configuration>
       ParametersExclusive: State['ParametersExclusive']

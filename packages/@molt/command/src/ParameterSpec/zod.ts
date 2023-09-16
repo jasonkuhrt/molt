@@ -4,10 +4,14 @@ import { z } from 'zod'
 
 export type SomeBasicParameterType = SomeBasicType | SomeUnionType
 
+type ZodEnumBase = z.ZodEnum<[string, ...string[]]>
+
+type ZodNativeEnumBase = z.ZodNativeEnum<any>
+
 export type SomeBasicType =
   | SomeBasicTypeScalar
-  | z.ZodOptional<z.ZodString | z.ZodBoolean | z.ZodNumber | z.ZodEnum<[string, ...string[]]>>
-  | z.ZodDefault<z.ZodString | z.ZodBoolean | z.ZodNumber | z.ZodEnum<[string, ...string[]]>>
+  | z.ZodOptional<SomeBasicTypeScalar>
+  | z.ZodDefault<SomeBasicTypeScalar>
 
 export type SomeUnionType = SomeUnionTypeScalar | z.ZodOptional<SomeUnionType> | z.ZodDefault<SomeUnionType>
 
@@ -20,7 +24,8 @@ export type SomeUnionTypeScalar = z.ZodUnion<
 // prettier-ignore
 export type SomeBasicTypeScalar =
   | z.ZodString
-  | z.ZodEnum<[string, ...string[]]>
+  | ZodEnumBase
+  | ZodNativeEnumBase
   | z.ZodNumber
   | z.ZodBoolean
   | z.ZodLiteral<number>

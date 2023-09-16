@@ -3,7 +3,7 @@ import type { Input } from '../../input.js'
 import type { Output } from '../../output.js'
 import { processEnvironment } from '../helpers/environment.js'
 import { processName } from '../helpers/name.js'
-import { analyzeZodTypeScalar } from '../helpers/type.js'
+import { analyzeZodTypeScalar } from '../helpers/zod.js'
 import { Alge } from 'alge'
 
 export const processExclusive = (

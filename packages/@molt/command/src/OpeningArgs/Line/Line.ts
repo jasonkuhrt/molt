@@ -1,7 +1,8 @@
 import { Errors } from '../../Errors/index.js'
-import { isNegated, parseRawInput, stripeDashPrefix, stripeNegatePrefixLoose } from '../../helpers.js'
+import { stripeNegatePrefixLoose } from '../../helpers.js'
 import type { Index } from '../../lib/prelude.js'
 import { ParameterSpec } from '../../ParameterSpec/index.js'
+import { isNegated, parseRawInput, stripeDashPrefix } from '../helpers.js'
 import type { ArgumentReport } from '../types.js'
 import camelCase from 'lodash.camelcase'
 
@@ -16,8 +17,11 @@ interface ParsedInputs {
   reports: Index<ArgumentReport>
 }
 
+/**
+ * Parse line input into an intermediary representation that is suited to comparison against
+ * the parameter specs.
+ */
 export const parse = (rawLineInputs: RawInputs, specs: ParameterSpec.Output[]): ParsedInputs => {
-  // dump(specs)
   const globalErrors: GlobalParseErrors[] = []
 
   const rawLineInputsPrepared = rawLineInputs
@@ -37,7 +41,7 @@ export const parse = (rawLineInputs: RawInputs, specs: ParameterSpec.Output[]): 
 
   const reports: Index<ArgumentReport> = {}
 
-  let current: null | ArgumentReport = null
+  let currentReport: null | ArgumentReport = null
 
   const finishPendingReport = (pendingReport: ArgumentReport) => {
     if (pendingReport.value === PENDING_VALUE) {
@@ -59,11 +63,13 @@ export const parse = (rawLineInputs: RawInputs, specs: ParameterSpec.Output[]): 
     }
   }
 
+  // Do processing
+
   for (const rawLineInput of rawLineInputsPrepared) {
     if (isFlag(rawLineInput)) {
-      if (current) {
-        finishPendingReport(current)
-        current = null
+      if (currentReport) {
+        finishPendingReport(currentReport)
+        currentReport = null
       }
 
       const flagNameNoDashPrefix = stripeDashPrefix(rawLineInput)
@@ -89,7 +95,7 @@ export const parse = (rawLineInputs: RawInputs, specs: ParameterSpec.Output[]): 
         continue
       }
 
-      current = {
+      currentReport = {
         spec,
         errors: [],
         value: PENDING_VALUE, // eslint-disable-line
@@ -99,26 +105,24 @@ export const parse = (rawLineInputs: RawInputs, specs: ParameterSpec.Output[]): 
         },
       }
 
-      reports[spec.name.canonical] = current
+      reports[spec.name.canonical] = currentReport
 
       continue
-    } else if (current) {
+    } else if (currentReport) {
       // TODO catch error and put into errors array
-      current.value = parseRawInput(current.spec.name.canonical, rawLineInput, current.spec)
-      current = null
+      currentReport.value = parseRawInput(currentReport.spec.name.canonical, rawLineInput, currentReport.spec)
+      currentReport = null
       continue
     } else {
       // TODO We got an argument without a flag, we should report an error? Or just ignore?
     }
   }
 
-  // dump({ current })
-  if (current) {
-    finishPendingReport(current)
-    current = null
+  if (currentReport) {
+    finishPendingReport(currentReport)
+    currentReport = null
   }
 
-  // dump({ reports })
   return {
     globalErrors,
     reports: reports,

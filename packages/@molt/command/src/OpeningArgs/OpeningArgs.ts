@@ -27,12 +27,6 @@ export const parse = ({
   const lineParseResult = Line.parse(line, specs)
 
   result.globalErrors.push(...lineParseResult.globalErrors, ...envParseResult.globalErrors)
-  // Object.entries(lineParseResult.line).map(_=>)
-
-  // dump({ lineParseResult })
-  // dump({ specs })
-  // dump({ line })
-  // dump({ env })
 
   const specsByVariant = groupBy(specs, `_tag`)
 

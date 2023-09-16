@@ -1,7 +1,7 @@
 import { Errors } from '../../Errors/index.js'
-import { parseRawInput } from '../../helpers.js'
 import type { Index, RequireField } from '../../lib/prelude.js'
 import { ParameterSpec } from '../../ParameterSpec/index.js'
+import { parseRawInput } from '../helpers.js'
 import type { EnvironmentArgumentReport } from '../types.js'
 import camelCase from 'lodash.camelcase'
 import snakecase from 'lodash.snakecase'
