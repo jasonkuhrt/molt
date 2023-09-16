@@ -1,6 +1,6 @@
 {
   "name": "@molt/command",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "Type-safe CLI command definition and execution.",
   "type": "module",
   "scripts": {
@@ -13,9 +13,9 @@
     "build:esm": "tsc --project tsconfig.esm.json",
     "build:toc": "markdown-toc README.md -i --maxdepth 4 && prettier --write README.md",
     "prepublishOnly": "pnpm build",
-    "examples:intro": "ts-node examples/intro.ts",
-    "examples:kitchen-sink": "ts-node examples/kitchen-sink.ts",
-    "examples:publish": "ts-node examples/publish.ts"
+    "examples:intro": "tsx examples/intro.ts",
+    "examples:kitchen-sink": "tsx examples/kitchen-sink.ts",
+    "examples:publish": "tsx examples/publish.ts"
   },
   "files": [
     "src",
