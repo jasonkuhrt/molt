@@ -9,35 +9,35 @@ describe(`errors`, () => {
   describe(`reserved flag`, () => {
     it(`help`, () => {
       // @ts-expect-error test
-      Command.parameter(`help`, s)
+      Command.create().parameter(`help`, s)
     })
     it(`help`, () => {
       // @ts-expect-error test
-      Command.parameter(`h`, s)
+      Command.create().parameter(`h`, s)
     })
     it(`h help`, () => {
       // @ts-expect-error test
-      Command.parameter(`h help`, s)
+      Command.create().parameter(`h help`, s)
     })
   })
   describe(`reuse flag`, () => {
     it(`long flag`, () => {
-      c = Command.parameter(`alpha`, s)
+      c = Command.create().parameter(`alpha`, s)
       // @ts-expect-error test
       c.parameter(`alpha`, s)
     })
     it(`long flag alias`, () => {
-      c = Command.parameter(`alpha bravo`, s)
+      c = Command.create().parameter(`alpha bravo`, s)
       // @ts-expect-error test
       c.parameter(`bravo`, s)
     })
     it(`short flag`, () => {
-      c = Command.parameter(`a`, s)
+      c = Command.create().parameter(`a`, s)
       // @ts-expect-error test
       c.parameter(`a`, s)
     })
     it(`short flag alias`, () => {
-      c = Command.parameter(`a b`, s)
+      c = Command.create().parameter(`a b`, s)
       // @ts-expect-error test
       c.parameter(`b`, s)
     })
@@ -45,7 +45,8 @@ describe(`errors`, () => {
 })
 
 it(`works`, () => {
-  const args = Command.parameter(`foo`, z.string())
+  const args = Command.create()
+    .parameter(`foo`, z.string())
     .parameter(`bar`, z.string())
     .parse({ line: [`--foo`, `1`, `--bar`, `2`] })
   expect(args).toMatchObject({ foo: `1`, bar: `2` })

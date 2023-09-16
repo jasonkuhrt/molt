@@ -12,7 +12,8 @@ describe(`parameter level`, () => {
   it(`can be passed object`, () => {
     tty.mock.input.add([`foo`])
     const args = tryCatch(() =>
-      Command.parameter(`a`, { schema: s, prompt: { enabled: true } })
+      Command.create()
+        .parameter(`a`, { schema: s, prompt: { enabled: true } })
         .settings({ onError: `throw`, helpOnError: false })
         .parse({ line: [], tty: tty.interface }),
     )
@@ -25,7 +26,8 @@ describe(`parameter level`, () => {
 describe(`command level`, () => {
   it(`passing object makes enabled default to true`, () => {
     tty.mock.input.add([`foo`])
-    const args = Command.parameter(`a`, { schema: s })
+    const args = Command.create()
+      .parameter(`a`, { schema: s })
       .settings({ onError: `throw`, helpOnError: false, prompt: { when: { result: `rejected` } } })
       .parse({ line: [], tty: tty.interface })
     expect(args).toMatchSnapshot(`args`)
@@ -36,7 +38,8 @@ describe(`command level`, () => {
 
 it(`prompt is disabled by default`, () => {
   const args = tryCatch(() =>
-    Command.parameter(`a`, { schema: s })
+    Command.create()
+      .parameter(`a`, { schema: s })
       .settings({ onError: `throw`, helpOnError: false })
       .parse({ line: [], tty: tty.interface }),
   )
@@ -48,7 +51,8 @@ it(`prompt is disabled by default`, () => {
 it(`prompt can be enabled by default`, () => {
   tty.mock.input.add([`foo`])
   const args = tryCatch(() =>
-    Command.parameter(`a`, { schema: s })
+    Command.create()
+      .parameter(`a`, { schema: s })
       .settings({ onError: `throw`, helpOnError: false, prompt: { enabled: true } })
       .parse({ line: [], tty: tty.interface }),
   )
@@ -59,7 +63,8 @@ it(`prompt can be enabled by default`, () => {
 
 it(`parameter settings overrides default settings`, () => {
   const args = tryCatch(() =>
-    Command.parameter(`a`, { schema: s, prompt: false })
+    Command.create()
+      .parameter(`a`, { schema: s, prompt: false })
       .settings({ onError: `throw`, helpOnError: false, prompt: { enabled: true } })
       .parse({ line: [], tty: tty.interface }),
   )
@@ -77,7 +82,8 @@ describe(`prompt can be toggled by check on error`, () => {
     it(`check does match`, () => {
       tty.mock.input.add([`foo`])
       const args = tryCatch(() =>
-        Command.parameter(`a`, { schema: s })
+        Command.create()
+          .parameter(`a`, { schema: s })
           .settings({ onError: `throw`, helpOnError: false, prompt: settings })
           .parse({ line: [], tty: tty.interface }),
       )
@@ -87,7 +93,8 @@ describe(`prompt can be toggled by check on error`, () => {
     })
     it(`check does not match`, () => {
       const args = tryCatch(() =>
-        Command.parameter(`b`, { schema: s })
+        Command.create()
+          .parameter(`b`, { schema: s })
           .settings({ onError: `throw`, helpOnError: false, prompt: settings })
           .parse({ line: [], tty: tty.interface }),
       )
@@ -101,7 +108,8 @@ describe(`prompt can be toggled by check on error`, () => {
 it(`parameter defaults to custom settings`, () => {
   tty.mock.input.add([`foo`])
   const args = tryCatch(() =>
-    Command.parameter(`a`, { schema: s })
+    Command.create()
+      .parameter(`a`, { schema: s })
       .settings({
         onError: `throw`,
         helpOnError: false,
@@ -137,7 +145,8 @@ it(`can be stack of conditional prompts`, () => {
   })
   tty.mock.input.add([`foo`])
   const args = tryCatch(() =>
-    Command.parameter(`a`, { schema: s.optional() })
+    Command.create()
+      .parameter(`a`, { schema: s.optional() })
       .settings({ onError: `throw`, helpOnError: false, prompt: settings })
       .parse({ line: [`-a`, `1`], tty: tty.interface }),
   )

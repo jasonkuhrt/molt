@@ -82,59 +82,76 @@ it(`prompt when omitted`, () => {
 
 it(`static error to match on omitted event on required parameter by .parameter(...)`, () => {
   // @ts-expect-error not available
-  Command.parameter(`a`, { schema: s, prompt: { when: { result: `omitted` } } })
+  Command.create().parameter(`a`, { schema: s, prompt: { when: { result: `omitted` } } })
   // Is fine, because parameter is optional.
-  Command.parameter(`a`, {
+  Command.create().parameter(`a`, {
     schema: s.optional(),
     prompt: { when: { result: `omitted` } },
   })
 })
 
 it(`can pass just one pattern in multiple pattern syntax`, () => {
-  Command.parameter(`a`, s).settings({ prompt: { when: [{ result: `accepted` }] } })
+  Command.create()
+    .parameter(`a`, s)
+    .settings({ prompt: { when: [{ result: `accepted` }] } })
 })
 
 it(`static error to match on omitted event on command level when no parameters have optional`, () => {
-  // @ts-expect-error not available
-  Command.parameter(`a`, s).settings({ prompt: { when: { result: `omitted` } } })
+  Command.create()
+    .parameter(`a`, s)
+    // @ts-expect-error not available
+    .settings({ prompt: { when: { result: `omitted` } } })
   // Is fine, because parameter is optional.
-  Command.parameter(`a`, s.optional()).settings({ prompt: { when: { result: `omitted` } } })
+  Command.create()
+    .parameter(`a`, s.optional())
+    .settings({ prompt: { when: { result: `omitted` } } })
   // Is fine, because at least one parameter is optional.
-  Command.parameter(`a`, s.optional())
+  Command.create()
+    .parameter(`a`, s.optional())
     .parameter(`b`, s)
     .settings({ prompt: { when: { result: `omitted` } } })
 })
 
 // TODO should be able match on common event properties _without_ specifying the event type...
-// Command.parameter(`a`, s).settings({
+// Command.create().parameter(`a`, s).settings({
 //   prompt: { when: { spec: { name: { aliases: { long: [`a`, `b`] } } } } },
 // })
 
 // TODO already taken care of by match test suite?
 it(`array value`, () => {
   // Can pass ONE literal match
-  Command.parameter(`a`, s).settings({
-    prompt: { when: { result: `accepted`, spec: { name: { aliases: { long: [`a`, `b`] } } } } },
-  })
+  Command.create()
+    .parameter(`a`, s)
+    .settings({
+      prompt: { when: { result: `accepted`, spec: { name: { aliases: { long: [`a`, `b`] } } } } },
+    })
   // can pass an OR literal match
-  Command.parameter(`a`, s).settings({
-    prompt: { when: { result: `accepted`, spec: { name: { aliases: { long: [[`a`, `b`], [`c`]] } } } } },
-  })
-  Command.parameter(`a`, s).settings({
-    // @ts-expect-error Cannot pass the array member literal
-    prompt: { when: { result: `accepted`, spec: { name: { aliases: { long: `a` } } } } },
-  })
-  Command.parameter(`a`, s).settings({
-    // @ts-expect-error Cannot mix OR and ONE matches
-    prompt: { when: { result: `accepted`, spec: { name: { aliases: { long: [`a`, [`b`]] } } } } },
-  })
+  Command.create()
+    .parameter(`a`, s)
+    .settings({
+      prompt: { when: { result: `accepted`, spec: { name: { aliases: { long: [[`a`, `b`], [`c`]] } } } } },
+    })
+  Command.create()
+    .parameter(`a`, s)
+    .settings({
+      // @ts-expect-error Cannot pass the array member literal
+      prompt: { when: { result: `accepted`, spec: { name: { aliases: { long: `a` } } } } },
+    })
+  Command.create()
+    .parameter(`a`, s)
+    .settings({
+      // @ts-expect-error Cannot mix OR and ONE matches
+      prompt: { when: { result: `accepted`, spec: { name: { aliases: { long: [`a`, [`b`]] } } } } },
+    })
 })
 
 it(`static error when fields from different event types matched in single pattern`, () => {
-  // @ts-expect-error "value" is not available on "rejected" event
-  Command.parameter(`a`, s).settings({ prompt: { when: { result: `rejected`, value: 1 } } })
+  Command.create()
+    .parameter(`a`, s)
+    // @ts-expect-error "value" is not available on "rejected" event
+    .settings({ prompt: { when: { result: `rejected`, value: 1 } } })
   // TODO excess properties should be an error in the pattern match but for some reason are not being here.
-  Command.parameter(`a`, {
+  Command.create().parameter(`a`, {
     schema: s,
     prompt: {
       when: {
@@ -159,17 +176,10 @@ const run = () => {
   tty.mock.input.add(ttyInputs)
   // eslint-disable-next-line
   const args = tryCatch(() => {
-    return (
-      // eslint-disable-next-line
-      Object.entries(parameters)
-        // @ts-expect-error todo
-        .reduce((chain, data) => {
-          return chain.parameter(data[0] as any, data[1])
-        }, Command)
-        // @ts-expect-error todo
-        .settings({ onError: `throw`, helpOnError: false, ...settings })
-        .parse({ line, tty: tty.interface })
-    )
+    return Object.entries(parameters)
+      .reduce((chain, data) => chain.parameter(data[0] as any, data[1]), Command.create())
+      .settings({ onError: `throw`, helpOnError: false, ...settings })
+      .parse({ line, tty: tty.interface })
   })
   expect(args).toMatchSnapshot(`args`)
   expect(tty.history.all).toMatchSnapshot(`tty`)

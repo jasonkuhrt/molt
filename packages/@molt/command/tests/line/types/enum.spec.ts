@@ -6,19 +6,23 @@ import { z } from 'zod'
 
 describe(`errors`, () => {
   it(`when argument missing (last position)`, () => {
-    Command.parameter(`--mode`, z.enum([`a`, `b`])).parse({ line: [`--mode`] })
+    Command.create()
+      .parameter(`--mode`, z.enum([`a`, `b`]))
+      .parse({ line: [`--mode`] })
     expect(stdout.mock.calls).toMatchSnapshot()
   })
   it(`when argument missing (non-last position)`, () => {
     // prettier-ignore
-    Command.parameter( `--name`, s).parameter( `--mode`, z.enum([`a`,`b`]) ).parse({line:[` --mode`, `--name`, `joe`]})
+    Command.create().parameter( `--name`, s).parameter( `--mode`, z.enum([`a`,`b`]) ).parse({line:[` --mode`, `--name`, `joe`]})
     expect(stdout.mock.calls).toMatchSnapshot()
   })
   it(`is validated`, () => {
     // const args = Parameters.create({ '--mode': z.enum([`a`, `b`, `c`]) }).parse({line:[`--mode`, `bad`]})
     // assert<IsExact<{ mode: 'a'|'b'|'c' }, typeof args>>(true)
     // expect(args).toMatchObject({ mode: true })
-    Command.parameter(`--mode`, z.enum([`a`, `b`, `c`])).parse({ line: [`--mode`, `bad`] })
+    Command.create()
+      .parameter(`--mode`, z.enum([`a`, `b`, `c`]))
+      .parse({ line: [`--mode`, `bad`] })
     expect(stdout.mock.calls).toMatchSnapshot()
   })
 })

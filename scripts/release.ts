@@ -10,7 +10,7 @@ import semverRegex from 'semver-regex'
 import { z } from 'zod'
 
 // prettier-ignore
-const args = Command
+const args = Command.create()
   .parameter(`githubToken`, z.string())
   .parameter(`publish`, z.boolean().default(true))
   .parameter(`githubRelease`, z.boolean().default(true))

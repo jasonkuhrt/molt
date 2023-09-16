@@ -5,7 +5,7 @@ import { Settings } from '../../Settings/index.js'
 import * as ExclusiveBuilder from '../exclusive/constructor.js'
 import type { ParameterConfiguration, RawArgInputs, RootBuilder } from './types.js'
 
-const create = () => {
+export const create = (): RootBuilder => {
   const $: State = {
     newSettingsBuffer: [],
     settings: null,
@@ -67,20 +67,8 @@ const create = () => {
     },
   }
 
-  return chain
+  return chain as any
 }
-
-// prettier-ignore
-// @ts-expect-error internal to external
-export const createViaParametersExclusive: RootBuilder['parametersExclusive'] = (...args) => create().parametersExclusive(...args)
-
-// prettier-ignore
-// @ts-expect-error internal to external
-export const createViaParameter: RootBuilder['parameter'] = (...args) => create().parameter(...args)
-
-// prettier-ignore
-// @ts-expect-error internal to external
-export const createViaDescription: RootBuilder['description'] = (...args) => create().description(...args)
 
 //
 // Internal Types

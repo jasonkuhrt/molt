@@ -2,15 +2,15 @@ import { Command } from '../src/index.js'
 import semverRegex from 'semver-regex'
 import { z } from 'zod'
 
-// prettier-ignore
-const args = Command
+const args = Command.create()
   .parameter(`githubToken`, z.string())
   .parameter(`publish`, z.boolean().default(true))
   .parameter(`githubRelease`, z.boolean().default(true))
   .parameter(`p package`, z.enum([`@molt/command`, `@molt/types`, `molt`]))
   .parametersExclusive(`method`, (__) =>
+    // prettier-ignore
     __.parameter(`v version`, z.string().regex(semverRegex()))
-      .parameter(`b bump`, z.enum([`major`, `minor`, `patch`]))
+      .parameter(`b bump`, z.enum([`major`, `minor`, `patch`])),
   )
   .settings({
     parameters: {

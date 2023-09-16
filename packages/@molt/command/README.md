@@ -1,4 +1,4 @@
-# @molt/command
+# @molt/Command
 
 🌱 Type-safe CLI command definition and execution.
 
@@ -68,30 +68,23 @@ npm add @molt/command zod
 import { Command } from '../src/index.js'
 import { z } from 'zod'
 
-// prettier-ignore
-const args = Command
-  .parameter(`filePath`, z
-    .string()
-    .describe(`Path to the file to convert.`)
+const args = Command.create()
+  .parameter(`filePath`, z.string().describe(`Path to the file to convert.`))
+  .parameter(`to`, z.enum([`json`, `yaml`, `toml`]).describe(`Format to convert to.`))
+  .parameter(
+    `from`,
+    z
+      .enum([`json`, `yaml`, `toml`])
+      .optional()
+      .describe(`Format to convert from. By default inferred from the file extension.`),
   )
-  .parameter(`to`, z
-     .enum([`json`, `yaml`, `toml`])
-     .describe(`Format to convert to.`)
+  .parameter(
+    `verbose v`,
+    z.boolean().default(false).describe(`Log detailed progress as conversion executes.`),
   )
-  .parameter(`from`, z
-     .enum([`json`, `yaml`, `toml`])
-     .optional()
-     .describe(`Format to convert from. By default inferred from the file extension.`)
-  )
-  .parameter(`verbose v`, z
-     .boolean()
-     .default(false)
-     .describe(`Log detailed progress as conversion executes.`)
-  )
-  .parameter(`move m`, z
-    .boolean()
-    .default(false)
-    .describe(`Delete the original file after it has been converted.`)
+  .parameter(
+    `move m`,
+    z.boolean().default(false).describe(`Delete the original file after it has been converted.`),
   )
   .parse()
 ```
@@ -118,7 +111,8 @@ $ mybin --help
 - Normalization between camel and kebab case and optional dash prefix:
 
   ```ts
-  const args = Command.parameter('--do-it-a', z.boolean())
+  const args = Command.create()
+    .parameter('--do-it-a', z.boolean())
     .parameter('--doItB', z.boolean())
     .parameter('doItC', z.boolean())
     .parse()
@@ -131,13 +125,13 @@ $ mybin --help
 - Specify one or multiple (aka. aliases) short and long flags:
 
   ```ts
-  Command.parameter('-f --force --forcefully', z.boolean()).parse()
+  Command.create().parameter('-f --force --forcefully', z.boolean()).parse()
   ```
 
 - Use Zod `.default(...)` method for setting default values.
 
   ```ts
-  const args = Command.parameter('--path', z.string().default('./a/b/c')).parse()
+  const args = Command.create().parameter('--path', z.string().default('./a/b/c')).parse()
   args.path === './a/b/c/' //   $ mybin
   args.path === '/over/ride' // $ mybin --path /over/ride
   ```
@@ -151,7 +145,7 @@ $ mybin --help
   - Pass via environment variables (customizable)
 
     ```ts
-    const args = Command.parameter('--path', z.string()).parse()
+    const args = Command.create().parameter('--path', z.string()).parse()
     args.path === './a/b/c/' // $ CLI_PARAM_PATH='./a/b/c' mybin
     ```
 
@@ -183,7 +177,8 @@ A [video introduction](https://www.youtube.com/watch?v=UtXM4FKCUDo) if you like 
 You can define parameters as a zod object schema using regular property names. These are flags for your CLI but arguments can also be passed by environment variables so in a way this is a neutral form that doesn't privilege either argument passing mechanism.
 
 ```ts
-const args = Command.parameter('foo', z.string())
+const args = Command.create()
+  .parameter('foo', z.string())
   .parameter('bar', z.number())
   .parameter('qux', z.boolean())
   .parse()
@@ -198,7 +193,8 @@ args.qux
 You can also define them using flag syntax if you prefer. Thanks to `@molt/types` this style doesn't sacrifice any type safety.
 
 ```ts
-const args = Command.parameter('--foo', z.string())
+const args = Command.create()
+  .parameter('--foo', z.string())
   .parameter('--bar', z.number())
   .parameter('--qux', z.boolean())
   .parse()
@@ -218,7 +214,8 @@ A set of parameter names gets normalized into its canonical name internally (aga
 2. Otherwise the first short flag
 
 ```ts
-const args = Command.parameter('--foobar --foo -f ', z.string())
+const args = Command.create()
+  .parameter('--foobar --foo -f ', z.string())
   .parameter('--bar -b -x', z.number())
   .parameter('-q --qux', z.boolean())
   .parameter('-m -n', z.boolean())
@@ -236,7 +233,8 @@ args.m === true
 If you prefer you can use a dash-prefix free syntax:
 
 ```ts
-const args = Command.parameter('foobar foo f ', z.string())
+const args = Command.create()
+  .parameter('foobar foo f ', z.string())
   .parameter('bar b x', z.number())
   .parameter('q qux', z.boolean())
   .parameter('m n', z.boolean())
@@ -248,7 +246,7 @@ const args = Command.parameter('foobar foo f ', z.string())
 You can use kebab or camel case (and likewise your users can pass flags in either style). Canonical form internally uses camel case.
 
 ```ts
-const args = Command.parameter('foo-bar', z.string()).parameter('quxLot', z.string()).parse()
+const args = Command.create().parameter('foo-bar', z.string()).parameter('quxLot', z.string()).parse()
 
 // $ mybin --foo-bar moo --qux-lot zoo
 // $ mybin --fooBar moo --quxLot zoo
@@ -261,14 +259,13 @@ args.quxLot === 'zoo'
 Duplicate parameter names will be caught statically via TypeScript.
 
 ```ts
-// prettier-ignore
-const args = Command
+const args = Command.create()
   .parameter('f foo bar', z.string())
-  .parameter('bar', z.string()) // <-- TS error: already taken
-  .parameter('f', z.string()) //   <-- TS error: already taken
-  .parameter('foo', z.string()) // <-- TS error: already taken
+  .parameter('bar', z.string()) //  <-- TS error: already taken
+  .parameter('f', z.string()) //    <-- TS error: already taken
+  .parameter('foo', z.string()) //  <-- TS error: already taken
   .parameter('help', z.string()) // <-- TS error: reserved name
-  .parameter('h', z.string()) // <-- TS error: reserved name
+  .parameter('h', z.string()) //    <-- TS error: reserved name
   .parse()
 ```
 
@@ -315,7 +312,7 @@ z.string().min(1).describe('...').optional()
 Examples:
 
 ```ts
-const args = Command.parameter('f force forcefully', z.boolean()).parse()
+const args = Command.create().parameter('f force forcefully', z.boolean()).parse()
 // $ CLI_PARAM_NO_F='true' mybin
 // $ CLI_PARAM_NO_FORCE='true' mybin
 // $ CLI_PARAM_NO_FORCEFULLY='true' mybin
@@ -386,7 +383,7 @@ args.force === true
 - If one variant is a boolean then flag will interpret no argument as being an argument of the boolean variant. For example given this CLI:
 
   ```ts
-  Command.parameter('xee', z.union([z.boolean(), z.number()]))
+  Command.create().parameter('xee', z.union([z.boolean(), z.number()]))
   ```
 
   A user could call your CLI in any of these ways:
@@ -400,7 +397,7 @@ args.force === true
 - When a parameter is a union type, the variant that can first successfully parse the given value becomes the interpreted type for the given value. Variant parsers are tried in order of most specific to least, which is: `enum`, `number`, `boolean`, `string`. So for example if you had a union parameter like this:
 
   ```ts
-  Command.parameter('xee', z.union([z.string(), z.number()]))
+  Command.create().parameter('xee', z.union([z.string(), z.number()]))
   ```
 
 ##### Help Rendering
@@ -408,7 +405,7 @@ args.force === true
 - By default help rendering will render something like so:
 
   ```ts
-  Command.parameter('xee', z.union([z.string(), z.number()]).description('Blah blah blah.'))
+  Command.create().parameter('xee', z.union([z.string(), z.number()]).description('Blah blah blah.'))
   ```
 
   ```
@@ -423,7 +420,7 @@ args.force === true
 - When the parameters have descriptions then it will cause an expanded layout e.g.:
 
   ```ts
-  Command.parameter(
+  Command.create().parameter(
     'xee',
     z
       .union([
@@ -453,7 +450,8 @@ args.force === true
 - You can force expanded layout even when parameters do not have descriptions via the settings, e.g.:
 
   ```ts
-  Command.parameter('xee', z.union([z.string(), z.number()]))
+  Command.create()
+    .parameter('xee', z.union([z.string(), z.number()]))
     .parameter('foo', z.union([z.string(), z.number()]))
     .settings({
       helpRendering: {
@@ -547,14 +545,13 @@ All you need to do is pass a _pattern_ to `prompt` either at the parameter level
 Each event type share some core properties but also have their own unique fields. For example with `Accepted` you can match against what the value given was and with `Rejected` you can match against the specific error that occurred.
 
 ```ts
-// prettier-ignore
-const args = Command
+const args = Command.create()
   .parameter(`filePath`, z.string())
   .parameter(`to`, {
     schema: z.enum([`json`, `yaml`, `toml`]),
     prompt: {
       result: 'rejected',
-      error: 'ErrorMissingArgument'
+      error: 'ErrorMissingArgument',
     },
   })
   .parse()
@@ -569,8 +566,7 @@ The pattern matching library will be open-sourced and thoroughly documented in t
 Passing `true` will enable using the default event pattern.
 
 ```ts
-// prettier-ignore
-const args = Command
+const args = Command.create()
   .parameter(`filePath`, z.string())
   .parameter(`to`, {
     schema: z.enum([`json`, `yaml`, `toml`]),
@@ -584,13 +580,13 @@ const args = Command
 You can enable prompt when one of the built-in event patterns occur:
 
 ```ts
-// prettier-ignore
-const args = Command.parameter(`filePath`, z.string())
+const args = Command.create()
+  .parameter(`filePath`, z.string())
   .parameter(`to`, {
     schema: z.enum([`json`, `yaml`, `toml`]),
     prompt: {
-      when: Command.EventPatterns.rejectedMissingOrInvalid
-    }
+      when: Command.EventPatterns.rejectedMissingOrInvalid,
+    },
   })
   .parse()
 ```
@@ -598,13 +594,13 @@ const args = Command.parameter(`filePath`, z.string())
 Or when one of multiple events occurs:
 
 ```ts
-// prettier-ignore
-const args = Command.parameter(`filePath`, z.string())
+const args = Command.create()
+  .parameter(`filePath`, z.string())
   .parameter(`to`, {
     schema: z.enum([`json`, `yaml`, `toml`]),
     prompt: {
       when: [Command.EventPatterns.rejectedMissingOrInvalid, Command.EventPatterns.omittedWithoutDefault],
-    }
+    },
   })
   .parse()
 ```
@@ -614,8 +610,8 @@ const args = Command.parameter(`filePath`, z.string())
 You can enable prompt when your given _event pattern_ occurs.
 
 ```ts
-// prettier-ignore
-const args = Command.parameter(`filePath`, z.string())
+const args = Command.create()
+  .parameter(`filePath`, z.string())
   .parameter(`to`, {
     schema: z.enum([`json`, `yaml`, `toml`]),
     prompt: {
@@ -623,7 +619,7 @@ const args = Command.parameter(`filePath`, z.string())
         rejected: {
           reason: 'missing',
         },
-      }
+      },
     },
   })
   .parse()
@@ -636,8 +632,7 @@ You can configure prompts for the entire instance in the settings. The configura
 Enable explicitly with shorthand approach using a `boolean`:
 
 ```ts
-// prettier-ignore
-const args = Command
+const args = Command.create()
   .parameter(`filePath`, z.string())
   .parameter(`to`, z.enum([`json`, `yaml`, `toml`]))
   .settings({ prompt: true })
@@ -649,8 +644,7 @@ Enable explicitly with longhand approach using the `enabled` nested property and
 Note that in the following `enabled` could be omitted because passing an object implies `enabled: true` by default.
 
 ```ts
-// prettier-ignore
-const args = Command
+const args = Command.create()
   .parameter(`filePath`, z.string())
   .parameter(`to`, z.enum([`json`, `yaml`, `toml`]))
   .settings({
@@ -731,7 +725,7 @@ CLI_PARAM_{parameter_name}
 ```
 
 ```ts
-const args = Command.parameter('--path', z.string()).parse()
+const args = Command.create().parameter('--path', z.string()).parse()
 args.path === './a/b/c/' // $ CLI_PARAMETER_PATH='./a/b/c' mybin
 ```
 
@@ -740,7 +734,7 @@ args.path === './a/b/c/' // $ CLI_PARAMETER_PATH='./a/b/c' mybin
 You can toggle environment arguments on/off. It is on by default.
 
 ```ts
-const command = Command.parameter('--path', z.string()).settings({
+const command = Command.create().parameter('--path', z.string()).settings({
   environment: false,
 })
 // $ CLI_PARAMETER_PATH='./a/b/c' mybin
@@ -751,7 +745,7 @@ command.parse()
 You can also toggle with the environment variable `CLI_SETTINGS_READ_ARGUMENTS_FROM_ENVIRONMENT` (case insensitive):
 
 ```ts
-const command = Command.parameter('--path', z.string())
+const command = Command.create().parameter('--path', z.string())
 // $ CLI_SETTINGS_READ_ARGUMENTS_FROM_ENVIRONMENT='false' CLI_PARAMETER_PATH='./a/b/c' mybin
 // Throws error because no argument given for "path"
 command.parse()
@@ -762,7 +756,8 @@ command.parse()
 You can toggle environment on for just one or some parameters.
 
 ```ts
-const args = Command.parameter('--foo', z.string())
+const args = Command.create()
+  .parameter('--foo', z.string())
   .parameter('--bar', z.string().default('not_from_env'))
   .settings({ environment: { foo: true } })
   .parse()
@@ -775,7 +770,8 @@ args.bar === 'not_from_env'
 You can toggle environment on except for just one or some parameters.
 
 ```ts
-const args = Command.parameter('--foo', z.string().default('not_from_env'))
+const args = Command.create()
+  .parameter('--foo', z.string().default('not_from_env'))
   .parameter('--bar', z.string().default('not_from_env'))
   .parameter('--qux', z.string().default('not_from_env'))
   .settings({ environment: { $default: true, bar: false } })
@@ -792,7 +788,8 @@ args.qux === 'qux'
 You can customize the environment variable name prefix:
 
 ```ts
-const args = Command.parameter('--path', z.string())
+const args = Command.create()
+  .parameter('--path', z.string())
   //                                              o-- case insensitive
   .settings({ environment: { $default: { prefix: 'foo' } } })
   .parse()
@@ -803,7 +800,8 @@ args.path === './a/b/c/' // $ FOO_PATH='./a/b/c' mybin
 You can pass a list of accepted prefixes instead of just one. Earlier ones take precedence over later ones:
 
 ```ts
-const args = Command.parameter('--path', z.string())
+const args = Command.create()
+  .parameter('--path', z.string())
   //                                               o---------o--- case insensitive
   .settings({ environment: { $default: { prefix: ['foobar', 'foo'] } } })
   .parse()
@@ -818,7 +816,8 @@ args.path === './a/b/c/' // $ FOO_PATH='./x/y/z' FOOBAR_PATH='./a/b/c' mybin
 You can customize the environment variable name prefix for just one or some parameters.
 
 ```ts
-const args = Command.parameter('--foo', z.string().default('not_from_env'))
+const args = Command.create()
+  .parameter('--foo', z.string().default('not_from_env'))
   .parameter('--bar', z.string().default('not_from_env'))
   .parameter('--qux', z.string().default('not_from_env'))
   .settings({ environment: { bar: { prefix: 'MOO' } } })
@@ -833,7 +832,8 @@ args.qux === 'qux'
 You can customize the environment variable name prefix except for just one or some parameters.
 
 ```ts
-const args = Command.parameter('--foo', z.string().default('not_from_env'))
+const args = Command.create()
+  .parameter('--foo', z.string().default('not_from_env'))
   .parameter('--bar', z.string().default('not_from_env'))
   .parameter('--qux', z.string().default('not_from_env'))
   .settings({ environment: { $default: { enabled: true, prefix: 'MOO' }, bar: { prefix: true } } })
@@ -850,7 +850,8 @@ args.qux === 'qux'
 You can remove the prefix altogether. Pretty and convenient, but be careful for unexpected use of variables in host environment that would affect your CLI execution!
 
 ```ts
-const args = Command.parameter('--path', z.string())
+const args = Command.create()
+  .parameter('--path', z.string())
   .settings({ environment: { $default: { prefix: false } } })
   .parse()
 
@@ -862,7 +863,8 @@ args.path === './a/b/c/' // $ PATH='./a/b/c' mybin
 You can disable environment variable name prefixes for just one or some parameters.
 
 ```ts
-const args = Command.parameter('--foo', z.string().default('not_from_env'))
+const args = Command.create()
+  .parameter('--foo', z.string().default('not_from_env'))
   .parameter('--bar', z.string().default('not_from_env'))
   .parameter('--qux', z.string().default('not_from_env'))
   .settings({ environment: { bar: { prefix: false } } })
@@ -877,7 +879,8 @@ args.qux === 'qux'
 You can disable environment variable name prefixes except for just one or some parameters.
 
 ```ts
-const args = Command.parameter('--foo', z.string().default('not_from_env'))
+const args = Command.create()
+  .parameter('--foo', z.string().default('not_from_env'))
   .parameter('--bar', z.string().default('not_from_env'))
   .parameter('--qux', z.string().default('not_from_env'))
   .settings({ environment: { $default: { enabled: true, prefix: false }, bar: { prefix: true } } })
@@ -894,7 +897,7 @@ args.qux === 'qux'
 Environment variables are considered in a case insensitive way so all of these work:
 
 ```ts
-const args = Command.parameter('--path', z.string()).parse()
+const args = Command.create().parameter('--path', z.string()).parse()
 // $ CLI_PARAM_PATH='./a/b/c' mybin
 // $ cli_param_path='./a/b/c' mybin
 // $ cLi_pAraM_paTh='./a/b/c' mybin
@@ -906,7 +909,7 @@ args.path === './a/b/c/'
 By default, when a prefix is defined, a typo will raise an error:
 
 ```ts
-const command = Command.parameter('--path', z.string())
+const command = Command.create().parameter('--path', z.string())
 
 // $ CLI_PARAM_PAH='./a/b/c' mybin
 // Throws error because there is no parameter named "pah" defined.
@@ -916,7 +919,7 @@ command.parse()
 If you pass arguments for a parameter multiple times under different environment variable name aliases an error will be raised.
 
 ```ts
-const command = Command.parameter('--path', z.string())
+const command = Command.create().parameter('--path', z.string())
 
 // $ CLI_PARAMETER_PAH='./1/2/3' CLI_PARAM_PAH='./a/b/c' mybin
 /ole/ Throws error because user intent is ambiguous.
@@ -931,7 +934,7 @@ Here is an example where you might want this feature. You are building a CLI for
 
 ```ts
 // prettier-ignore
-const args = Command
+const args = Command.create()
   .parametersExclusive(`method`, (_) =>
     _.parameter(`v version`, z.string().regex(semverRegex()))
      .parameter(`b bump`, z.enum([`major`, `minor`, `patch`]))
@@ -970,7 +973,7 @@ By default, input for a group of mutually exclusive parameters is required. You 
 
 ```ts
 // prettier-ignore
-const args = Command
+const args = Command.create()
   .parametersExclusive(`method`, (_) =>
     _.parameter(`v version`, z.string().regex(semverRegex()))
      .parameter(`b bump`, z.enum([`major`, `minor`, `patch`]))
@@ -984,7 +987,7 @@ By default, input for a group of mutually exclusive parameters is required. You 
 
 ```ts
 // prettier-ignore
-const args = Command
+const args = Command.create()
   .parametersExclusive(`method`, (_) =>
     _.parameter(`v version`, z.string().regex(semverRegex()))
      .parameter(`b bump`, z.enum([`major`, `minor`, `patch`]))
@@ -1004,9 +1007,11 @@ Your users will clearly see that these parameters are mutually exclusive. Here's
 You can give your command a description similar to how you can give each of your parameters a description.
 
 ```ts
-const args = Command.description(
-  'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.',
-).parameter(/* ... */)
+const args = Command.create()
+  .description(
+    'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.',
+  )
+  .parameter(/* ... */)
 ```
 
 Descriptions will show up in the auto generated help.
@@ -1038,7 +1043,7 @@ mybin --xee z     <-- enable xee using z
 You could achieve this with the following parameter definition:
 
 ```ts
-const args = Command.parameter('xee', z.union([z.boolean(), z.enum(['x', 'y', 'z'])]).default(false))
+const args = Command.create().parameter('xee', z.union([z.boolean(), z.enum(['x', 'y', 'z'])]).default(false))
 
 args.xee // type: false | true | 'x' | 'y' | 'z'
 ```

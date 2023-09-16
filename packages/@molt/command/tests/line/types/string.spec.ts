@@ -15,13 +15,8 @@ describe(`errors`, () => {
     ],
   )(`%s`, (_, parameters, input) => {
     expect(() => {
-      // eslint-disable-next-line
       Object.entries(parameters)
-        // @ts-expect-error todo
-        .reduce((chain, data) => {
-          return chain.parameter(data[0] as any, data[1])
-        }, Command)
-        // @ts-expect-error todo
+        .reduce((chain, data) => chain.parameter(data[0] as any, data[1]), Command.create())
         .settings({ onError: `throw`, helpOnError: false })
         .parse(input)
     }).toThrowErrorMatchingSnapshot()
@@ -30,17 +25,23 @@ describe(`errors`, () => {
 
 describe(`optional`, () => {
   it(`specified input can be omitted, missing key is possible`, () => {
-    const args = Command.parameter(`--foo`, s.optional()).parse({ line: [] })
+    const args = Command.create().parameter(`--foo`, s.optional()).parse({ line: [] })
     assert<IsExact<{ foo: string | undefined }, typeof args>>(true)
     expect(Object.keys(args)).not.toContain(`foo`)
   })
   it(`input can be given`, () => {
-    const args = Command.parameter(`--foo`, s.optional()).parse({ line: [`--foo`, `bar`] })
+    const args = Command.create()
+      .parameter(`--foo`, s.optional())
+      .parse({ line: [`--foo`, `bar`] })
     assert<IsExact<{ foo: string | undefined }, typeof args>>(true)
     expect(args).toMatchObject({ foo: `bar` })
   })
 })
 
 it(`is not trimmed by default`, () => {
-  expect(Command.parameter(`name`, s).parse({ line: [`--name`, `foobar  `] })).toMatchSnapshot()
+  expect(
+    Command.create()
+      .parameter(`name`, s)
+      .parse({ line: [`--name`, `foobar  `] }),
+  ).toMatchSnapshot()
 })
