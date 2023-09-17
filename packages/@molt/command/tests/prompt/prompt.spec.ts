@@ -2,7 +2,7 @@ import type { ParameterConfiguration } from '../../src/Builder/root/types.js'
 import type { Settings } from '../../src/entrypoints/types.js'
 import { Command } from '../../src/index.js'
 import { l1, s, tryCatch } from '../_/helpers.js'
-import { tty } from '../_/mocks/tty.js'
+import { memoryPrompter } from '../_/mocks/tty.js'
 import stripAnsi from 'strip-ansi'
 import { expectType } from 'tsd'
 import { expect, it } from 'vitest'
@@ -10,7 +10,7 @@ import { expect, it } from 'vitest'
 // TODO test that prompt order is based on order of parameter definition
 
 let parameters: Record<string, ParameterConfiguration>
-let ttyInputs: string[]
+let answers: string[]
 let line: string[]
 const settings: Settings.Input = {}
 
@@ -21,7 +21,7 @@ it(`can be explicitly disabled`, async () => {
       prompt: { enabled: false },
     },
   }
-  ttyInputs = []
+  answers = []
   line = []
   await run()
 })
@@ -33,7 +33,7 @@ it(`can be explicitly disabled with a "when" condition present`, async () => {
       prompt: { enabled: false, when: { result: `rejected`, error: `ErrorMissingArgument` } },
     },
   }
-  ttyInputs = []
+  answers = []
   line = []
   await run()
 })
@@ -42,7 +42,7 @@ it(`prompt when missing input`, async () => {
   parameters = {
     a: { schema: s.min(2), prompt: { when: { result: `rejected`, error: `ErrorMissingArgument` } } },
   }
-  ttyInputs = [`foo`]
+  answers = [`foo`]
   line = []
   await run()
 })
@@ -51,7 +51,7 @@ it(`prompt when invalid input`, async () => {
   parameters = {
     a: { schema: s.min(2), prompt: { when: { result: `rejected`, error: `ErrorInvalidArgument` } } },
   }
-  ttyInputs = [`foo`]
+  answers = [`foo`]
   line = [`-a`, `1`]
   await run()
 })
@@ -63,7 +63,7 @@ it(`prompt when invalid input OR missing input`, async () => {
       prompt: { when: { result: `rejected`, error: [`ErrorInvalidArgument`, `ErrorMissingArgument`] } },
     },
   }
-  ttyInputs = [`foo`]
+  answers = [`foo`]
   line = [`-a`, `1`]
   await run()
 })
@@ -76,7 +76,7 @@ it(`prompt when omitted`, async () => {
       prompt: { when: { result: `omitted`, spec: { optionality: [`default`, `optional`] } } },
     },
   }
-  ttyInputs = [`foo`]
+  answers = [`foo`]
   line = []
   await run()
 })
@@ -196,7 +196,7 @@ it(`Static type tests`, () => {
  */
 
 const run = async () => {
-  tty.mock.input.add(ttyInputs)
+  memoryPrompter.answers.add(answers)
   // eslint-disable-next-line
   const args = await tryCatch(async () => {
     // eslint-disable-next-line
@@ -205,9 +205,9 @@ const run = async () => {
       .reduce((chain, data) => chain.parameter(data[0] as any, data[1]), Command.create())
       // @ts-expect-error todo
       .settings({ onError: `throw`, helpOnError: false, ...settings })
-      .parse({ line, tty: tty.interface })
+      .parse({ line, tty: memoryPrompter })
   })
   expect(args).toMatchSnapshot(`args`)
-  expect(tty.history.all).toMatchSnapshot(`tty`)
-  expect(tty.history.all.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)
+  expect(memoryPrompter.history.all).toMatchSnapshot(`tty`)
+  expect(memoryPrompter.history.all.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)
 }

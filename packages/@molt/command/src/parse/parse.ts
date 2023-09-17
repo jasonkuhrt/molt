@@ -11,8 +11,7 @@ import type {
 } from '../OpeningArgs/OpeningArgs.js'
 import { ParameterSpec } from '../ParameterSpec/index.js'
 import { match } from '../Pattern/Pattern.js'
-import { prompt } from './prompt.js'
-import * as ReadLineSync from 'readline-sync'
+import { createStdioPrompter, prompt } from './prompt.js'
 
 export interface ParseProgressPostPromptAnnotation {
   globalErrors: OpeningArgs.ParseResult['globalErrors']
@@ -68,14 +67,7 @@ export const parse = (
   argInputs: RawArgInputs,
 ) => {
   const testDebuggingNoExit = process.env[`testing_molt`] === `true`
-  const argInputsTTY =
-    argInputs?.tty ??
-    (process.stdout.isTTY
-      ? {
-          output: console.log,
-          input: (params) => ReadLineSync.question(params.prompt),
-        }
-      : null)
+  const argInputsTTY = argInputs?.tty ?? (process.stdout.isTTY ? createStdioPrompter() : null)
   const argInputsLine = argInputs?.line ?? process.argv.slice(2)
   const argInputsEnvironment = argInputs?.environment
     ? lowerCaseObjectKeys(argInputs.environment)

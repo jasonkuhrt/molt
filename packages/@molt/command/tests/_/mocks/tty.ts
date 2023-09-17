@@ -1,13 +1,13 @@
-import type { MockTTY } from '../../../src/parse/prompt.js'
-import { createMockTTY } from '../../../src/parse/prompt.js'
+import type { MemoryPrompter } from '../../../src/parse/prompt.js'
+import { createMemoryPrompter } from '../../../src/parse/prompt.js'
 import { afterEach, beforeEach, expect } from 'vitest'
 
-export let tty: MockTTY
+export let memoryPrompter: MemoryPrompter
 
 beforeEach(() => {
-  tty = createMockTTY()
+  memoryPrompter = createMemoryPrompter()
 })
 
 afterEach(() => {
-  expect(tty.mock.input.get()).toEqual([])
+  expect(memoryPrompter.answers.get()).toEqual([])
 })

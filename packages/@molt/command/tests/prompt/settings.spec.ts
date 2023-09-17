@@ -2,7 +2,7 @@ import type { Settings } from '../../src/index.js'
 import { Command } from '../../src/index.js'
 import type { ParameterSpec } from '../../src/ParameterSpec/index.js'
 import { s, tryCatch } from '../_/helpers.js'
-import { tty } from '../_/mocks/tty.js'
+import { memoryPrompter } from '../_/mocks/tty.js'
 import stripAnsi from 'strip-ansi'
 import { describe, expect, it } from 'vitest'
 
@@ -10,30 +10,30 @@ const S = <S extends ParameterSpec.Input.Schema>(settings: Settings.InputPrompt<
 
 describe(`parameter level`, () => {
   it(`can be passed object`, async () => {
-    tty.mock.input.add([`foo`])
+    memoryPrompter.answers.add([`foo`])
     const args = await tryCatch(() =>
       Command.create()
         .parameter(`a`, { schema: s, prompt: { enabled: true } })
         .settings({ onError: `throw`, helpOnError: false })
-        .parse({ line: [], tty: tty.interface }),
+        .parse({ line: [], tty: memoryPrompter }),
     )
     expect(args).toMatchSnapshot(`args`)
-    expect(tty.history.all).toMatchSnapshot(`tty`)
-    expect(tty.history.all.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)
+    expect(memoryPrompter.history.all).toMatchSnapshot(`tty`)
+    expect(memoryPrompter.history.all.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)
   })
 })
 
 describe(`command level`, () => {
   it(`passing object makes enabled default to true`, async () => {
-    tty.mock.input.add([`foo`])
+    memoryPrompter.answers.add([`foo`])
     // eslint-disable-next-line
     const args = await Command.create()
       .parameter(`a`, { schema: s })
       .settings({ onError: `throw`, helpOnError: false, prompt: { when: { result: `rejected` } } })
-      .parse({ line: [], tty: tty.interface })
+      .parse({ line: [], tty: memoryPrompter })
     expect(args).toMatchSnapshot(`args`)
-    expect(tty.history.all).toMatchSnapshot(`tty`)
-    expect(tty.history.all.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)
+    expect(memoryPrompter.history.all).toMatchSnapshot(`tty`)
+    expect(memoryPrompter.history.all.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)
   })
 })
 
@@ -42,24 +42,24 @@ it(`prompt is disabled by default`, () => {
     Command.create()
       .parameter(`a`, { schema: s })
       .settings({ onError: `throw`, helpOnError: false })
-      .parse({ line: [], tty: tty.interface }),
+      .parse({ line: [], tty: memoryPrompter }),
   )
   expect(args).toMatchSnapshot(`args`)
-  expect(tty.history.all).toMatchSnapshot(`tty`)
-  expect(tty.history.all.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)
+  expect(memoryPrompter.history.all).toMatchSnapshot(`tty`)
+  expect(memoryPrompter.history.all.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)
 })
 
 it(`prompt can be enabled by default`, async () => {
-  tty.mock.input.add([`foo`])
+  memoryPrompter.answers.add([`foo`])
   const args = await tryCatch(() =>
     Command.create()
       .parameter(`a`, { schema: s })
       .settings({ onError: `throw`, helpOnError: false, prompt: { enabled: true } })
-      .parse({ line: [], tty: tty.interface }),
+      .parse({ line: [], tty: memoryPrompter }),
   )
   expect(args).toMatchSnapshot(`args`)
-  expect(tty.history.all).toMatchSnapshot(`tty`)
-  expect(tty.history.all.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)
+  expect(memoryPrompter.history.all).toMatchSnapshot(`tty`)
+  expect(memoryPrompter.history.all.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)
 })
 
 it(`parameter settings overrides default settings`, () => {
@@ -67,11 +67,11 @@ it(`parameter settings overrides default settings`, () => {
     Command.create()
       .parameter(`a`, { schema: s, prompt: false })
       .settings({ onError: `throw`, helpOnError: false, prompt: { enabled: true } })
-      .parse({ line: [], tty: tty.interface }),
+      .parse({ line: [], tty: memoryPrompter }),
   )
   expect(args).toMatchSnapshot(`args`)
-  expect(tty.history.all).toMatchSnapshot(`tty`)
-  expect(tty.history.all.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)
+  expect(memoryPrompter.history.all).toMatchSnapshot(`tty`)
+  expect(memoryPrompter.history.all.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)
 })
 
 describe(`prompt can be toggled by check on error`, () => {
@@ -81,34 +81,34 @@ describe(`prompt can be toggled by check on error`, () => {
       when: { result: `rejected`, error: `ErrorMissingArgument`, spec: { name: { canonical: `a` } } },
     })
     it(`check does match`, async () => {
-      tty.mock.input.add([`foo`])
+      memoryPrompter.answers.add([`foo`])
       // eslint-disable-next-line
       const args = await tryCatch(() =>
         Command.create()
           .parameter(`a`, { schema: s })
           .settings({ onError: `throw`, helpOnError: false, prompt: settings })
-          .parse({ line: [], tty: tty.interface }),
+          .parse({ line: [], tty: memoryPrompter }),
       )
       expect(args).toMatchSnapshot(`args`)
-      expect(tty.history.all).toMatchSnapshot(`tty`)
-      expect(tty.history.all.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)
+      expect(memoryPrompter.history.all).toMatchSnapshot(`tty`)
+      expect(memoryPrompter.history.all.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)
     })
     it(`check does not match`, () => {
       const args = tryCatch(() =>
         Command.create()
           .parameter(`b`, { schema: s })
           .settings({ onError: `throw`, helpOnError: false, prompt: settings })
-          .parse({ line: [], tty: tty.interface }),
+          .parse({ line: [], tty: memoryPrompter }),
       )
       expect(args).toMatchSnapshot(`args`)
-      expect(tty.history.all).toMatchSnapshot(`tty`)
-      expect(tty.history.all.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)
+      expect(memoryPrompter.history.all).toMatchSnapshot(`tty`)
+      expect(memoryPrompter.history.all.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)
     })
   })
 })
 
 it(`parameter defaults to custom settings`, async () => {
-  tty.mock.input.add([`foo`])
+  memoryPrompter.answers.add([`foo`])
   const args = await tryCatch(() =>
     Command.create()
       .parameter(`a`, { schema: s })
@@ -123,11 +123,11 @@ it(`parameter defaults to custom settings`, async () => {
           },
         },
       })
-      .parse({ line: [], tty: tty.interface }),
+      .parse({ line: [], tty: memoryPrompter }),
   )
   expect(args).toMatchSnapshot(`args`)
-  expect(tty.history.all).toMatchSnapshot(`tty`)
-  expect(tty.history.all.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)
+  expect(memoryPrompter.history.all).toMatchSnapshot(`tty`)
+  expect(memoryPrompter.history.all.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)
 })
 
 it(`can be stack of conditional prompts`, async () => {
@@ -145,15 +145,15 @@ it(`can be stack of conditional prompts`, async () => {
       },
     ],
   })
-  tty.mock.input.add([`foo`])
+  memoryPrompter.answers.add([`foo`])
   // eslint-disable-next-line
   const args = await tryCatch(() =>
     Command.create()
       .parameter(`a`, { schema: s.optional() })
       .settings({ onError: `throw`, helpOnError: false, prompt: settings })
-      .parse({ line: [`-a`, `1`], tty: tty.interface }),
+      .parse({ line: [`-a`, `1`], tty: memoryPrompter }),
   )
   expect(args).toMatchSnapshot(`args`)
-  expect(tty.history.all).toMatchSnapshot(`tty`)
-  expect(tty.history.all.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)
+  expect(memoryPrompter.history.all).toMatchSnapshot(`tty`)
+  expect(memoryPrompter.history.all.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)
 })

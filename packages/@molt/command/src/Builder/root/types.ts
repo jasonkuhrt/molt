@@ -1,6 +1,6 @@
 import type { OpeningArgs } from '../../OpeningArgs/index.js'
 import type { ParameterSpec } from '../../ParameterSpec/index.js'
-import type { TTY } from '../../parse/prompt.js'
+import type { Prompter } from '../../parse/prompt.js'
 import type { Settings } from '../../Settings/index.js'
 import type {
   BuilderAfterSettings,
@@ -74,7 +74,7 @@ export interface RootBuilder<State extends State.Base = State.BaseEmpty> {
 export type RawArgInputs = {
   line?: OpeningArgs.Line.RawInputs
   environment?: OpeningArgs.Environment.RawInputs
-  tty?: TTY
+  tty?: Prompter
 }
 
 export type SomeArgsNormalized = Record<string, unknown>
