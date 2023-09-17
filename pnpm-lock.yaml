@@ -120,9 +120,6 @@ importers:
       lodash.snakecase:
         specifier: ^4.1.1
         version: 4.1.1
-      readline-sync:
-        specifier: ^1.4.10
-        version: 1.4.10
       string-length:
         specifier: ^6.0.0
         version: 6.0.0
@@ -142,9 +139,6 @@ importers:
       '@types/lodash.snakecase':
         specifier: ^4.1.7
         version: 4.1.7
-      '@types/readline-sync':
-        specifier: ^1.4.4
-        version: 1.4.4
       conditional-type-checks:
         specifier: 1.0.6
         version: 1.0.6
@@ -823,10 +817,6 @@ packages:
 
   /@types/normalize-package-data@2.4.1:
     resolution: {integrity: sha512-Gj7cI7z+98M282Tqmp2K5EIsoouUEzbBJhQQzDE3jSIRk6r9gsz0oUokqIUR4u1R3dMHo0pDHM7sNOHyhulypw==}
-    dev: true
-
-  /@types/readline-sync@1.4.4:
-    resolution: {integrity: sha512-cFjVIoiamX7U6zkO2VPvXyTxbFDdiRo902IarJuPVxBhpDnXhwSaVE86ip+SCuyWBbEioKCkT4C88RNTxBM1Dw==}
     dev: true
 
   /@types/semver@7.5.2:
@@ -2678,11 +2668,6 @@ packages:
     dependencies:
       picomatch: 2.3.1
     dev: true
-
-  /readline-sync@1.4.10:
-    resolution: {integrity: sha512-gNva8/6UAe8QYepIQH/jQ2qn91Qj0B9sYjMBBs3QOB8F2CXcKgLxQaJRP76sWVRQt+QU+8fAkCbCvjjMFu7Ycw==}
-    engines: {node: '>= 0.8.0'}
-    dev: false
 
   /redent@3.0.0:
     resolution: {integrity: sha512-6tDA8g98We0zd0GvVeMT9arEOnTw9qM03L9cJXaCjrip1OO764RDBLBfrB4cwzNGDj5OA5ioymC9GkizgWJDUg==}
