@@ -3,7 +3,6 @@ import { createEvent } from '../eventPatterns.js'
 import { Help } from '../Help/index.js'
 import { getLowerCaseEnvironment, lowerCaseObjectKeys } from '../helpers.js'
 import type { Settings } from '../index.js'
-import { Text } from '../lib/Text/index.js'
 import { OpeningArgs } from '../OpeningArgs/index.js'
 import type {
   ParseResultBasicError,
@@ -12,8 +11,7 @@ import type {
 } from '../OpeningArgs/OpeningArgs.js'
 import { ParameterSpec } from '../ParameterSpec/index.js'
 import { match } from '../Pattern/Pattern.js'
-import { createPrompter, createStdioPrompter, prompt } from './prompt.js'
-import * as Readline from 'node:readline/promises'
+import { createStdioPrompter, prompt } from './prompt.js'
 
 export interface ParseProgressPostPromptAnnotation {
   globalErrors: OpeningArgs.ParseResult['globalErrors']
