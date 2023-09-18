@@ -1,4 +1,5 @@
 import { casesExhausted } from '../helpers.js'
+import { KeyPress } from '../lib/KeyPress/index.js'
 import { Tex } from '../lib/Tex/index_.js'
 import { Text } from '../lib/Text/index.js'
 import { ParameterSpec } from '../ParameterSpec/index.js'
@@ -6,13 +7,11 @@ import { Term } from '../term.js'
 import type { ParseProgressPostPrompt, ParseProgressPostPromptAnnotation } from './parse.js'
 import ansiEscapes from 'ansi-escapes'
 import chalk from 'chalk'
-import { stdin, stdout } from 'node:process'
 import * as Readline from 'node:readline'
 
 /**
  * Get args from the user interactively via the console for the given parameters.
  */
-// export const prompt = (specs: ParameterSpec.Output[], tty: TTY): Record<string, any> => {
 export const prompt = async (
   parseProgress: ParseProgressPostPromptAnnotation,
   prompter: null | Prompter,
@@ -97,62 +96,82 @@ export interface Prompter {
   }) => Promise<T extends boolean ? boolean : T extends number ? number : string>
 }
 
-export const createPrompter = (channels: {
+interface Channels {
   output: (value: string) => void
   readLine: () => Promise<string>
-  readKeyPresses: <K extends string>(params: { matching?: K[] }) => AsyncIterable<KeyPressEvent<K>>
-}): Prompter => {
+  readKeyPresses: <K extends string>(params: { matching?: K[] }) => AsyncIterable<KeyPress.KeyPressEvent<K>>
+}
+
+export const createPrompter = (channels: Channels): Prompter => {
   const prompter: Prompter = {
     say: (value: string) => {
       channels.output(value + Text.chars.newline)
     },
     ask: async (params) => {
-      channels.output(params.question + Text.chars.newline + params.prompt)
+      channels.output(params.question + Text.chars.newline)
       if (params.type === `boolean`) {
-        channels.output(ansiEscapes.cursorHide)
-        const no = `${chalk.green(chalk.bold(`no`))} / yes`
-        const yes = `no / ${chalk.green(chalk.bold(`yes`))}`
-        channels.output(no)
-        let answer = false
-        for await (const event of channels.readKeyPresses({
-          matching: [`left`, `right`, `space`, `return`, `y`, `n`],
-        })) {
-          if (event.name === `return`) {
-            break
-          }
-          channels.output(ansiEscapes.cursorTo(0))
-          channels.output(ansiEscapes.eraseLine)
-          channels.output(params.prompt)
-          if (event.name === `left` || event.name === `n`) {
-            answer = false
-          } else if (event.name === `right` || event.name === `y`) {
-            answer = true
-          } else if (event.name === `space`) {
-            answer = !answer
-          }
-          channels.output(answer ? yes : no)
-        }
-        channels.output(ansiEscapes.cursorShow)
-        return answer as any
+        return Inputs.boolean({ channels, prompt: params.prompt })
       }
 
       if (params.type === `string`) {
-        process.stdin.setRawMode(false) // TODO this should be called within `readKeyPresses` as part of some teardown
-        return channels.readLine()
+        return Inputs.string({ channels, prompt: params.prompt })
       }
 
       if (params.type === `number`) {
-        process.stdin.setRawMode(false) // TODO this should be called within `readKeyPresses` as part of some teardown
-        const answer_ = await channels.readLine()
-        const answer = parseFloat(answer_)
-        if (isNaN(answer)) return null
-        return answer
+        return Inputs.number({ channels, prompt: params.prompt })
       }
 
       casesExhausted(params.type)
     },
   }
   return prompter
+}
+
+namespace Inputs {
+  export const boolean = async (params: { channels: Channels; prompt: string }) => {
+    const { channels } = params
+    channels.output(ansiEscapes.cursorHide)
+    const no = `${chalk.green(chalk.bold(`no`))} / yes`
+    const yes = `no / ${chalk.green(chalk.bold(`yes`))}`
+
+    channels.output(params.prompt)
+    channels.output(no)
+
+    let answer = false
+    for await (const event of channels.readKeyPresses({
+      matching: [`left`, `right`, `space`, `return`, `y`, `n`],
+    })) {
+      if (event.name === `return`) {
+        break
+      }
+      channels.output(ansiEscapes.cursorTo(0))
+      channels.output(ansiEscapes.eraseLine)
+      channels.output(params.prompt)
+      if (event.name === `left` || event.name === `n`) {
+        answer = false
+      } else if (event.name === `right` || event.name === `y`) {
+        answer = true
+      } else if (event.name === `space`) {
+        answer = !answer
+      }
+      channels.output(answer ? yes : no)
+    }
+    channels.output(ansiEscapes.cursorShow)
+    process.stdin.setRawMode(false) // TODO this should be called within `readKeyPresses` as part of some teardown
+    return answer as any
+  }
+
+  export const string = async (params: { channels: Channels; prompt: string }) => {
+    params.channels.output(params.prompt)
+    return params.channels.readLine()
+  }
+
+  export const number = async (params: { channels: Channels; prompt: string }) => {
+    const answer_ = await params.channels.readLine()
+    const answer = parseFloat(answer_)
+    if (isNaN(answer)) return null
+    return answer
+  }
 }
 
 /**
@@ -219,7 +238,7 @@ export const createStdioPrompter = () => {
   return createPrompter({
     output: (value) => process.stdout.write(value),
     readKeyPresses: async function* (params) {
-      for await (const event of readKeyStrokes()) {
+      for await (const event of KeyPress.watch()) {
         if (params.matching?.includes(event.name as any) ?? true) {
           // console.log(keyStroke)
           yield event
@@ -238,43 +257,4 @@ export const createStdioPrompter = () => {
       })
     },
   })
-}
-
-export type KeyPressEvent<Name extends string = string> = {
-  name: Name
-  sequence: string
-  ctrl: boolean
-  meta: boolean
-  shift: boolean
-}
-
-export const readKeyStroke = async (): Promise<KeyPressEvent> => {
-  const rl = Readline.promises.createInterface({
-    input: stdin,
-    output: stdout,
-    terminal: false,
-  })
-  stdin.setRawMode(true)
-  Readline.emitKeypressEvents(stdin, rl)
-
-  let listener: (...args: any[]) => void
-
-  return new Promise((resolve) => {
-    listener = (k, e) => {
-      rl.close()
-      stdin.removeListener(`keypress`, listener)
-      resolve(e)
-    }
-    stdin.on(`keypress`, listener)
-  })
-}
-
-async function* readKeyStrokes(): AsyncGenerator<KeyPressEvent> {
-  while (true) {
-    const event = await readKeyStroke()
-    if (event.name == `c` && event.ctrl == true) {
-      process.exit()
-    }
-    yield event
-  }
 }
