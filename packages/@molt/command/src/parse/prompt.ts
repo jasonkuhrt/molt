@@ -1,21 +1,13 @@
+import { casesExhausted } from '../helpers.js'
 import { Tex } from '../lib/Tex/index_.js'
 import { Text } from '../lib/Text/index.js'
 import { ParameterSpec } from '../ParameterSpec/index.js'
 import { Term } from '../term.js'
 import type { ParseProgressPostPrompt, ParseProgressPostPromptAnnotation } from './parse.js'
-import * as Readline from 'node:readline/promises'
-
-export interface Prompter {
-  /**
-   * Send output to the user.
-   */
-  say: (text: string) => void
-  /**
-   * Receive input from the user.
-   * TODO remove prompt config from here.
-   */
-  ask: (params: { prompt: string; question: string }) => Promise<string>
-}
+import ansiEscapes from 'ansi-escapes'
+import chalk from 'chalk'
+import { stdin, stdout } from 'node:process'
+import * as Readline from 'node:readline'
 
 /**
  * Get args from the user interactively via the console for the given parameters.
@@ -49,6 +41,16 @@ export const prompt = async (
       const arg = await prompter.ask({
         question,
         prompt: `${Text.pad(`left`, gutterWidth, Text.chars.space, `❯ `)}`,
+        type:
+          param._tag === `Basic`
+            ? {
+                TypeBoolean: `boolean` as const,
+                TypeNumber: `number` as const,
+                TypeString: `string` as const,
+                TypeEnum: `string` as const,
+                TypeLiteral: `string` as const,
+              }[param.type._tag]
+            : `string`, //param._tag === `Basic` && param.type._tag === `TypeBoolean` ? `boolean` : `string`,
       })
       const validationResult = ParameterSpec.validate(param, arg)
       if (validationResult._tag === `Success`) {
@@ -78,18 +80,76 @@ export const prompt = async (
   return Promise.resolve(parseProgressPostPrompt)
 }
 
+export type QuestionType = 'boolean' | 'string' | 'number'
+export interface Prompter {
+  /**
+   * Send output to the user.
+   */
+  say: (text: string) => void
+  /**
+   * Receive input from the user.
+   * TODO remove prompt config from here.
+   */
+  ask: <T extends QuestionType>(params: {
+    prompt: string
+    question: string
+    type: T
+  }) => Promise<T extends boolean ? boolean : T extends number ? number : string>
+}
+
 export const createPrompter = (channels: {
   output: (value: string) => void
   readLine: () => Promise<string>
-}) => {
+  readKeyPresses: <K extends string>(params: { matching?: K[] }) => AsyncIterable<KeyPressEvent<K>>
+}): Prompter => {
   const prompter: Prompter = {
     say: (value: string) => {
       channels.output(value + Text.chars.newline)
     },
     ask: async (params) => {
       channels.output(params.question + Text.chars.newline + params.prompt)
-      const answer = await channels.readLine()
-      return answer
+      if (params.type === `boolean`) {
+        channels.output(ansiEscapes.cursorHide)
+        const no = `${chalk.green(chalk.bold(`no`))} / yes`
+        const yes = `no / ${chalk.green(chalk.bold(`yes`))}`
+        channels.output(no)
+        let answer = false
+        for await (const event of channels.readKeyPresses({
+          matching: [`left`, `right`, `space`, `return`, `y`, `n`],
+        })) {
+          if (event.name === `return`) {
+            break
+          }
+          channels.output(ansiEscapes.cursorTo(0))
+          channels.output(ansiEscapes.eraseLine)
+          channels.output(params.prompt)
+          if (event.name === `left` || event.name === `n`) {
+            answer = false
+          } else if (event.name === `right` || event.name === `y`) {
+            answer = true
+          } else if (event.name === `space`) {
+            answer = !answer
+          }
+          channels.output(answer ? yes : no)
+        }
+        channels.output(ansiEscapes.cursorShow)
+        return answer as any
+      }
+
+      if (params.type === `string`) {
+        process.stdin.setRawMode(false) // TODO this should be called within `readKeyPresses` as part of some teardown
+        return channels.readLine()
+      }
+
+      if (params.type === `number`) {
+        process.stdin.setRawMode(false) // TODO this should be called within `readKeyPresses` as part of some teardown
+        const answer_ = await channels.readLine()
+        const answer = parseFloat(answer_)
+        if (isNaN(answer)) return null
+        return answer
+      }
+
+      casesExhausted(params.type)
     },
   }
   return prompter
@@ -102,6 +162,9 @@ export const createPrompter = (channels: {
 export const createMemoryPrompter = () => {
   const state: {
     inputScript: string[]
+    script: {
+      keyPress: string[]
+    }
     history: {
       output: string[]
       answers: string[]
@@ -109,6 +172,7 @@ export const createMemoryPrompter = () => {
     }
   } = {
     inputScript: [],
+    script: { keyPress: [] },
     history: {
       answers: [],
       output: [],
@@ -129,9 +193,15 @@ export const createMemoryPrompter = () => {
       state.history.all.push(value)
       return Promise.resolve(value)
     },
+    readKeyPresses: async function* (params) {
+      for (const keyPress of state.script.keyPress) {
+        if (params.matching?.includes(keyPress as any) ?? true) {
+          yield await Promise.resolve(keyPress)
+        }
+      }
+    },
   })
   return {
-    // state,
     history: state.history,
     answers: {
       add: (values: string[]) => {
@@ -148,6 +218,14 @@ export type MemoryPrompter = ReturnType<typeof createMemoryPrompter>
 export const createStdioPrompter = () => {
   return createPrompter({
     output: (value) => process.stdout.write(value),
+    readKeyPresses: async function* (params) {
+      for await (const event of readKeyStrokes()) {
+        if (params.matching?.includes(event.name as any) ?? true) {
+          // console.log(keyStroke)
+          yield event
+        }
+      }
+    },
     readLine: () => {
       return new Promise((res) => {
         const lineReader = Readline.createInterface({
@@ -160,4 +238,43 @@ export const createStdioPrompter = () => {
       })
     },
   })
+}
+
+export type KeyPressEvent<Name extends string = string> = {
+  name: Name
+  sequence: string
+  ctrl: boolean
+  meta: boolean
+  shift: boolean
+}
+
+export const readKeyStroke = async (): Promise<KeyPressEvent> => {
+  const rl = Readline.promises.createInterface({
+    input: stdin,
+    output: stdout,
+    terminal: false,
+  })
+  stdin.setRawMode(true)
+  Readline.emitKeypressEvents(stdin, rl)
+
+  let listener: (...args: any[]) => void
+
+  return new Promise((resolve) => {
+    listener = (k, e) => {
+      rl.close()
+      stdin.removeListener(`keypress`, listener)
+      resolve(e)
+    }
+    stdin.on(`keypress`, listener)
+  })
+}
+
+async function* readKeyStrokes(): AsyncGenerator<KeyPressEvent> {
+  while (true) {
+    const event = await readKeyStroke()
+    if (event.name == `c` && event.ctrl == true) {
+      process.exit()
+    }
+    yield event
+  }
 }
