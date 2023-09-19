@@ -22,7 +22,8 @@ exports[`prompt when invalid input > args 1`] = `
 exports[`prompt when invalid input > tty 1`] = `
 [
   "[2m[90m1/1[39m[22m  [32ma[39m
-     ❯ ",
+",
+  "     ❯ ",
   "foo",
   "
 ",
@@ -32,7 +33,8 @@ exports[`prompt when invalid input > tty 1`] = `
 exports[`prompt when invalid input > tty strip ansi 1`] = `
 [
   "1/1  a
-     ❯ ",
+",
+  "     ❯ ",
   "foo",
   "
 ",
@@ -49,7 +51,8 @@ exports[`prompt when invalid input OR missing input > args 1`] = `
 exports[`prompt when invalid input OR missing input > tty 1`] = `
 [
   "[2m[90m1/1[39m[22m  [32ma[39m
-     ❯ ",
+",
+  "     ❯ ",
   "foo",
   "
 ",
@@ -59,7 +62,8 @@ exports[`prompt when invalid input OR missing input > tty 1`] = `
 exports[`prompt when invalid input OR missing input > tty strip ansi 1`] = `
 [
   "1/1  a
-     ❯ ",
+",
+  "     ❯ ",
   "foo",
   "
 ",
@@ -76,7 +80,8 @@ exports[`prompt when missing input > args 1`] = `
 exports[`prompt when missing input > tty 1`] = `
 [
   "[2m[90m1/1[39m[22m  [32ma[39m
-     ❯ ",
+",
+  "     ❯ ",
   "foo",
   "
 ",
@@ -86,7 +91,8 @@ exports[`prompt when missing input > tty 1`] = `
 exports[`prompt when missing input > tty strip ansi 1`] = `
 [
   "1/1  a
-     ❯ ",
+",
+  "     ❯ ",
   "foo",
   "
 ",
@@ -103,7 +109,8 @@ exports[`prompt when omitted > args 1`] = `
 exports[`prompt when omitted > tty 1`] = `
 [
   "[2m[90m1/1[39m[22m  [32ma[39m
-     ❯ ",
+",
+  "     ❯ ",
   "foo",
   "
 ",
@@ -113,7 +120,8 @@ exports[`prompt when omitted > tty 1`] = `
 exports[`prompt when omitted > tty strip ansi 1`] = `
 [
   "1/1  a
-     ❯ ",
+",
+  "     ❯ ",
   "foo",
   "
 ",
