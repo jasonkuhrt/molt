@@ -1,6 +1,5 @@
 import { casesExhausted } from '../helpers.js'
 import { KeyPress } from '../lib/KeyPress/index.js'
-import { KeyPressEvent } from '../lib/KeyPress/KeyPress.js'
 import { Tex } from '../lib/Tex/index_.js'
 import { Text } from '../lib/Text/index.js'
 import { ParameterSpec } from '../ParameterSpec/index.js'
