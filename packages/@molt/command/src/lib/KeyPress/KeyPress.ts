@@ -15,7 +15,10 @@ export const get = async (): Promise<KeyPressEvent> => {
     output: stdout,
     terminal: false,
   })
-  stdin.setRawMode(true)
+  const originalIsRawState = stdin.isRaw
+  if (!stdin.isRaw) {
+    stdin.setRawMode(true)
+  }
   Readline.emitKeypressEvents(stdin, rl)
 
   let listener: (...args: any[]) => void
@@ -24,6 +27,9 @@ export const get = async (): Promise<KeyPressEvent> => {
     listener = (k, e) => {
       rl.close()
       stdin.removeListener(`keypress`, listener)
+      if (!originalIsRawState) {
+        process.stdin.setRawMode(false)
+      }
       resolve(e)
     }
     stdin.on(`keypress`, listener)

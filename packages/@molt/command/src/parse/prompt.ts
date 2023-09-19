@@ -139,7 +139,7 @@ namespace Inputs {
 
     let answer = false
     for await (const event of channels.readKeyPresses({
-      matching: [`left`, `right`, `space`, `return`, `y`, `n`],
+      matching: [`left`, `right`, `tab`, `return`, `y`, `n`],
     })) {
       if (event.name === `return`) {
         break
@@ -151,13 +151,12 @@ namespace Inputs {
         answer = false
       } else if (event.name === `right` || event.name === `y`) {
         answer = true
-      } else if (event.name === `space`) {
+      } else if (event.name === `tab`) {
         answer = !answer
       }
       channels.output(answer ? yes : no)
     }
     channels.output(ansiEscapes.cursorShow)
-    process.stdin.setRawMode(false) // TODO this should be called within `readKeyPresses` as part of some teardown
     return answer as any
   }
 
@@ -222,6 +221,7 @@ export const createMemoryPrompter = () => {
   })
   return {
     history: state.history,
+    script: state.script,
     answers: {
       add: (values: string[]) => {
         state.inputScript.push(...values)
