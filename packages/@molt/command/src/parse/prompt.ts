@@ -1,5 +1,6 @@
 import { casesExhausted } from '../helpers.js'
 import { KeyPress } from '../lib/KeyPress/index.js'
+import { KeyPressEvent } from '../lib/KeyPress/KeyPress.js'
 import { Tex } from '../lib/Tex/index_.js'
 import { Text } from '../lib/Text/index.js'
 import { ParameterSpec } from '../ParameterSpec/index.js'
@@ -182,7 +183,7 @@ export const createMemoryPrompter = () => {
   const state: {
     inputScript: string[]
     script: {
-      keyPress: string[]
+      keyPress: KeyPress.KeyPressEvent<any>[]
     }
     history: {
       output: string[]
@@ -214,7 +215,7 @@ export const createMemoryPrompter = () => {
     },
     readKeyPresses: async function* (params) {
       for (const keyPress of state.script.keyPress) {
-        if (params.matching?.includes(keyPress as any) ?? true) {
+        if (params.matching?.includes(keyPress.name) ?? true) {
           yield await Promise.resolve(keyPress)
         }
       }
@@ -240,8 +241,7 @@ export const createStdioPrompter = () => {
     readKeyPresses: async function* (params) {
       for await (const event of KeyPress.watch()) {
         if (params.matching?.includes(event.name as any) ?? true) {
-          // console.log(keyStroke)
-          yield event
+          yield event as KeyPress.KeyPressEvent<any>
         }
       }
     },
