@@ -528,12 +528,17 @@ $ mybin --filePath ./a/b/c.yaml
 - By default, disabled.
 - Can be configured at parameter level _or_ command level. Parameter level overrides command level.
 - Only _basic_ parameters support prompting (so e.g. not [mutually exclusive parameters](#mutually-exclusive-parameters)).
+- Prompt interaction honours the parameter type. For example here is an example for boolean:
+  ```
+  1/3  verbose
+       ❯ no / yes
+  ```
 - Can be enabled _conditionally_ via _pattern matching_ on _events_.
-- Common patterns have been pre-defined and exported at `Command.eventPatterns` for you.
-- Custom patterns may be defined in a type-safe way.
-- When enabled, a default pattern is used when none explicitly set.
+  - Common patterns have been pre-defined and exported at `Command.eventPatterns` for you.
+  - Custom patterns may be defined in a type-safe way.
 - The order of prompts will match the order of your parameter definitions.
-- The default pattern may be changed.
+- When enabled, a default pattern is used when none explicitly set.
+  - The default pattern may be changed.
 - The default settings are:
   ```ts
   Command.create().settings({

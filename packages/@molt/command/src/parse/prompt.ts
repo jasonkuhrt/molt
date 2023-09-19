@@ -166,6 +166,7 @@ namespace Inputs {
   }
 
   export const number = async (params: { channels: Channels; prompt: string }) => {
+    params.channels.output(params.prompt)
     const answer_ = await params.channels.readLine()
     const answer = parseFloat(answer_)
     if (isNaN(answer)) return null
