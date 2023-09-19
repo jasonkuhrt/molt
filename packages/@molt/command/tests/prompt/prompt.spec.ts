@@ -1,18 +1,61 @@
 import type { ParameterConfiguration } from '../../src/Builder/root/types.js'
 import type { Settings } from '../../src/entrypoints/types.js'
 import { Command } from '../../src/index.js'
-import { l1, s, tryCatch } from '../_/helpers.js'
+import type { KeyPress } from '../../src/lib/KeyPress/index.js'
+import { b, l1, s, tryCatch } from '../_/helpers.js'
 import { memoryPrompter } from '../_/mocks/tty.js'
 import stripAnsi from 'strip-ansi'
 import { expectType } from 'tsd'
-import { expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 
 // TODO test that prompt order is based on order of parameter definition
 
 let parameters: Record<string, ParameterConfiguration>
 let answers: string[]
+let keyPresses: KeyPress.KeyPressEvent[]
 let line: string[]
 const settings: Settings.Input = {}
+
+beforeEach(() => {
+  parameters = {}
+  answers = []
+  keyPresses = []
+  line = []
+})
+
+describe(`boolean`, () => {
+  it(`defaults to "no"`, async () => {
+    parameters = { a: { schema: b, prompt: true } }
+    keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
+    await run()
+  })
+  it(`can be toggled to "yes"`, async () => {
+    parameters = { a: { schema: b, prompt: true } }
+    keyPresses.push(
+      { ctrl: false, meta: false, sequence: ``, shift: false, name: `right` },
+      { ctrl: false, meta: false, sequence: ``, shift: false, name: `return` },
+    )
+    await run()
+  })
+  it(`can be toggled to "yes" and then back to "no"`, async () => {
+    parameters = { a: { schema: b, prompt: true } }
+    keyPresses.push(
+      { ctrl: false, meta: false, sequence: ``, shift: false, name: `right` },
+      { ctrl: false, meta: false, sequence: ``, shift: false, name: `left` },
+      { ctrl: false, meta: false, sequence: ``, shift: false, name: `return` },
+    )
+    await run()
+  })
+  it(`can use tab to toggle between "yes" and "no"`, async () => {
+    parameters = { a: { schema: b, prompt: true } }
+    keyPresses.push(
+      { ctrl: false, meta: false, sequence: ``, shift: false, name: `tab` },
+      { ctrl: false, meta: false, sequence: ``, shift: false, name: `tab` },
+      { ctrl: false, meta: false, sequence: ``, shift: false, name: `return` },
+    )
+    await run()
+  })
+})
 
 it(`can be explicitly disabled`, async () => {
   parameters = {
@@ -197,6 +240,7 @@ it(`Static type tests`, () => {
 
 const run = async () => {
   memoryPrompter.answers.add(answers)
+  memoryPrompter.script.keyPress.push(...keyPresses)
   // eslint-disable-next-line
   const args = await tryCatch(async () => {
     // eslint-disable-next-line

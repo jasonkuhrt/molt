@@ -1,26 +1,17 @@
+import { casesExhausted } from '../helpers.js'
+import { KeyPress } from '../lib/KeyPress/index.js'
 import { Tex } from '../lib/Tex/index_.js'
 import { Text } from '../lib/Text/index.js'
 import { ParameterSpec } from '../ParameterSpec/index.js'
 import { Term } from '../term.js'
 import type { ParseProgressPostPrompt, ParseProgressPostPromptAnnotation } from './parse.js'
-import * as Readline from 'node:readline/promises'
-
-export interface Prompter {
-  /**
-   * Send output to the user.
-   */
-  say: (text: string) => void
-  /**
-   * Receive input from the user.
-   * TODO remove prompt config from here.
-   */
-  ask: (params: { prompt: string; question: string }) => Promise<string>
-}
+import ansiEscapes from 'ansi-escapes'
+import chalk from 'chalk'
+import * as Readline from 'node:readline'
 
 /**
  * Get args from the user interactively via the console for the given parameters.
  */
-// export const prompt = (specs: ParameterSpec.Output[], tty: TTY): Record<string, any> => {
 export const prompt = async (
   parseProgress: ParseProgressPostPromptAnnotation,
   prompter: null | Prompter,
@@ -49,6 +40,16 @@ export const prompt = async (
       const arg = await prompter.ask({
         question,
         prompt: `${Text.pad(`left`, gutterWidth, Text.chars.space, `❯ `)}`,
+        type:
+          param._tag === `Basic`
+            ? {
+                TypeBoolean: `boolean` as const,
+                TypeNumber: `number` as const,
+                TypeString: `string` as const,
+                TypeEnum: `string` as const,
+                TypeLiteral: `string` as const,
+              }[param.type._tag]
+            : `string`, //param._tag === `Basic` && param.type._tag === `TypeBoolean` ? `boolean` : `string`,
       })
       const validationResult = ParameterSpec.validate(param, arg)
       if (validationResult._tag === `Success`) {
@@ -78,21 +79,99 @@ export const prompt = async (
   return Promise.resolve(parseProgressPostPrompt)
 }
 
-export const createPrompter = (channels: {
+export type QuestionType = 'boolean' | 'string' | 'number'
+export interface Prompter {
+  /**
+   * Send output to the user.
+   */
+  say: (text: string) => void
+  /**
+   * Receive input from the user.
+   * TODO remove prompt config from here.
+   */
+  ask: <T extends QuestionType>(params: {
+    prompt: string
+    question: string
+    type: T
+  }) => Promise<T extends boolean ? boolean : T extends number ? number : string>
+}
+
+interface Channels {
   output: (value: string) => void
   readLine: () => Promise<string>
-}) => {
+  readKeyPresses: <K extends string>(params: { matching?: K[] }) => AsyncIterable<KeyPress.KeyPressEvent<K>>
+}
+
+export const createPrompter = (channels: Channels): Prompter => {
   const prompter: Prompter = {
     say: (value: string) => {
       channels.output(value + Text.chars.newline)
     },
     ask: async (params) => {
-      channels.output(params.question + Text.chars.newline + params.prompt)
-      const answer = await channels.readLine()
-      return answer
+      channels.output(params.question + Text.chars.newline)
+      if (params.type === `boolean`) {
+        return Inputs.boolean({ channels, prompt: params.prompt })
+      }
+
+      if (params.type === `string`) {
+        return Inputs.string({ channels, prompt: params.prompt })
+      }
+
+      if (params.type === `number`) {
+        return Inputs.number({ channels, prompt: params.prompt })
+      }
+
+      casesExhausted(params.type)
     },
   }
   return prompter
+}
+
+namespace Inputs {
+  export const boolean = async (params: { channels: Channels; prompt: string }) => {
+    const { channels } = params
+    channels.output(ansiEscapes.cursorHide)
+    const no = `${chalk.green(chalk.bold(`no`))} / yes`
+    const yes = `no / ${chalk.green(chalk.bold(`yes`))}`
+
+    channels.output(params.prompt)
+    channels.output(no)
+
+    let answer = false
+    for await (const event of channels.readKeyPresses({
+      matching: [`left`, `right`, `tab`, `return`, `y`, `n`],
+    })) {
+      if (event.name === `return`) {
+        break
+      }
+      channels.output(ansiEscapes.cursorTo(0))
+      channels.output(ansiEscapes.eraseLine)
+      channels.output(params.prompt)
+      if (event.name === `left` || event.name === `n`) {
+        answer = false
+      } else if (event.name === `right` || event.name === `y`) {
+        answer = true
+      } else if (event.name === `tab`) {
+        answer = !answer
+      }
+      channels.output(answer ? yes : no)
+    }
+    channels.output(ansiEscapes.cursorShow)
+    return answer as any
+  }
+
+  export const string = async (params: { channels: Channels; prompt: string }) => {
+    params.channels.output(params.prompt)
+    return params.channels.readLine()
+  }
+
+  export const number = async (params: { channels: Channels; prompt: string }) => {
+    params.channels.output(params.prompt)
+    const answer_ = await params.channels.readLine()
+    const answer = parseFloat(answer_)
+    if (isNaN(answer)) return null
+    return answer
+  }
 }
 
 /**
@@ -102,6 +181,9 @@ export const createPrompter = (channels: {
 export const createMemoryPrompter = () => {
   const state: {
     inputScript: string[]
+    script: {
+      keyPress: KeyPress.KeyPressEvent<any>[]
+    }
     history: {
       output: string[]
       answers: string[]
@@ -109,6 +191,7 @@ export const createMemoryPrompter = () => {
     }
   } = {
     inputScript: [],
+    script: { keyPress: [] },
     history: {
       answers: [],
       output: [],
@@ -129,10 +212,17 @@ export const createMemoryPrompter = () => {
       state.history.all.push(value)
       return Promise.resolve(value)
     },
+    readKeyPresses: async function* (params) {
+      for (const keyPress of state.script.keyPress) {
+        if (params.matching?.includes(keyPress.name) ?? true) {
+          yield await Promise.resolve(keyPress)
+        }
+      }
+    },
   })
   return {
-    // state,
     history: state.history,
+    script: state.script,
     answers: {
       add: (values: string[]) => {
         state.inputScript.push(...values)
@@ -148,6 +238,13 @@ export type MemoryPrompter = ReturnType<typeof createMemoryPrompter>
 export const createStdioPrompter = () => {
   return createPrompter({
     output: (value) => process.stdout.write(value),
+    readKeyPresses: async function* (params) {
+      for await (const event of KeyPress.watch()) {
+        if (params.matching?.includes(event.name as any) ?? true) {
+          yield event as KeyPress.KeyPressEvent<any>
+        }
+      }
+    },
     readLine: () => {
       return new Promise((res) => {
         const lineReader = Readline.createInterface({

@@ -1,5 +1,177 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`boolean > can be toggled to "yes" > args 1`] = `
+{
+  "a": true,
+  "help": false,
+}
+`;
+
+exports[`boolean > can be toggled to "yes" > tty 1`] = `
+[
+  "[2m[90m1/1[39m[22m  [32ma[39m
+",
+  "[?25l",
+  "     ❯ ",
+  "[32m[1mno[22m[39m / yes",
+  "[1G",
+  "[2K",
+  "     ❯ ",
+  "no / [32m[1myes[22m[39m",
+  "[?25h",
+  "
+",
+]
+`;
+
+exports[`boolean > can be toggled to "yes" > tty strip ansi 1`] = `
+[
+  "1/1  a
+",
+  "",
+  "     ❯ ",
+  "no / yes",
+  "",
+  "",
+  "     ❯ ",
+  "no / yes",
+  "",
+  "
+",
+]
+`;
+
+exports[`boolean > can be toggled to "yes" and then back to "no" > args 1`] = `
+{
+  "a": false,
+  "help": false,
+}
+`;
+
+exports[`boolean > can be toggled to "yes" and then back to "no" > tty 1`] = `
+[
+  "[2m[90m1/1[39m[22m  [32ma[39m
+",
+  "[?25l",
+  "     ❯ ",
+  "[32m[1mno[22m[39m / yes",
+  "[1G",
+  "[2K",
+  "     ❯ ",
+  "no / [32m[1myes[22m[39m",
+  "[1G",
+  "[2K",
+  "     ❯ ",
+  "[32m[1mno[22m[39m / yes",
+  "[?25h",
+  "
+",
+]
+`;
+
+exports[`boolean > can be toggled to "yes" and then back to "no" > tty strip ansi 1`] = `
+[
+  "1/1  a
+",
+  "",
+  "     ❯ ",
+  "no / yes",
+  "",
+  "",
+  "     ❯ ",
+  "no / yes",
+  "",
+  "",
+  "     ❯ ",
+  "no / yes",
+  "",
+  "
+",
+]
+`;
+
+exports[`boolean > can use tab to toggle between "yes" and "no" > args 1`] = `
+{
+  "a": false,
+  "help": false,
+}
+`;
+
+exports[`boolean > can use tab to toggle between "yes" and "no" > tty 1`] = `
+[
+  "[2m[90m1/1[39m[22m  [32ma[39m
+",
+  "[?25l",
+  "     ❯ ",
+  "[32m[1mno[22m[39m / yes",
+  "[1G",
+  "[2K",
+  "     ❯ ",
+  "no / [32m[1myes[22m[39m",
+  "[1G",
+  "[2K",
+  "     ❯ ",
+  "[32m[1mno[22m[39m / yes",
+  "[?25h",
+  "
+",
+]
+`;
+
+exports[`boolean > can use tab to toggle between "yes" and "no" > tty strip ansi 1`] = `
+[
+  "1/1  a
+",
+  "",
+  "     ❯ ",
+  "no / yes",
+  "",
+  "",
+  "     ❯ ",
+  "no / yes",
+  "",
+  "",
+  "     ❯ ",
+  "no / yes",
+  "",
+  "
+",
+]
+`;
+
+exports[`boolean > defaults to "no" > args 1`] = `
+{
+  "a": false,
+  "help": false,
+}
+`;
+
+exports[`boolean > defaults to "no" > tty 1`] = `
+[
+  "[2m[90m1/1[39m[22m  [32ma[39m
+",
+  "[?25l",
+  "     ❯ ",
+  "[32m[1mno[22m[39m / yes",
+  "[?25h",
+  "
+",
+]
+`;
+
+exports[`boolean > defaults to "no" > tty strip ansi 1`] = `
+[
+  "1/1  a
+",
+  "",
+  "     ❯ ",
+  "no / yes",
+  "",
+  "
+",
+]
+`;
+
 exports[`can be explicitly disabled > args 1`] = `[ErrorMissingArgument: Missing argument for flag "a".]`;
 
 exports[`can be explicitly disabled > tty 1`] = `[]`;
@@ -22,7 +194,8 @@ exports[`prompt when invalid input > args 1`] = `
 exports[`prompt when invalid input > tty 1`] = `
 [
   "[2m[90m1/1[39m[22m  [32ma[39m
-     ❯ ",
+",
+  "     ❯ ",
   "foo",
   "
 ",
@@ -32,7 +205,8 @@ exports[`prompt when invalid input > tty 1`] = `
 exports[`prompt when invalid input > tty strip ansi 1`] = `
 [
   "1/1  a
-     ❯ ",
+",
+  "     ❯ ",
   "foo",
   "
 ",
@@ -49,7 +223,8 @@ exports[`prompt when invalid input OR missing input > args 1`] = `
 exports[`prompt when invalid input OR missing input > tty 1`] = `
 [
   "[2m[90m1/1[39m[22m  [32ma[39m
-     ❯ ",
+",
+  "     ❯ ",
   "foo",
   "
 ",
@@ -59,7 +234,8 @@ exports[`prompt when invalid input OR missing input > tty 1`] = `
 exports[`prompt when invalid input OR missing input > tty strip ansi 1`] = `
 [
   "1/1  a
-     ❯ ",
+",
+  "     ❯ ",
   "foo",
   "
 ",
@@ -76,7 +252,8 @@ exports[`prompt when missing input > args 1`] = `
 exports[`prompt when missing input > tty 1`] = `
 [
   "[2m[90m1/1[39m[22m  [32ma[39m
-     ❯ ",
+",
+  "     ❯ ",
   "foo",
   "
 ",
@@ -86,7 +263,8 @@ exports[`prompt when missing input > tty 1`] = `
 exports[`prompt when missing input > tty strip ansi 1`] = `
 [
   "1/1  a
-     ❯ ",
+",
+  "     ❯ ",
   "foo",
   "
 ",
@@ -103,7 +281,8 @@ exports[`prompt when omitted > args 1`] = `
 exports[`prompt when omitted > tty 1`] = `
 [
   "[2m[90m1/1[39m[22m  [32ma[39m
-     ❯ ",
+",
+  "     ❯ ",
   "foo",
   "
 ",
@@ -113,7 +292,8 @@ exports[`prompt when omitted > tty 1`] = `
 exports[`prompt when omitted > tty strip ansi 1`] = `
 [
   "1/1  a
-     ❯ ",
+",
+  "     ❯ ",
   "foo",
   "
 ",
