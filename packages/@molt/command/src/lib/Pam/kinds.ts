@@ -10,8 +10,8 @@ export namespace Type {
   export interface Union {
     _tag: 'TypeUnion'
     members: {
-      type: Group.Scalar
-      description: string
+      type: Group.Any
+      description: string | null
     }[]
   }
 

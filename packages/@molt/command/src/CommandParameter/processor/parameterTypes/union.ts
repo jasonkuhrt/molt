@@ -5,7 +5,7 @@ import type { ArgumentValueScalar } from '../../types.js'
 import { getUnionScalar } from '../../types.js'
 import { processEnvironment } from '../helpers/environment.js'
 import { processName } from '../helpers/name.js'
-import { analyzeZodTypeScalar } from '../helpers/zod.js'
+import { analyzeZodType } from '../helpers/zod.js'
 import { z } from 'zod'
 
 export const processUnion = (
@@ -13,9 +13,9 @@ export const processUnion = (
   input: Input.Union,
   settings: Settings.Output,
 ): Output.Union => {
-  const name = processName(nameExpression)
-  const environment = processEnvironment(settings, name)
-  const typeAnalysis = analyzeType(input)
+  // const name = processName(nameExpression)
+  // const environment = processEnvironment(settings, name)
+  // const typeAnalysis = analyzeType(input)
   const parameter: Output.Union = {
     _tag: `Union`,
     name,
@@ -37,7 +37,7 @@ const analyzeType = (input: Input.Union) => {
   const union = getUnionScalar(input.type)
   const description = union.description ?? null
   const types = union._def.options.map((_) => {
-    const typeAnalysis = analyzeZodTypeScalar(_)
+    const typeAnalysis = analyzeZodType(_)
     return {
       zodType: _,
       description: typeAnalysis.description,

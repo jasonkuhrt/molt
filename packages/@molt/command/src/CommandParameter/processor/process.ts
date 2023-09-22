@@ -3,7 +3,6 @@ import type { Input } from '../input.js'
 import type { Output } from '../output.js'
 import { processBasic } from './parameterTypes/basic.js'
 import { processExclusive } from './parameterTypes/exclusive.js'
-import { processUnion } from './parameterTypes/union.js'
 import { Alge } from 'alge'
 import { z } from 'zod'
 
@@ -20,7 +19,6 @@ export const process = (inputs: Record<string, Input>, settings: Settings.Output
   const outputs = Object.entries(inputsWithHelp).flatMap(([expression, input]): Output[] =>
     Alge.match(input)
       .Basic((_) => [processBasic(expression, _, settings)])
-      .Union((_) => [processUnion(expression, _, settings)])
       .Exclusive((_) => processExclusive(expression, _, settings))
       .done(),
   )

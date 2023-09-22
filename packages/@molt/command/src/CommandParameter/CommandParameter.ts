@@ -56,8 +56,8 @@ export const hasName = (spec: Output, name: string): null | NameHit => {
 }
 
 export const isOrHasType = (spec: Output, typeTag: Type['_tag']): boolean => {
-  return spec._tag === `Union`
-    ? spec.types.find((_) => _.type._tag === typeTag) !== undefined
+  return spec.type._tag === `TypeUnion`
+    ? spec.type.members.find((_) => _.type._tag === typeTag) !== undefined
     : spec.type._tag === typeTag
 }
 

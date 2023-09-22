@@ -39,8 +39,8 @@ export const isUnionType = (type: SomeBasicType | SomeUnionType): type is SomeUn
 }
 
 export const getUnionScalar = (zodType: SomeUnionType): SomeUnionTypeScalar => {
-  const zodScalarType = ZodHelpers.stripOptionalAndDefault(zodType)
-  return zodScalarType
+  const type = ZodHelpers.stripOptionalAndDefault(zodType)
+  return type
 }
 
 export const getBasicScalar = (zodType: SomeBasicType): SomeBasicTypeScalar => {

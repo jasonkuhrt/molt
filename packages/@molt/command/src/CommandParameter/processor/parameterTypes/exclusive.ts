@@ -3,7 +3,7 @@ import type { Input } from '../../input.js'
 import type { Output } from '../../output.js'
 import { processEnvironment } from '../helpers/environment.js'
 import { processName } from '../helpers/name.js'
-import { analyzeZodTypeScalar } from '../helpers/zod.js'
+import { analyzeZodType } from '../helpers/zod.js'
 import { Alge } from 'alge'
 
 export const processExclusive = (
@@ -14,7 +14,7 @@ export const processExclusive = (
   const parameters = input.parameters.map((_) => {
     const name = processName(_.nameExpression)
     const environment = processEnvironment(settings, name)
-    const typeAnalysis = analyzeZodTypeScalar(_.type)
+    const typeAnalysis = analyzeZodType(_.type)
     return {
       _tag: `Exclusive`,
       description: typeAnalysis.description,
