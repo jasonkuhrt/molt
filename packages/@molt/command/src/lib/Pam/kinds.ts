@@ -1,10 +1,9 @@
 import type { Value } from './types.js'
 
-export type Type = Type.Enumeration | Type.String | Type.Number | Type.Boolean | Type.Literal
-
 export namespace Type {
   export namespace Group {
     export type Scalar = Type.Enumeration | Type.String | Type.Number | Type.Boolean | Type.Literal
+
     export type Any = Scalar | Union
   }
 
