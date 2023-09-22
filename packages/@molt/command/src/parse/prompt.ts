@@ -1,5 +1,6 @@
 import { casesExhausted } from '../helpers.js'
 import { KeyPress } from '../lib/KeyPress/index.js'
+import type { Pam } from '../lib/Pam/index.js'
 import { Tex } from '../lib/Tex/index_.js'
 import { Text } from '../lib/Text/index.js'
 import { ParameterSpec } from '../ParameterSpec/index.js'
@@ -40,16 +41,7 @@ export const prompt = async (
       const arg = await prompter.ask({
         question,
         prompt: `${Text.pad(`left`, gutterWidth, Text.chars.space, `❯ `)}`,
-        type:
-          param._tag === `Basic`
-            ? {
-                TypeBoolean: `boolean` as const,
-                TypeNumber: `number` as const,
-                TypeString: `string` as const,
-                TypeEnum: `string` as const,
-                TypeLiteral: `string` as const,
-              }[param.type._tag]
-            : `string`, //param._tag === `Basic` && param.type._tag === `TypeBoolean` ? `boolean` : `string`,
+        parameter: param,
       })
       const validationResult = ParameterSpec.validate(param, arg)
       if (validationResult._tag === `Success`) {
@@ -79,7 +71,8 @@ export const prompt = async (
   return Promise.resolve(parseProgressPostPrompt)
 }
 
-export type QuestionType = 'boolean' | 'string' | 'number'
+export type QuestionType = 'boolean' | 'string' | 'number' | 'enumeration'
+
 export interface Prompter {
   /**
    * Send output to the user.
@@ -92,7 +85,8 @@ export interface Prompter {
   ask: <T extends QuestionType>(params: {
     prompt: string
     question: string
-    type: T
+    parameter: Pam.Parameter
+    // type: T
   }) => Promise<T extends boolean ? boolean : T extends number ? number : string>
 }
 
@@ -108,45 +102,79 @@ export const createPrompter = (channels: Channels): Prompter => {
       channels.output(value + Text.chars.newline)
     },
     ask: async (params) => {
+      const { prompt, parameter: parameter_ } = params
       channels.output(params.question + Text.chars.newline)
-      if (params.type === `boolean`) {
-        return Inputs.boolean({ channels, prompt: params.prompt })
+
+      if (parameter_._tag === `Union`) {
+        throw new Error(`Unions are not supported yet.`)
       }
 
-      if (params.type === `string`) {
-        return Inputs.string({ channels, prompt: params.prompt })
+      const type = parameter_.type
+
+      if (type._tag === `TypeLiteral`) {
+        throw new Error(`Literals are not supported yet.`)
       }
 
-      if (params.type === `number`) {
-        return Inputs.number({ channels, prompt: params.prompt })
+      if (type._tag === `TypeBoolean`) {
+        const parameter = { ...parameter_, type }
+        return Inputs.boolean({ channels, prompt, parameter: parameter })
       }
 
-      casesExhausted(params.type)
+      if (type._tag === `TypeString`) {
+        const parameter = { ...parameter_, type }
+        return Inputs.string({ channels, prompt, parameter })
+      }
+
+      if (type._tag === `TypeNumber`) {
+        const parameter = { ...parameter_, type }
+        return Inputs.number({ channels, prompt, parameter })
+      }
+
+      if (type._tag === `TypeEnum`) {
+        const parameter = { ...parameter_, type }
+        return Inputs.enumeration({ channels, prompt, parameter })
+      }
+
+      casesExhausted(type)
     },
   }
   return prompter
 }
 
 namespace Inputs {
-  export const boolean = async (params: { channels: Channels; prompt: string }) => {
+  interface InputParams<parameter extends Pam.Parameter> {
+    channels: Channels
+    prompt: string
+    parameter: parameter
+  }
+
+  export const boolean = async (params: InputParams<Pam.Parameter.Scalar<Pam.Type.Boolean>>) => {
     const { channels } = params
-    channels.output(ansiEscapes.cursorHide)
-    const no = `${chalk.green(chalk.bold(`no`))} / yes`
-    const yes = `no / ${chalk.green(chalk.bold(`yes`))}`
-
-    channels.output(params.prompt)
-    channels.output(no)
-
+    const pipe = `${chalk.dim(`|`)}`
     let answer = false
+    const cleanup = () => {
+      channels.output(ansiEscapes.cursorShow)
+      process.off(`exit`, cleanup)
+    }
+    const refresh = () => {
+      channels.output(ansiEscapes.eraseLine)
+      channels.output(ansiEscapes.cursorTo(0))
+      channels.output(params.prompt)
+      const no = `${chalk.green(chalk.bold(`no`))} ${pipe} yes`
+      const yes = `no ${pipe} ${chalk.green(chalk.bold(`yes`))}`
+      channels.output(answer ? yes : no)
+    }
+
+    channels.output(ansiEscapes.cursorHide)
+    process.once(`exit`, cleanup)
+
+    refresh()
     for await (const event of channels.readKeyPresses({
       matching: [`left`, `right`, `tab`, `return`, `y`, `n`],
     })) {
       if (event.name === `return`) {
         break
       }
-      channels.output(ansiEscapes.cursorTo(0))
-      channels.output(ansiEscapes.eraseLine)
-      channels.output(params.prompt)
       if (event.name === `left` || event.name === `n`) {
         answer = false
       } else if (event.name === `right` || event.name === `y`) {
@@ -154,18 +182,65 @@ namespace Inputs {
       } else if (event.name === `tab`) {
         answer = !answer
       }
-      channels.output(answer ? yes : no)
+      refresh()
     }
+    channels.output(Text.chars.newline)
     channels.output(ansiEscapes.cursorShow)
+    cleanup()
     return answer as any
   }
 
-  export const string = async (params: { channels: Channels; prompt: string }) => {
+  export const string = async (params: InputParams<Pam.Parameter.Scalar<Pam.Type.String>>) => {
     params.channels.output(params.prompt)
     return params.channels.readLine()
   }
 
-  export const number = async (params: { channels: Channels; prompt: string }) => {
+  export const enumeration = async (params: InputParams<Pam.Parameter.Scalar<Pam.Type.Enumeration>>) => {
+    const { channels, parameter } = params
+    let active = 0
+    const render = () =>
+      parameter.type.members
+        .map((item, i) => (i === active ? `${chalk.green(chalk.bold(item))}` : item))
+        .join(chalk.dim(` | `))
+    const refresh = () => {
+      channels.output(ansiEscapes.eraseLine)
+      channels.output(ansiEscapes.cursorTo(0))
+      channels.output(params.prompt)
+      channels.output(render())
+    }
+    const cleanup = () => {
+      channels.output(ansiEscapes.cursorShow)
+      process.off(`exit`, cleanup)
+    }
+
+    channels.output(ansiEscapes.cursorHide)
+    process.once(`exit`, cleanup)
+
+    refresh()
+    for await (const event of channels.readKeyPresses({
+      matching: [`left`, `right`, `tab`, `return`],
+    })) {
+      if (event.name === `return`) {
+        break
+      }
+      if (event.name === `left` || (event.name === `tab` && event.shift)) {
+        active = active === 0 ? parameter.type.members.length - 1 : active - 1
+      } else if (event.name === `right` || (event.name === `tab` && !event.shift)) {
+        active = active === parameter.type.members.length - 1 ? 0 : active + 1
+      }
+      refresh()
+    }
+    const choice = parameter.type.members[active]
+    if (!choice)
+      throw new Error(
+        `No choice selected. Enumeration must be empty. But enumerations should not be empty. This is a bug.`,
+      )
+    channels.output(Text.chars.newline)
+    cleanup()
+    return choice
+  }
+
+  export const number = async (params: InputParams<Pam.Parameter.Scalar<Pam.Type.Number>>) => {
     params.channels.output(params.prompt)
     const answer_ = await params.channels.readLine()
     const answer = parseFloat(answer_)

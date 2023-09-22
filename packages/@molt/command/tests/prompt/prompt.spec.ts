@@ -2,7 +2,7 @@ import type { ParameterConfiguration } from '../../src/Builder/root/types.js'
 import type { Settings } from '../../src/entrypoints/types.js'
 import { Command } from '../../src/index.js'
 import type { KeyPress } from '../../src/lib/KeyPress/index.js'
-import { b, l1, s, tryCatch } from '../_/helpers.js'
+import { b, e, l1, s, tryCatch } from '../_/helpers.js'
 import { memoryPrompter } from '../_/mocks/tty.js'
 import stripAnsi from 'strip-ansi'
 import { expectType } from 'tsd'
@@ -54,6 +54,58 @@ describe(`boolean`, () => {
       { ctrl: false, meta: false, sequence: ``, shift: false, name: `return` },
     )
     await run()
+  })
+})
+
+describe(`enumeration`, () => {
+  it(`defaults to first member`, async () => {
+    parameters = { a: { schema: e, prompt: true } }
+    keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
+    await run()
+  })
+  it(`can select member rightward with right key`, async () => {
+    parameters = { a: { schema: e, prompt: true } }
+    keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `right` })
+    keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `enter` })
+    await run()
+  })
+  it(`can select member leftward with left key`, async () => {
+    parameters = { a: { schema: e, prompt: true } }
+    keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `right` })
+    keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `left` })
+    keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `enter` })
+    await run()
+  })
+  describe(`tab`, () => {
+    it(`can select member rightward with tab key`, async () => {
+      parameters = { a: { schema: e, prompt: true } }
+      keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `tab` })
+      keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `enter` })
+      await run()
+    })
+    it(`can select member leftward with shift+tab key`, async () => {
+      parameters = { a: { schema: e, prompt: true } }
+      keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `right` })
+      keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: true, name: `tab` })
+      keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `enter` })
+      await run()
+    })
+  })
+  describe(`loop`, () => {
+    it(`right key on last member loops to first member`, async () => {
+      parameters = { a: { schema: e, prompt: true } }
+      keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `right` })
+      keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `right` })
+      keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `right` })
+      keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `enter` })
+      await run()
+    })
+    it(`left key on first member loops to last member`, async () => {
+      parameters = { a: { schema: e, prompt: true } }
+      keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `left` })
+      keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `enter` })
+      await run()
+    })
   })
 })
 
