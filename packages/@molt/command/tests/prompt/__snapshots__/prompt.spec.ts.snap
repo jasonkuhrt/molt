@@ -12,12 +12,17 @@ exports[`boolean > can be toggled to "yes" > tty 1`] = `
   "[2m[90m1/1[39m[22m  [32ma[39m
 ",
   "[?25l",
-  "     ❯ ",
-  "[32m[1mno[22m[39m / yes",
-  "[1G",
   "[2K",
+  "[1G",
   "     ❯ ",
-  "no / [32m[1myes[22m[39m",
+  "[32m[1mno[22m[39m [2m|[22m yes",
+  "[2K",
+  "[1G",
+  "     ❯ ",
+  "no [2m|[22m [32m[1myes[22m[39m",
+  "
+",
+  "[?25h",
   "[?25h",
   "
 ",
@@ -29,12 +34,17 @@ exports[`boolean > can be toggled to "yes" > tty strip ansi 1`] = `
   "1/1  a
 ",
   "",
-  "     ❯ ",
-  "no / yes",
   "",
   "",
   "     ❯ ",
-  "no / yes",
+  "no | yes",
+  "",
+  "",
+  "     ❯ ",
+  "no | yes",
+  "
+",
+  "",
   "",
   "
 ",
@@ -53,16 +63,21 @@ exports[`boolean > can be toggled to "yes" and then back to "no" > tty 1`] = `
   "[2m[90m1/1[39m[22m  [32ma[39m
 ",
   "[?25l",
-  "     ❯ ",
-  "[32m[1mno[22m[39m / yes",
-  "[1G",
   "[2K",
-  "     ❯ ",
-  "no / [32m[1myes[22m[39m",
   "[1G",
-  "[2K",
   "     ❯ ",
-  "[32m[1mno[22m[39m / yes",
+  "[32m[1mno[22m[39m [2m|[22m yes",
+  "[2K",
+  "[1G",
+  "     ❯ ",
+  "no [2m|[22m [32m[1myes[22m[39m",
+  "[2K",
+  "[1G",
+  "     ❯ ",
+  "[32m[1mno[22m[39m [2m|[22m yes",
+  "
+",
+  "[?25h",
   "[?25h",
   "
 ",
@@ -74,16 +89,21 @@ exports[`boolean > can be toggled to "yes" and then back to "no" > tty strip ans
   "1/1  a
 ",
   "",
-  "     ❯ ",
-  "no / yes",
   "",
   "",
   "     ❯ ",
-  "no / yes",
+  "no | yes",
   "",
   "",
   "     ❯ ",
-  "no / yes",
+  "no | yes",
+  "",
+  "",
+  "     ❯ ",
+  "no | yes",
+  "
+",
+  "",
   "",
   "
 ",
@@ -102,16 +122,21 @@ exports[`boolean > can use tab to toggle between "yes" and "no" > tty 1`] = `
   "[2m[90m1/1[39m[22m  [32ma[39m
 ",
   "[?25l",
-  "     ❯ ",
-  "[32m[1mno[22m[39m / yes",
-  "[1G",
   "[2K",
-  "     ❯ ",
-  "no / [32m[1myes[22m[39m",
   "[1G",
-  "[2K",
   "     ❯ ",
-  "[32m[1mno[22m[39m / yes",
+  "[32m[1mno[22m[39m [2m|[22m yes",
+  "[2K",
+  "[1G",
+  "     ❯ ",
+  "no [2m|[22m [32m[1myes[22m[39m",
+  "[2K",
+  "[1G",
+  "     ❯ ",
+  "[32m[1mno[22m[39m [2m|[22m yes",
+  "
+",
+  "[?25h",
   "[?25h",
   "
 ",
@@ -123,16 +148,21 @@ exports[`boolean > can use tab to toggle between "yes" and "no" > tty strip ansi
   "1/1  a
 ",
   "",
-  "     ❯ ",
-  "no / yes",
   "",
   "",
   "     ❯ ",
-  "no / yes",
+  "no | yes",
   "",
   "",
   "     ❯ ",
-  "no / yes",
+  "no | yes",
+  "",
+  "",
+  "     ❯ ",
+  "no | yes",
+  "
+",
+  "",
   "",
   "
 ",
@@ -151,8 +181,13 @@ exports[`boolean > defaults to "no" > tty 1`] = `
   "[2m[90m1/1[39m[22m  [32ma[39m
 ",
   "[?25l",
+  "[2K",
+  "[1G",
   "     ❯ ",
-  "[32m[1mno[22m[39m / yes",
+  "[32m[1mno[22m[39m [2m|[22m yes",
+  "
+",
+  "[?25h",
   "[?25h",
   "
 ",
@@ -164,8 +199,13 @@ exports[`boolean > defaults to "no" > tty strip ansi 1`] = `
   "1/1  a
 ",
   "",
+  "",
+  "",
   "     ❯ ",
-  "no / yes",
+  "no | yes",
+  "
+",
+  "",
   "",
   "
 ",
@@ -183,6 +223,373 @@ exports[`can be explicitly disabled with a "when" condition present > args 1`] =
 exports[`can be explicitly disabled with a "when" condition present > tty 1`] = `[]`;
 
 exports[`can be explicitly disabled with a "when" condition present > tty strip ansi 1`] = `[]`;
+
+exports[`enumeration > can select member leftward with left key > args 1`] = `
+{
+  "a": "major",
+  "help": false,
+}
+`;
+
+exports[`enumeration > can select member leftward with left key > tty 1`] = `
+[
+  "[2m[90m1/1[39m[22m  [32ma[39m
+",
+  "[?25l",
+  "[2K",
+  "[1G",
+  "     ❯ ",
+  "[32m[1mmajor[22m[39m[2m | [22mminor[2m | [22mpatch",
+  "[2K",
+  "[1G",
+  "     ❯ ",
+  "major[2m | [22m[32m[1mminor[22m[39m[2m | [22mpatch",
+  "[2K",
+  "[1G",
+  "     ❯ ",
+  "[32m[1mmajor[22m[39m[2m | [22mminor[2m | [22mpatch",
+  "
+",
+  "[?25h",
+  "
+",
+]
+`;
+
+exports[`enumeration > can select member leftward with left key > tty strip ansi 1`] = `
+[
+  "1/1  a
+",
+  "",
+  "",
+  "",
+  "     ❯ ",
+  "major | minor | patch",
+  "",
+  "",
+  "     ❯ ",
+  "major | minor | patch",
+  "",
+  "",
+  "     ❯ ",
+  "major | minor | patch",
+  "
+",
+  "",
+  "
+",
+]
+`;
+
+exports[`enumeration > can select member rightward with right key > args 1`] = `
+{
+  "a": "minor",
+  "help": false,
+}
+`;
+
+exports[`enumeration > can select member rightward with right key > tty 1`] = `
+[
+  "[2m[90m1/1[39m[22m  [32ma[39m
+",
+  "[?25l",
+  "[2K",
+  "[1G",
+  "     ❯ ",
+  "[32m[1mmajor[22m[39m[2m | [22mminor[2m | [22mpatch",
+  "[2K",
+  "[1G",
+  "     ❯ ",
+  "major[2m | [22m[32m[1mminor[22m[39m[2m | [22mpatch",
+  "
+",
+  "[?25h",
+  "
+",
+]
+`;
+
+exports[`enumeration > can select member rightward with right key > tty strip ansi 1`] = `
+[
+  "1/1  a
+",
+  "",
+  "",
+  "",
+  "     ❯ ",
+  "major | minor | patch",
+  "",
+  "",
+  "     ❯ ",
+  "major | minor | patch",
+  "
+",
+  "",
+  "
+",
+]
+`;
+
+exports[`enumeration > defaults to first member > args 1`] = `
+{
+  "a": "major",
+  "help": false,
+}
+`;
+
+exports[`enumeration > defaults to first member > tty 1`] = `
+[
+  "[2m[90m1/1[39m[22m  [32ma[39m
+",
+  "[?25l",
+  "[2K",
+  "[1G",
+  "     ❯ ",
+  "[32m[1mmajor[22m[39m[2m | [22mminor[2m | [22mpatch",
+  "
+",
+  "[?25h",
+  "
+",
+]
+`;
+
+exports[`enumeration > defaults to first member > tty strip ansi 1`] = `
+[
+  "1/1  a
+",
+  "",
+  "",
+  "",
+  "     ❯ ",
+  "major | minor | patch",
+  "
+",
+  "",
+  "
+",
+]
+`;
+
+exports[`enumeration > loop > left key on first member loops to last member > args 1`] = `
+{
+  "a": "patch",
+  "help": false,
+}
+`;
+
+exports[`enumeration > loop > left key on first member loops to last member > tty 1`] = `
+[
+  "[2m[90m1/1[39m[22m  [32ma[39m
+",
+  "[?25l",
+  "[2K",
+  "[1G",
+  "     ❯ ",
+  "[32m[1mmajor[22m[39m[2m | [22mminor[2m | [22mpatch",
+  "[2K",
+  "[1G",
+  "     ❯ ",
+  "major[2m | [22mminor[2m | [22m[32m[1mpatch[22m[39m",
+  "
+",
+  "[?25h",
+  "
+",
+]
+`;
+
+exports[`enumeration > loop > left key on first member loops to last member > tty strip ansi 1`] = `
+[
+  "1/1  a
+",
+  "",
+  "",
+  "",
+  "     ❯ ",
+  "major | minor | patch",
+  "",
+  "",
+  "     ❯ ",
+  "major | minor | patch",
+  "
+",
+  "",
+  "
+",
+]
+`;
+
+exports[`enumeration > loop > right key on last member loops to first member > args 1`] = `
+{
+  "a": "major",
+  "help": false,
+}
+`;
+
+exports[`enumeration > loop > right key on last member loops to first member > tty 1`] = `
+[
+  "[2m[90m1/1[39m[22m  [32ma[39m
+",
+  "[?25l",
+  "[2K",
+  "[1G",
+  "     ❯ ",
+  "[32m[1mmajor[22m[39m[2m | [22mminor[2m | [22mpatch",
+  "[2K",
+  "[1G",
+  "     ❯ ",
+  "major[2m | [22m[32m[1mminor[22m[39m[2m | [22mpatch",
+  "[2K",
+  "[1G",
+  "     ❯ ",
+  "major[2m | [22mminor[2m | [22m[32m[1mpatch[22m[39m",
+  "[2K",
+  "[1G",
+  "     ❯ ",
+  "[32m[1mmajor[22m[39m[2m | [22mminor[2m | [22mpatch",
+  "
+",
+  "[?25h",
+  "
+",
+]
+`;
+
+exports[`enumeration > loop > right key on last member loops to first member > tty strip ansi 1`] = `
+[
+  "1/1  a
+",
+  "",
+  "",
+  "",
+  "     ❯ ",
+  "major | minor | patch",
+  "",
+  "",
+  "     ❯ ",
+  "major | minor | patch",
+  "",
+  "",
+  "     ❯ ",
+  "major | minor | patch",
+  "",
+  "",
+  "     ❯ ",
+  "major | minor | patch",
+  "
+",
+  "",
+  "
+",
+]
+`;
+
+exports[`enumeration > tab > can select member leftward with shift+tab key > args 1`] = `
+{
+  "a": "major",
+  "help": false,
+}
+`;
+
+exports[`enumeration > tab > can select member leftward with shift+tab key > tty 1`] = `
+[
+  "[2m[90m1/1[39m[22m  [32ma[39m
+",
+  "[?25l",
+  "[2K",
+  "[1G",
+  "     ❯ ",
+  "[32m[1mmajor[22m[39m[2m | [22mminor[2m | [22mpatch",
+  "[2K",
+  "[1G",
+  "     ❯ ",
+  "major[2m | [22m[32m[1mminor[22m[39m[2m | [22mpatch",
+  "[2K",
+  "[1G",
+  "     ❯ ",
+  "[32m[1mmajor[22m[39m[2m | [22mminor[2m | [22mpatch",
+  "
+",
+  "[?25h",
+  "
+",
+]
+`;
+
+exports[`enumeration > tab > can select member leftward with shift+tab key > tty strip ansi 1`] = `
+[
+  "1/1  a
+",
+  "",
+  "",
+  "",
+  "     ❯ ",
+  "major | minor | patch",
+  "",
+  "",
+  "     ❯ ",
+  "major | minor | patch",
+  "",
+  "",
+  "     ❯ ",
+  "major | minor | patch",
+  "
+",
+  "",
+  "
+",
+]
+`;
+
+exports[`enumeration > tab > can select member rightward with tab key > args 1`] = `
+{
+  "a": "minor",
+  "help": false,
+}
+`;
+
+exports[`enumeration > tab > can select member rightward with tab key > tty 1`] = `
+[
+  "[2m[90m1/1[39m[22m  [32ma[39m
+",
+  "[?25l",
+  "[2K",
+  "[1G",
+  "     ❯ ",
+  "[32m[1mmajor[22m[39m[2m | [22mminor[2m | [22mpatch",
+  "[2K",
+  "[1G",
+  "     ❯ ",
+  "major[2m | [22m[32m[1mminor[22m[39m[2m | [22mpatch",
+  "
+",
+  "[?25h",
+  "
+",
+]
+`;
+
+exports[`enumeration > tab > can select member rightward with tab key > tty strip ansi 1`] = `
+[
+  "1/1  a
+",
+  "",
+  "",
+  "",
+  "     ❯ ",
+  "major | minor | patch",
+  "",
+  "",
+  "     ❯ ",
+  "major | minor | patch",
+  "
+",
+  "",
+  "
+",
+]
+`;
 
 exports[`prompt when invalid input > args 1`] = `
 {
