@@ -1,7 +1,7 @@
 import { groupBy } from '../lib/prelude.js'
 import { Tex } from '../lib/Tex/index.js'
 import { Text } from '../lib/Text/index.js'
-import type { ParameterSpec } from '../ParameterSpec/index.js'
+import type { CommandParameter } from '../CommandParameter/index.js'
 import type { Settings } from '../Settings/index.js'
 import { Term } from '../term.js'
 import chalk from 'chalk'
@@ -23,7 +23,7 @@ interface RenderSettings {
 }
 
 export const render = (
-  specs_: ParameterSpec.Output[],
+  specs_: CommandParameter.Output[],
   settings: Settings.Output,
   _settings?: RenderSettings,
 ) => {
@@ -153,7 +153,7 @@ export const render = (
   return output
 }
 
-const environmentNote = (specs: ParameterSpec.Output[], settings: Settings.Output) => {
+const environmentNote = (specs: CommandParameter.Output[], settings: Settings.Output) => {
   const isHasSpecsWithCustomEnvironmentNamespace =
     specs
       .filter((_) => _.environment?.enabled)
@@ -219,7 +219,7 @@ const environmentNote = (specs: ParameterSpec.Output[], settings: Settings.Outpu
   )
 }
 
-const parameterDefault = (spec: ParameterSpec.Output) => {
+const parameterDefault = (spec: CommandParameter.Output) => {
   if (spec._tag === `Exclusive`) {
     return Term.colors.dim(`–`)
   }
@@ -244,7 +244,7 @@ const labels = {
   required: chalk.bold(chalk.black(Term.colors.alertBoldBg(` REQUIRED `))),
 }
 
-const parameterName = (spec: ParameterSpec.Output) => {
+const parameterName = (spec: CommandParameter.Output) => {
   const isRequired =
     ((spec._tag === `Basic` || spec._tag === `Union`) && spec.optionality._tag === `required`) ||
     (spec._tag === `Exclusive` && spec.group.optionality._tag === `required`)
@@ -275,7 +275,7 @@ const parameterName = (spec: ParameterSpec.Output) => {
   )
 }
 
-const parameterTypeAndDescription = (settings: Settings.Output, spec: ParameterSpec.Output) => {
+const parameterTypeAndDescription = (settings: Settings.Output, spec: CommandParameter.Output) => {
   if (spec._tag === `Union`) {
     const unionMemberIcon = Term.colors.accent(`◒`)
     const isOneOrMoreMembersWithDescription = spec.types.some((_) => _.description !== null)
@@ -316,7 +316,7 @@ const parameterTypeAndDescription = (settings: Settings.Output, spec: ParameterS
   )
 }
 
-const parameterEnvironment = (spec: ParameterSpec.Output, settings: Settings.Output) => {
+const parameterEnvironment = (spec: CommandParameter.Output, settings: Settings.Output) => {
   return spec.environment?.enabled
     ? Term.colors.secondary(Text.chars.check) +
         (spec.environment.enabled && spec.environment.namespaces.length === 0
@@ -339,7 +339,7 @@ const parameterEnvironment = (spec: ParameterSpec.Output, settings: Settings.Out
 /**
  * Render an enum type into a column.
  */
-const typeEnum = (type: ParameterSpec.TypeEnum) => {
+const typeEnum = (type: CommandParameter.TypeEnum) => {
   const separator = Term.colors.accent(` ${Text.chars.pipe} `)
   const members = Object.values(type.members)
   const lines = members.map((member) => Term.colors.positive(String(member))).join(separator)
@@ -352,7 +352,7 @@ const title = (string: string) => {
   return Text.line(string.toUpperCase())
 }
 
-const typeScalar = (type: ParameterSpec.Type): string => {
+const typeScalar = (type: CommandParameter.Type): string => {
   if (type._tag === `TypeEnum`) return typeEnum(type)
   return Term.colors.positive(typeTagsToTypeScriptName[type._tag])
 }

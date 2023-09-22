@@ -1,5 +1,5 @@
-import type { ParameterSpec } from '../../ParameterSpec/index.js'
-import type { ArgumentValueScalar } from '../../ParameterSpec/types.js'
+import type { CommandParameter } from '../../CommandParameter/index.js'
+import type { ArgumentValueScalar } from '../../CommandParameter/types.js'
 import type { InternalState, SomeBuilderExclusiveInitial } from './types.js'
 
 export const create = (): SomeBuilderExclusiveInitial => {
@@ -8,7 +8,7 @@ export const create = (): SomeBuilderExclusiveInitial => {
       _tag: `Exclusive`,
       optionality: { _tag: `required` },
       parameters: [],
-    } satisfies ParameterSpec.Input.Exclusive,
+    } satisfies CommandParameter.Input.Exclusive,
     typeState: undefined as any, // eslint-disable-line
   }
 

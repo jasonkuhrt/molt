@@ -9,7 +9,7 @@ import type {
   ParseResultExclusiveGroupError,
   ParseResultExclusiveGroupSupplied,
 } from '../OpeningArgs/OpeningArgs.js'
-import { ParameterSpec } from '../ParameterSpec/index.js'
+import { CommandParameter } from '../CommandParameter/index.js'
 import { match } from '../Pattern/Pattern.js'
 import { createStdioPrompter, prompt } from './prompt.js'
 
@@ -38,7 +38,7 @@ export interface ParseProgressPostPrompt {
       openingParseResult: OpeningArgs.ParseResult['basicParameters'][string]
       prompt: {
         enabled: boolean
-        arg: ParameterSpec.ArgumentValue
+        arg: CommandParameter.ArgumentValue
       }
     }
   >
@@ -63,7 +63,7 @@ export interface ParseProgressDone {
 
 export const parse = (
   settings: Settings.Output,
-  parameterSpecInputs: Record<string, ParameterSpec.Input>,
+  parameterSpecInputs: Record<string, CommandParameter.Input>,
   argInputs: RawArgInputs,
 ) => {
   const testDebuggingNoExit = process.env[`testing_molt`] === `true`
@@ -75,7 +75,7 @@ export const parse = (
 
   // todo handle concept of specs themselves having errors
   const specsResult = {
-    specs: ParameterSpec.process(parameterSpecInputs, settings),
+    specs: CommandParameter.process(parameterSpecInputs, settings),
   }
   // dump(specsResult)
 
@@ -106,7 +106,7 @@ export const parse = (
   }
 
   if (argInputsTTY) {
-    const basicSpecs = specsResult.specs.filter((_): _ is ParameterSpec.Output.Basic => _._tag === `Basic`)
+    const basicSpecs = specsResult.specs.filter((_): _ is CommandParameter.Output.Basic => _._tag === `Basic`)
     for (const spec of basicSpecs) {
       const promptEnabled =
         (spec.prompt.when !== null && spec.prompt.enabled !== false) ||
@@ -211,7 +211,7 @@ export const parse = (
                 : null,
             ]
           })
-          .filter((kv): kv is [string, ParameterSpec.ArgumentValue] => kv[1] !== null),
+          .filter((kv): kv is [string, CommandParameter.ArgumentValue] => kv[1] !== null),
       ),
       ...Object.fromEntries(
         Object.values(parseProgressPostPrompts.mutuallyExclusiveParameters)

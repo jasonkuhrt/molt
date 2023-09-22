@@ -1,5 +1,5 @@
 import type { Values } from '../helpers.js'
-import type { ParameterSpec } from '../ParameterSpec/index.js'
+import type { CommandParameter } from '../CommandParameter/index.js'
 import type { ExclusiveParameterConfiguration } from './exclusive/types.js'
 import type { ParameterConfiguration } from './root/types.js'
 import type { FlagName } from '@molt/types'
@@ -22,7 +22,7 @@ export namespace State {
           [canonicalName: string]: {
             NameParsed: FlagName.Types.FlagNames
             NameUnion: string
-            Schema: ParameterSpec.SomeBasicType
+            Schema: CommandParameter.SomeBasicType
           }
         }
       }
@@ -31,7 +31,7 @@ export namespace State {
       [nameExpression: string]: {
         NameParsed: FlagName.Types.FlagNames
         NameUnion: string
-        Schema: ParameterSpec.SomeBasicType
+        Schema: CommandParameter.SomeBasicType
       }
     }
   }
@@ -62,7 +62,7 @@ export namespace State {
     string,
     {
       schema: ParameterConfiguration['schema']
-      prompt?: ParameterSpec.Input.Prompt<any>
+      prompt?: CommandParameter.Input.Prompt<any>
     }
   >
 

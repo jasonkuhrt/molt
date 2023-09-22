@@ -1,16 +1,16 @@
-import type { ParameterSpec } from '../../ParameterSpec/index.js'
+import type { CommandParameter } from '../../CommandParameter/index.js'
 import type { RawArgInputs } from '../root/types.js'
 import type { State } from '../State.js'
 import type { z } from 'zod'
 
 export interface ExclusiveParameterConfiguration {
-  schema: ParameterSpec.SomeExclusiveZodType
+  schema: CommandParameter.SomeExclusiveZodType
 }
 
 // prettier-ignore
 interface Parameter<State extends State.Base, Label extends string> {
   <NameExpression extends string, Configuration extends ExclusiveParameterConfiguration   >(name: State.ValidateNameExpression<State, NameExpression>, configuration: Configuration): BuilderExclusiveInitial<State.AddExclusiveParameter<State, Label, NameExpression, Configuration>, Label>
-  <NameExpression extends string, Schema        extends ParameterSpec.SomeExclusiveZodType>(name: State.ValidateNameExpression<State, NameExpression>, schema: Schema              ): BuilderExclusiveInitial<State.AddExclusiveParameter<State, Label, NameExpression, {schema:Schema}>, Label>
+  <NameExpression extends string, Schema        extends CommandParameter.SomeExclusiveZodType>(name: State.ValidateNameExpression<State, NameExpression>, schema: Schema              ): BuilderExclusiveInitial<State.AddExclusiveParameter<State, Label, NameExpression, {schema:Schema}>, Label>
 }
 
 /**
@@ -24,7 +24,7 @@ export type InternalState<State extends State.Base = State.Base> = {
   /**
    * Used for runtime.
    */
-  input: ParameterSpec.Input.Exclusive
+  input: CommandParameter.Input.Exclusive
 }
 
 // prettier-ignore
@@ -48,7 +48,7 @@ export interface BuilderAfterSettings<Spec extends State.Base> {
 }
 
 export interface SomeParameter {
-  (nameExpression: any, type: ParameterSpec.SomeExclusiveZodType): any // eslint-disable-line
+  (nameExpression: any, type: CommandParameter.SomeExclusiveZodType): any // eslint-disable-line
   (nameExpression: any, configuration: ExclusiveParameterConfiguration): any // eslint-disable-line
 }
 

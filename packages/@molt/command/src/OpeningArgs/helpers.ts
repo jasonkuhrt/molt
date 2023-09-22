@@ -1,5 +1,5 @@
+import type { CommandParameter } from '../CommandParameter/index.js'
 import { BooleanLookup, negateNamePattern, parseEnvironmentVariableBoolean } from '../helpers.js'
-import type { ParameterSpec } from '../ParameterSpec/index.js'
 import type { Value } from './types.js'
 import { Alge } from 'alge'
 import camelCase from 'lodash.camelcase'
@@ -12,7 +12,7 @@ export const stripeDashPrefix = (flagNameInput: string): string => {
 export const zodPassthrough = <T>() => z.any().transform((_) => _ as T)
 
 // prettier-ignore
-export const parseRawInput = (name: string, rawValue: string, spec: ParameterSpec.Output): Value => {
+export const parseRawInput = (name: string, rawValue: string, spec: CommandParameter.Output): Value => {
   const parsedValue = parseRawValue(rawValue, spec)
   if (parsedValue === null) {
     const expectedTypes = Alge.match(spec).Union((spec) => spec.types.map(_=>_.type._tag).join(` | `)).else(spec => spec.type._tag)
@@ -35,7 +35,7 @@ const casesHandled = (value: never): never => {
  * Is the environment variable input negated? Unlike line input the environment can be
  * namespaced so a bit more work is needed to parse out the name pattern.
  */
-export const isEnvarNegated = (name: string, spec: ParameterSpec.Output): boolean => {
+export const isEnvarNegated = (name: string, spec: CommandParameter.Output): boolean => {
   const nameWithNamespaceStripped = stripeNamespace(name, spec)
   // dump({ nameWithNamespaceStripped })
   return negateNamePattern.test(nameWithNamespaceStripped)
@@ -45,7 +45,7 @@ export const isNegated = (name: string): boolean => {
   return negateNamePattern.test(name)
 }
 
-const stripeNamespace = (name: string, spec: ParameterSpec.Output): string => {
+const stripeNamespace = (name: string, spec: CommandParameter.Output): string => {
   for (const namespace of spec.environment?.namespaces ?? []) {
     if (name.startsWith(namespace)) return camelCase(name.slice(namespace.length))
   }
@@ -54,7 +54,7 @@ const stripeNamespace = (name: string, spec: ParameterSpec.Output): string => {
 
 export const parseRawValue = (
   value: string,
-  spec: ParameterSpec.Output,
+  spec: CommandParameter.Output,
 ): null | boolean | number | string => {
   return Alge.match(spec)
     .Union((spec) => {
@@ -64,7 +64,7 @@ export const parseRawValue = (
        * For example a number is a subset of string type. If there is a string and number variant
        * we should first check if the value could be a number, than a string.
        */
-      const variantOrder: ParameterSpec.Type['_tag'][] = [
+      const variantOrder: CommandParameter.Type['_tag'][] = [
         `TypeNumber`,
         `TypeBoolean`,
         `TypeString`,
@@ -111,13 +111,16 @@ export const parseRawValue = (
  *
  * When we receive a raw value, we infer its base  type based on checking the type first member of the enum.
  */
-export const parseEnum = (spec: ParameterSpec.TypeEnum, value: string): string | number => {
+export const parseEnum = (spec: CommandParameter.TypeEnum, value: string): string | number => {
   const isNumberEnum = spec.members.find((_) => typeof _ === `number`)
   if (isNumberEnum) return Number(value)
   return value
 }
 
-export const parseLiteral = (spec: ParameterSpec.TypeLiteral, value: string): boolean | string | number => {
+export const parseLiteral = (
+  spec: CommandParameter.TypeLiteral,
+  value: string,
+): boolean | string | number => {
   if (typeof spec.value === `string`) return value
   if (typeof spec.value === `number`) return Number(value)
   if (typeof spec.value === `boolean`) {

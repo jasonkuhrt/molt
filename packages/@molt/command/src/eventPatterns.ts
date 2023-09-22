@@ -1,17 +1,17 @@
+import type { CommandParameter } from './CommandParameter/index.js'
 import type { Errors } from './Errors/index.js'
 import type { OpeningArgs } from './OpeningArgs/index.js'
-import type { ParameterSpec } from './ParameterSpec/index.js'
 import type { Pattern } from './Pattern/Pattern.js'
 import type { z } from 'zod'
 
 // prettier-ignore
-export type EventPatternsInputAtLeastOne<Schema extends ParameterSpec.Input.Schema> =
+export type EventPatternsInputAtLeastOne<Schema extends CommandParameter.Input.Schema> =
   z.ZodFirstPartyTypeKind.ZodOptional extends Schema['_def']['typeName']  	? Pattern<BasicParameterParseEvent,'result'> :
   z.ZodFirstPartyTypeKind.ZodDefault  extends Schema['_def']['typeName']    ? Pattern<BasicParameterParseEvent,'result'> :
                                                                               Pattern<BasicParameterParseEventAccepted | BasicParameterParseEventRejected,'result'>
 
 // prettier-ignore
-export type EventPatternsInput<Schema extends ParameterSpec.Input.Schema> =
+export type EventPatternsInput<Schema extends CommandParameter.Input.Schema> =
   Schema['_def']['typeName'] extends z.ZodFirstPartyTypeKind.ZodOptional  ? Pattern<BasicParameterParseEvent,'result'> :
   Schema['_def']['typeName'] extends z.ZodFirstPartyTypeKind.ZodDefault   ? Pattern<BasicParameterParseEvent,'result'> :
                                                                             Pattern<BasicParameterParseEventAccepted | BasicParameterParseEventRejected,'result'>
@@ -23,23 +23,23 @@ export type BasicParameterParseEvent =
 
 export interface BasicParameterParseEventOmitted {
   result: 'omitted'
-  spec: ParameterSpec.Output.BasicData
+  spec: CommandParameter.Output.BasicData
 }
 
 export interface BasicParameterParseEventAccepted {
   result: 'accepted'
-  spec: ParameterSpec.Output.BasicData
-  value: ParameterSpec.ArgumentValue
+  spec: CommandParameter.Output.BasicData
+  value: CommandParameter.ArgumentValue
 }
 
 export interface BasicParameterParseEventRejected {
   result: 'rejected'
-  spec: ParameterSpec.Output.BasicData
+  spec: CommandParameter.Output.BasicData
   error: Errors.ErrorMissingArgument['name'] | Errors.ErrorInvalidArgument['name']
 }
 
 export const createEvent = (parseResult: OpeningArgs.ParseResultBasic) => {
-  const specData: ParameterSpec.Output.BasicData | ParameterSpec.Output.UnionData =
+  const specData: CommandParameter.Output.BasicData | CommandParameter.Output.UnionData =
     parseResult.spec._tag === `Basic`
       ? {
           ...parseResult.spec,

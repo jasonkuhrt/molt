@@ -3,7 +3,7 @@ import { KeyPress } from '../lib/KeyPress/index.js'
 import type { Pam } from '../lib/Pam/index.js'
 import { Tex } from '../lib/Tex/index_.js'
 import { Text } from '../lib/Text/index.js'
-import { ParameterSpec } from '../ParameterSpec/index.js'
+import { CommandParameter } from '../CommandParameter/index.js'
 import { Term } from '../term.js'
 import type { ParseProgressPostPrompt, ParseProgressPostPromptAnnotation } from './parse.js'
 import ansiEscapes from 'ansi-escapes'
@@ -43,7 +43,7 @@ export const prompt = async (
         prompt: `${Text.pad(`left`, gutterWidth, Text.chars.space, `❯ `)}`,
         parameter: param,
       })
-      const validationResult = ParameterSpec.validate(param, arg)
+      const validationResult = CommandParameter.validate(param, arg)
       if (validationResult._tag === `Success`) {
         args[param.name.canonical] = validationResult.value
         prompter.say(``) // newline

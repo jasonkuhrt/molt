@@ -4,13 +4,13 @@ import { eventPatterns } from '../eventPatterns.js'
 import type { Values } from '../helpers.js'
 import { parseEnvironmentVariableBooleanOrThrow } from '../helpers.js'
 import { defaultParameterNamePrefixes } from '../OpeningArgs/Environment/Environment.js'
-import type { ParameterSpec } from '../ParameterSpec/index.js'
+import type { CommandParameter } from '../CommandParameter/index.js'
 import type { FlagName } from '@molt/types'
 import snakeCase from 'lodash.snakecase'
 
 export type OnErrorReaction = 'exit' | 'throw'
 
-export type InputPrompt<S extends ParameterSpec.Input.Schema> =
+export type InputPrompt<S extends CommandParameter.Input.Schema> =
   | boolean
   | {
       enabled?: boolean
@@ -47,7 +47,7 @@ export interface Input<ParametersObject extends State.ParametersSchemaObjectBase
 export interface Output {
   prompt: {
     enabled: boolean
-    when: EventPatternsInput<ParameterSpec.Input.Schema>
+    when: EventPatternsInput<CommandParameter.Input.Schema>
   }
   description?: string | undefined
   help: boolean

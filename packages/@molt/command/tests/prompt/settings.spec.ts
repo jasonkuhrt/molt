@@ -1,12 +1,12 @@
 import type { Settings } from '../../src/index.js'
 import { Command } from '../../src/index.js'
-import type { ParameterSpec } from '../../src/ParameterSpec/index.js'
+import type { CommandParameter } from '../../src/CommandParameter/index.js'
 import { s, tryCatch } from '../_/helpers.js'
 import { memoryPrompter } from '../_/mocks/tty.js'
 import stripAnsi from 'strip-ansi'
 import { describe, expect, it } from 'vitest'
 
-const S = <S extends ParameterSpec.Input.Schema>(settings: Settings.InputPrompt<S>) => settings
+const S = <S extends CommandParameter.Input.Schema>(settings: Settings.InputPrompt<S>) => settings
 
 describe(`parameter level`, () => {
   it(`can be passed object`, async () => {

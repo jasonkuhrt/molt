@@ -15,7 +15,7 @@ export namespace Parameter {
     _tag: 'Union'
     name: Name
     types: {
-      type: Type
+      type: Type.Group.Scalar
       description: null | string
     }[]
     optionality: Optionality

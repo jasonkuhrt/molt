@@ -1,5 +1,5 @@
 import { getLowerCaseEnvironment, lowerCaseObjectKeys } from '../../helpers.js'
-import { ParameterSpec } from '../../ParameterSpec/index.js'
+import { CommandParameter } from '../../CommandParameter/index.js'
 import { parse } from '../../parse/parse.js'
 import { Settings } from '../../Settings/index.js'
 import * as ExclusiveBuilder from '../exclusive/constructor.js'
@@ -15,18 +15,18 @@ export const create = (): RootBuilder => {
   const $$ = {
     addParameterBasicOrUnion: (nameExpression: string, configuration: ParameterConfiguration) => {
       const prompt = configuration.prompt ?? null
-      const parameter = ParameterSpec.isUnionType(configuration.schema)
+      const parameter = CommandParameter.isUnionType(configuration.schema)
         ? ({
             _tag: `Union`,
             type: configuration.schema,
             nameExpression: nameExpression,
-          } satisfies ParameterSpec.Input.Union)
+          } satisfies CommandParameter.Input.Union)
         : ({
             _tag: `Basic`,
             type: configuration.schema,
             nameExpression: nameExpression,
             prompt,
-          } satisfies ParameterSpec.Input.Basic)
+          } satisfies CommandParameter.Input.Basic)
       $.parameterSpecInputs[nameExpression] = parameter
     },
   }
@@ -77,11 +77,11 @@ export const create = (): RootBuilder => {
 interface State {
   settings: null | Settings.Output
   newSettingsBuffer: Settings.Input[]
-  parameterSpecInputs: Record<string, ParameterSpec.Input>
+  parameterSpecInputs: Record<string, CommandParameter.Input>
 }
 
 interface Parameter {
-  (nameExpression: string, type: ParameterSpec.SomeBasicType): InternalRootBuilder
+  (nameExpression: string, type: CommandParameter.SomeBasicType): InternalRootBuilder
   (nameExpression: string, configuration: ParameterConfiguration): InternalRootBuilder
 }
 

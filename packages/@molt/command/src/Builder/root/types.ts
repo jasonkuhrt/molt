@@ -1,5 +1,5 @@
 import type { OpeningArgs } from '../../OpeningArgs/index.js'
-import type { ParameterSpec } from '../../ParameterSpec/index.js'
+import type { CommandParameter } from '../../CommandParameter/index.js'
 import type { Prompter } from '../../parse/prompt.js'
 import type { Settings } from '../../Settings/index.js'
 import type {
@@ -10,11 +10,11 @@ import type {
 // eslint-disable-next-line
 import { State } from '../State.js'
 
-export type Schema = ParameterSpec.SomeBasicType | ParameterSpec.SomeUnionType
+export type Schema = CommandParameter.SomeBasicType | CommandParameter.SomeUnionType
 
 export interface ParameterConfiguration {
   schema: Schema
-  prompt?: ParameterSpec.Input.Prompt<this['schema']>
+  prompt?: CommandParameter.Input.Prompt<this['schema']>
 }
 
 export type IsHasKey<Obj extends object, Key> = Key extends keyof Obj ? true : false
@@ -29,7 +29,7 @@ export type IsPromptEnabledInCommandSettings<P extends Settings.Input<any>> =
                                                                                 IsPromptEnabled<P['prompt']>
 
 // prettier-ignore
-export type IsPromptEnabled<P extends ParameterSpec.Input.Prompt<any>|undefined> =
+export type IsPromptEnabled<P extends CommandParameter.Input.Prompt<any>|undefined> =
   P                                               extends undefined ? false :
   P                                               extends false     ? false :
   P                                               extends true      ? true  :
@@ -39,7 +39,7 @@ export type IsPromptEnabled<P extends ParameterSpec.Input.Prompt<any>|undefined>
 
 export interface SomeParameterConfig<S extends Schema> {
   schema: S
-  prompt?: ParameterSpec.Input.Prompt<S>
+  prompt?: CommandParameter.Input.Prompt<S>
 }
 
 // prettier-ignore

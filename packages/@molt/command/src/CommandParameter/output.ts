@@ -1,21 +1,18 @@
 import type { EventPatternsInput } from '../eventPatterns.js'
-import type { ParameterSpec } from './index.js'
+import type { Pam } from '../lib/Pam/index.js'
+import type { CommandParameter } from './index.js'
 import type { ArgumentValueScalar, SomeBasicType, Type } from './types.js'
 
 export type Output = Output.Exclusive | Output.Basic | Output.Union
 
 export namespace Output {
-  export type Prompt<S extends ParameterSpec.Input.Schema = ParameterSpec.Input.Schema> = {
+  export type Prompt<S extends CommandParameter.Input.Schema = CommandParameter.Input.Schema> = {
     enabled: boolean | null
     when: EventPatternsInput<S> | null
   }
 
-  export interface Basic {
+  export interface Basic extends Omit<Pam.Parameter.Scalar, '_tag'> {
     _tag: 'Basic'
-    name: Name
-    type: Type
-    optionality: BasicOptionality
-    description: null | string
     environment: Environment
     prompt: Prompt
   }

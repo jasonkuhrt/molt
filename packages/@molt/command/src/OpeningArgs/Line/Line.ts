@@ -1,7 +1,7 @@
+import { CommandParameter } from '../../CommandParameter/index.js'
 import { Errors } from '../../Errors/index.js'
 import { stripeNegatePrefixLoose } from '../../helpers.js'
 import type { Index } from '../../lib/prelude.js'
-import { ParameterSpec } from '../../ParameterSpec/index.js'
 import { isNegated, parseRawInput, stripeDashPrefix } from '../helpers.js'
 import type { ArgumentReport } from '../types.js'
 import camelCase from 'lodash.camelcase'
@@ -21,7 +21,7 @@ interface ParsedInputs {
  * Parse line input into an intermediary representation that is suited to comparison against
  * the parameter specs.
  */
-export const parse = (rawLineInputs: RawInputs, specs: ParameterSpec.Output[]): ParsedInputs => {
+export const parse = (rawLineInputs: RawInputs, specs: CommandParameter.Output[]): ParsedInputs => {
   const globalErrors: GlobalParseErrors[] = []
 
   const rawLineInputsPrepared = rawLineInputs
@@ -51,7 +51,7 @@ export const parse = (rawLineInputs: RawInputs, specs: ParameterSpec.Output[]): 
        * If union with boolean or boolean then we interpret foo argument as being a boolean.
        * Otherwise it is an error.
        */
-      if (ParameterSpec.isOrHasType(pendingReport.spec, `TypeBoolean`)) {
+      if (CommandParameter.isOrHasType(pendingReport.spec, `TypeBoolean`)) {
         pendingReport.value = {
           value: true,
           _tag: `boolean`,
@@ -75,7 +75,7 @@ export const parse = (rawLineInputs: RawInputs, specs: ParameterSpec.Output[]): 
       const flagNameNoDashPrefix = stripeDashPrefix(rawLineInput)
       const flagNameNoDashPrefixCamel = camelCase(flagNameNoDashPrefix)
       const flagNameNoDashPrefixNoNegate = stripeNegatePrefixLoose(flagNameNoDashPrefixCamel)
-      const spec = ParameterSpec.findByName(flagNameNoDashPrefixCamel, specs)
+      const spec = CommandParameter.findByName(flagNameNoDashPrefixCamel, specs)
       if (!spec) {
         globalErrors.push(new Errors.Global.ErrorUnknownFlag({ flagName: flagNameNoDashPrefixNoNegate }))
         continue

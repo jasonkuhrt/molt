@@ -1,6 +1,6 @@
+import { CommandParameter } from '../CommandParameter/index.js'
 import { Errors } from '../Errors/index.js'
 import { errorFromUnknown, groupBy } from '../lib/prelude.js'
-import { ParameterSpec } from '../ParameterSpec/index.js'
 import { Environment } from './Environment/index.js'
 import { Line } from './Line/index.js'
 import type { ArgumentReport, ParseResult } from './types.js'
@@ -14,7 +14,7 @@ export const parse = ({
   line,
   environment,
 }: {
-  specs: ParameterSpec.Output[]
+  specs: CommandParameter.Output[]
   line: Line.RawInputs
   environment: Environment.RawInputs
 }): ParseResult => {
@@ -82,8 +82,8 @@ export const parse = ({
           }
         })
         .else((argReportValue) => {
-          const valueTransformed = ParameterSpec.transform(spec, argReportValue.value)
-          const validationResult = ParameterSpec.validate(spec, valueTransformed)
+          const valueTransformed = CommandParameter.transform(spec, argReportValue.value)
+          const validationResult = CommandParameter.validate(spec, valueTransformed)
           return Alge.match(validationResult)
             .Success((result) => {
               return {
@@ -169,7 +169,7 @@ export const parse = ({
     const group = specs[0]!.group // eslint-disable-line
     const argsToGroup = specs
       .map((_) => lineParseResult.reports[_.name.canonical] ?? envParseResult.reports[_.name.canonical])
-      .filter((_): _ is ArgumentReport<ParameterSpec.Output.Exclusive> => _ !== undefined)
+      .filter((_): _ is ArgumentReport<CommandParameter.Output.Exclusive> => _ !== undefined)
 
     if (argsToGroup.length === 0) {
       if (group.optionality._tag === `optional`) {
