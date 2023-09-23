@@ -53,6 +53,11 @@ export const inferPropsFromZodType = (zodType: SomeBasicType | SomeUnionType) =>
   return {
     optionality,
     description,
+    // Cannot use @ts-expect-error because someone the build then
+    // does _not_ detect an error here, in which case the expect error
+    // itself triggers the error... chicken and egg problem.
+    //
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore todo
     type: type,
   }

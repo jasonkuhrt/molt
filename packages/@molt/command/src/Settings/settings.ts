@@ -1,10 +1,10 @@
 import type { State } from '../Builder/State.js'
+import type { CommandParameter } from '../CommandParameter/index.js'
 import type { EventPatternsInput, EventPatternsInputAtLeastOne } from '../eventPatterns.js'
 import { eventPatterns } from '../eventPatterns.js'
 import type { Values } from '../helpers.js'
 import { parseEnvironmentVariableBooleanOrThrow } from '../helpers.js'
 import { defaultParameterNamePrefixes } from '../OpeningArgs/Environment/Environment.js'
-import type { CommandParameter } from '../CommandParameter/index.js'
 import type { FlagName } from '@molt/types'
 import snakeCase from 'lodash.snakecase'
 

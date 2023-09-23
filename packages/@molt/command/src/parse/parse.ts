@@ -1,4 +1,5 @@
 import type { RawArgInputs } from '../Builder/root/types.js'
+import { CommandParameter } from '../CommandParameter/index.js'
 import { createEvent } from '../eventPatterns.js'
 import { Help } from '../Help/index.js'
 import { getLowerCaseEnvironment, lowerCaseObjectKeys } from '../helpers.js'
@@ -9,7 +10,6 @@ import type {
   ParseResultExclusiveGroupError,
   ParseResultExclusiveGroupSupplied,
 } from '../OpeningArgs/OpeningArgs.js'
-import { CommandParameter } from '../CommandParameter/index.js'
 import { match } from '../Pattern/Pattern.js'
 import { createStdioPrompter, prompt } from './prompt.js'
 

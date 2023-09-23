@@ -1,5 +1,5 @@
-import type { Values } from '../helpers.js'
 import type { CommandParameter } from '../CommandParameter/index.js'
+import type { Values } from '../helpers.js'
 import type { ExclusiveParameterConfiguration } from './exclusive/types.js'
 import type { ParameterConfiguration } from './root/types.js'
 import type { FlagName } from '@molt/types'
