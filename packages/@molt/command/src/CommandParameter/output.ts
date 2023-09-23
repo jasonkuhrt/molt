@@ -1,7 +1,6 @@
 import type { EventPatternsInput } from '../eventPatterns.js'
 import type { Pam } from '../lib/Pam/index.js'
 import type { CommandParameter } from './index.js'
-import type { ArgumentValueScalar, Type } from './types.js'
 
 export type Output = Output.Exclusive | Output.Basic //| Output.Union
 
@@ -22,32 +21,10 @@ export namespace Output {
     optionality: BasicOptionality['_tag']
   }
 
-  // export interface Union {
-  //   _tag: 'Union'
-  //   name: Name
-  //   types: {
-  //     type: Type
-  //     zodType: SomeBasicType
-  //     description: null | string
-  //   }[]
-  //   optionality: BasicOptionality
-  //   description: null | string
-  //   environment: Environment
-  // }
-
-  // export type UnionData = Omit<Union, '_tag' | 'optionality' | 'types'> & {
-  //   _tag: 'UnionData'
-  //   optionality: BasicOptionality['_tag']
-  //   types: {
-  //     type: Type
-  //     description: null | string
-  //   }[]
-  // }
-
   export interface Exclusive {
     _tag: 'Exclusive'
     name: Name
-    type: Type
+    type: Pam.Type
     description: string | null
     environment: Environment
     group: ExclusiveGroup
@@ -57,12 +34,12 @@ export namespace Output {
   export type BasicOptionality = 
     | { _tag: 'required' }
     | { _tag: 'optional' }
-    | { _tag: 'default', getValue: () => ArgumentValueScalar }
+    | { _tag: 'default', getValue: () => Pam.Value }
 
   export type ExclusiveOptionality =
     | { _tag: 'required' }
     | { _tag: 'optional' }
-    | { _tag: 'default'; tag: string; getValue: () => ArgumentValueScalar }
+    | { _tag: 'default'; tag: string; getValue: () => Pam.Value }
 
   export type Environment = null | { enabled: boolean; namespaces: string[] }
 

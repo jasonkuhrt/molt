@@ -4,36 +4,6 @@ import type { SomeBasicType, SomeUnionType, TypeNumber, TypeString } from '../..
 import { Alge } from 'alge'
 import { z } from 'zod'
 
-// export const analyzeZodType = (zodType: SomeBasicType | SomeUnionType) => {
-//   if (zodType._def.typeName === z.ZodFirstPartyTypeKind.ZodUnion) {
-//     let description = zodType.description ?? null
-//     let primitiveType = zodType
-
-//     while (
-//       primitiveType._def.typeName === z.ZodFirstPartyTypeKind.ZodDefault ||
-//       primitiveType._def.typeName === z.ZodFirstPartyTypeKind.ZodOptional
-//     ) {
-//       description = description ?? primitiveType._def.innerType.description ?? null
-//       primitiveType = primitiveType._def.innerType
-//     }
-
-//     const members = zodType._def.options.map((_) => {
-//       const typeAnalysis = analyzeZodTypeScalar(_)
-//       return {
-//         // zodType: _,
-//         description: typeAnalysis.description,
-//         type: typeAnalysis.type,
-//       }
-//     })
-//     return {
-//       _tag: `TypeUnion`,
-//       members,
-//     }
-//   }
-
-//   return analyzeZodTypeScalar(zodType)
-// }
-
 export const analyzeZodType = (zodType: SomeBasicType | SomeUnionType) => {
   return analyzeZodType_(zodType, zodType.description ?? null)
 }
@@ -42,12 +12,12 @@ export const analyzeZodType = (zodType: SomeBasicType | SomeUnionType) => {
 type ZodTypeToType<ZT extends SomeBasicType | SomeUnionType> =
   ZT extends z.ZodOptional<infer T>       ? ZodTypeToType<T> :
   ZT extends z.ZodDefault<infer T>        ? ZodTypeToType<T> :
-  ZT extends z.ZodLiteral<any>            ? Pam.Type.Literal :
-  ZT extends z.ZodString                  ? Pam.Type.String :
-  ZT extends z.ZodBoolean                 ? Pam.Type.Boolean :
-  ZT extends z.ZodNumber                  ? Pam.Type.Number :
-  ZT extends z.ZodEnum<any>               ? Pam.Type.Enumeration :
-  ZT extends z.ZodNativeEnum<any>         ? Pam.Type.Enumeration :
+  ZT extends z.ZodLiteral<any>            ? Pam.Type.Scalar.Literal :
+  ZT extends z.ZodString                  ? Pam.Type.Scalar.String :
+  ZT extends z.ZodBoolean                 ? Pam.Type.Scalar.Boolean :
+  ZT extends z.ZodNumber                  ? Pam.Type.Scalar.Number :
+  ZT extends z.ZodEnum<any>               ? Pam.Type.Scalar.Enumeration :
+  ZT extends z.ZodNativeEnum<any>         ? Pam.Type.Scalar.Enumeration :
   ZT extends z.ZodUnion<any>              ? Pam.Type.Union :
                                             never
 
@@ -67,7 +37,7 @@ const analyzeZodType_ = <ZT extends SomeBasicType | SomeUnionType>(
     return analyzeZodType_(zodType._def.innerType as ZT, description)
   }
 
-  const type: null | Pam.Type.Group.Any =
+  const type: null | Pam.Type =
     zodType._def.typeName === z.ZodFirstPartyTypeKind.ZodUnion
       ? {
           _tag: `TypeUnion` as const,

@@ -4,7 +4,7 @@ import type { Value } from './types.js'
 export type Parameter = Parameter.Single
 
 export namespace Parameter {
-  export interface Single<T extends Type.Group.Any = Type.Group.Any> {
+  export interface Single<T extends Type = Type> {
     _tag: 'Basic'
     name: Name
     type: T

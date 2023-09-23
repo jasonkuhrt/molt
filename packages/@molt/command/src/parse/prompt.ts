@@ -148,7 +148,7 @@ namespace Inputs {
     parameter: parameter
   }
 
-  export const boolean = async (params: InputParams<Pam.Parameter.Single<Pam.Type.Boolean>>) => {
+  export const boolean = async (params: InputParams<Pam.Parameter.Single<Pam.Type.Scalar.Boolean>>) => {
     const { channels } = params
     const pipe = `${chalk.dim(`|`)}`
     let answer = false
@@ -190,12 +190,14 @@ namespace Inputs {
     return answer as any
   }
 
-  export const string = async (params: InputParams<Pam.Parameter.Single<Pam.Type.String>>) => {
+  export const string = async (params: InputParams<Pam.Parameter.Single<Pam.Type.Scalar.String>>) => {
     params.channels.output(params.prompt)
     return params.channels.readLine()
   }
 
-  export const enumeration = async (params: InputParams<Pam.Parameter.Single<Pam.Type.Enumeration>>) => {
+  export const enumeration = async (
+    params: InputParams<Pam.Parameter.Single<Pam.Type.Scalar.Enumeration>>,
+  ) => {
     const { channels, parameter } = params
     let active = 0
     const render = () =>
@@ -240,7 +242,7 @@ namespace Inputs {
     return choice
   }
 
-  export const number = async (params: InputParams<Pam.Parameter.Single<Pam.Type.Number>>) => {
+  export const number = async (params: InputParams<Pam.Parameter.Single<Pam.Type.Scalar.Number>>) => {
     params.channels.output(params.prompt)
     const answer_ = await params.channels.readLine()
     const answer = parseFloat(answer_)

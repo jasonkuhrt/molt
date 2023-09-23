@@ -1,12 +1,12 @@
 import type { Settings } from '../../../index.js'
-import { ZodHelpers } from '../../../lib/zodHelpers/index.js'
+import type { Pam } from '../../../lib/Pam/index.js'
 import type { Input } from '../../input.js'
 import type { Output } from '../../output.js'
-import type { ArgumentValueScalar } from '../../types.js'
+import type { SomeBasicType, SomeUnionType } from '../../types.js'
 import { processEnvironment } from '../helpers/environment.js'
 import { processName } from '../helpers/name.js'
 import { analyzeZodType } from '../helpers/zod.js'
-import { union, z } from 'zod'
+import { z } from 'zod'
 
 export const processBasic = (
   expression: string,
@@ -15,12 +15,11 @@ export const processBasic = (
 ): Output.Basic => {
   const name = processName(expression)
   const environment = processEnvironment(settings, name)
-  const typeAnalysis = analyzeType(input)
+  const inferredProperties = inferPropsFromZodType(input.type)
   const parameter = {
     _tag: `Basic`,
-    description: typeAnalysis.description,
-    type: typeAnalysis.type,
-    optionality: typeAnalysis.optionality,
+    environment,
+    name,
     prompt: {
       enabled:
         input.prompt === true
@@ -33,48 +32,32 @@ export const processBasic = (
       when:
         input.prompt === null ? null : typeof input.prompt === `object` ? input.prompt.when ?? null : null,
     },
-    environment,
-    name,
+    ...inferredProperties,
   } satisfies Output.Basic
 
   return parameter
 }
 
-export const analyzeType = (input: Input.Basic) => {
-  const isOptional = input.type._def.typeName === z.ZodFirstPartyTypeKind.ZodOptional
-  const hasDefault = input.type._def.typeName === z.ZodFirstPartyTypeKind.ZodDefault
+export const inferPropsFromZodType = (zodType: SomeBasicType | SomeUnionType) => {
+  const isOptional = zodType._def.typeName === z.ZodFirstPartyTypeKind.ZodOptional
+  const hasDefault = zodType._def.typeName === z.ZodFirstPartyTypeKind.ZodDefault
   // @ts-expect-error todo
   // eslint-disable-next-line
   const defaultGetter = hasDefault ? (input.type._def.defaultValue as DefaultGetter) : null
-  const optionality = (
-    defaultGetter
-      ? { _tag: `default`, getValue: () => defaultGetter() }
-      : isOptional
-      ? { _tag: `optional` }
-      : { _tag: `required` }
-  ) satisfies Output.Basic['optionality']
+  const optionality: Pam.Optionality = defaultGetter
+    ? { _tag: `default`, getValue: () => defaultGetter() }
+    : isOptional
+    ? { _tag: `optional` }
+    : { _tag: `required` }
 
-  const type_ = ZodHelpers.stripOptionalAndDefault(input.type)
-
-  if (type_._def.typeName === z.ZodFirstPartyTypeKind.ZodUnion) {
-    const types = type_._def.options.map((_) => {
-      const typeAnalysis = analyzeZodType(_)
-      return {
-        zodType: _,
-        description: typeAnalysis.description,
-        type: typeAnalysis.type,
-      }
-    })
-    return
-  }
-
-  const { type, description } = analyzeZodType(type_._def)
+  const { type, description } = analyzeZodType(zodType)
 
   return {
     optionality,
     description,
-    type,
+    // @ts-expect-error todo
+    type: type,
   }
 }
 
-type DefaultGetter = () => ArgumentValueScalar
+type DefaultGetter = () => Pam.Value
