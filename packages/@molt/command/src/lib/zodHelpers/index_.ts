@@ -24,7 +24,31 @@ export const stripOptionalAndDefault = <T extends z.ZodFirstPartySchemaTypes>(
   return type as any
 }
 
-export const isUnion = (type: z.ZodFirstPartySchemaTypes) => {
+export const isUnion = (type: z.ZodFirstPartySchemaTypes): type is z.ZodUnion<any> => {
+  return type._def.typeName === z.ZodFirstPartyTypeKind.ZodUnion
+}
+
+export const isLiteral = (type: z.ZodFirstPartySchemaTypes): type is z.ZodLiteral<any> => {
+  return type._def.typeName === z.ZodFirstPartyTypeKind.ZodLiteral
+}
+
+export const isString = (type: z.ZodFirstPartySchemaTypes): type is z.ZodString => {
+  return type._def.typeName === z.ZodFirstPartyTypeKind.ZodString
+}
+
+export const isNumber = (type: z.ZodFirstPartySchemaTypes): type is z.ZodNumber => {
+  return type._def.typeName === z.ZodFirstPartyTypeKind.ZodNumber
+}
+
+export const isNativeEnum = (type: z.ZodFirstPartySchemaTypes): type is z.ZodNativeEnum<any> => {
+  return type._def.typeName === z.ZodFirstPartyTypeKind.ZodNativeEnum
+}
+
+export const isEnum = (type: z.ZodFirstPartySchemaTypes): type is z.ZodEnum<any> => {
+  return type._def.typeName === z.ZodFirstPartyTypeKind.ZodEnum
+}
+
+export const isUnionUnwrapped = (type: z.ZodFirstPartySchemaTypes) => {
   const type_ = stripOptionalAndDefault(type)
   const isUnion = type_._def.typeName === z.ZodFirstPartyTypeKind.ZodUnion
   return isUnion

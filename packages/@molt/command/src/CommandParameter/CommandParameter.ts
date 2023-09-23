@@ -5,8 +5,8 @@ export * from './transform.js'
 export * from './types.js'
 export * from './validate.js'
 import { stripeNegatePrefix } from '../helpers.js'
+import type { Pam } from '../lib/Pam/index.js'
 import type { Output } from './output.js'
-import type { Type } from './types.js'
 
 export const findByName = (name: string, specs: Output[]): null | Output => {
   for (const spec of specs) {
@@ -55,7 +55,7 @@ export const hasName = (spec: Output, name: string): null | NameHit => {
   return result
 }
 
-export const isOrHasType = (spec: Output, typeTag: Type['_tag']): boolean => {
+export const isOrHasType = (spec: Output, typeTag: Pam.Type['_tag']): boolean => {
   return spec.type._tag === `TypeUnion`
     ? spec.type.members.find((_) => _.type._tag === typeTag) !== undefined
     : spec.type._tag === typeTag
