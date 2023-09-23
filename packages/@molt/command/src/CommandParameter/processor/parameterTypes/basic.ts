@@ -55,7 +55,7 @@ export const inferPropsFromZodType = (zodType: SomeBasicType | SomeUnionType) =>
   return {
     optionality,
     description,
-    // @ts-expect-error todo
+    // @ts-ignore todo
     type: type,
   }
 }
