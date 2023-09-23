@@ -14,7 +14,7 @@ export const zodPassthrough = <T>() => z.any().transform((_) => _ as T)
 
 // prettier-ignore
 export const parseRawInput = (name: string, rawValue: string, spec: CommandParameter.Output): Value => {
-  const parsedValue = parseRawValue(rawValue, spec)
+  const parsedValue = parseRawValue(rawValue, spec.type)
   if (parsedValue === null) {
     const expectedTypes = spec.type._tag
     throw new Error(`Failed to parse input ${name} with value ${rawValue}. Expected type of ${expectedTypes}.`)
@@ -53,64 +53,33 @@ const stripeNamespace = (name: string, spec: CommandParameter.Output): string =>
   return name
 }
 
-export const parseRawValue = (
-  value: string,
-  spec: CommandParameter.Output,
-): null | boolean | number | string => {
-  return (
-    Alge.match(spec.type)
-      .TypeLiteral((_) => parseLiteral(_, value))
-      .TypeString(() => value)
-      .TypeEnum((_) => parseEnum(_, value))
-      .TypeBoolean(() => parseEnvironmentVariableBoolean(value))
-      .TypeNumber(() => Number(value))
-      // TODO
-      // .TypeUnion
-      .done()
-  )
-  // return Alge.match(spec)
-  // .Union((spec) => {
-  //   /**
-  //    * For a union we infer the value to be the type of the first variant type that matches.
-  //    * This means that variant order matters since there are sub/super type relationships.
-  //    * For example a number is a subset of string type. If there is a string and number variant
-  //    * we should first check if the value could be a number, than a string.
-  //    */
-  //   const variantOrder: CommandParameter.Type['_tag'][] = [
-  //     `TypeNumber`,
-  //     `TypeBoolean`,
-  //     `TypeString`,
-  //     `TypeEnum`,
-  //   ]
-  //   const types = spec.types.sort(
-  //     (a, b) => variantOrder.indexOf(a.type._tag) - variantOrder.indexOf(b.type._tag),
-  //   )
-  //   return (
-  //     types
-  //       .map((_) =>
-  //         Alge.match(_.type)
-  //           .TypeLiteral((_) => parseLiteral(_, value))
-  //           .TypeString(() => value)
-  //           .TypeEnum((_) => parseEnum(_, value))
-  //           .TypeBoolean(() => parseEnvironmentVariableBoolean(value))
-  //           .TypeNumber(() => {
-  //             const result = Number(value)
-  //             return isNaN(result) ? null : result
-  //           })
-  //           .done(),
-  //       )
-  //       .find((parsedValue) => parsedValue !== null) ?? null
-  //   )
-  // })
-  // .else((spec) =>
-  //   Alge.match(spec.type)
-  //     .TypeLiteral((_) => parseLiteral(_, value))
-  //     .TypeString(() => value)
-  //     .TypeEnum((_) => parseEnum(_, value))
-  //     .TypeBoolean(() => parseEnvironmentVariableBoolean(value))
-  //     .TypeNumber(() => Number(value))
-  //     .done(),
-  // )
+/**
+ * For a union we infer the value to be the type of the first variant type that matches.
+ * This means that variant order matters since there are sub/super type relationships.
+ * For example a number is a subset of string type. If there is a string and number variant
+ * we should first check if the value could be a number, than a string.
+ */
+const variantOrder: Pam.Type['_tag'][] = [`TypeNumber`, `TypeBoolean`, `TypeString`, `TypeEnum`, `TypeUnion`]
+
+export const parseRawValue = (value: string, type: Pam.Type): null | boolean | number | string => {
+  return Alge.match(type)
+    .TypeLiteral((t) => parseLiteral(t, value))
+    .TypeString(() => value)
+    .TypeEnum((t) => parseEnum(t, value))
+    .TypeBoolean(() => parseEnvironmentVariableBoolean(value))
+    .TypeNumber(() => {
+      const result = Number(value)
+      return isNaN(result) ? null : result
+    })
+    .TypeUnion((t) => {
+      return (
+        t.members
+          .sort((a, b) => variantOrder.indexOf(a.type._tag) - variantOrder.indexOf(b.type._tag))
+          .map((m) => parseRawValue(value, m.type))
+          .find((m) => m !== null) ?? null
+      )
+    })
+    .done()
 }
 
 /**
