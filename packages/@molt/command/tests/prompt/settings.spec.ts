@@ -1,6 +1,6 @@
+import type { CommandParameter } from '../../src/CommandParameter/index.js'
 import type { Settings } from '../../src/index.js'
 import { Command } from '../../src/index.js'
-import type { CommandParameter } from '../../src/CommandParameter/index.js'
 import { s, tryCatch } from '../_/helpers.js'
 import { memoryPrompter } from '../_/mocks/tty.js'
 import stripAnsi from 'strip-ansi'

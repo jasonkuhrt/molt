@@ -1,4 +1,5 @@
 import type { RawArgInputs } from '../Builder/root/types.js'
+import { CommandParameter } from '../CommandParameter/index.js'
 import { createEvent } from '../eventPatterns.js'
 import { Help } from '../Help/index.js'
 import { getLowerCaseEnvironment, lowerCaseObjectKeys } from '../helpers.js'
@@ -9,7 +10,6 @@ import type {
   ParseResultExclusiveGroupError,
   ParseResultExclusiveGroupSupplied,
 } from '../OpeningArgs/OpeningArgs.js'
-import { CommandParameter } from '../CommandParameter/index.js'
 import { match } from '../Pattern/Pattern.js'
 import { createStdioPrompter, prompt } from './prompt.js'
 
@@ -197,7 +197,7 @@ export const parse = (
    * Progress to the next parse stage wherein we will execute prompts.
    */
 
-  const tail = (parseProgressPostPrompts: ParseProgressPostPrompt) => {
+  const tailProcess = (parseProgressPostPrompts: ParseProgressPostPrompt) => {
     const args = {
       ...Object.fromEntries(
         Object.entries(parseProgressPostPrompts.basicParameters)
@@ -233,6 +233,6 @@ export const parse = (
   }
 
   return hasPrompt
-    ? prompt(parseProgressPostPromptAnnotation, argInputsTTY).then(tail)
-    : tail(parseProgressPostPromptAnnotation as ParseProgressPostPrompt)
+    ? prompt(parseProgressPostPromptAnnotation, argInputsTTY).then(tailProcess)
+    : tailProcess(parseProgressPostPromptAnnotation as ParseProgressPostPrompt)
 }

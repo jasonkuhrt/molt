@@ -1,5 +1,5 @@
 import type { CommandParameter } from '../../CommandParameter/index.js'
-import type { ArgumentValueScalar } from '../../CommandParameter/types.js'
+import type { Pam } from '../../lib/Pam/index.js'
 import type { InternalState, SomeBuilderExclusiveInitial } from './types.js'
 
 export const create = (): SomeBuilderExclusiveInitial => {
@@ -23,7 +23,7 @@ export const create = (): SomeBuilderExclusiveInitial => {
       _.input.optionality = { _tag: `optional` }
       return chain
     },
-    default: (tag: string, value: ArgumentValueScalar) => {
+    default: (tag: string, value: Pam.Value) => {
       _.input.optionality = { _tag: `default`, tag, value }
       return chain
     },

@@ -1,7 +1,8 @@
 import type { EventPatternsInput } from '../eventPatterns.js'
-import type { ArgumentValueScalar, SomeBasicType, SomeExclusiveZodType, SomeUnionType } from './types.js'
+import type { Pam } from '../lib/Pam/index.js'
+import type { SomeBasicType, SomeExclusiveZodType, SomeUnionType } from './types.js'
 
-export type Input = Input.Basic | Input.Exclusive | Input.Union
+export type Input = Input.Basic | Input.Exclusive
 
 export namespace Input {
   export type Schema = SomeBasicType | SomeUnionType
@@ -17,7 +18,7 @@ export namespace Input {
   export interface Basic {
     _tag: 'Basic'
     nameExpression: string
-    type: SomeBasicType
+    type: SomeBasicType | SomeUnionType
     prompt: Prompt<SomeBasicType>
   }
 
@@ -26,18 +27,11 @@ export namespace Input {
     optionality:
       | { _tag: 'required' }
       | { _tag: 'optional' }
-      | { _tag: 'default'; tag: string; value: ArgumentValueScalar | (() => ArgumentValueScalar) }
+      | { _tag: 'default'; tag: string; value: Pam.Value | (() => Pam.Value) }
     description?: string
     parameters: {
       nameExpression: string
       type: SomeExclusiveZodType
     }[]
-  }
-
-  export interface Union {
-    _tag: 'Union'
-    description?: string
-    nameExpression: string
-    type: SomeUnionType
   }
 }

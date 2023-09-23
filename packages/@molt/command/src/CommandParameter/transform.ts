@@ -8,7 +8,6 @@ import { Alge } from 'alge'
 export const transform = <T>(spec: Output, value: T): T => {
   return Alge.match(spec)
     .Basic((spec) => transformBasic(spec, value))
-    .Union((spec) => transformUnion(spec, value))
     .Exclusive((spec) => transformExclusive(spec, value))
     .done()
 }
@@ -42,14 +41,6 @@ const transformBasic = (spec: Output.Basic, value: unknown): any => {
     }
   }
 
-  return value
-}
-
-const transformUnion = <T>(_spec: Output.Union, value: T): T => {
-  // TODO how do we handle this?
-  // If one member has trim, how do we know if we should apply the transformation before
-  // assigning the value to it via the validation? But we need trim before validation??
-  // throw new Error(`todo`)
   return value
 }
 

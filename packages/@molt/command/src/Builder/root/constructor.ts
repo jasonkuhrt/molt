@@ -1,5 +1,5 @@
+import type { CommandParameter } from '../../CommandParameter/index.js'
 import { getLowerCaseEnvironment, lowerCaseObjectKeys } from '../../helpers.js'
-import { CommandParameter } from '../../CommandParameter/index.js'
 import { parse } from '../../parse/parse.js'
 import { Settings } from '../../Settings/index.js'
 import * as ExclusiveBuilder from '../exclusive/constructor.js'
@@ -13,20 +13,14 @@ export const create = (): RootBuilder => {
   }
 
   const $$ = {
-    addParameterBasicOrUnion: (nameExpression: string, configuration: ParameterConfiguration) => {
+    addParameterBasic: (nameExpression: string, configuration: ParameterConfiguration) => {
       const prompt = configuration.prompt ?? null
-      const parameter = CommandParameter.isUnionType(configuration.schema)
-        ? ({
-            _tag: `Union`,
-            type: configuration.schema,
-            nameExpression: nameExpression,
-          } satisfies CommandParameter.Input.Union)
-        : ({
-            _tag: `Basic`,
-            type: configuration.schema,
-            nameExpression: nameExpression,
-            prompt,
-          } satisfies CommandParameter.Input.Basic)
+      const parameter = {
+        _tag: `Basic`,
+        type: configuration.schema,
+        nameExpression: nameExpression,
+        prompt,
+      } satisfies CommandParameter.Input.Basic
       $.parameterSpecInputs[nameExpression] = parameter
     },
   }
@@ -45,7 +39,7 @@ export const create = (): RootBuilder => {
     parameter: (nameExpression, typeOrConfiguration) => {
       const configuration =
         `schema` in typeOrConfiguration ? typeOrConfiguration : { schema: typeOrConfiguration }
-      $$.addParameterBasicOrUnion(nameExpression, configuration)
+      $$.addParameterBasic(nameExpression, configuration)
 
       return chain
     },

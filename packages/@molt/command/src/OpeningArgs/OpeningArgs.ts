@@ -30,13 +30,13 @@ export const parse = ({
 
   const specsByVariant = groupBy(specs, `_tag`)
 
-  const specVariantsBasicAndUnion = [...(specsByVariant.Basic ?? []), ...(specsByVariant.Union ?? [])]
+  const specVariantsBasic = specsByVariant.Basic ?? []
 
   /**
    * Handle "basic" parameters. This excludes "Exclusive Parameter Groups" which are handled later.
    */
 
-  for (const spec of specVariantsBasicAndUnion) {
+  for (const spec of specVariantsBasic) {
     /**
      * A note about types.
      *
@@ -243,6 +243,5 @@ export const parse = ({
     }
   }
 
-  // dump({ result })
   return result
 }

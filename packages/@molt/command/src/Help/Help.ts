@@ -1,7 +1,8 @@
+import type { CommandParameter } from '../CommandParameter/index.js'
+import type { Pam } from '../lib/Pam/index.js'
 import { groupBy } from '../lib/prelude.js'
 import { Tex } from '../lib/Tex/index.js'
 import { Text } from '../lib/Text/index.js'
-import type { CommandParameter } from '../CommandParameter/index.js'
 import type { Settings } from '../Settings/index.js'
 import { Term } from '../term.js'
 import chalk from 'chalk'
@@ -30,7 +31,7 @@ export const render = (
   const allSpecs = specs_
   const specsWithDescription = allSpecs.filter((_) => _.description !== null)
   const specsByKind = groupBy(specs_, `_tag`)
-  const basicAndUnionSpecs = [...(specsByKind.Basic ?? []), ...(specsByKind.Union ?? [])] ?? []
+  const basicSpecs = specsByKind.Basic ?? []
   const allSpecsWithoutHelp = allSpecs
     .filter((_) => _.name.canonical !== `help`)
     .sort((_) =>
@@ -43,10 +44,10 @@ export const render = (
         : -1,
     )
 
-  const basicAndUnionSpecsWithoutHelp = basicAndUnionSpecs
+  const basicAndUnionSpecsWithoutHelp = basicSpecs
     .filter((_) => _.name.canonical !== `help`)
     .sort((_) => (_.optionality._tag === `optional` ? 1 : -1))
-  const isAcceptsAnyEnvironmentArgs = basicAndUnionSpecs.filter((_) => _.environment?.enabled).length > 0
+  const isAcceptsAnyEnvironmentArgs = basicSpecs.filter((_) => _.environment?.enabled).length > 0
   const isAcceptsAnyMutuallyExclusiveParameters =
     (specsByKind.Exclusive && specsByKind.Exclusive.length > 0) || false
   const isEnvironmentEnabled =
@@ -246,7 +247,7 @@ const labels = {
 
 const parameterName = (spec: CommandParameter.Output) => {
   const isRequired =
-    ((spec._tag === `Basic` || spec._tag === `Union`) && spec.optionality._tag === `required`) ||
+    (spec._tag === `Basic` && spec.optionality._tag === `required`) ||
     (spec._tag === `Exclusive` && spec.group.optionality._tag === `required`)
 
   const parameters: Tex.BlockParameters =
@@ -276,14 +277,15 @@ const parameterName = (spec: CommandParameter.Output) => {
 }
 
 const parameterTypeAndDescription = (settings: Settings.Output, spec: CommandParameter.Output) => {
-  if (spec._tag === `Union`) {
+  const t = spec.type
+  if (t._tag === `TypeUnion`) {
     const unionMemberIcon = Term.colors.accent(`◒`)
-    const isOneOrMoreMembersWithDescription = spec.types.some((_) => _.description !== null)
+    const isOneOrMoreMembersWithDescription = t.members.some((_) => _.description !== null)
     const isExpandedMode =
       isOneOrMoreMembersWithDescription || settings.helpRendering.union.mode === `expandAlways`
     const isExpandedModeViaForceSetting = isExpandedMode && !isOneOrMoreMembersWithDescription
     if (isExpandedMode) {
-      const types = spec.types.flatMap((_) => {
+      const types = t.members.flatMap((m) => {
         return Tex.block(
           {
             padding: { bottomBetween: isExpandedModeViaForceSetting ? 0 : 1 },
@@ -292,7 +294,7 @@ const parameterTypeAndDescription = (settings: Settings.Output, spec: CommandPar
                 `${index === 0 ? unionMemberIcon : Term.colors.dim(Text.chars.borders.vertical)} `,
             },
           },
-          (__) => __.block(typeScalar(_.type)).block(_.description),
+          (__) => __.block(typeScalar(m.type)).block(m.description),
         )
       })
       return Tex.block((__) =>
@@ -305,7 +307,7 @@ const parameterTypeAndDescription = (settings: Settings.Output, spec: CommandPar
           .block(Term.colors.dim(Text.chars.borders.leftBottom + Text.chars.borders.horizontal)),
       )
     } else {
-      const types = spec.types.map((_) => typeTagsToTypeScriptName[_.type._tag]).join(` | `)
+      const types = t.members.map((m) => typeTagsToTypeScriptName[m.type._tag]).join(` | `)
       return Tex.block(($) => $.block(types).block(spec.description ?? null))
     }
   }
@@ -339,7 +341,7 @@ const parameterEnvironment = (spec: CommandParameter.Output, settings: Settings.
 /**
  * Render an enum type into a column.
  */
-const typeEnum = (type: CommandParameter.TypeEnum) => {
+const typeEnum = (type: Pam.Type.Scalar.Enumeration) => {
   const separator = Term.colors.accent(` ${Text.chars.pipe} `)
   const members = Object.values(type.members)
   const lines = members.map((member) => Term.colors.positive(String(member))).join(separator)
@@ -352,13 +354,14 @@ const title = (string: string) => {
   return Text.line(string.toUpperCase())
 }
 
-const typeScalar = (type: CommandParameter.Type): string => {
+const typeScalar = (type: Pam.Type): string => {
   if (type._tag === `TypeEnum`) return typeEnum(type)
   return Term.colors.positive(typeTagsToTypeScriptName[type._tag])
 }
 
 const typeTagsToTypeScriptName = {
   TypeLiteral: `literal`,
+  TypeUnion: `union`,
   TypeString: `string`,
   TypeNumber: `number`,
   TypeEnum: `enum`,

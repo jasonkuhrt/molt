@@ -11,6 +11,7 @@ it(`implies true`, () => {
   assert<IsExact<{ verbose: boolean }, typeof args>>(true)
   expect(args).toMatchObject({ verbose: true })
 })
+
 it(`has a negated variant that implies false`, () => {
   const args = Command.create()
     .parameter(`--verbose`, b)

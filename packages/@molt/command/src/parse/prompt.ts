@@ -1,9 +1,9 @@
+import { CommandParameter } from '../CommandParameter/index.js'
 import { casesExhausted } from '../helpers.js'
 import { KeyPress } from '../lib/KeyPress/index.js'
 import type { Pam } from '../lib/Pam/index.js'
 import { Tex } from '../lib/Tex/index_.js'
 import { Text } from '../lib/Text/index.js'
-import { CommandParameter } from '../CommandParameter/index.js'
 import { Term } from '../term.js'
 import type { ParseProgressPostPrompt, ParseProgressPostPromptAnnotation } from './parse.js'
 import ansiEscapes from 'ansi-escapes'
@@ -105,11 +105,11 @@ export const createPrompter = (channels: Channels): Prompter => {
       const { prompt, parameter: parameter_ } = params
       channels.output(params.question + Text.chars.newline)
 
-      if (parameter_._tag === `Union`) {
+      const type = parameter_.type
+
+      if (type._tag === `TypeUnion`) {
         throw new Error(`Unions are not supported yet.`)
       }
-
-      const type = parameter_.type
 
       if (type._tag === `TypeLiteral`) {
         throw new Error(`Literals are not supported yet.`)
@@ -148,7 +148,7 @@ namespace Inputs {
     parameter: parameter
   }
 
-  export const boolean = async (params: InputParams<Pam.Parameter.Scalar<Pam.Type.Boolean>>) => {
+  export const boolean = async (params: InputParams<Pam.Parameter.Single<Pam.Type.Scalar.Boolean>>) => {
     const { channels } = params
     const pipe = `${chalk.dim(`|`)}`
     let answer = false
@@ -190,12 +190,14 @@ namespace Inputs {
     return answer as any
   }
 
-  export const string = async (params: InputParams<Pam.Parameter.Scalar<Pam.Type.String>>) => {
+  export const string = async (params: InputParams<Pam.Parameter.Single<Pam.Type.Scalar.String>>) => {
     params.channels.output(params.prompt)
     return params.channels.readLine()
   }
 
-  export const enumeration = async (params: InputParams<Pam.Parameter.Scalar<Pam.Type.Enumeration>>) => {
+  export const enumeration = async (
+    params: InputParams<Pam.Parameter.Single<Pam.Type.Scalar.Enumeration>>,
+  ) => {
     const { channels, parameter } = params
     let active = 0
     const render = () =>
@@ -240,7 +242,7 @@ namespace Inputs {
     return choice
   }
 
-  export const number = async (params: InputParams<Pam.Parameter.Scalar<Pam.Type.Number>>) => {
+  export const number = async (params: InputParams<Pam.Parameter.Single<Pam.Type.Scalar.Number>>) => {
     params.channels.output(params.prompt)
     const answer_ = await params.channels.readLine()
     const answer = parseFloat(answer_)

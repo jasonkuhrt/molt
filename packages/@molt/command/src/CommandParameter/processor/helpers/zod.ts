@@ -1,43 +1,80 @@
-import type { ZodNumberCheck, ZodStringCheck } from '../../../lib/zodHelpers/index_.js'
-import type { SomeBasicType, Type, TypeNumber, TypeString } from '../../types.js'
-import { getBasicScalar } from '../../types.js'
+import type { Pam } from '../../../lib/Pam/index.js'
+import { ZodHelpers } from '../../../lib/zodHelpers/index.js'
+import { type ZodNumberCheck, type ZodStringCheck } from '../../../lib/zodHelpers/index_.js'
+import type { SomeBasicType, SomeType, SomeUnionType, SomeUnionTypeScalar } from '../../types.js'
 import { Alge } from 'alge'
 import { z } from 'zod'
 
-export const analyzeZodTypeScalar = (zodType: SomeBasicType) => {
-  let description = zodType.description ?? null
-  let primitiveType = zodType
+export const analyzeZodType = (zodType: SomeType) => {
+  return analyzeZodType_(zodType, zodType.description ?? null)
+}
 
-  while (
-    primitiveType._def.typeName === z.ZodFirstPartyTypeKind.ZodDefault ||
-    primitiveType._def.typeName === z.ZodFirstPartyTypeKind.ZodOptional
-  ) {
-    description = description ?? primitiveType._def.innerType.description ?? null
-    primitiveType = primitiveType._def.innerType
+// prettier-ignore
+type ZodTypeToType<ZT extends SomeBasicType | SomeUnionType> =
+  ZT extends z.ZodOptional<infer T>       ? ZodTypeToType<T> :
+  ZT extends z.ZodDefault<infer T>        ? ZodTypeToType<T> :
+  ZT extends z.ZodLiteral<any>            ? Pam.Type.Scalar.Literal :
+  ZT extends z.ZodString                  ? Pam.Type.Scalar.String :
+  ZT extends z.ZodBoolean                 ? Pam.Type.Scalar.Boolean :
+  ZT extends z.ZodNumber                  ? Pam.Type.Scalar.Number :
+  ZT extends z.ZodEnum<any>               ? Pam.Type.Scalar.Enumeration :
+  ZT extends z.ZodNativeEnum<any>         ? Pam.Type.Scalar.Enumeration :
+  ZT extends z.ZodUnion<any>              ? Pam.Type.Union :
+                                            never
+
+const analyzeZodType_ = <ZT extends SomeType>(
+  zodType: ZT,
+  description: null | string,
+): {
+  type: ZodTypeToType<ZT>
+  // type: ZT
+  description: null | string
+} => {
+  if (zodType._def.typeName === z.ZodFirstPartyTypeKind.ZodDefault) {
+    return analyzeZodType_(zodType._def.innerType as ZT, description)
   }
 
-  const zodTypeScalar = getBasicScalar(primitiveType)
+  if (zodType._def.typeName === z.ZodFirstPartyTypeKind.ZodOptional) {
+    return analyzeZodType_(zodType._def.innerType as ZT, description)
+  }
 
-  const type: null | Type =
-    zodTypeScalar._def.typeName === z.ZodFirstPartyTypeKind.ZodLiteral
-      ? { _tag: `TypeLiteral`, value: zodTypeScalar._def.value }
-      : zodTypeScalar._def.typeName === z.ZodFirstPartyTypeKind.ZodString
-      ? { _tag: `TypeString`, ...mapZodStringChecks(zodTypeScalar._def.checks) }
-      : zodTypeScalar._def.typeName === z.ZodFirstPartyTypeKind.ZodBoolean
-      ? { _tag: `TypeBoolean` }
-      : zodTypeScalar._def.typeName === z.ZodFirstPartyTypeKind.ZodNumber
-      ? { _tag: `TypeNumber`, ...mapZodNumberChecks(zodTypeScalar._def.checks) }
-      : zodTypeScalar._def.typeName === z.ZodFirstPartyTypeKind.ZodNativeEnum
-      ? { _tag: `TypeEnum`, members: Object.values(zodTypeScalar._def.values) }
-      : zodTypeScalar._def.typeName === z.ZodFirstPartyTypeKind.ZodEnum
-      ? { _tag: `TypeEnum`, members: zodTypeScalar._def.values }
-      : null
+  // @ts-expect-error todo
+  const type: null | Pam.Type = ZodHelpers.isUnion(zodType)
+    ? analyzeZodUnionType(zodType)
+    : ZodHelpers.isLiteral(zodType)
+    ? { _tag: `TypeLiteral`, value: zodType._def.value }
+    : ZodHelpers.isString(zodType)
+    ? { _tag: `TypeString`, ...mapZodStringChecks(zodType._def.checks) }
+    : zodType._def.typeName === z.ZodFirstPartyTypeKind.ZodBoolean
+    ? { _tag: `TypeBoolean` }
+    : ZodHelpers.isNumber(zodType)
+    ? { _tag: `TypeNumber`, ...mapZodNumberChecks(zodType._def.checks) }
+    : ZodHelpers.isNativeEnum(zodType)
+    ? { _tag: `TypeEnum`, members: Object.values(zodType._def.values) }
+    : ZodHelpers.isEnum(zodType)
+    ? { _tag: `TypeEnum`, members: zodType._def.values }
+    : null
 
-  if (!type) throw new Error(`Unsupported zod type: ${zodTypeScalar._def.typeName}`)
+  if (!type) throw new Error(`Unsupported zod type: ${zodType._def.typeName}`)
 
   return {
     description,
-    type,
+    type: type as ZodTypeToType<ZT>,
+  }
+}
+
+export const analyzeZodUnionType = (zodType: SomeUnionTypeScalar) => {
+  return {
+    _tag: `TypeUnion` as const,
+    members: zodType._def.options.map((_) => {
+      return analyzeZodType(_)
+      // const typeAnalysis = analyzeZodType(_)
+      // return {
+      //   // zodType: _,
+      //   description: typeAnalysis.description,
+      //   type: typeAnalysis.type,
+      // }
+    }),
   }
 }
 
@@ -62,14 +99,14 @@ const mapZodNumberChecks = (checks: z.ZodNumberCheck[]) => {
           }))
           .done()
       },
-      {} as Omit<TypeNumber, '_tag'>,
+      {} as Omit<Pam.Type.Scalar.Number, '_tag'>,
     )
 }
 
-const mapZodStringChecks = (checks: z.ZodStringCheck[]): Omit<TypeString, '_tag'> => {
+const mapZodStringChecks = (checks: z.ZodStringCheck[]): Omit<Pam.Type.Scalar.String, '_tag'> => {
   return checks
     .map((_): ZodStringCheck => ({ _tag: _.kind, ..._ }) as any)
-    .reduce<Omit<TypeString, '_tag'>>(
+    .reduce<Omit<Pam.Type.Scalar.String, '_tag'>>(
       (acc, check) => {
         return {
           ...acc,
@@ -156,6 +193,6 @@ const mapZodStringChecks = (checks: z.ZodStringCheck[]): Omit<TypeString, '_tag'
             .done(),
         }
       },
-      {} as Omit<TypeString, '_tag'>,
+      {} as Omit<Pam.Type.Scalar.String, '_tag'>,
     )
 }

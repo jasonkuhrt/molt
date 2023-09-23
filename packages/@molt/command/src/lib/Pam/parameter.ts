@@ -1,23 +1,13 @@
 import type { Type } from './kinds.js'
 import type { Value } from './types.js'
 
-export type Parameter = Parameter.Scalar | Parameter.Union
+export type Parameter = Parameter.Single
 
 export namespace Parameter {
-  export interface Scalar<T extends Type.Group.Scalar = Type.Group.Scalar> {
+  export interface Single<T extends Type = Type> {
     _tag: 'Basic'
     name: Name
     type: T
-    optionality: Optionality
-    description: null | string
-  }
-  export interface Union {
-    _tag: 'Union'
-    name: Name
-    types: {
-      type: Type.Group.Scalar
-      description: null | string
-    }[]
     optionality: Optionality
     description: null | string
   }
