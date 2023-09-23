@@ -277,39 +277,40 @@ const parameterName = (spec: CommandParameter.Output) => {
 }
 
 const parameterTypeAndDescription = (settings: Settings.Output, spec: CommandParameter.Output) => {
-  // if (spec._tag === `Union`) {
-  //   const unionMemberIcon = Term.colors.accent(`◒`)
-  //   const isOneOrMoreMembersWithDescription = spec.types.some((_) => _.description !== null)
-  //   const isExpandedMode =
-  //     isOneOrMoreMembersWithDescription || settings.helpRendering.union.mode === `expandAlways`
-  //   const isExpandedModeViaForceSetting = isExpandedMode && !isOneOrMoreMembersWithDescription
-  //   if (isExpandedMode) {
-  //     const types = spec.types.flatMap((_) => {
-  //       return Tex.block(
-  //         {
-  //           padding: { bottomBetween: isExpandedModeViaForceSetting ? 0 : 1 },
-  //           border: {
-  //             left: (index) =>
-  //               `${index === 0 ? unionMemberIcon : Term.colors.dim(Text.chars.borders.vertical)} `,
-  //           },
-  //         },
-  //         (__) => __.block(typeScalar(_.type)).block(_.description),
-  //       )
-  //     })
-  //     return Tex.block((__) =>
-  //       __.block(Term.colors.dim(Text.chars.borders.leftTop + Text.chars.borders.horizontal + `union`))
-  //         .block(
-  //           { padding: { bottom: 1 }, border: { left: `${Term.colors.dim(Text.chars.borders.vertical)} ` } },
-  //           spec.description,
-  //         )
-  //         .block(types)
-  //         .block(Term.colors.dim(Text.chars.borders.leftBottom + Text.chars.borders.horizontal)),
-  //     )
-  //   } else {
-  //     const types = spec.types.map((_) => typeTagsToTypeScriptName[_.type._tag]).join(` | `)
-  //     return Tex.block(($) => $.block(types).block(spec.description ?? null))
-  //   }
-  // }
+  const t = spec.type
+  if (t._tag === `TypeUnion`) {
+    const unionMemberIcon = Term.colors.accent(`◒`)
+    const isOneOrMoreMembersWithDescription = t.members.some((_) => _.description !== null)
+    const isExpandedMode =
+      isOneOrMoreMembersWithDescription || settings.helpRendering.union.mode === `expandAlways`
+    const isExpandedModeViaForceSetting = isExpandedMode && !isOneOrMoreMembersWithDescription
+    if (isExpandedMode) {
+      const types = t.members.flatMap((m) => {
+        return Tex.block(
+          {
+            padding: { bottomBetween: isExpandedModeViaForceSetting ? 0 : 1 },
+            border: {
+              left: (index) =>
+                `${index === 0 ? unionMemberIcon : Term.colors.dim(Text.chars.borders.vertical)} `,
+            },
+          },
+          (__) => __.block(typeScalar(m.type)).block(m.description),
+        )
+      })
+      return Tex.block((__) =>
+        __.block(Term.colors.dim(Text.chars.borders.leftTop + Text.chars.borders.horizontal + `union`))
+          .block(
+            { padding: { bottom: 1 }, border: { left: `${Term.colors.dim(Text.chars.borders.vertical)} ` } },
+            spec.description,
+          )
+          .block(types)
+          .block(Term.colors.dim(Text.chars.borders.leftBottom + Text.chars.borders.horizontal)),
+      )
+    } else {
+      const types = t.members.map((m) => typeTagsToTypeScriptName[m.type._tag]).join(` | `)
+      return Tex.block(($) => $.block(types).block(spec.description ?? null))
+    }
+  }
 
   // const maybeZodEnum = ZodHelpers.getEnum(spec.zodType)
   return Tex.block({ padding: { bottom: spec._tag === `Exclusive` ? 0 : 1 } }, ($) =>

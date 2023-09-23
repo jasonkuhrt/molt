@@ -1246,16 +1246,18 @@ exports[`union parameter > shows default as undefined when overall optional > mo
 "
 PARAMETERS
                                                                       
-  Name     Type                                Default       Environment (1)
-                                                                            
-  bar      ┌─union                             undefined     ✓              
-  b        ◒ string                                                         
-           │ Blah blah blah string.                                         
-           │                                                                
-           ◒ number                                                         
-           │ Blah blah blah number.                                         
-           └─                                                               
-                                                                            
+  Name     Type/Description                     Default       Environment (1)
+                                                                             
+  bar      ┌─union                              undefined     ✓              
+  b        │ Blah blah blah overall.                                         
+           │                                                                 
+           ◒ string                                                          
+           │ Blah blah blah string.                                          
+           │                                                                 
+           ◒ number                                                          
+           │ Blah blah blah number.                                          
+           └─                                                                
+                                                                             
   
   NOTES                                                                           
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -1271,16 +1273,18 @@ exports[`union parameter > shows default as undefined when overall optional > po
 "
 PARAMETERS
                                                                       
-  [4m[90mName[39m[24m     [4m[90mType[39m[24m                                [4m[90mDefault[39m[24m       [4m[90mEnvironment (1)[39m[24m
-                                                                            
-  [32mbar[39m      [2m[90m┌─union[39m[22m                             [34mundefined[39m     [34m✓[39m              
-  [2m[90mb[39m[22m        [33m◒[39m [32mstring[39m                                                         
-           [2m[90m│[39m[22m Blah blah blah string.                                         
-           [2m[90m│[39m[22m                                                                
-           [33m◒[39m [32mnumber[39m                                                         
-           [2m[90m│[39m[22m Blah blah blah number.                                         
-           [2m[90m└─[39m[22m                                                               
-                                                                            
+  [4m[90mName[39m[24m     [4m[90mType/Description[39m[24m                     [4m[90mDefault[39m[24m       [4m[90mEnvironment (1)[39m[24m
+                                                                             
+  [32mbar[39m      [2m[90m┌─union[39m[22m                              [34mundefined[39m     [34m✓[39m              
+  [2m[90mb[39m[22m        [2m[90m│[39m[22m Blah blah blah overall.                                         
+           [2m[90m│[39m[22m                                                                 
+           [33m◒[39m [32mstring[39m                                                          
+           [2m[90m│[39m[22m Blah blah blah string.                                          
+           [2m[90m│[39m[22m                                                                 
+           [33m◒[39m [32mnumber[39m                                                          
+           [2m[90m│[39m[22m Blah blah blah number.                                          
+           [2m[90m└─[39m[22m                                                                
+                                                                             
   [2m[90m[39m[22m
   [2m[90mNOTES                                                                           [39m[22m
   [2m[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m[22m
@@ -1296,16 +1300,18 @@ exports[`union parameter > shows default when overall has a default > monochrome
 "
 PARAMETERS
                                                                       
-  Name     Type                                Default       Environment (1)
-                                                                            
-  bar      ┌─union                             1             ✓              
-  b        ◒ string                                                         
-           │ Blah blah blah string.                                         
-           │                                                                
-           ◒ number                                                         
-           │ Blah blah blah number.                                         
-           └─                                                               
-                                                                            
+  Name     Type/Description                     Default       Environment (1)
+                                                                             
+  bar      ┌─union                              1             ✓              
+  b        │ Blah blah blah overall.                                         
+           │                                                                 
+           ◒ string                                                          
+           │ Blah blah blah string.                                          
+           │                                                                 
+           ◒ number                                                          
+           │ Blah blah blah number.                                          
+           └─                                                                
+                                                                             
   
   NOTES                                                                           
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -1321,16 +1327,18 @@ exports[`union parameter > shows default when overall has a default > polychrome
 "
 PARAMETERS
                                                                       
-  [4m[90mName[39m[24m     [4m[90mType[39m[24m                                [4m[90mDefault[39m[24m       [4m[90mEnvironment (1)[39m[24m
-                                                                            
-  [32mbar[39m      [2m[90m┌─union[39m[22m                             [34m1[39m             [34m✓[39m              
-  [2m[90mb[39m[22m        [33m◒[39m [32mstring[39m                                                         
-           [2m[90m│[39m[22m Blah blah blah string.                                         
-           [2m[90m│[39m[22m                                                                
-           [33m◒[39m [32mnumber[39m                                                         
-           [2m[90m│[39m[22m Blah blah blah number.                                         
-           [2m[90m└─[39m[22m                                                               
-                                                                            
+  [4m[90mName[39m[24m     [4m[90mType/Description[39m[24m                     [4m[90mDefault[39m[24m       [4m[90mEnvironment (1)[39m[24m
+                                                                             
+  [32mbar[39m      [2m[90m┌─union[39m[22m                              [34m1[39m             [34m✓[39m              
+  [2m[90mb[39m[22m        [2m[90m│[39m[22m Blah blah blah overall.                                         
+           [2m[90m│[39m[22m                                                                 
+           [33m◒[39m [32mstring[39m                                                          
+           [2m[90m│[39m[22m Blah blah blah string.                                          
+           [2m[90m│[39m[22m                                                                 
+           [33m◒[39m [32mnumber[39m                                                          
+           [2m[90m│[39m[22m Blah blah blah number.                                          
+           [2m[90m└─[39m[22m                                                                
+                                                                             
   [2m[90m[39m[22m
   [2m[90mNOTES                                                                           [39m[22m
   [2m[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[39m[22m
