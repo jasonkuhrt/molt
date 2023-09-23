@@ -29,7 +29,6 @@ const validateExclusive = <T>(_spec: Output.Exclusive, _value: T): ValidationRes
 }
 
 const validateType = <T>(type: Pam.Type, value: T): ValidationResult<T> => {
-  // @ts-expect-error todo
   return Alge.match(type)
     .TypeLiteral((_) =>
       value === _.value
@@ -72,7 +71,7 @@ const validateType = <T>(type: Pam.Type, value: T): ValidationResult<T> => {
       if (errors.length > 0) {
         return ValidationResult.Failure(value, errors)
       }
-      return ValidationResult.Success({ value })
+      return ValidationResult.Success(value)
     })
     .TypeString((type) => {
       const errors = []

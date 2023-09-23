@@ -41,9 +41,7 @@ export const processBasic = (
 export const inferPropsFromZodType = (zodType: SomeBasicType | SomeUnionType) => {
   const isOptional = zodType._def.typeName === z.ZodFirstPartyTypeKind.ZodOptional
   const hasDefault = zodType._def.typeName === z.ZodFirstPartyTypeKind.ZodDefault
-  // @ts-expect-error todo
-  // eslint-disable-next-line
-  const defaultGetter = hasDefault ? (input.type._def.defaultValue as DefaultGetter) : null
+  const defaultGetter = hasDefault ? (zodType._def.defaultValue as DefaultGetter) : null
   const optionality: Pam.Optionality = defaultGetter
     ? { _tag: `default`, getValue: () => defaultGetter() }
     : isOptional
