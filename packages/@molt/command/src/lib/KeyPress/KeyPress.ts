@@ -55,10 +55,8 @@ export const get = async (): Promise<KeyPressEvent> => {
   }
   Readline.emitKeypressEvents(stdin, rl)
 
-  let listener: (...args: any[]) => void
-
   return new Promise((resolve) => {
-    listener = (k, e) => {
+    const listener = (k: any, e: any) => {
       rl.close()
       stdin.removeListener(`keypress`, listener)
       if (!originalIsRawState) {
@@ -70,12 +68,19 @@ export const get = async (): Promise<KeyPressEvent> => {
   })
 }
 
-export async function* watch(): AsyncGenerator<KeyPressEvent> {
-  while (true) {
-    const event = await get()
-    if (event.name == `c` && event.ctrl == true) {
-      process.exit()
-    }
-    yield event
+export const watch = (): AsyncIterable<KeyPressEvent> => {
+  return {
+    [Symbol.asyncIterator]: () => ({
+      next: async () => {
+        const event = await get()
+        if (event.name == `c` && event.ctrl == true) {
+          process.exit()
+        }
+        return {
+          value: event,
+          done: false,
+        }
+      },
+    }),
   }
 }
