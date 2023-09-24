@@ -540,7 +540,7 @@ exports[`number > optional > when nothing entered then value is undefined > args
 
 exports[`number > optional > when nothing entered then value is undefined > tty 1`] = `
 [
-  "[2m[90m1/1[39m[22m  [32ma[39m
+  "[2m[90m1/1[39m[22m  [32ma[39m[2m optional (press esc to skip)[22m
 ",
   "     ❯ ",
   "",
@@ -551,7 +551,7 @@ exports[`number > optional > when nothing entered then value is undefined > tty 
 
 exports[`number > optional > when nothing entered then value is undefined > tty strip ansi 1`] = `
 [
-  "1/1  a
+  "1/1  a optional (press esc to skip)
 ",
   "     ❯ ",
   "",
@@ -656,7 +656,7 @@ exports[`prompt when omitted > args 1`] = `
 
 exports[`prompt when omitted > tty 1`] = `
 [
-  "[2m[90m1/1[39m[22m  [32ma[39m
+  "[2m[90m1/1[39m[22m  [32ma[39m[2m optional (press esc to skip)[22m
 ",
   "     ❯ ",
   "foo",
@@ -667,7 +667,7 @@ exports[`prompt when omitted > tty 1`] = `
 
 exports[`prompt when omitted > tty strip ansi 1`] = `
 [
-  "1/1  a
+  "1/1  a optional (press esc to skip)
 ",
   "     ❯ ",
   "foo",
@@ -685,7 +685,7 @@ exports[`string > optional > when nothing entered then value is undefined > args
 
 exports[`string > optional > when nothing entered then value is undefined > tty 1`] = `
 [
-  "[2m[90m1/1[39m[22m  [32ma[39m
+  "[2m[90m1/1[39m[22m  [32ma[39m[2m optional (press esc to skip)[22m
 ",
   "     ❯ ",
   "",
@@ -696,7 +696,7 @@ exports[`string > optional > when nothing entered then value is undefined > tty 
 
 exports[`string > optional > when nothing entered then value is undefined > tty strip ansi 1`] = `
 [
-  "1/1  a
+  "1/1  a optional (press esc to skip)
 ",
   "     ❯ ",
   "",

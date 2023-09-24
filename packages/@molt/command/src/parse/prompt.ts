@@ -32,7 +32,7 @@ export const prompt = async (
     const question = Tex({ flow: `horizontal`})
         .block({ padding: { right: 2 }}, `${Term.colors.dim(`${indexCurrent}/${indexTotal}`)}`)
         .block((__) =>
-          __.block(Term.colors.positive(param.name.canonical))
+          __.block(Term.colors.positive(param.name.canonical) +  `${param.optionality._tag === `required` ? `` : chalk.dim(` optional (press esc to skip)`)}`)
             .block((param.description && Term.colors.dim(param.description)) ?? null)
         )
       .render()
@@ -142,10 +142,16 @@ namespace Inputs {
   }
 
   export const union = async (params: InputParams<Pam.Parameter<Pam.Type.Union>>) => {
+    interface State {
+      active: number
+    }
+    const initialState: State = {
+      active: 0,
+    }
     const { parameter } = params
-    const state = await PromptEngine.create<{ active: number }>({
+    const state = await PromptEngine.create({
       channels: params.channels,
-      initialState: { active: 0 },
+      initialState,
       on: [
         {
           match: [`left`, { name: `tab`, shift: true }],
@@ -187,6 +193,8 @@ namespace Inputs {
       },
     })()
 
+    if (state === null) return undefined
+
     const choice = parameter.type.members[state.active]
     // prettier-ignore
     if (!choice) throw new Error(`No choice selected. Enumeration must be empty. But enumerations should not be empty. This is a bug.`)
@@ -202,13 +210,19 @@ namespace Inputs {
   }
 
   export const boolean = async (params: InputParams<Pam.Parameter<Pam.Type.Scalar.Boolean>>) => {
+    interface State {
+      answer: boolean
+    }
+    const initialState: State = {
+      answer: false,
+    }
     const marginLeftSpace = ` `.repeat(params.marginLeft ?? 0)
     const pipe = `${chalk.dim(`|`)}`
     const no = `${chalk.green(chalk.bold(`no`))} ${pipe} yes`
     const yes = `no ${pipe} ${chalk.green(chalk.bold(`yes`))}`
-    const state = await PromptEngine.create<{ answer: boolean }>({
+    const state = await PromptEngine.create({
       channels: params.channels,
-      initialState: { answer: false },
+      initialState,
       on: [
         {
           match: [`left`, `n`],
@@ -227,15 +241,22 @@ namespace Inputs {
         return marginLeftSpace + params.prompt + (state.answer ? yes : no)
       },
     })()
+    if (state === null) return undefined
     return state.answer
   }
 
   export const enumeration = async (params: InputParams<Pam.Parameter<Pam.Type.Scalar.Enumeration>>) => {
+    interface State {
+      active: number
+    }
+    const initialState: State = {
+      active: 0,
+    }
     const { parameter } = params
     const marginLeftSpace = ` `.repeat(params.marginLeft ?? 0)
-    const state = await PromptEngine.create<{ active: number }>({
+    const state = await PromptEngine.create({
       channels: params.channels,
-      initialState: { active: 0 },
+      initialState,
       on: [
         {
           match: [`left`, { name: `tab`, shift: true }],
@@ -260,6 +281,8 @@ namespace Inputs {
         )
       },
     })()
+
+    if (state === null) return undefined
 
     const choice = parameter.type.members[state.active]
     // prettier-ignore
