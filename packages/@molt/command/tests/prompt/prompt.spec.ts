@@ -2,11 +2,12 @@ import type { ParameterConfiguration } from '../../src/Builder/root/types.js'
 import type { Settings } from '../../src/entrypoints/types.js'
 import { Command } from '../../src/index.js'
 import type { KeyPress } from '../../src/lib/KeyPress/index.js'
-import { b, e, l1, s, tryCatch } from '../_/helpers.js'
+import { b, e, l1, n, s, tryCatch } from '../_/helpers.js'
 import { memoryPrompter } from '../_/mocks/tty.js'
 import stripAnsi from 'strip-ansi'
 import { expectType } from 'tsd'
 import { beforeEach, describe, expect, it } from 'vitest'
+import { z } from 'zod'
 
 // TODO test that prompt order is based on order of parameter definition
 
@@ -53,6 +54,17 @@ describe(`boolean`, () => {
       { ctrl: false, meta: false, sequence: ``, shift: false, name: `tab` },
       { ctrl: false, meta: false, sequence: ``, shift: false, name: `return` },
     )
+    await run()
+  })
+})
+
+describe(`union`, () => {
+  it(`asks user to select member to use"`, async () => {
+    parameters = { a: { schema: z.union([s, b, n]), prompt: true } }
+    keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `tab` })
+    keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
+    keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `tab` })
+    keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
     await run()
   })
 })

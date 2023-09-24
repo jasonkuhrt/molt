@@ -1,16 +1,12 @@
 import type { Type } from './kinds.js'
 import type { Value } from './types.js'
 
-export type Parameter = Parameter.Single
-
-export namespace Parameter {
-  export interface Single<T extends Type = Type> {
-    _tag: 'Basic'
-    name: Name
-    type: T
-    optionality: Optionality
-    description: null | string
-  }
+export interface Parameter<T extends Type = Type> {
+  _tag: 'Basic'
+  name: Name
+  type: T
+  optionality: Optionality
+  description: null | string
 }
 
 // prettier-ignore

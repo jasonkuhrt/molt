@@ -546,9 +546,23 @@ $ mybin --filePath ./a/b/c.yaml
     ```
 
   - boolean
+
     ```
     1/3  verbose
          ❯ no | yes
+    ```
+
+  - enum
+
+    ```
+    5/5  level
+
+        Different kinds of answers are accepted.
+        Which kind do you want to give?
+
+        ❯ string | number | enum
+
+        ❯ low | medium | high
     ```
 
 - Can be enabled _conditionally_ via _pattern matching_ on _events_.
