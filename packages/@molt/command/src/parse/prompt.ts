@@ -1,3 +1,4 @@
+import { type } from 'node:os'
 import { CommandParameter } from '../CommandParameter/index.js'
 import { casesExhausted } from '../helpers.js'
 import { KeyPress } from '../lib/KeyPress/index.js'
@@ -9,6 +10,7 @@ import { Term } from '../term.js'
 import type { ParseProgressPostPrompt, ParseProgressPostPromptAnnotation } from './parse.js'
 import chalk from 'chalk'
 import * as Readline from 'node:readline'
+import stringLength from 'string-length'
 
 /**
  * Get args from the user interactively via the console for the given parameters.
@@ -40,7 +42,8 @@ export const prompt = async (
     while (true) {
       const arg = await prompter.ask({
         question,
-        prompt: `${Text.pad(`left`, gutterWidth, Text.chars.space, `❯ `)}`,
+        prompt: '❯ ',
+        marginLeft: gutterWidth,
         parameter: param,
       })
       const validationResult = CommandParameter.validate(param, arg)
@@ -86,6 +89,7 @@ export interface Prompter {
     prompt: string
     question: string
     parameter: Pam.Parameter
+    marginLeft?: number
     // type: T
   }) => Promise<T extends boolean ? boolean : T extends number ? number : string>
 }
@@ -96,40 +100,39 @@ export const createPrompter = (channels: Prompt.Channels): Prompter => {
       channels.output(value + Text.chars.newline)
     },
     ask: async (params) => {
-      const { prompt, parameter: parameter_ } = params
+      const p = { ...params, channels }
       channels.output(params.question + Text.chars.newline)
 
-      const type = parameter_.type
-
-      if (type._tag === `TypeUnion`) {
-        throw new Error(`Unions are not supported yet.`)
-      }
-
-      if (type._tag === `TypeLiteral`) {
+      if (p.parameter.type._tag === `TypeLiteral`) {
         throw new Error(`Literals are not supported yet.`)
       }
 
-      if (type._tag === `TypeBoolean`) {
-        const parameter = { ...parameter_, type }
-        return Inputs.boolean({ channels, prompt, parameter: parameter })
+      if (p.parameter.type._tag === `TypeUnion`) {
+        // @ts-expect-error
+        return Inputs.union(p)
       }
 
-      if (type._tag === `TypeString`) {
-        const parameter = { ...parameter_, type }
-        return Inputs.string({ channels, prompt, parameter })
+      if (p.parameter.type._tag === `TypeBoolean`) {
+        // @ts-expect-error
+        return Inputs.boolean(p)
       }
 
-      if (type._tag === `TypeNumber`) {
-        const parameter = { ...parameter_, type }
-        return Inputs.number({ channels, prompt, parameter })
+      if (p.parameter.type._tag === `TypeString`) {
+        // @ts-expect-error
+        return Inputs.string(p)
       }
 
-      if (type._tag === `TypeEnum`) {
-        const parameter = { ...parameter_, type }
-        return Inputs.enumeration({ channels, prompt, parameter })
+      if (p.parameter.type._tag === `TypeNumber`) {
+        // @ts-expect-error
+        return Inputs.number(p)
       }
 
-      throw casesExhausted(type)
+      if (p.parameter.type._tag === `TypeEnum`) {
+        // @ts-expect-error
+        return Inputs.enumeration(p)
+      }
+
+      throw casesExhausted(p.parameter.type)
     },
   }
   return prompter
@@ -139,10 +142,75 @@ namespace Inputs {
   interface InputParams<parameter extends Pam.Parameter> {
     channels: Prompt.Channels
     prompt: string
+    marginLeft?: number
     parameter: parameter
   }
 
-  export const boolean = async (params: InputParams<Pam.Parameter.Single<Pam.Type.Scalar.Boolean>>) => {
+  export const union = async (params: InputParams<Pam.Parameter<Pam.Type.Union>>) => {
+    const { parameter } = params
+    const pipe = `${chalk.dim(`|`)}`
+    const state = await Prompt.create<{ active: number }>({
+      channels: params.channels,
+      initialState: { active: 0 },
+      on: [
+        {
+          match: [`left`, { name: `tab`, shift: true }],
+          run: (state) => ({
+            active: state.active === 0 ? parameter.type.members.length - 1 : state.active - 1,
+          }),
+        },
+        {
+          match: [`right`, { name: `tab`, shift: false }],
+          run: (state) => ({
+            active: state.active === parameter.type.members.length - 1 ? 0 : state.active + 1,
+          }),
+        },
+      ],
+      draw: (state) => {
+        const marginLeftSpace = ' '.repeat(params.marginLeft ?? 0)
+        // const marginLeftSpaceSansPrompt = ' '.repeat((params.marginLeft ?? 0) - stringLength(params.prompt))
+        // prettier-ignore
+        const intro = marginLeftSpace + `Different kinds of answers are accepted.` + Text.chars.newline + marginLeftSpace + `Which kind do you want to give?`
+        // prettier-ignore
+        const typeNameMapping: Record<Pam.Type['_tag'],string> = {
+          TypeBoolean:'boolean',
+          TypeEnum: 'enum',
+          TypeLiteral: 'literal',
+          TypeNumber: 'number',
+          TypeString: 'string',
+          TypeUnion: 'union'
+        }
+        const choices =
+          marginLeftSpace +
+          params.prompt +
+          parameter.type.members
+            .map((item, i) =>
+              i === state.active
+                ? `${chalk.green(chalk.bold(typeNameMapping[item.type._tag]))}`
+                : typeNameMapping[item.type._tag],
+            )
+            .join(chalk.dim(` | `))
+        return Text.chars.newline + intro + Text.chars.newline + Text.chars.newline + choices
+      },
+    })()
+
+    const choice = parameter.type.members[state.active]
+    // prettier-ignore
+    if (!choice) throw new Error(`No choice selected. Enumeration must be empty. But enumerations should not be empty. This is a bug.`)
+
+    return createPrompter(params.channels).ask({
+      ...params,
+      parameter: {
+        ...parameter,
+        ...choice,
+      },
+      question: '',
+    })
+  }
+
+  export const boolean = async (params: InputParams<Pam.Parameter<Pam.Type.Scalar.Boolean>>) => {
+    const marginLeftSpace = ' '.repeat(params.marginLeft ?? 0)
+    // const marginLeftSpaceSansPrompt = ' '.repeat((params.marginLeft ?? 0) - stringLength(params.prompt))
     const pipe = `${chalk.dim(`|`)}`
     const no = `${chalk.green(chalk.bold(`no`))} ${pipe} yes`
     const yes = `no ${pipe} ${chalk.green(chalk.bold(`yes`))}`
@@ -164,21 +232,22 @@ namespace Inputs {
         },
       ],
       draw: (state) => {
-        return params.prompt + (state.answer ? yes : no)
+        return marginLeftSpace + params.prompt + (state.answer ? yes : no)
       },
     })()
     return state.answer
   }
 
-  export const string = async (params: InputParams<Pam.Parameter.Single<Pam.Type.Scalar.String>>) => {
-    params.channels.output(params.prompt)
+  export const string = async (params: InputParams<Pam.Parameter<Pam.Type.Scalar.String>>) => {
+    const marginLeftSpace = ' '.repeat(params.marginLeft ?? 0)
+    params.channels.output(marginLeftSpace + params.prompt)
     return params.channels.readLine()
   }
 
-  export const enumeration = async (
-    params: InputParams<Pam.Parameter.Single<Pam.Type.Scalar.Enumeration>>,
-  ) => {
+  export const enumeration = async (params: InputParams<Pam.Parameter<Pam.Type.Scalar.Enumeration>>) => {
     const { parameter } = params
+    const marginLeftSpace = ' '.repeat(params.marginLeft ?? 0)
+    // const marginLeftSpaceSansPrompt = ' '.repeat((params.marginLeft ?? 0) - stringLength(params.prompt))
     const state = await Prompt.create<{ active: number }>({
       channels: params.channels,
       initialState: { active: 0 },
@@ -198,6 +267,7 @@ namespace Inputs {
       ],
       draw: (state) => {
         return (
+          marginLeftSpace +
           params.prompt +
           parameter.type.members
             .map((item, i) => (i === state.active ? `${chalk.green(chalk.bold(item))}` : item))
@@ -212,8 +282,9 @@ namespace Inputs {
     return choice
   }
 
-  export const number = async (params: InputParams<Pam.Parameter.Single<Pam.Type.Scalar.Number>>) => {
-    params.channels.output(params.prompt)
+  export const number = async (params: InputParams<Pam.Parameter<Pam.Type.Scalar.Number>>) => {
+    const marginLeftSpace = ' '.repeat(params.marginLeft ?? 0)
+    params.channels.output(marginLeftSpace + params.prompt)
     const answer_ = await params.channels.readLine()
     const answer = parseFloat(answer_)
     if (isNaN(answer)) return null as any // todo remove cast

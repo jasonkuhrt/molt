@@ -12,10 +12,10 @@ exports[`boolean > can be toggled to "yes" > tty 1`] = `
   "[2m[90m1/1[39m[22m  [32ma[39m
 ",
   "[?25l",
-  "[2K",
+  "",
   "[1G",
   "     ❯ [32m[1mno[22m[39m [2m|[22m yes",
-  "[2K",
+  "[2K[G",
   "[1G",
   "     ❯ no [2m|[22m [32m[1myes[22m[39m",
   "
@@ -59,13 +59,13 @@ exports[`boolean > can be toggled to "yes" and then back to "no" > tty 1`] = `
   "[2m[90m1/1[39m[22m  [32ma[39m
 ",
   "[?25l",
-  "[2K",
+  "",
   "[1G",
   "     ❯ [32m[1mno[22m[39m [2m|[22m yes",
-  "[2K",
+  "[2K[G",
   "[1G",
   "     ❯ no [2m|[22m [32m[1myes[22m[39m",
-  "[2K",
+  "[2K[G",
   "[1G",
   "     ❯ [32m[1mno[22m[39m [2m|[22m yes",
   "
@@ -112,13 +112,13 @@ exports[`boolean > can use tab to toggle between "yes" and "no" > tty 1`] = `
   "[2m[90m1/1[39m[22m  [32ma[39m
 ",
   "[?25l",
-  "[2K",
+  "",
   "[1G",
   "     ❯ [32m[1mno[22m[39m [2m|[22m yes",
-  "[2K",
+  "[2K[G",
   "[1G",
   "     ❯ no [2m|[22m [32m[1myes[22m[39m",
-  "[2K",
+  "[2K[G",
   "[1G",
   "     ❯ [32m[1mno[22m[39m [2m|[22m yes",
   "
@@ -165,7 +165,7 @@ exports[`boolean > defaults to "no" > tty 1`] = `
   "[2m[90m1/1[39m[22m  [32ma[39m
 ",
   "[?25l",
-  "[2K",
+  "",
   "[1G",
   "     ❯ [32m[1mno[22m[39m [2m|[22m yes",
   "
@@ -218,13 +218,13 @@ exports[`enumeration > can select member leftward with left key > tty 1`] = `
   "[2m[90m1/1[39m[22m  [32ma[39m
 ",
   "[?25l",
-  "[2K",
+  "",
   "[1G",
   "     ❯ [32m[1mmajor[22m[39m[2m | [22mminor[2m | [22mpatch",
-  "[2K",
+  "[2K[G",
   "[1G",
   "     ❯ major[2m | [22m[32m[1mminor[22m[39m[2m | [22mpatch",
-  "[2K",
+  "[2K[G",
   "[1G",
   "     ❯ [32m[1mmajor[22m[39m[2m | [22mminor[2m | [22mpatch",
   "
@@ -271,10 +271,10 @@ exports[`enumeration > can select member rightward with right key > tty 1`] = `
   "[2m[90m1/1[39m[22m  [32ma[39m
 ",
   "[?25l",
-  "[2K",
+  "",
   "[1G",
   "     ❯ [32m[1mmajor[22m[39m[2m | [22mminor[2m | [22mpatch",
-  "[2K",
+  "[2K[G",
   "[1G",
   "     ❯ major[2m | [22m[32m[1mminor[22m[39m[2m | [22mpatch",
   "
@@ -318,7 +318,7 @@ exports[`enumeration > defaults to first member > tty 1`] = `
   "[2m[90m1/1[39m[22m  [32ma[39m
 ",
   "[?25l",
-  "[2K",
+  "",
   "[1G",
   "     ❯ [32m[1mmajor[22m[39m[2m | [22mminor[2m | [22mpatch",
   "
@@ -359,10 +359,10 @@ exports[`enumeration > loop > left key on first member loops to last member > tt
   "[2m[90m1/1[39m[22m  [32ma[39m
 ",
   "[?25l",
-  "[2K",
+  "",
   "[1G",
   "     ❯ [32m[1mmajor[22m[39m[2m | [22mminor[2m | [22mpatch",
-  "[2K",
+  "[2K[G",
   "[1G",
   "     ❯ major[2m | [22mminor[2m | [22m[32m[1mpatch[22m[39m",
   "
@@ -406,16 +406,16 @@ exports[`enumeration > loop > right key on last member loops to first member > t
   "[2m[90m1/1[39m[22m  [32ma[39m
 ",
   "[?25l",
-  "[2K",
+  "",
   "[1G",
   "     ❯ [32m[1mmajor[22m[39m[2m | [22mminor[2m | [22mpatch",
-  "[2K",
+  "[2K[G",
   "[1G",
   "     ❯ major[2m | [22m[32m[1mminor[22m[39m[2m | [22mpatch",
-  "[2K",
+  "[2K[G",
   "[1G",
   "     ❯ major[2m | [22mminor[2m | [22m[32m[1mpatch[22m[39m",
-  "[2K",
+  "[2K[G",
   "[1G",
   "     ❯ [32m[1mmajor[22m[39m[2m | [22mminor[2m | [22mpatch",
   "
@@ -465,13 +465,13 @@ exports[`enumeration > tab > can select member leftward with shift+tab key > tty
   "[2m[90m1/1[39m[22m  [32ma[39m
 ",
   "[?25l",
-  "[2K",
+  "",
   "[1G",
   "     ❯ [32m[1mmajor[22m[39m[2m | [22mminor[2m | [22mpatch",
-  "[2K",
+  "[2K[G",
   "[1G",
   "     ❯ major[2m | [22m[32m[1mminor[22m[39m[2m | [22mpatch",
-  "[2K",
+  "[2K[G",
   "[1G",
   "     ❯ [32m[1mmajor[22m[39m[2m | [22mminor[2m | [22mpatch",
   "
@@ -518,10 +518,10 @@ exports[`enumeration > tab > can select member rightward with tab key > tty 1`] 
   "[2m[90m1/1[39m[22m  [32ma[39m
 ",
   "[?25l",
-  "[2K",
+  "",
   "[1G",
   "     ❯ [32m[1mmajor[22m[39m[2m | [22mminor[2m | [22mpatch",
-  "[2K",
+  "[2K[G",
   "[1G",
   "     ❯ major[2m | [22m[32m[1mminor[22m[39m[2m | [22mpatch",
   "

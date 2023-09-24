@@ -10,7 +10,7 @@ export namespace Output {
     when: EventPatternsInput<S> | null
   }
 
-  export interface Basic extends Omit<Pam.Parameter.Single, '_tag'> {
+  export interface Basic extends Omit<Pam.Parameter, '_tag'> {
     _tag: 'Basic'
     environment: Environment
     prompt: Prompt

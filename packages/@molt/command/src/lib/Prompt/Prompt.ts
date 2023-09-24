@@ -55,10 +55,13 @@ export namespace Prompt {
         channels.output(ansiEscapes.cursorShow)
         process.off(`exit`, cleanup)
       }
+      let previousLineCount = 0
       const refresh = () => {
-        channels.output(ansiEscapes.eraseLine)
+        channels.output(ansiEscapes.eraseLines(previousLineCount))
         channels.output(ansiEscapes.cursorTo(0))
-        channels.output(params.draw(state))
+        const content = params.draw(state)
+        previousLineCount = content.split(Text.chars.newline).length
+        channels.output(content)
       }
 
       channels.output(ansiEscapes.cursorHide)
