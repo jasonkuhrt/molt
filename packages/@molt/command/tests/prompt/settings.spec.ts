@@ -7,10 +7,16 @@ import stripAnsi from 'strip-ansi'
 import { describe, expect, it } from 'vitest'
 
 const S = <S extends CommandParameter.Input.Schema>(settings: Settings.InputPrompt<S>) => settings
+const foo = [
+  { ctrl: false, meta: false, sequence: `f`, shift: false, name: `f` },
+  { ctrl: false, meta: false, sequence: `o`, shift: false, name: `o` },
+  { ctrl: false, meta: false, sequence: `o`, shift: false, name: `o` },
+  { ctrl: false, meta: false, sequence: ``, shift: false, name: `return` },
+]
 
 describe(`parameter level`, () => {
   it(`can be passed object`, async () => {
-    memoryPrompter.answers.add([`foo`])
+    memoryPrompter.script.keyPress.push(...foo)
     const args = await tryCatch(() =>
       Command.create()
         .parameter(`a`, { schema: s, prompt: { enabled: true } })
@@ -25,7 +31,7 @@ describe(`parameter level`, () => {
 
 describe(`command level`, () => {
   it(`passing object makes enabled default to true`, async () => {
-    memoryPrompter.answers.add([`foo`])
+    memoryPrompter.script.keyPress.push(...foo)
     // eslint-disable-next-line
     const args = await Command.create()
       .parameter(`a`, { schema: s })
@@ -50,7 +56,7 @@ it(`prompt is disabled by default`, () => {
 })
 
 it(`prompt can be enabled by default`, async () => {
-  memoryPrompter.answers.add([`foo`])
+  memoryPrompter.script.keyPress.push(...foo)
   const args = await tryCatch(() =>
     Command.create()
       .parameter(`a`, { schema: s })
@@ -81,7 +87,7 @@ describe(`prompt can be toggled by check on error`, () => {
       when: { result: `rejected`, error: `ErrorMissingArgument`, spec: { name: { canonical: `a` } } },
     })
     it(`check does match`, async () => {
-      memoryPrompter.answers.add([`foo`])
+      memoryPrompter.script.keyPress.push(...foo)
       // eslint-disable-next-line
       const args = await tryCatch(() =>
         Command.create()
@@ -108,7 +114,7 @@ describe(`prompt can be toggled by check on error`, () => {
 })
 
 it(`parameter defaults to custom settings`, async () => {
-  memoryPrompter.answers.add([`foo`])
+  memoryPrompter.script.keyPress.push(...foo)
   const args = await tryCatch(() =>
     Command.create()
       .parameter(`a`, { schema: s })
@@ -145,7 +151,7 @@ it(`can be stack of conditional prompts`, async () => {
       },
     ],
   })
-  memoryPrompter.answers.add([`foo`])
+  memoryPrompter.script.keyPress.push(...foo)
   // eslint-disable-next-line
   const args = await tryCatch(() =>
     Command.create()

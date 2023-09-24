@@ -21,7 +21,6 @@ exports[`boolean > required > can be toggled to "yes" > tty 1`] = `
   "
 ",
   "[?25h",
-  "[?25h",
   "
 ",
 ]
@@ -40,7 +39,6 @@ exports[`boolean > required > can be toggled to "yes" > tty strip ansi 1`] = `
   "     ❯ no | yes",
   "
 ",
-  "",
   "",
   "
 ",
@@ -71,7 +69,6 @@ exports[`boolean > required > can be toggled to "yes" and then back to "no" > tt
   "
 ",
   "[?25h",
-  "[?25h",
   "
 ",
 ]
@@ -93,7 +90,6 @@ exports[`boolean > required > can be toggled to "yes" and then back to "no" > tt
   "     ❯ no | yes",
   "
 ",
-  "",
   "",
   "
 ",
@@ -124,7 +120,6 @@ exports[`boolean > required > can use tab to toggle between "yes" and "no" > tty
   "
 ",
   "[?25h",
-  "[?25h",
   "
 ",
 ]
@@ -146,7 +141,6 @@ exports[`boolean > required > can use tab to toggle between "yes" and "no" > tty
   "     ❯ no | yes",
   "
 ",
-  "",
   "",
   "
 ",
@@ -171,7 +165,6 @@ exports[`boolean > required > defaults to "no" > tty 1`] = `
   "
 ",
   "[?25h",
-  "[?25h",
   "
 ",
 ]
@@ -187,7 +180,6 @@ exports[`boolean > required > defaults to "no" > tty strip ansi 1`] = `
   "     ❯ no | yes",
   "
 ",
-  "",
   "",
   "
 ",
@@ -230,7 +222,6 @@ exports[`enumeration > required > can select member leftward with left key > tty
   "
 ",
   "[?25h",
-  "[?25h",
   "
 ",
 ]
@@ -252,7 +243,6 @@ exports[`enumeration > required > can select member leftward with left key > tty
   "     ❯ major | minor | patch",
   "
 ",
-  "",
   "",
   "
 ",
@@ -280,7 +270,6 @@ exports[`enumeration > required > can select member rightward with right key > t
   "
 ",
   "[?25h",
-  "[?25h",
   "
 ",
 ]
@@ -299,7 +288,6 @@ exports[`enumeration > required > can select member rightward with right key > t
   "     ❯ major | minor | patch",
   "
 ",
-  "",
   "",
   "
 ",
@@ -324,7 +312,6 @@ exports[`enumeration > required > defaults to first member > tty 1`] = `
   "
 ",
   "[?25h",
-  "[?25h",
   "
 ",
 ]
@@ -340,7 +327,6 @@ exports[`enumeration > required > defaults to first member > tty strip ansi 1`] 
   "     ❯ major | minor | patch",
   "
 ",
-  "",
   "",
   "
 ",
@@ -368,7 +354,6 @@ exports[`enumeration > required > loop > left key on first member loops to last 
   "
 ",
   "[?25h",
-  "[?25h",
   "
 ",
 ]
@@ -387,7 +372,6 @@ exports[`enumeration > required > loop > left key on first member loops to last 
   "     ❯ major | minor | patch",
   "
 ",
-  "",
   "",
   "
 ",
@@ -421,7 +405,6 @@ exports[`enumeration > required > loop > right key on last member loops to first
   "
 ",
   "[?25h",
-  "[?25h",
   "
 ",
 ]
@@ -446,7 +429,6 @@ exports[`enumeration > required > loop > right key on last member loops to first
   "     ❯ major | minor | patch",
   "
 ",
-  "",
   "",
   "
 ",
@@ -477,7 +459,6 @@ exports[`enumeration > required > tab > can select member leftward with shift+ta
   "
 ",
   "[?25h",
-  "[?25h",
   "
 ",
 ]
@@ -499,7 +480,6 @@ exports[`enumeration > required > tab > can select member leftward with shift+ta
   "     ❯ major | minor | patch",
   "
 ",
-  "",
   "",
   "
 ",
@@ -527,7 +507,6 @@ exports[`enumeration > required > tab > can select member rightward with tab key
   "
 ",
   "[?25h",
-  "[?25h",
   "
 ",
 ]
@@ -547,6 +526,44 @@ exports[`enumeration > required > tab > can select member rightward with tab key
   "
 ",
   "",
+  "
+",
+]
+`;
+
+exports[`number > optional > when esc is pressed the question is skipped > args 1`] = `
+{
+  "a": undefined,
+  "help": false,
+}
+`;
+
+exports[`number > optional > when esc is pressed the question is skipped > tty 1`] = `
+[
+  "[2m[90m1/1[39m[22m  [32ma[39m[2m optional (press esc to skip)[22m
+",
+  "[?25l",
+  "",
+  "[1G",
+  "     ❯ ",
+  "
+",
+  "[?25h",
+  "
+",
+]
+`;
+
+exports[`number > optional > when esc is pressed the question is skipped > tty strip ansi 1`] = `
+[
+  "1/1  a optional (press esc to skip)
+",
+  "",
+  "",
+  "",
+  "     ❯ ",
+  "
+",
   "",
   "
 ",
@@ -562,10 +579,15 @@ exports[`number > optional > when nothing entered then value is undefined > args
 
 exports[`number > optional > when nothing entered then value is undefined > tty 1`] = `
 [
-  "[2m[90m1/1[39m[22m  [32ma[39m
+  "[2m[90m1/1[39m[22m  [32ma[39m[2m optional (press esc to skip)[22m
 ",
-  "     ❯ ",
+  "[?25l",
   "",
+  "[1G",
+  "     ❯ ",
+  "
+",
+  "[?25h",
   "
 ",
 ]
@@ -573,9 +595,14 @@ exports[`number > optional > when nothing entered then value is undefined > tty 
 
 exports[`number > optional > when nothing entered then value is undefined > tty strip ansi 1`] = `
 [
-  "1/1  a
+  "1/1  a optional (press esc to skip)
 ",
+  "",
+  "",
+  "",
   "     ❯ ",
+  "
+",
   "",
   "
 ",
@@ -593,8 +620,22 @@ exports[`prompt when invalid input > tty 1`] = `
 [
   "[2m[90m1/1[39m[22m  [32ma[39m
 ",
+  "[?25l",
+  "",
+  "[1G",
   "     ❯ ",
-  "foo",
+  "[2K[G",
+  "[1G",
+  "     ❯ f",
+  "[2K[G",
+  "[1G",
+  "     ❯ fo",
+  "[2K[G",
+  "[1G",
+  "     ❯ foo",
+  "
+",
+  "[?25h",
   "
 ",
 ]
@@ -604,8 +645,22 @@ exports[`prompt when invalid input > tty strip ansi 1`] = `
 [
   "1/1  a
 ",
+  "",
+  "",
+  "",
   "     ❯ ",
-  "foo",
+  "",
+  "",
+  "     ❯ f",
+  "",
+  "",
+  "     ❯ fo",
+  "",
+  "",
+  "     ❯ foo",
+  "
+",
+  "",
   "
 ",
 ]
@@ -622,8 +677,22 @@ exports[`prompt when invalid input OR missing input > tty 1`] = `
 [
   "[2m[90m1/1[39m[22m  [32ma[39m
 ",
+  "[?25l",
+  "",
+  "[1G",
   "     ❯ ",
-  "foo",
+  "[2K[G",
+  "[1G",
+  "     ❯ f",
+  "[2K[G",
+  "[1G",
+  "     ❯ fo",
+  "[2K[G",
+  "[1G",
+  "     ❯ foo",
+  "
+",
+  "[?25h",
   "
 ",
 ]
@@ -633,8 +702,22 @@ exports[`prompt when invalid input OR missing input > tty strip ansi 1`] = `
 [
   "1/1  a
 ",
+  "",
+  "",
+  "",
   "     ❯ ",
-  "foo",
+  "",
+  "",
+  "     ❯ f",
+  "",
+  "",
+  "     ❯ fo",
+  "",
+  "",
+  "     ❯ foo",
+  "
+",
+  "",
   "
 ",
 ]
@@ -651,8 +734,22 @@ exports[`prompt when missing input > tty 1`] = `
 [
   "[2m[90m1/1[39m[22m  [32ma[39m
 ",
+  "[?25l",
+  "",
+  "[1G",
   "     ❯ ",
-  "foo",
+  "[2K[G",
+  "[1G",
+  "     ❯ f",
+  "[2K[G",
+  "[1G",
+  "     ❯ fo",
+  "[2K[G",
+  "[1G",
+  "     ❯ foo",
+  "
+",
+  "[?25h",
   "
 ",
 ]
@@ -662,8 +759,22 @@ exports[`prompt when missing input > tty strip ansi 1`] = `
 [
   "1/1  a
 ",
+  "",
+  "",
+  "",
   "     ❯ ",
-  "foo",
+  "",
+  "",
+  "     ❯ f",
+  "",
+  "",
+  "     ❯ fo",
+  "",
+  "",
+  "     ❯ foo",
+  "
+",
+  "",
   "
 ",
 ]
@@ -678,10 +789,24 @@ exports[`prompt when omitted > args 1`] = `
 
 exports[`prompt when omitted > tty 1`] = `
 [
-  "[2m[90m1/1[39m[22m  [32ma[39m
+  "[2m[90m1/1[39m[22m  [32ma[39m[2m optional (press esc to skip)[22m
 ",
+  "[?25l",
+  "",
+  "[1G",
   "     ❯ ",
-  "foo",
+  "[2K[G",
+  "[1G",
+  "     ❯ f",
+  "[2K[G",
+  "[1G",
+  "     ❯ fo",
+  "[2K[G",
+  "[1G",
+  "     ❯ foo",
+  "
+",
+  "[?25h",
   "
 ",
 ]
@@ -689,10 +814,63 @@ exports[`prompt when omitted > tty 1`] = `
 
 exports[`prompt when omitted > tty strip ansi 1`] = `
 [
-  "1/1  a
+  "1/1  a optional (press esc to skip)
 ",
+  "",
+  "",
+  "",
   "     ❯ ",
-  "foo",
+  "",
+  "",
+  "     ❯ f",
+  "",
+  "",
+  "     ❯ fo",
+  "",
+  "",
+  "     ❯ foo",
+  "
+",
+  "",
+  "
+",
+]
+`;
+
+exports[`string > optional > when esc is pressed the question is skipped > args 1`] = `
+{
+  "a": undefined,
+  "help": false,
+}
+`;
+
+exports[`string > optional > when esc is pressed the question is skipped > tty 1`] = `
+[
+  "[2m[90m1/1[39m[22m  [32ma[39m[2m optional (press esc to skip)[22m
+",
+  "[?25l",
+  "",
+  "[1G",
+  "     ❯ ",
+  "
+",
+  "[?25h",
+  "
+",
+]
+`;
+
+exports[`string > optional > when esc is pressed the question is skipped > tty strip ansi 1`] = `
+[
+  "1/1  a optional (press esc to skip)
+",
+  "",
+  "",
+  "",
+  "     ❯ ",
+  "
+",
+  "",
   "
 ",
 ]
@@ -707,10 +885,15 @@ exports[`string > optional > when nothing entered then value is undefined > args
 
 exports[`string > optional > when nothing entered then value is undefined > tty 1`] = `
 [
-  "[2m[90m1/1[39m[22m  [32ma[39m
+  "[2m[90m1/1[39m[22m  [32ma[39m[2m optional (press esc to skip)[22m
 ",
-  "     ❯ ",
+  "[?25l",
   "",
+  "[1G",
+  "     ❯ ",
+  "
+",
+  "[?25h",
   "
 ",
 ]
@@ -718,9 +901,14 @@ exports[`string > optional > when nothing entered then value is undefined > tty 
 
 exports[`string > optional > when nothing entered then value is undefined > tty strip ansi 1`] = `
 [
-  "1/1  a
+  "1/1  a optional (press esc to skip)
 ",
+  "",
+  "",
+  "",
   "     ❯ ",
+  "
+",
   "",
   "
 ",
@@ -756,7 +944,6 @@ exports[`union > required > asks user to select member to use" > tty 1`] = `
   "
 ",
   "[?25h",
-  "[?25h",
   "
 ",
   "[?25l",
@@ -768,7 +955,6 @@ exports[`union > required > asks user to select member to use" > tty 1`] = `
   "     ❯ no [2m|[22m [32m[1myes[22m[39m",
   "
 ",
-  "[?25h",
   "[?25h",
   "
 ",
@@ -797,7 +983,6 @@ exports[`union > required > asks user to select member to use" > tty strip ansi 
   "
 ",
   "",
-  "",
   "
 ",
   "",
@@ -809,7 +994,6 @@ exports[`union > required > asks user to select member to use" > tty strip ansi 
   "     ❯ no | yes",
   "
 ",
-  "",
   "",
   "
 ",

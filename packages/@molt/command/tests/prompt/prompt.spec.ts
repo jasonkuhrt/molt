@@ -27,10 +27,15 @@ beforeEach(() => {
 describe(`string`, () => {
   describe(`optional`, () => {
     it(`when nothing entered then value is undefined`, async () => {
-      answers = [``]
       // @ts-expect-error todo
       parameters = { a: { schema: s.optional(), prompt: { when: { result: `omitted` } } } }
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
+      await run()
+    })
+    it(`when esc is pressed the question is skipped`, async () => {
+      // @ts-expect-error todo
+      parameters = { a: { schema: s.optional(), prompt: { when: { result: `omitted` } } } }
+      keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `escape` })
       await run()
     })
   })
@@ -39,10 +44,15 @@ describe(`string`, () => {
 describe(`number`, () => {
   describe(`optional`, () => {
     it(`when nothing entered then value is undefined`, async () => {
-      answers = [``]
       // @ts-expect-error todo
       parameters = { a: { schema: n.optional(), prompt: { when: { result: `omitted` } } } }
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
+      await run()
+    })
+    it(`when esc is pressed the question is skipped`, async () => {
+      // @ts-expect-error todo
+      parameters = { a: { schema: n.optional(), prompt: { when: { result: `omitted` } } } }
+      keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `escape` })
       await run()
     })
   })
@@ -179,7 +189,12 @@ it(`prompt when missing input`, async () => {
   parameters = {
     a: { schema: s.min(2), prompt: { when: { result: `rejected`, error: `ErrorMissingArgument` } } },
   }
-  answers = [`foo`]
+  keyPresses.push(
+    { ctrl: false, meta: false, sequence: `f`, shift: false, name: `f` },
+    { ctrl: false, meta: false, sequence: `o`, shift: false, name: `o` },
+    { ctrl: false, meta: false, sequence: `o`, shift: false, name: `o` },
+    { ctrl: false, meta: false, sequence: ``, shift: false, name: `return` },
+  )
   line = []
   await run()
 })
@@ -188,7 +203,12 @@ it(`prompt when invalid input`, async () => {
   parameters = {
     a: { schema: s.min(2), prompt: { when: { result: `rejected`, error: `ErrorInvalidArgument` } } },
   }
-  answers = [`foo`]
+  keyPresses.push(
+    { ctrl: false, meta: false, sequence: `f`, shift: false, name: `f` },
+    { ctrl: false, meta: false, sequence: `o`, shift: false, name: `o` },
+    { ctrl: false, meta: false, sequence: `o`, shift: false, name: `o` },
+    { ctrl: false, meta: false, sequence: ``, shift: false, name: `return` },
+  )
   line = [`-a`, `1`]
   await run()
 })
@@ -200,7 +220,12 @@ it(`prompt when invalid input OR missing input`, async () => {
       prompt: { when: { result: `rejected`, error: [`ErrorInvalidArgument`, `ErrorMissingArgument`] } },
     },
   }
-  answers = [`foo`]
+  keyPresses.push(
+    { ctrl: false, meta: false, sequence: `f`, shift: false, name: `f` },
+    { ctrl: false, meta: false, sequence: `o`, shift: false, name: `o` },
+    { ctrl: false, meta: false, sequence: `o`, shift: false, name: `o` },
+    { ctrl: false, meta: false, sequence: ``, shift: false, name: `return` },
+  )
   line = [`-a`, `1`]
   await run()
 })
@@ -213,7 +238,12 @@ it(`prompt when omitted`, async () => {
       prompt: { when: { result: `omitted`, spec: { optionality: [`default`, `optional`] } } },
     },
   }
-  answers = [`foo`]
+  keyPresses.push(
+    { ctrl: false, meta: false, sequence: `f`, shift: false, name: `f` },
+    { ctrl: false, meta: false, sequence: `o`, shift: false, name: `o` },
+    { ctrl: false, meta: false, sequence: `o`, shift: false, name: `o` },
+    { ctrl: false, meta: false, sequence: ``, shift: false, name: `return` },
+  )
   line = []
   await run()
 })
