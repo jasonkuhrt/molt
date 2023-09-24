@@ -541,14 +541,14 @@ $ mybin --filePath ./a/b/c.yaml
   - string
 
     ```
-    1/3  name
+    1/9  name
          ❯
     ```
 
   - boolean
 
     ```
-    1/3  verbose
+    2/3  verbose
          ❯ no | yes
     ```
 
