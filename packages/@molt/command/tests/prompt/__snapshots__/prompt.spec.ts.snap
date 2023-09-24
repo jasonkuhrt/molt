@@ -1,13 +1,13 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`boolean > can be toggled to "yes" > args 1`] = `
+exports[`boolean > required > can be toggled to "yes" > args 1`] = `
 {
   "a": true,
   "help": false,
 }
 `;
 
-exports[`boolean > can be toggled to "yes" > tty 1`] = `
+exports[`boolean > required > can be toggled to "yes" > tty 1`] = `
 [
   "[2m[90m1/1[39m[22m  [32ma[39m
 ",
@@ -27,7 +27,7 @@ exports[`boolean > can be toggled to "yes" > tty 1`] = `
 ]
 `;
 
-exports[`boolean > can be toggled to "yes" > tty strip ansi 1`] = `
+exports[`boolean > required > can be toggled to "yes" > tty strip ansi 1`] = `
 [
   "1/1  a
 ",
@@ -47,67 +47,14 @@ exports[`boolean > can be toggled to "yes" > tty strip ansi 1`] = `
 ]
 `;
 
-exports[`boolean > can be toggled to "yes" and then back to "no" > args 1`] = `
+exports[`boolean > required > can be toggled to "yes" and then back to "no" > args 1`] = `
 {
   "a": false,
   "help": false,
 }
 `;
 
-exports[`boolean > can be toggled to "yes" and then back to "no" > tty 1`] = `
-[
-  "[2m[90m1/1[39m[22m  [32ma[39m
-",
-  "[?25l",
-  "",
-  "[1G",
-  "     ❯ [32m[1mno[22m[39m [2m|[22m yes",
-  "[2K[G",
-  "[1G",
-  "     ❯ no [2m|[22m [32m[1myes[22m[39m",
-  "[2K[G",
-  "[1G",
-  "     ❯ [32m[1mno[22m[39m [2m|[22m yes",
-  "
-",
-  "[?25h",
-  "[?25h",
-  "
-",
-]
-`;
-
-exports[`boolean > can be toggled to "yes" and then back to "no" > tty strip ansi 1`] = `
-[
-  "1/1  a
-",
-  "",
-  "",
-  "",
-  "     ❯ no | yes",
-  "",
-  "",
-  "     ❯ no | yes",
-  "",
-  "",
-  "     ❯ no | yes",
-  "
-",
-  "",
-  "",
-  "
-",
-]
-`;
-
-exports[`boolean > can use tab to toggle between "yes" and "no" > args 1`] = `
-{
-  "a": false,
-  "help": false,
-}
-`;
-
-exports[`boolean > can use tab to toggle between "yes" and "no" > tty 1`] = `
+exports[`boolean > required > can be toggled to "yes" and then back to "no" > tty 1`] = `
 [
   "[2m[90m1/1[39m[22m  [32ma[39m
 ",
@@ -130,7 +77,7 @@ exports[`boolean > can use tab to toggle between "yes" and "no" > tty 1`] = `
 ]
 `;
 
-exports[`boolean > can use tab to toggle between "yes" and "no" > tty strip ansi 1`] = `
+exports[`boolean > required > can be toggled to "yes" and then back to "no" > tty strip ansi 1`] = `
 [
   "1/1  a
 ",
@@ -153,14 +100,67 @@ exports[`boolean > can use tab to toggle between "yes" and "no" > tty strip ansi
 ]
 `;
 
-exports[`boolean > defaults to "no" > args 1`] = `
+exports[`boolean > required > can use tab to toggle between "yes" and "no" > args 1`] = `
 {
   "a": false,
   "help": false,
 }
 `;
 
-exports[`boolean > defaults to "no" > tty 1`] = `
+exports[`boolean > required > can use tab to toggle between "yes" and "no" > tty 1`] = `
+[
+  "[2m[90m1/1[39m[22m  [32ma[39m
+",
+  "[?25l",
+  "",
+  "[1G",
+  "     ❯ [32m[1mno[22m[39m [2m|[22m yes",
+  "[2K[G",
+  "[1G",
+  "     ❯ no [2m|[22m [32m[1myes[22m[39m",
+  "[2K[G",
+  "[1G",
+  "     ❯ [32m[1mno[22m[39m [2m|[22m yes",
+  "
+",
+  "[?25h",
+  "[?25h",
+  "
+",
+]
+`;
+
+exports[`boolean > required > can use tab to toggle between "yes" and "no" > tty strip ansi 1`] = `
+[
+  "1/1  a
+",
+  "",
+  "",
+  "",
+  "     ❯ no | yes",
+  "",
+  "",
+  "     ❯ no | yes",
+  "",
+  "",
+  "     ❯ no | yes",
+  "
+",
+  "",
+  "",
+  "
+",
+]
+`;
+
+exports[`boolean > required > defaults to "no" > args 1`] = `
+{
+  "a": false,
+  "help": false,
+}
+`;
+
+exports[`boolean > required > defaults to "no" > tty 1`] = `
 [
   "[2m[90m1/1[39m[22m  [32ma[39m
 ",
@@ -177,7 +177,7 @@ exports[`boolean > defaults to "no" > tty 1`] = `
 ]
 `;
 
-exports[`boolean > defaults to "no" > tty strip ansi 1`] = `
+exports[`boolean > required > defaults to "no" > tty strip ansi 1`] = `
 [
   "1/1  a
 ",
@@ -206,14 +206,14 @@ exports[`can be explicitly disabled with a "when" condition present > tty 1`] = 
 
 exports[`can be explicitly disabled with a "when" condition present > tty strip ansi 1`] = `[]`;
 
-exports[`enumeration > can select member leftward with left key > args 1`] = `
+exports[`enumeration > required > can select member leftward with left key > args 1`] = `
 {
   "a": "major",
   "help": false,
 }
 `;
 
-exports[`enumeration > can select member leftward with left key > tty 1`] = `
+exports[`enumeration > required > can select member leftward with left key > tty 1`] = `
 [
   "[2m[90m1/1[39m[22m  [32ma[39m
 ",
@@ -236,7 +236,7 @@ exports[`enumeration > can select member leftward with left key > tty 1`] = `
 ]
 `;
 
-exports[`enumeration > can select member leftward with left key > tty strip ansi 1`] = `
+exports[`enumeration > required > can select member leftward with left key > tty strip ansi 1`] = `
 [
   "1/1  a
 ",
@@ -259,14 +259,14 @@ exports[`enumeration > can select member leftward with left key > tty strip ansi
 ]
 `;
 
-exports[`enumeration > can select member rightward with right key > args 1`] = `
+exports[`enumeration > required > can select member rightward with right key > args 1`] = `
 {
   "a": "minor",
   "help": false,
 }
 `;
 
-exports[`enumeration > can select member rightward with right key > tty 1`] = `
+exports[`enumeration > required > can select member rightward with right key > tty 1`] = `
 [
   "[2m[90m1/1[39m[22m  [32ma[39m
 ",
@@ -286,7 +286,7 @@ exports[`enumeration > can select member rightward with right key > tty 1`] = `
 ]
 `;
 
-exports[`enumeration > can select member rightward with right key > tty strip ansi 1`] = `
+exports[`enumeration > required > can select member rightward with right key > tty strip ansi 1`] = `
 [
   "1/1  a
 ",
@@ -306,14 +306,14 @@ exports[`enumeration > can select member rightward with right key > tty strip an
 ]
 `;
 
-exports[`enumeration > defaults to first member > args 1`] = `
+exports[`enumeration > required > defaults to first member > args 1`] = `
 {
   "a": "major",
   "help": false,
 }
 `;
 
-exports[`enumeration > defaults to first member > tty 1`] = `
+exports[`enumeration > required > defaults to first member > tty 1`] = `
 [
   "[2m[90m1/1[39m[22m  [32ma[39m
 ",
@@ -330,7 +330,7 @@ exports[`enumeration > defaults to first member > tty 1`] = `
 ]
 `;
 
-exports[`enumeration > defaults to first member > tty strip ansi 1`] = `
+exports[`enumeration > required > defaults to first member > tty strip ansi 1`] = `
 [
   "1/1  a
 ",
@@ -347,14 +347,14 @@ exports[`enumeration > defaults to first member > tty strip ansi 1`] = `
 ]
 `;
 
-exports[`enumeration > loop > left key on first member loops to last member > args 1`] = `
+exports[`enumeration > required > loop > left key on first member loops to last member > args 1`] = `
 {
   "a": "patch",
   "help": false,
 }
 `;
 
-exports[`enumeration > loop > left key on first member loops to last member > tty 1`] = `
+exports[`enumeration > required > loop > left key on first member loops to last member > tty 1`] = `
 [
   "[2m[90m1/1[39m[22m  [32ma[39m
 ",
@@ -374,7 +374,7 @@ exports[`enumeration > loop > left key on first member loops to last member > tt
 ]
 `;
 
-exports[`enumeration > loop > left key on first member loops to last member > tty strip ansi 1`] = `
+exports[`enumeration > required > loop > left key on first member loops to last member > tty strip ansi 1`] = `
 [
   "1/1  a
 ",
@@ -394,14 +394,14 @@ exports[`enumeration > loop > left key on first member loops to last member > tt
 ]
 `;
 
-exports[`enumeration > loop > right key on last member loops to first member > args 1`] = `
+exports[`enumeration > required > loop > right key on last member loops to first member > args 1`] = `
 {
   "a": "major",
   "help": false,
 }
 `;
 
-exports[`enumeration > loop > right key on last member loops to first member > tty 1`] = `
+exports[`enumeration > required > loop > right key on last member loops to first member > tty 1`] = `
 [
   "[2m[90m1/1[39m[22m  [32ma[39m
 ",
@@ -427,7 +427,7 @@ exports[`enumeration > loop > right key on last member loops to first member > t
 ]
 `;
 
-exports[`enumeration > loop > right key on last member loops to first member > tty strip ansi 1`] = `
+exports[`enumeration > required > loop > right key on last member loops to first member > tty strip ansi 1`] = `
 [
   "1/1  a
 ",
@@ -453,14 +453,14 @@ exports[`enumeration > loop > right key on last member loops to first member > t
 ]
 `;
 
-exports[`enumeration > tab > can select member leftward with shift+tab key > args 1`] = `
+exports[`enumeration > required > tab > can select member leftward with shift+tab key > args 1`] = `
 {
   "a": "major",
   "help": false,
 }
 `;
 
-exports[`enumeration > tab > can select member leftward with shift+tab key > tty 1`] = `
+exports[`enumeration > required > tab > can select member leftward with shift+tab key > tty 1`] = `
 [
   "[2m[90m1/1[39m[22m  [32ma[39m
 ",
@@ -483,7 +483,7 @@ exports[`enumeration > tab > can select member leftward with shift+tab key > tty
 ]
 `;
 
-exports[`enumeration > tab > can select member leftward with shift+tab key > tty strip ansi 1`] = `
+exports[`enumeration > required > tab > can select member leftward with shift+tab key > tty strip ansi 1`] = `
 [
   "1/1  a
 ",
@@ -506,14 +506,14 @@ exports[`enumeration > tab > can select member leftward with shift+tab key > tty
 ]
 `;
 
-exports[`enumeration > tab > can select member rightward with tab key > args 1`] = `
+exports[`enumeration > required > tab > can select member rightward with tab key > args 1`] = `
 {
   "a": "minor",
   "help": false,
 }
 `;
 
-exports[`enumeration > tab > can select member rightward with tab key > tty 1`] = `
+exports[`enumeration > required > tab > can select member rightward with tab key > tty 1`] = `
 [
   "[2m[90m1/1[39m[22m  [32ma[39m
 ",
@@ -533,7 +533,7 @@ exports[`enumeration > tab > can select member rightward with tab key > tty 1`] 
 ]
 `;
 
-exports[`enumeration > tab > can select member rightward with tab key > tty strip ansi 1`] = `
+exports[`enumeration > required > tab > can select member rightward with tab key > tty strip ansi 1`] = `
 [
   "1/1  a
 ",
@@ -547,6 +547,35 @@ exports[`enumeration > tab > can select member rightward with tab key > tty stri
   "
 ",
   "",
+  "",
+  "
+",
+]
+`;
+
+exports[`number > optional > when nothing entered then value is undefined > args 1`] = `
+{
+  "a": undefined,
+  "help": false,
+}
+`;
+
+exports[`number > optional > when nothing entered then value is undefined > tty 1`] = `
+[
+  "[2m[90m1/1[39m[22m  [32ma[39m
+",
+  "     ❯ ",
+  "",
+  "
+",
+]
+`;
+
+exports[`number > optional > when nothing entered then value is undefined > tty strip ansi 1`] = `
+[
+  "1/1  a
+",
+  "     ❯ ",
   "",
   "
 ",
@@ -669,14 +698,43 @@ exports[`prompt when omitted > tty strip ansi 1`] = `
 ]
 `;
 
-exports[`union > asks user to select member to use" > args 1`] = `
+exports[`string > optional > when nothing entered then value is undefined > args 1`] = `
+{
+  "a": undefined,
+  "help": false,
+}
+`;
+
+exports[`string > optional > when nothing entered then value is undefined > tty 1`] = `
+[
+  "[2m[90m1/1[39m[22m  [32ma[39m
+",
+  "     ❯ ",
+  "",
+  "
+",
+]
+`;
+
+exports[`string > optional > when nothing entered then value is undefined > tty strip ansi 1`] = `
+[
+  "1/1  a
+",
+  "     ❯ ",
+  "",
+  "
+",
+]
+`;
+
+exports[`union > required > asks user to select member to use" > args 1`] = `
 {
   "a": true,
   "help": false,
 }
 `;
 
-exports[`union > asks user to select member to use" > tty 1`] = `
+exports[`union > required > asks user to select member to use" > tty 1`] = `
 [
   "[2m[90m1/1[39m[22m  [32ma[39m
 ",
@@ -717,7 +775,7 @@ exports[`union > asks user to select member to use" > tty 1`] = `
 ]
 `;
 
-exports[`union > asks user to select member to use" > tty strip ansi 1`] = `
+exports[`union > required > asks user to select member to use" > tty strip ansi 1`] = `
 [
   "1/1  a
 ",
