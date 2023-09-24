@@ -291,19 +291,59 @@ namespace Inputs {
   }
 
   export const string = async (params: InputParams<Pam.Parameter<Pam.Type.Scalar.String>>) => {
+    interface State {
+      value: string
+    }
+    const initialState: State = { value: `` }
     const marginLeftSpace = ` `.repeat(params.marginLeft ?? 0)
-    params.channels.output(marginLeftSpace + params.prompt)
-    const value = await params.channels.readLine()
-    if (value === ``) return undefined
-    return value
+    const state = await PromptEngine.create({
+      channels: params.channels,
+      skippable: params.parameter.optionality._tag !== `required`,
+      initialState,
+      on: [
+        {
+          run: (state, event) => {
+            return {
+              value: event.name === `backspace` ? state.value.slice(0, -1) : state.value + event.sequence,
+            }
+          },
+        },
+      ],
+      draw: (state) => {
+        return marginLeftSpace + params.prompt + state.value
+      },
+    })()
+    if (state === null) return undefined
+    if (state.value === ``) return undefined
+    return state.value
   }
 
   export const number = async (params: InputParams<Pam.Parameter<Pam.Type.Scalar.Number>>) => {
+    interface State {
+      value: string
+    }
+    const initialState: State = { value: `` }
     const marginLeftSpace = ` `.repeat(params.marginLeft ?? 0)
-    params.channels.output(marginLeftSpace + params.prompt)
-    const valueRaw = await params.channels.readLine()
-    if (valueRaw === ``) return undefined
-    const valueParsed = parseFloat(valueRaw)
+    const state = await PromptEngine.create({
+      channels: params.channels,
+      skippable: params.parameter.optionality._tag !== `required`,
+      initialState,
+      on: [
+        {
+          run: (state, event) => {
+            return {
+              value: event.name === `backspace` ? state.value.slice(0, -1) : state.value + event.sequence,
+            }
+          },
+        },
+      ],
+      draw: (state) => {
+        return marginLeftSpace + params.prompt + state.value
+      },
+    })()
+    if (state === null) return undefined
+    if (state.value === ``) return undefined
+    const valueParsed = parseFloat(state.value)
     if (isNaN(valueParsed)) return null as any // todo remove cast
     return valueParsed
   }
