@@ -1,6 +1,6 @@
-import ansiEscapes from 'ansi-escapes'
+import type { KeyPress } from '../KeyPress/index.js'
 import { Text } from '../Text/index.js'
-import { KeyPress } from '../KeyPress/index.js'
+import ansiEscapes from 'ansi-escapes'
 
 interface KeyPressPattern {
   name: KeyPress.Key
@@ -40,7 +40,7 @@ export namespace Prompt {
       const matchers = params.on.map(({ match, run }) => {
         return {
           match: (Array.isArray(match) ? match : [match]).map((_) =>
-            typeof _ === 'string'
+            typeof _ === `string`
               ? {
                   name: _,
                 }

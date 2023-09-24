@@ -7,7 +7,6 @@ import { Tex } from '../lib/Tex/index_.js'
 import { Text } from '../lib/Text/index.js'
 import { Term } from '../term.js'
 import type { ParseProgressPostPrompt, ParseProgressPostPromptAnnotation } from './parse.js'
-import ansiEscapes from 'ansi-escapes'
 import chalk from 'chalk'
 import * as Readline from 'node:readline'
 
@@ -152,15 +151,15 @@ namespace Inputs {
       initialState: { answer: false },
       on: [
         {
-          match: ['left', 'n'],
+          match: [`left`, `n`],
           run: (_state) => ({ answer: false }),
         },
         {
-          match: ['right', 'y'],
+          match: [`right`, `y`],
           run: (_state) => ({ answer: true }),
         },
         {
-          match: 'tab',
+          match: `tab`,
           run: (state) => ({ answer: !state.answer }),
         },
       ],
@@ -185,13 +184,13 @@ namespace Inputs {
       initialState: { active: 0 },
       on: [
         {
-          match: ['left', { name: 'tab', shift: true }],
+          match: [`left`, { name: `tab`, shift: true }],
           run: (state) => ({
             active: state.active === 0 ? parameter.type.members.length - 1 : state.active - 1,
           }),
         },
         {
-          match: ['right', { name: 'tab', shift: false }],
+          match: [`right`, { name: `tab`, shift: false }],
           run: (state) => ({
             active: state.active === parameter.type.members.length - 1 ? 0 : state.active + 1,
           }),
