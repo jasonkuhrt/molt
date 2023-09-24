@@ -2,6 +2,7 @@ import { CommandParameter } from '../CommandParameter/index.js'
 import { casesExhausted } from '../helpers.js'
 import { KeyPress } from '../lib/KeyPress/index.js'
 import type { Pam } from '../lib/Pam/index.js'
+import { Prompt } from '../lib/Prompt/Prompt.js'
 import { Tex } from '../lib/Tex/index_.js'
 import { Text } from '../lib/Text/index.js'
 import { Term } from '../term.js'
@@ -90,13 +91,7 @@ export interface Prompter {
   }) => Promise<T extends boolean ? boolean : T extends number ? number : string>
 }
 
-interface Channels {
-  output: (value: string) => void
-  readLine: () => Promise<string>
-  readKeyPresses: <K extends string>(params: { matching?: K[] }) => AsyncIterable<KeyPress.KeyPressEvent<K>>
-}
-
-export const createPrompter = (channels: Channels): Prompter => {
+export const createPrompter = (channels: Prompt.Channels): Prompter => {
   const prompter: Prompter = {
     say: (value: string) => {
       channels.output(value + Text.chars.newline)
@@ -143,51 +138,37 @@ export const createPrompter = (channels: Channels): Prompter => {
 
 namespace Inputs {
   interface InputParams<parameter extends Pam.Parameter> {
-    channels: Channels
+    channels: Prompt.Channels
     prompt: string
     parameter: parameter
   }
 
   export const boolean = async (params: InputParams<Pam.Parameter.Single<Pam.Type.Scalar.Boolean>>) => {
-    const { channels } = params
     const pipe = `${chalk.dim(`|`)}`
-    let answer = false
-    const cleanup = () => {
-      channels.output(ansiEscapes.cursorShow)
-      process.off(`exit`, cleanup)
-    }
-    const refresh = () => {
-      channels.output(ansiEscapes.eraseLine)
-      channels.output(ansiEscapes.cursorTo(0))
-      channels.output(params.prompt)
-      const no = `${chalk.green(chalk.bold(`no`))} ${pipe} yes`
-      const yes = `no ${pipe} ${chalk.green(chalk.bold(`yes`))}`
-      channels.output(answer ? yes : no)
-    }
-
-    channels.output(ansiEscapes.cursorHide)
-    process.once(`exit`, cleanup)
-
-    refresh()
-    for await (const event of channels.readKeyPresses({
-      matching: [`left`, `right`, `tab`, `return`, `y`, `n`],
-    })) {
-      if (event.name === `return`) {
-        break
-      }
-      if (event.name === `left` || event.name === `n`) {
-        answer = false
-      } else if (event.name === `right` || event.name === `y`) {
-        answer = true
-      } else if (event.name === `tab`) {
-        answer = !answer
-      }
-      refresh()
-    }
-    channels.output(Text.chars.newline)
-    channels.output(ansiEscapes.cursorShow)
-    cleanup()
-    return answer as any
+    const no = `${chalk.green(chalk.bold(`no`))} ${pipe} yes`
+    const yes = `no ${pipe} ${chalk.green(chalk.bold(`yes`))}`
+    const state = await Prompt.create<{ answer: boolean }>({
+      channels: params.channels,
+      initialState: { answer: false },
+      on: [
+        {
+          match: ['left', 'n'],
+          run: (_state) => ({ answer: false }),
+        },
+        {
+          match: ['right', 'y'],
+          run: (_state) => ({ answer: true }),
+        },
+        {
+          match: 'tab',
+          run: (state) => ({ answer: !state.answer }),
+        },
+      ],
+      draw: (state) => {
+        return params.prompt + (state.answer ? yes : no)
+      },
+    })()
+    return state.answer
   }
 
   export const string = async (params: InputParams<Pam.Parameter.Single<Pam.Type.Scalar.String>>) => {
@@ -198,47 +179,37 @@ namespace Inputs {
   export const enumeration = async (
     params: InputParams<Pam.Parameter.Single<Pam.Type.Scalar.Enumeration>>,
   ) => {
-    const { channels, parameter } = params
-    let active = 0
-    const render = () =>
-      parameter.type.members
-        .map((item, i) => (i === active ? `${chalk.green(chalk.bold(item))}` : item))
-        .join(chalk.dim(` | `))
-    const refresh = () => {
-      channels.output(ansiEscapes.eraseLine)
-      channels.output(ansiEscapes.cursorTo(0))
-      channels.output(params.prompt)
-      channels.output(render())
-    }
-    const cleanup = () => {
-      channels.output(ansiEscapes.cursorShow)
-      process.off(`exit`, cleanup)
-    }
+    const { parameter } = params
+    const state = await Prompt.create<{ active: number }>({
+      channels: params.channels,
+      initialState: { active: 0 },
+      on: [
+        {
+          match: ['left', { name: 'tab', shift: true }],
+          run: (state) => ({
+            active: state.active === 0 ? parameter.type.members.length - 1 : state.active - 1,
+          }),
+        },
+        {
+          match: ['right', { name: 'tab', shift: false }],
+          run: (state) => ({
+            active: state.active === parameter.type.members.length - 1 ? 0 : state.active + 1,
+          }),
+        },
+      ],
+      draw: (state) => {
+        return (
+          params.prompt +
+          parameter.type.members
+            .map((item, i) => (i === state.active ? `${chalk.green(chalk.bold(item))}` : item))
+            .join(chalk.dim(` | `))
+        )
+      },
+    })()
 
-    channels.output(ansiEscapes.cursorHide)
-    process.once(`exit`, cleanup)
-
-    refresh()
-    for await (const event of channels.readKeyPresses({
-      matching: [`left`, `right`, `tab`, `return`],
-    })) {
-      if (event.name === `return`) {
-        break
-      }
-      if (event.name === `left` || (event.name === `tab` && event.shift)) {
-        active = active === 0 ? parameter.type.members.length - 1 : active - 1
-      } else if (event.name === `right` || (event.name === `tab` && !event.shift)) {
-        active = active === parameter.type.members.length - 1 ? 0 : active + 1
-      }
-      refresh()
-    }
-    const choice = parameter.type.members[active]
-    if (!choice)
-      throw new Error(
-        `No choice selected. Enumeration must be empty. But enumerations should not be empty. This is a bug.`,
-      )
-    channels.output(Text.chars.newline)
-    cleanup()
+    const choice = parameter.type.members[state.active]
+    // prettier-ignore
+    if (!choice) throw new Error(`No choice selected. Enumeration must be empty. But enumerations should not be empty. This is a bug.`)
     return choice
   }
 
@@ -291,7 +262,7 @@ export const createMemoryPrompter = () => {
     },
     readKeyPresses: async function* (params) {
       for (const keyPress of state.script.keyPress) {
-        if (params.matching?.includes(keyPress.name) ?? true) {
+        if (params?.matching?.includes(keyPress.name) ?? true) {
           yield await Promise.resolve(keyPress)
         }
       }
@@ -317,7 +288,7 @@ export const createStdioPrompter = () => {
     output: (value) => process.stdout.write(value),
     readKeyPresses: async function* (params) {
       for await (const event of KeyPress.watch()) {
-        if (params.matching?.includes(event.name as any) ?? true) {
+        if (params?.matching?.includes(event.name as any) ?? true) {
           yield event as KeyPress.KeyPressEvent<any>
         }
       }
