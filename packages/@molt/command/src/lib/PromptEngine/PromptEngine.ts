@@ -24,7 +24,7 @@ const isKeyPressMatchPattern = (event: KeyPress.KeyPressEvent, keyPressMatchSpec
   )
 }
 
-export namespace Prompt {
+export namespace PromptEngine {
   export interface Params<S> {
     initialState: S
     channels: Channels

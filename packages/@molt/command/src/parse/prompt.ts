@@ -2,7 +2,7 @@ import { CommandParameter } from '../CommandParameter/index.js'
 import { casesExhausted } from '../helpers.js'
 import { KeyPress } from '../lib/KeyPress/index.js'
 import type { Pam } from '../lib/Pam/index.js'
-import { Prompt } from '../lib/Prompt/Prompt.js'
+import { PromptEngine } from '../lib/PromptEngine/PromptEngine.js'
 import { Tex } from '../lib/Tex/index_.js'
 import { Text } from '../lib/Text/index.js'
 import { Term } from '../term.js'
@@ -72,8 +72,6 @@ export const prompt = async (
   return Promise.resolve(parseProgressPostPrompt)
 }
 
-export type QuestionType = 'boolean' | 'string' | 'number' | 'enumeration'
-
 export interface Prompter {
   /**
    * Send output to the user.
@@ -83,16 +81,15 @@ export interface Prompter {
    * Receive input from the user.
    * TODO remove prompt config from here.
    */
-  ask: <T extends QuestionType>(params: {
+  ask: <T extends Pam.Type>(params: {
     prompt: string
     question: string
-    parameter: Pam.Parameter
+    parameter: Pam.Parameter<T>
     marginLeft?: number
-    // type: T
-  }) => Promise<T extends boolean ? boolean : T extends number ? number : string>
+  }) => Promise<Pam.TypeToValueMapping<T>>
 }
 
-export const createPrompter = (channels: Prompt.Channels): Prompter => {
+export const createPrompter = (channels: PromptEngine.Channels): Prompter => {
   const prompter: Prompter = {
     say: (value: string) => {
       channels.output(value + Text.chars.newline)
@@ -138,7 +135,7 @@ export const createPrompter = (channels: Prompt.Channels): Prompter => {
 
 namespace Inputs {
   interface InputParams<parameter extends Pam.Parameter> {
-    channels: Prompt.Channels
+    channels: PromptEngine.Channels
     prompt: string
     marginLeft?: number
     parameter: parameter
@@ -146,7 +143,7 @@ namespace Inputs {
 
   export const union = async (params: InputParams<Pam.Parameter<Pam.Type.Union>>) => {
     const { parameter } = params
-    const state = await Prompt.create<{ active: number }>({
+    const state = await PromptEngine.create<{ active: number }>({
       channels: params.channels,
       initialState: { active: 0 },
       on: [
@@ -209,7 +206,7 @@ namespace Inputs {
     const pipe = `${chalk.dim(`|`)}`
     const no = `${chalk.green(chalk.bold(`no`))} ${pipe} yes`
     const yes = `no ${pipe} ${chalk.green(chalk.bold(`yes`))}`
-    const state = await Prompt.create<{ answer: boolean }>({
+    const state = await PromptEngine.create<{ answer: boolean }>({
       channels: params.channels,
       initialState: { answer: false },
       on: [
@@ -242,7 +239,7 @@ namespace Inputs {
   export const enumeration = async (params: InputParams<Pam.Parameter<Pam.Type.Scalar.Enumeration>>) => {
     const { parameter } = params
     const marginLeftSpace = ` `.repeat(params.marginLeft ?? 0)
-    const state = await Prompt.create<{ active: number }>({
+    const state = await PromptEngine.create<{ active: number }>({
       channels: params.channels,
       initialState: { active: 0 },
       on: [
