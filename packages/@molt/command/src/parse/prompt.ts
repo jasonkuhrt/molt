@@ -82,9 +82,9 @@ export interface Prompter {
    * TODO remove prompt config from here.
    */
   ask: <T extends Pam.Type>(params: {
+    parameter: Pam.Parameter<T>
     prompt: string
     question: string
-    parameter: Pam.Parameter<T>
     marginLeft?: number
   }) => Promise<Pam.TypeToValueMapping<T>>
 }
@@ -230,12 +230,6 @@ namespace Inputs {
     return state.answer
   }
 
-  export const string = async (params: InputParams<Pam.Parameter<Pam.Type.Scalar.String>>) => {
-    const marginLeftSpace = ` `.repeat(params.marginLeft ?? 0)
-    params.channels.output(marginLeftSpace + params.prompt)
-    return params.channels.readLine()
-  }
-
   export const enumeration = async (params: InputParams<Pam.Parameter<Pam.Type.Scalar.Enumeration>>) => {
     const { parameter } = params
     const marginLeftSpace = ` `.repeat(params.marginLeft ?? 0)
@@ -273,13 +267,22 @@ namespace Inputs {
     return choice
   }
 
+  export const string = async (params: InputParams<Pam.Parameter<Pam.Type.Scalar.String>>) => {
+    const marginLeftSpace = ` `.repeat(params.marginLeft ?? 0)
+    params.channels.output(marginLeftSpace + params.prompt)
+    const value = await params.channels.readLine()
+    if (value === ``) return undefined
+    return value
+  }
+
   export const number = async (params: InputParams<Pam.Parameter<Pam.Type.Scalar.Number>>) => {
     const marginLeftSpace = ` `.repeat(params.marginLeft ?? 0)
     params.channels.output(marginLeftSpace + params.prompt)
-    const answer_ = await params.channels.readLine()
-    const answer = parseFloat(answer_)
-    if (isNaN(answer)) return null as any // todo remove cast
-    return answer
+    const valueRaw = await params.channels.readLine()
+    if (valueRaw === ``) return undefined
+    const valueParsed = parseFloat(valueRaw)
+    if (isNaN(valueParsed)) return null as any // todo remove cast
+    return valueParsed
   }
 }
 

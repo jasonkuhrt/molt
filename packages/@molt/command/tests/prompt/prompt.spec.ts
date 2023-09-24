@@ -24,99 +24,129 @@ beforeEach(() => {
   line = []
 })
 
+describe(`string`, () => {
+  describe(`optional`, () => {
+    it(`when nothing entered then value is undefined`, async () => {
+      answers = [``]
+      // @ts-expect-error todo
+      parameters = { a: { schema: s.optional(), prompt: { when: { result: `omitted` } } } }
+      keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
+      await run()
+    })
+  })
+})
+
+describe(`number`, () => {
+  describe(`optional`, () => {
+    it(`when nothing entered then value is undefined`, async () => {
+      answers = [``]
+      // @ts-expect-error todo
+      parameters = { a: { schema: n.optional(), prompt: { when: { result: `omitted` } } } }
+      keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
+      await run()
+    })
+  })
+})
+
 describe(`boolean`, () => {
-  it(`defaults to "no"`, async () => {
-    parameters = { a: { schema: b, prompt: true } }
-    keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
-    await run()
-  })
-  it(`can be toggled to "yes"`, async () => {
-    parameters = { a: { schema: b, prompt: true } }
-    keyPresses.push(
-      { ctrl: false, meta: false, sequence: ``, shift: false, name: `right` },
-      { ctrl: false, meta: false, sequence: ``, shift: false, name: `return` },
-    )
-    await run()
-  })
-  it(`can be toggled to "yes" and then back to "no"`, async () => {
-    parameters = { a: { schema: b, prompt: true } }
-    keyPresses.push(
-      { ctrl: false, meta: false, sequence: ``, shift: false, name: `right` },
-      { ctrl: false, meta: false, sequence: ``, shift: false, name: `left` },
-      { ctrl: false, meta: false, sequence: ``, shift: false, name: `return` },
-    )
-    await run()
-  })
-  it(`can use tab to toggle between "yes" and "no"`, async () => {
-    parameters = { a: { schema: b, prompt: true } }
-    keyPresses.push(
-      { ctrl: false, meta: false, sequence: ``, shift: false, name: `tab` },
-      { ctrl: false, meta: false, sequence: ``, shift: false, name: `tab` },
-      { ctrl: false, meta: false, sequence: ``, shift: false, name: `return` },
-    )
-    await run()
+  describe(`required`, () => {
+    it(`defaults to "no"`, async () => {
+      parameters = { a: { schema: b, prompt: true } }
+      keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
+      await run()
+    })
+    it(`can be toggled to "yes"`, async () => {
+      parameters = { a: { schema: b, prompt: true } }
+      keyPresses.push(
+        { ctrl: false, meta: false, sequence: ``, shift: false, name: `right` },
+        { ctrl: false, meta: false, sequence: ``, shift: false, name: `return` },
+      )
+      await run()
+    })
+    it(`can be toggled to "yes" and then back to "no"`, async () => {
+      parameters = { a: { schema: b, prompt: true } }
+      keyPresses.push(
+        { ctrl: false, meta: false, sequence: ``, shift: false, name: `right` },
+        { ctrl: false, meta: false, sequence: ``, shift: false, name: `left` },
+        { ctrl: false, meta: false, sequence: ``, shift: false, name: `return` },
+      )
+      await run()
+    })
+    it(`can use tab to toggle between "yes" and "no"`, async () => {
+      parameters = { a: { schema: b, prompt: true } }
+      keyPresses.push(
+        { ctrl: false, meta: false, sequence: ``, shift: false, name: `tab` },
+        { ctrl: false, meta: false, sequence: ``, shift: false, name: `tab` },
+        { ctrl: false, meta: false, sequence: ``, shift: false, name: `return` },
+      )
+      await run()
+    })
   })
 })
 
 describe(`union`, () => {
-  it(`asks user to select member to use"`, async () => {
-    parameters = { a: { schema: z.union([s, b, n]), prompt: true } }
-    keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `tab` })
-    keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
-    keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `tab` })
-    keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
-    await run()
-  })
-})
-
-describe(`enumeration`, () => {
-  it(`defaults to first member`, async () => {
-    parameters = { a: { schema: e, prompt: true } }
-    keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
-    await run()
-  })
-  it(`can select member rightward with right key`, async () => {
-    parameters = { a: { schema: e, prompt: true } }
-    keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `right` })
-    keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
-    await run()
-  })
-  it(`can select member leftward with left key`, async () => {
-    parameters = { a: { schema: e, prompt: true } }
-    keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `right` })
-    keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `left` })
-    keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
-    await run()
-  })
-  describe(`tab`, () => {
-    it(`can select member rightward with tab key`, async () => {
-      parameters = { a: { schema: e, prompt: true } }
+  describe(`required`, () => {
+    it(`asks user to select member to use"`, async () => {
+      parameters = { a: { schema: z.union([s, b, n]), prompt: true } }
+      keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `tab` })
+      keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `tab` })
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
       await run()
     })
-    it(`can select member leftward with shift+tab key`, async () => {
-      parameters = { a: { schema: e, prompt: true } }
-      keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `right` })
-      keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: true, name: `tab` })
-      keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
-      await run()
-    })
   })
-  describe(`loop`, () => {
-    it(`right key on last member loops to first member`, async () => {
+})
+
+describe(`enumeration`, () => {
+  describe(`required`, () => {
+    it(`defaults to first member`, async () => {
       parameters = { a: { schema: e, prompt: true } }
-      keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `right` })
-      keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `right` })
+      keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
+      await run()
+    })
+    it(`can select member rightward with right key`, async () => {
+      parameters = { a: { schema: e, prompt: true } }
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `right` })
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
       await run()
     })
-    it(`left key on first member loops to last member`, async () => {
+    it(`can select member leftward with left key`, async () => {
       parameters = { a: { schema: e, prompt: true } }
+      keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `right` })
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `left` })
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
       await run()
+    })
+    describe(`tab`, () => {
+      it(`can select member rightward with tab key`, async () => {
+        parameters = { a: { schema: e, prompt: true } }
+        keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `tab` })
+        keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
+        await run()
+      })
+      it(`can select member leftward with shift+tab key`, async () => {
+        parameters = { a: { schema: e, prompt: true } }
+        keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `right` })
+        keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: true, name: `tab` })
+        keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
+        await run()
+      })
+    })
+    describe(`loop`, () => {
+      it(`right key on last member loops to first member`, async () => {
+        parameters = { a: { schema: e, prompt: true } }
+        keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `right` })
+        keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `right` })
+        keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `right` })
+        keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
+        await run()
+      })
+      it(`left key on first member loops to last member`, async () => {
+        parameters = { a: { schema: e, prompt: true } }
+        keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `left` })
+        keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
+        await run()
+      })
     })
   })
 })

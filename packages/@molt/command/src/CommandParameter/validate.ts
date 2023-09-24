@@ -14,11 +14,9 @@ export const validate = <T>(spec: Output, value: T): ValidationResult<T> => {
 const validateBasic = <T>(spec: Output.Basic, value: T): ValidationResult<T> => {
   if (value === undefined) {
     if (spec.optionality._tag === `required`) {
-      // @ts-expect-error todo alge generics
-      return ValidationResult.Failure({ value, errors: [`Value is undefined. A value is required.`] })
+      return ValidationResult.Failure(value, [`Value is undefined. A value is required.`])
     }
-    // @ts-expect-error todo alge generics
-    return ValidationResult.Success({ value })
+    return ValidationResult.Success(value)
   }
   return validateType(spec.type, value)
 }
