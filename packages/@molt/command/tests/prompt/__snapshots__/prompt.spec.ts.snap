@@ -668,3 +668,92 @@ exports[`prompt when omitted > tty strip ansi 1`] = `
 ",
 ]
 `;
+
+exports[`union > asks user to select member to use" > args 1`] = `
+{
+  "a": true,
+  "help": false,
+}
+`;
+
+exports[`union > asks user to select member to use" > tty 1`] = `
+[
+  "[2m[90m1/1[39m[22m  [32ma[39m
+",
+  "[?25l",
+  "",
+  "[1G",
+  "
+     Different kinds of answers are accepted.
+     Which kind do you want to give?
+
+     ❯ [32m[1mstring[22m[39m[2m | [22mboolean[2m | [22mnumber",
+  "[2K[1A[2K[1A[2K[1A[2K[1A[2K[G",
+  "[1G",
+  "
+     Different kinds of answers are accepted.
+     Which kind do you want to give?
+
+     ❯ string[2m | [22m[32m[1mboolean[22m[39m[2m | [22mnumber",
+  "
+",
+  "[?25h",
+  "[?25h",
+  "
+",
+  "[?25l",
+  "",
+  "[1G",
+  "     ❯ [32m[1mno[22m[39m [2m|[22m yes",
+  "[2K[G",
+  "[1G",
+  "     ❯ no [2m|[22m [32m[1myes[22m[39m",
+  "
+",
+  "[?25h",
+  "[?25h",
+  "
+",
+]
+`;
+
+exports[`union > asks user to select member to use" > tty strip ansi 1`] = `
+[
+  "1/1  a
+",
+  "",
+  "",
+  "",
+  "
+     Different kinds of answers are accepted.
+     Which kind do you want to give?
+
+     ❯ string | boolean | number",
+  "",
+  "",
+  "
+     Different kinds of answers are accepted.
+     Which kind do you want to give?
+
+     ❯ string | boolean | number",
+  "
+",
+  "",
+  "",
+  "
+",
+  "",
+  "",
+  "",
+  "     ❯ no | yes",
+  "",
+  "",
+  "     ❯ no | yes",
+  "
+",
+  "",
+  "",
+  "
+",
+]
+`;
