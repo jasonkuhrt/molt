@@ -6,7 +6,7 @@ const args = await Command.create()
   .parameter(`bravo`, z.number())
   .parameter(`charlie`, z.boolean())
   .parameter(`delta`, z.enum([`echo`, `foxtrot`, `golf`]))
-  .parameter(`honda`, z.union([z.string(), z.number(), z.enum(['a', 'b', 'c'])]))
+  .parameter(`honda`, z.union([z.string(), z.number(), z.enum([`a`, `b`, `c`])]))
   .settings({ prompt: true })
   .parse()
 

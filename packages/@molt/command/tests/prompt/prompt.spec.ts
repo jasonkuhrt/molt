@@ -1,4 +1,3 @@
-import { z } from 'zod'
 import type { ParameterConfiguration } from '../../src/Builder/root/types.js'
 import type { Settings } from '../../src/entrypoints/types.js'
 import { Command } from '../../src/index.js'
@@ -8,6 +7,7 @@ import { memoryPrompter } from '../_/mocks/tty.js'
 import stripAnsi from 'strip-ansi'
 import { expectType } from 'tsd'
 import { beforeEach, describe, expect, it } from 'vitest'
+import { z } from 'zod'
 
 // TODO test that prompt order is based on order of parameter definition
 

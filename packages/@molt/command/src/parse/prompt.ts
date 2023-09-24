@@ -1,4 +1,3 @@
-import { type } from 'node:os'
 import { CommandParameter } from '../CommandParameter/index.js'
 import { casesExhausted } from '../helpers.js'
 import { KeyPress } from '../lib/KeyPress/index.js'
@@ -10,7 +9,6 @@ import { Term } from '../term.js'
 import type { ParseProgressPostPrompt, ParseProgressPostPromptAnnotation } from './parse.js'
 import chalk from 'chalk'
 import * as Readline from 'node:readline'
-import stringLength from 'string-length'
 
 /**
  * Get args from the user interactively via the console for the given parameters.
@@ -42,7 +40,7 @@ export const prompt = async (
     while (true) {
       const arg = await prompter.ask({
         question,
-        prompt: '❯ ',
+        prompt: `❯ `,
         marginLeft: gutterWidth,
         parameter: param,
       })
@@ -108,27 +106,27 @@ export const createPrompter = (channels: Prompt.Channels): Prompter => {
       }
 
       if (p.parameter.type._tag === `TypeUnion`) {
-        // @ts-expect-error
+        // @ts-expect-error todo
         return Inputs.union(p)
       }
 
       if (p.parameter.type._tag === `TypeBoolean`) {
-        // @ts-expect-error
+        // @ts-expect-error todo
         return Inputs.boolean(p)
       }
 
       if (p.parameter.type._tag === `TypeString`) {
-        // @ts-expect-error
+        // @ts-expect-error todo
         return Inputs.string(p)
       }
 
       if (p.parameter.type._tag === `TypeNumber`) {
-        // @ts-expect-error
+        // @ts-expect-error todo
         return Inputs.number(p)
       }
 
       if (p.parameter.type._tag === `TypeEnum`) {
-        // @ts-expect-error
+        // @ts-expect-error todo
         return Inputs.enumeration(p)
       }
 
@@ -148,7 +146,6 @@ namespace Inputs {
 
   export const union = async (params: InputParams<Pam.Parameter<Pam.Type.Union>>) => {
     const { parameter } = params
-    const pipe = `${chalk.dim(`|`)}`
     const state = await Prompt.create<{ active: number }>({
       channels: params.channels,
       initialState: { active: 0 },
@@ -167,18 +164,17 @@ namespace Inputs {
         },
       ],
       draw: (state) => {
-        const marginLeftSpace = ' '.repeat(params.marginLeft ?? 0)
-        // const marginLeftSpaceSansPrompt = ' '.repeat((params.marginLeft ?? 0) - stringLength(params.prompt))
+        const marginLeftSpace = ` `.repeat(params.marginLeft ?? 0)
         // prettier-ignore
         const intro = marginLeftSpace + `Different kinds of answers are accepted.` + Text.chars.newline + marginLeftSpace + `Which kind do you want to give?`
         // prettier-ignore
         const typeNameMapping: Record<Pam.Type['_tag'],string> = {
-          TypeBoolean:'boolean',
-          TypeEnum: 'enum',
-          TypeLiteral: 'literal',
-          TypeNumber: 'number',
-          TypeString: 'string',
-          TypeUnion: 'union'
+          TypeBoolean:`boolean`,
+          TypeEnum: `enum`,
+          TypeLiteral: `literal`,
+          TypeNumber: `number`,
+          TypeString: `string`,
+          TypeUnion: `union`
         }
         const choices =
           marginLeftSpace +
@@ -204,13 +200,12 @@ namespace Inputs {
         ...parameter,
         ...choice,
       },
-      question: '',
+      question: ``,
     })
   }
 
   export const boolean = async (params: InputParams<Pam.Parameter<Pam.Type.Scalar.Boolean>>) => {
-    const marginLeftSpace = ' '.repeat(params.marginLeft ?? 0)
-    // const marginLeftSpaceSansPrompt = ' '.repeat((params.marginLeft ?? 0) - stringLength(params.prompt))
+    const marginLeftSpace = ` `.repeat(params.marginLeft ?? 0)
     const pipe = `${chalk.dim(`|`)}`
     const no = `${chalk.green(chalk.bold(`no`))} ${pipe} yes`
     const yes = `no ${pipe} ${chalk.green(chalk.bold(`yes`))}`
@@ -239,15 +234,14 @@ namespace Inputs {
   }
 
   export const string = async (params: InputParams<Pam.Parameter<Pam.Type.Scalar.String>>) => {
-    const marginLeftSpace = ' '.repeat(params.marginLeft ?? 0)
+    const marginLeftSpace = ` `.repeat(params.marginLeft ?? 0)
     params.channels.output(marginLeftSpace + params.prompt)
     return params.channels.readLine()
   }
 
   export const enumeration = async (params: InputParams<Pam.Parameter<Pam.Type.Scalar.Enumeration>>) => {
     const { parameter } = params
-    const marginLeftSpace = ' '.repeat(params.marginLeft ?? 0)
-    // const marginLeftSpaceSansPrompt = ' '.repeat((params.marginLeft ?? 0) - stringLength(params.prompt))
+    const marginLeftSpace = ` `.repeat(params.marginLeft ?? 0)
     const state = await Prompt.create<{ active: number }>({
       channels: params.channels,
       initialState: { active: 0 },
@@ -283,7 +277,7 @@ namespace Inputs {
   }
 
   export const number = async (params: InputParams<Pam.Parameter<Pam.Type.Scalar.Number>>) => {
-    const marginLeftSpace = ' '.repeat(params.marginLeft ?? 0)
+    const marginLeftSpace = ` `.repeat(params.marginLeft ?? 0)
     params.channels.output(marginLeftSpace + params.prompt)
     const answer_ = await params.channels.readLine()
     const answer = parseFloat(answer_)
