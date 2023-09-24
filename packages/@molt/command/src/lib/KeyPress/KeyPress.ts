@@ -8,6 +8,8 @@ export type Key =
   | 'right'
   | 'tab'
   | 'return'
+  | 'escape'
+  | 'backspace'
   | 'a'
   | 'b'
   | 'c'

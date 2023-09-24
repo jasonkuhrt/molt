@@ -3,7 +3,7 @@ import { Text } from '../Text/index.js'
 import ansiEscapes from 'ansi-escapes'
 
 interface KeyPressPattern {
-  name: KeyPress.Key
+  name?: KeyPress.Key
   shift?: boolean
 }
 
@@ -18,26 +18,29 @@ interface KeyPressPatternExpressionObject {
 }
 
 const isKeyPressMatchPattern = (event: KeyPress.KeyPressEvent, keyPressMatchSpec: KeyPressPattern) => {
+  // prettier-ignore
   return (
-    keyPressMatchSpec.name.includes(event.name) &&
-    (keyPressMatchSpec.shift === undefined || keyPressMatchSpec.shift === event.shift)
+    keyPressMatchSpec.name === undefined ||
+    (keyPressMatchSpec.name.includes(event.name) && (keyPressMatchSpec.shift === undefined || keyPressMatchSpec.shift === event.shift))
   )
 }
 
 export namespace PromptEngine {
-  export interface Params<S> {
-    initialState: S
+  export interface Input<State extends object, Skippable extends boolean = false> {
+    initialState: State
     channels: Channels
-    draw: (state: S) => string
-    on: {
-      match: KeyPressPatternExpression
-      run: (state: S) => S
+    draw: (state: State) => string
+    on?: {
+      match?: KeyPressPatternExpression
+      run: (state: State, event: KeyPress.KeyPressEvent) => State
     }[]
+    skippable?: Skippable
   }
-  export const create = <S>(params: Params<S>) => {
-    return async () => {
-      let state = params.initialState
-      const matchers = params.on.map(({ match, run }) => {
+
+  export const create = <State extends object, Skippable extends boolean>(input: Input<State, Skippable>) => {
+    return async (): Promise<Skippable extends true ? null | State : State> => {
+      let state = input.initialState
+      const matchers = (input?.on ?? []).map(({ match, run }) => {
         return {
           match: (Array.isArray(match) ? match : [match]).map((_) =>
             typeof _ === `string`
@@ -50,8 +53,9 @@ export namespace PromptEngine {
         }
       })
 
-      const { channels } = params
+      const { channels } = input
       const cleanup = () => {
+        channels.output(Text.chars.newline)
         channels.output(ansiEscapes.cursorShow)
         process.off(`exit`, cleanup)
       }
@@ -59,7 +63,7 @@ export namespace PromptEngine {
       const refresh = () => {
         channels.output(ansiEscapes.eraseLines(previousLineCount))
         channels.output(ansiEscapes.cursorTo(0))
-        const content = params.draw(state)
+        const content = input.draw(state)
         previousLineCount = content.split(Text.chars.newline).length
         channels.output(content)
       }
@@ -68,23 +72,32 @@ export namespace PromptEngine {
       process.once(`exit`, cleanup)
 
       refresh()
+
       for await (const event of channels.readKeyPresses()) {
-        if (event.name === `return`) {
-          break
+        if (input.skippable && event.name === `escape`) {
+          cleanup()
+          // @ts-expect-error ignoreme
+          return null
         }
-        const matcher = matchers.find((matcher) =>
-          matcher.match.some((match) => isKeyPressMatchPattern(event, match)),
-        )
+
+        if (event.name === `return`) {
+          cleanup()
+          // @ts-expect-error ignoreme
+          return state
+        }
+
+        // prettier-ignore
+        const matcher = matchers.find((matcher) => matcher.match.some((match) => isKeyPressMatchPattern(event, match ?? {})))
         if (matcher) {
-          const newState = matcher.run(state)
+          const newState = matcher.run(state, event)
           state = newState
         }
         refresh()
       }
-      channels.output(Text.chars.newline)
-      channels.output(ansiEscapes.cursorShow)
-      cleanup()
-      return state
+
+      // @ts-expect-error ignoreme
+      // This is unreachable because the key presses iterator will never end, but TypeScript doesn't know that.
+      return null
     }
   }
 
