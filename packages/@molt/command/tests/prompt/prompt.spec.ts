@@ -66,28 +66,28 @@ describe(`enumeration`, () => {
   it(`can select member rightward with right key`, async () => {
     parameters = { a: { schema: e, prompt: true } }
     keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `right` })
-    keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `enter` })
+    keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
     await run()
   })
   it(`can select member leftward with left key`, async () => {
     parameters = { a: { schema: e, prompt: true } }
     keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `right` })
     keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `left` })
-    keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `enter` })
+    keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
     await run()
   })
   describe(`tab`, () => {
     it(`can select member rightward with tab key`, async () => {
       parameters = { a: { schema: e, prompt: true } }
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `tab` })
-      keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `enter` })
+      keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
       await run()
     })
     it(`can select member leftward with shift+tab key`, async () => {
       parameters = { a: { schema: e, prompt: true } }
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `right` })
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: true, name: `tab` })
-      keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `enter` })
+      keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
       await run()
     })
   })
@@ -97,13 +97,13 @@ describe(`enumeration`, () => {
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `right` })
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `right` })
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `right` })
-      keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `enter` })
+      keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
       await run()
     })
     it(`left key on first member loops to last member`, async () => {
       parameters = { a: { schema: e, prompt: true } }
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `left` })
-      keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `enter` })
+      keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
       await run()
     })
   })

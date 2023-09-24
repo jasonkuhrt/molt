@@ -130,7 +130,7 @@ export const createPrompter = (channels: Prompt.Channels): Prompter => {
         return Inputs.enumeration({ channels, prompt, parameter })
       }
 
-      casesExhausted(type)
+      throw casesExhausted(type)
     },
   }
   return prompter
@@ -217,7 +217,7 @@ namespace Inputs {
     params.channels.output(params.prompt)
     const answer_ = await params.channels.readLine()
     const answer = parseFloat(answer_)
-    if (isNaN(answer)) return null
+    if (isNaN(answer)) return null as any // todo remove cast
     return answer
   }
 }

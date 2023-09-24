@@ -227,9 +227,6 @@ exports[`enumeration > can select member leftward with left key > tty 1`] = `
   "[2K",
   "[1G",
   "     ❯ [32m[1mmajor[22m[39m[2m | [22mminor[2m | [22mpatch",
-  "[2K",
-  "[1G",
-  "     ❯ [32m[1mmajor[22m[39m[2m | [22mminor[2m | [22mpatch",
   "
 ",
   "[?25h",
@@ -244,9 +241,6 @@ exports[`enumeration > can select member leftward with left key > tty strip ansi
   "1/1  a
 ",
   "",
-  "",
-  "",
-  "     ❯ major | minor | patch",
   "",
   "",
   "     ❯ major | minor | patch",
@@ -283,9 +277,6 @@ exports[`enumeration > can select member rightward with right key > tty 1`] = `
   "[2K",
   "[1G",
   "     ❯ major[2m | [22m[32m[1mminor[22m[39m[2m | [22mpatch",
-  "[2K",
-  "[1G",
-  "     ❯ major[2m | [22m[32m[1mminor[22m[39m[2m | [22mpatch",
   "
 ",
   "[?25h",
@@ -300,9 +291,6 @@ exports[`enumeration > can select member rightward with right key > tty strip an
   "1/1  a
 ",
   "",
-  "",
-  "",
-  "     ❯ major | minor | patch",
   "",
   "",
   "     ❯ major | minor | patch",
@@ -377,9 +365,6 @@ exports[`enumeration > loop > left key on first member loops to last member > tt
   "[2K",
   "[1G",
   "     ❯ major[2m | [22mminor[2m | [22m[32m[1mpatch[22m[39m",
-  "[2K",
-  "[1G",
-  "     ❯ major[2m | [22mminor[2m | [22m[32m[1mpatch[22m[39m",
   "
 ",
   "[?25h",
@@ -394,9 +379,6 @@ exports[`enumeration > loop > left key on first member loops to last member > tt
   "1/1  a
 ",
   "",
-  "",
-  "",
-  "     ❯ major | minor | patch",
   "",
   "",
   "     ❯ major | minor | patch",
@@ -436,9 +418,6 @@ exports[`enumeration > loop > right key on last member loops to first member > t
   "[2K",
   "[1G",
   "     ❯ [32m[1mmajor[22m[39m[2m | [22mminor[2m | [22mpatch",
-  "[2K",
-  "[1G",
-  "     ❯ [32m[1mmajor[22m[39m[2m | [22mminor[2m | [22mpatch",
   "
 ",
   "[?25h",
@@ -453,9 +432,6 @@ exports[`enumeration > loop > right key on last member loops to first member > t
   "1/1  a
 ",
   "",
-  "",
-  "",
-  "     ❯ major | minor | patch",
   "",
   "",
   "     ❯ major | minor | patch",
@@ -498,9 +474,6 @@ exports[`enumeration > tab > can select member leftward with shift+tab key > tty
   "[2K",
   "[1G",
   "     ❯ [32m[1mmajor[22m[39m[2m | [22mminor[2m | [22mpatch",
-  "[2K",
-  "[1G",
-  "     ❯ [32m[1mmajor[22m[39m[2m | [22mminor[2m | [22mpatch",
   "
 ",
   "[?25h",
@@ -515,9 +488,6 @@ exports[`enumeration > tab > can select member leftward with shift+tab key > tty
   "1/1  a
 ",
   "",
-  "",
-  "",
-  "     ❯ major | minor | patch",
   "",
   "",
   "     ❯ major | minor | patch",
@@ -554,9 +524,6 @@ exports[`enumeration > tab > can select member rightward with tab key > tty 1`] 
   "[2K",
   "[1G",
   "     ❯ major[2m | [22m[32m[1mminor[22m[39m[2m | [22mpatch",
-  "[2K",
-  "[1G",
-  "     ❯ major[2m | [22m[32m[1mminor[22m[39m[2m | [22mpatch",
   "
 ",
   "[?25h",
@@ -571,9 +538,6 @@ exports[`enumeration > tab > can select member rightward with tab key > tty stri
   "1/1  a
 ",
   "",
-  "",
-  "",
-  "     ❯ major | minor | patch",
   "",
   "",
   "     ❯ major | minor | patch",
