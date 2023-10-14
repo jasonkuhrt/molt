@@ -46,7 +46,7 @@ export interface KeyPressEvent<Name extends Key = Key> {
   sequence: string
 }
 
-export const get = (): Effect.Effect<never, Error, KeyPressEvent> => {
+export const get = Effect.async<never, never, KeyPressEvent>((resume) => {
   const rl = Readline.promises.createInterface({
     input: stdin,
     output: stdout,
@@ -57,25 +57,23 @@ export const get = (): Effect.Effect<never, Error, KeyPressEvent> => {
     stdin.setRawMode(true)
   }
   Readline.emitKeypressEvents(stdin, rl)
-  return Effect.async((resume) => {
-    const listener = (_key: string, event: KeyPressEvent) => {
-      rl.close()
-      stdin.removeListener(`keypress`, listener)
-      if (!originalIsRawState) {
-        process.stdin.setRawMode(false)
-      }
-      resume(Effect.succeed(event))
+  const listener = (_key: string, event: KeyPressEvent) => {
+    rl.close()
+    stdin.removeListener(`keypress`, listener)
+    if (!originalIsRawState) {
+      process.stdin.setRawMode(false)
     }
+    resume(Effect.succeed(event))
+  }
 
-    stdin.on(`keypress`, listener)
-  })
-}
+  stdin.on(`keypress`, listener)
+})
 
 export const watch = (): AsyncIterable<KeyPressEvent> => {
   return {
     [Symbol.asyncIterator]: () => ({
       next: async () => {
-        const event = await Effect.runPromise(get())
+        const event = await Effect.runPromise(get)
         if (event.name == `c` && event.ctrl == true) {
           process.exit()
         }
