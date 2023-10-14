@@ -8,6 +8,7 @@ import { Text } from '../lib/Text/index.js'
 import { Term } from '../term.js'
 import type { ParseProgressPostPrompt, ParseProgressPostPromptAnnotation } from './parse.js'
 import chalk from 'chalk'
+import { Exit, Stream } from 'effect'
 import * as Readline from 'node:readline'
 
 /**
@@ -387,13 +388,12 @@ export const createMemoryPrompter = () => {
       state.history.all.push(value)
       return Promise.resolve(value)
     },
-    readKeyPresses: async function* (params) {
-      for (const keyPress of state.script.keyPress) {
-        if (params?.matching?.includes(keyPress.name) ?? true) {
-          yield await Promise.resolve(keyPress)
-        }
-      }
-    },
+    readKeyPresses: (params) =>
+      Stream.fromIterable(state.script.keyPress).pipe(
+        Stream.filter((event) => {
+          return params?.matching?.includes(event.name) ?? true
+        }),
+      ),
   })
   return {
     history: state.history,
@@ -413,13 +413,13 @@ export type MemoryPrompter = ReturnType<typeof createMemoryPrompter>
 export const createStdioPrompter = () => {
   return createPrompter({
     output: (value) => process.stdout.write(value),
-    readKeyPresses: async function* (params) {
-      for await (const event of KeyPress.watch()) {
-        if (params?.matching?.includes(event.name as any) ?? true) {
-          yield event as KeyPress.KeyPressEvent<any>
-        }
-      }
-    },
+    readKeyPresses: (params) =>
+      KeyPress.stream().pipe(
+        Stream.filter((event) => {
+          if (Exit.isExit(event)) return true
+          return params?.matching?.includes(event.name) ?? true
+        }),
+      ),
     readLine: () => {
       return new Promise((res) => {
         const lineReader = Readline.createInterface({
