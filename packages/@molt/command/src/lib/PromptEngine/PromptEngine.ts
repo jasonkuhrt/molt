@@ -39,6 +39,7 @@ export namespace PromptEngine {
   }
 
   export const create = <State extends object, Skippable extends boolean>(input: Input<State, Skippable>) => {
+    // TODO turn into effect
     return async (): Promise<Skippable extends true ? null | State : State> => {
       const matchers = (input?.on ?? []).map(({ match, run }) => {
         return {
