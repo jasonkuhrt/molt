@@ -85,22 +85,22 @@ export const parse = ({
           const valueTransformed = CommandParameter.transform(spec, argReportValue.value)
           const validationResult = CommandParameter.validate(spec, valueTransformed)
           return Alge.match(validationResult)
-            .Success((result) => {
+            .Right((result) => {
               return {
                 _tag: `supplied` as const,
                 spec,
-                value: result.value,
+                value: result.right,
               }
             })
-            .Failure((result) => {
+            .Left((result) => {
               return {
                 _tag: `error` as const,
                 spec,
                 errors: [
                   new Errors.ErrorInvalidArgument({
                     spec,
-                    validationErrors: result.errors,
-                    value: result.value,
+                    validationErrors: result.left.errors,
+                    value: result.left.value,
                   }),
                 ],
               }

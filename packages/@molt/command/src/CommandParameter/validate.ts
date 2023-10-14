@@ -1,8 +1,10 @@
 import type { Pam } from '../lib/Pam/index.js'
 import { Patterns } from '../lib/Patterns/index.js'
-import { ValidationResult } from '../lib/ValidationResult/ValidationResult.js'
 import type { Output } from './output.js'
 import { Alge } from 'alge'
+import { Either } from 'effect'
+
+type ValidationResult<T> = Either.Either<{ value: T; errors: string[] }, T>
 
 export const validate = <T>(spec: Output, value: T): ValidationResult<T> => {
   return Alge.match(spec)
@@ -14,9 +16,9 @@ export const validate = <T>(spec: Output, value: T): ValidationResult<T> => {
 const validateBasic = <T>(spec: Output.Basic, value: T): ValidationResult<T> => {
   if (value === undefined) {
     if (spec.optionality._tag === `required`) {
-      return ValidationResult.Failure(value, [`Value is undefined. A value is required.`])
+      return Either.left({ value, errors: [`Value is undefined. A value is required.`] })
     }
-    return ValidationResult.Success(value)
+    return Either.right(value)
   }
   return validateType(spec.type, value)
 }
@@ -30,23 +32,23 @@ const validateType = <T>(type: Pam.Type, value: T): ValidationResult<T> => {
   return Alge.match(type)
     .TypeLiteral((_) =>
       value === _.value
-        ? ValidationResult.Success(value)
-        : ValidationResult.Failure(value, [`Value is not equal to literal.`]),
+        ? Either.right(value)
+        : Either.left({ value, errors: [`Value is not equal to literal.`] }),
     )
     .TypeBoolean(() =>
       typeof value === `boolean`
-        ? ValidationResult.Success(value)
-        : ValidationResult.Failure(value, [`Value is not a boolean.`]),
+        ? Either.right(value)
+        : Either.left({ value, errors: [`Value is not a boolean.`] }),
     )
     .TypeEnum((type) =>
       type.members.includes(value as any)
-        ? ValidationResult.Success(value)
-        : ValidationResult.Failure(value, [`Value is not a member of the enum.`]),
+        ? Either.right(value)
+        : Either.left({ value, errors: [`Value is not a member of the enum.`] }),
     )
     .TypeNumber((type) => {
       const errors = []
       if (typeof value !== `number`) {
-        return ValidationResult.Failure(value, [`Value is not a number.`])
+        return Either.left({ value, errors: [`Value is not a number.`] })
       }
       if (type.int && !Number.isInteger(value)) {
         errors.push(`Value is not an integer.`)
@@ -67,14 +69,14 @@ const validateType = <T>(type: Pam.Type, value: T): ValidationResult<T> => {
         }
       }
       if (errors.length > 0) {
-        return ValidationResult.Failure(value, errors)
+        return Either.left({ value, errors })
       }
-      return ValidationResult.Success(value)
+      return Either.right(value)
     })
     .TypeString((type) => {
       const errors = []
       if (typeof value !== `string`) {
-        return ValidationResult.Failure(value, [`Value is not a string.`])
+        return Either.left({ value, errors: [`Value is not a string.`] })
       }
       if (type.regex && !type.regex.test(value)) {
         errors.push(`Value does not conform to Regular Expression.`)
@@ -171,16 +173,16 @@ const validateType = <T>(type: Pam.Type, value: T): ValidationResult<T> => {
         }
       }
       if (errors.length > 0) {
-        return ValidationResult.Failure(value, errors)
+        return Either.left({ value, errors })
       }
-      return ValidationResult.Success(value)
+      return Either.right(value)
     })
     .TypeUnion((type) => {
       const result = type.members.find((member) => validateType(member.type, value))
       if (!result) {
-        return ValidationResult.Failure(value, [`Value does not fit any member of the union.`])
+        return Either.left({ value, errors: [`Value does not fit any member of the union.`] })
       }
-      return ValidationResult.Success(value)
+      return Either.right(value)
     })
     .done()
 }

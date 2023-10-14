@@ -45,8 +45,8 @@ export const prompt = async (
         parameter: param,
       })
       const validationResult = CommandParameter.validate(param, arg)
-      if (validationResult._tag === `Success`) {
-        args[param.name.canonical] = validationResult.value
+      if (validationResult._tag === `Right`) {
+        args[param.name.canonical] = validationResult.right
         prompter.say(``) // newline
         indexCurrent++
         break
@@ -56,7 +56,7 @@ export const prompt = async (
             `left`,
             gutterWidth,
             ` `,
-            Term.colors.alert(`Invalid value: ${validationResult.errors.join(`, `)}`),
+            Term.colors.alert(`Invalid value: ${validationResult.left.errors.join(`, `)}`),
           ),
         )
       }

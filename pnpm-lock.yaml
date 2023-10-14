@@ -117,6 +117,9 @@ importers:
       chalk:
         specifier: ^5.3.0
         version: 5.3.0
+      effect:
+        specifier: 2.0.0-next.48
+        version: 2.0.0-next.48
       lodash.camelcase:
         specifier: ^4.3.0
         version: 4.3.0
@@ -1384,6 +1387,10 @@ packages:
     dependencies:
       esutils: 2.0.3
     dev: true
+
+  /effect@2.0.0-next.48:
+    resolution: {integrity: sha512-vwMIl39m8fMBeXoGIdSwMi2lrg7NltyrGMK0N/liGDl7G9LXvERKOCipNcobSIGO0V7hjaXEWgL6W/KEWEww+g==}
+    dev: false
 
   /emoji-regex@8.0.0:
     resolution: {integrity: sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==}
