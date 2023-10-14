@@ -47,7 +47,7 @@ export interface KeyPressEvent<Name extends Key = Key> {
   sequence: string
 }
 
-export const awaitKeyPress = Effect.async<never, never, KeyPressEvent>((resume) => {
+export const readOne = Effect.async<never, never, KeyPressEvent>((resume) => {
   const rl = Readline.promises.createInterface({
     input: stdin,
     output: stdout,
@@ -70,11 +70,9 @@ export const awaitKeyPress = Effect.async<never, never, KeyPressEvent>((resume) 
   stdin.on(`keypress`, listener)
 })
 
-export const stream = (params?: {
-  exitOnCtrlC?: boolean
-}): Stream.Stream<never, never, KeyPressEvent<any> | Exit.Exit<never, void>> =>
+export const readMany = (params?: { exitOnCtrlC?: boolean }) =>
   pipe(
-    Stream.repeatEffect(awaitKeyPress),
+    Stream.repeatEffect(readOne),
     Stream.map((event) =>
       event.name == `c` && event.ctrl == true && params?.exitOnCtrlC !== false ? Exit.unit : event,
     ),

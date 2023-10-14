@@ -107,8 +107,11 @@ export namespace PromptEngine {
   export interface Channels {
     output: (value: string) => void
     readLine: () => Promise<string>
-    readKeyPresses: <K extends KeyPress.Key>(params?: {
-      matching?: K[]
-    }) => Stream.Stream<never, never, Exit.Exit<never, void> | KeyPress.KeyPressEvent<K>>
+    readKeyPresses: <K extends KeyPress.Key>(
+      params?: ReadKeyPressesParams<K>,
+    ) => Stream.Stream<never, never, Exit.Exit<never, void> | KeyPress.KeyPressEvent<K>>
+  }
+  export interface ReadKeyPressesParams<K extends string> {
+    matching?: K[]
   }
 }

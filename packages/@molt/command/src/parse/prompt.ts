@@ -1,6 +1,7 @@
 import { CommandParameter } from '../CommandParameter/index.js'
 import { casesExhausted } from '../helpers.js'
 import { KeyPress } from '../lib/KeyPress/index.js'
+import type { KeyPressEvent } from '../lib/KeyPress/KeyPress.js'
 import type { Pam } from '../lib/Pam/index.js'
 import { PromptEngine } from '../lib/PromptEngine/PromptEngine.js'
 import { Tex } from '../lib/Tex/index_.js'
@@ -413,11 +414,11 @@ export type MemoryPrompter = ReturnType<typeof createMemoryPrompter>
 export const createStdioPrompter = () => {
   return createPrompter({
     output: (value) => process.stdout.write(value),
-    readKeyPresses: (params) =>
-      KeyPress.stream().pipe(
-        Stream.filter((event) => {
+    readKeyPresses: <K extends KeyPress.Key>(params?: PromptEngine.ReadKeyPressesParams<K>) =>
+      KeyPress.readMany().pipe(
+        Stream.filter((event): event is Exit.Exit<never, void> | KeyPressEvent<K> => {
           if (Exit.isExit(event)) return true
-          return params?.matching?.includes(event.name) ?? true
+          return params?.matching?.includes(event.name as any) ?? true
         }),
       ),
     readLine: () => {
