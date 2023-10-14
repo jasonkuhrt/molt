@@ -1,3 +1,4 @@
+import { Effect } from 'effect'
 import { stdin, stdout } from 'node:process'
 import * as Readline from 'node:readline'
 
@@ -45,7 +46,7 @@ export interface KeyPressEvent<Name extends Key = Key> {
   sequence: string
 }
 
-export const get = async (): Promise<KeyPressEvent> => {
+export const get = (): Effect.Effect<never, Error, KeyPressEvent> => {
   const rl = Readline.promises.createInterface({
     input: stdin,
     output: stdout,
@@ -56,16 +57,16 @@ export const get = async (): Promise<KeyPressEvent> => {
     stdin.setRawMode(true)
   }
   Readline.emitKeypressEvents(stdin, rl)
-
-  return new Promise((resolve) => {
-    const listener = (k: any, e: any) => {
+  return Effect.async((resume) => {
+    const listener = (_key: string, event: KeyPressEvent) => {
       rl.close()
       stdin.removeListener(`keypress`, listener)
       if (!originalIsRawState) {
         process.stdin.setRawMode(false)
       }
-      resolve(e)
+      resume(Effect.succeed(event))
     }
+
     stdin.on(`keypress`, listener)
   })
 }
@@ -74,7 +75,7 @@ export const watch = (): AsyncIterable<KeyPressEvent> => {
   return {
     [Symbol.asyncIterator]: () => ({
       next: async () => {
-        const event = await get()
+        const event = await Effect.runPromise(get())
         if (event.name == `c` && event.ctrl == true) {
           process.exit()
         }
