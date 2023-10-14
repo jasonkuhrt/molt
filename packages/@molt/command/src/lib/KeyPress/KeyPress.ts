@@ -1,3 +1,4 @@
+import { Exit, pipe, Stream } from 'effect'
 import { Effect } from 'effect'
 import { stdin, stdout } from 'node:process'
 import * as Readline from 'node:readline'
@@ -46,7 +47,7 @@ export interface KeyPressEvent<Name extends Key = Key> {
   sequence: string
 }
 
-export const get = Effect.async<never, never, KeyPressEvent>((resume) => {
+export const readOne = Effect.async<never, never, KeyPressEvent>((resume) => {
   const rl = Readline.promises.createInterface({
     input: stdin,
     output: stdout,
@@ -69,19 +70,13 @@ export const get = Effect.async<never, never, KeyPressEvent>((resume) => {
   stdin.on(`keypress`, listener)
 })
 
-export const watch = (): AsyncIterable<KeyPressEvent> => {
-  return {
-    [Symbol.asyncIterator]: () => ({
-      next: async () => {
-        const event = await Effect.runPromise(get)
-        if (event.name == `c` && event.ctrl == true) {
-          process.exit()
-        }
-        return {
-          value: event,
-          done: false,
-        }
-      },
+export const readMany = (params?: { exitOnCtrlC?: boolean }) =>
+  pipe(
+    Stream.repeatEffect(readOne),
+    Stream.map((event) =>
+      event.name == `c` && event.ctrl == true && params?.exitOnCtrlC !== false ? Exit.unit : event,
+    ),
+    Stream.takeUntil((event) => {
+      return Exit.isExit(event)
     }),
-  }
-}
+  )

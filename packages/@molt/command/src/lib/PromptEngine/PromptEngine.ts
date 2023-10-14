@@ -1,6 +1,7 @@
 import type { KeyPress } from '../KeyPress/index.js'
 import { Text } from '../Text/index.js'
 import ansiEscapes from 'ansi-escapes'
+import { Effect, Exit, pipe, Stream } from 'effect'
 
 interface KeyPressPattern {
   name?: KeyPress.Key
@@ -39,7 +40,6 @@ export namespace PromptEngine {
 
   export const create = <State extends object, Skippable extends boolean>(input: Input<State, Skippable>) => {
     return async (): Promise<Skippable extends true ? null | State : State> => {
-      let state = input.initialState
       const matchers = (input?.on ?? []).map(({ match, run }) => {
         return {
           match: (Array.isArray(match) ? match : [match]).map((_) =>
@@ -60,7 +60,7 @@ export namespace PromptEngine {
         process.off(`exit`, cleanup)
       }
       let previousLineCount = 0
-      const refresh = () => {
+      const refresh = (state: State) => {
         channels.output(ansiEscapes.eraseLines(previousLineCount))
         channels.output(ansiEscapes.cursorTo(0))
         const content = input.draw(state)
@@ -71,41 +71,47 @@ export namespace PromptEngine {
       channels.output(ansiEscapes.cursorHide)
       process.once(`exit`, cleanup)
 
-      refresh()
+      const initialState = input.initialState
+      refresh(initialState)
 
-      for await (const event of channels.readKeyPresses()) {
-        if (input.skippable && event.name === `escape`) {
-          cleanup()
-          // @ts-expect-error ignoreme
-          return null
-        }
+      const result = await pipe(
+        channels.readKeyPresses(),
+        Stream.takeUntil(
+          (value) => !Exit.isExit(value) && input.skippable === true && value.name === `escape`,
+        ),
+        Stream.takeUntil((value) => !Exit.isExit(value) && value.name === `return`),
+        Stream.runFold(initialState as State | null, (state, value): State | null => {
+          // todo do higher in the stack
+          if (Exit.isExit(value)) {
+            process.exit()
+          }
+          if (state === null) return null
+          if (input.skippable && value.name === `escape`) return null
+          if (value.name === `return`) return state
+          const matcher = matchers.find((matcher) =>
+            matcher.match.some((match) => isKeyPressMatchPattern(value, match ?? {})),
+          )
+          const newState = matcher?.run(state, value) ?? state
+          refresh(newState)
+          return newState
+        }),
+        Effect.runPromise,
+      )
 
-        if (event.name === `return`) {
-          cleanup()
-          // @ts-expect-error ignoreme
-          return state
-        }
+      cleanup()
 
-        // prettier-ignore
-        const matcher = matchers.find((matcher) => matcher.match.some((match) => isKeyPressMatchPattern(event, match ?? {})))
-        if (matcher) {
-          const newState = matcher.run(state, event)
-          state = newState
-        }
-        refresh()
-      }
-
-      // @ts-expect-error ignoreme
-      // This is unreachable because the key presses iterator will never end, but TypeScript doesn't know that.
-      return null
+      return result as Skippable extends true ? null | State : State
     }
   }
 
   export interface Channels {
     output: (value: string) => void
     readLine: () => Promise<string>
-    readKeyPresses: <K extends KeyPress.Key>(params?: {
-      matching?: K[]
-    }) => AsyncIterable<KeyPress.KeyPressEvent<K>>
+    readKeyPresses: <K extends KeyPress.Key>(
+      params?: ReadKeyPressesParams<K>,
+    ) => Stream.Stream<never, never, Exit.Exit<never, void> | KeyPress.KeyPressEvent<K>>
+  }
+  export interface ReadKeyPressesParams<K extends string> {
+    matching?: K[]
   }
 }
