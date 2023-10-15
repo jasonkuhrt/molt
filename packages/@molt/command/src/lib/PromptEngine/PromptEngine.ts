@@ -1,7 +1,8 @@
 import type { KeyPress } from '../KeyPress/index.js'
 import { Text } from '../Text/index.js'
 import ansiEscapes from 'ansi-escapes'
-import { Effect, Exit, pipe, Stream } from 'effect'
+import type { Effect } from 'effect'
+import { Exit, pipe, Stream } from 'effect'
 
 interface KeyPressPattern {
   name?: KeyPress.Key
@@ -39,8 +40,7 @@ export namespace PromptEngine {
   }
 
   export const create = <State extends object, Skippable extends boolean>(input: Input<State, Skippable>) => {
-    // TODO turn into effect
-    return async (): Promise<Skippable extends true ? null | State : State> => {
+    return (): Effect.Effect<never, never, Skippable extends true ? null | State : State> => {
       const matchers = (input?.on ?? []).map(({ match, run }) => {
         return {
           match: (Array.isArray(match) ? match : [match]).map((_) =>
@@ -60,7 +60,9 @@ export namespace PromptEngine {
         channels.output(ansiEscapes.cursorShow)
         process.off(`exit`, cleanup)
       }
+
       let previousLineCount = 0
+
       const refresh = (state: State) => {
         channels.output(ansiEscapes.eraseLines(previousLineCount))
         channels.output(ansiEscapes.cursorTo(0))
@@ -75,7 +77,7 @@ export namespace PromptEngine {
       const initialState = input.initialState
       refresh(initialState)
 
-      const result = await pipe(
+      const result = pipe(
         channels.readKeyPresses(),
         Stream.takeUntil(
           (value) => !Exit.isExit(value) && input.skippable === true && value.name === `escape`,
@@ -96,18 +98,17 @@ export namespace PromptEngine {
           refresh(newState)
           return newState
         }),
-        Effect.runPromise,
       )
 
       cleanup()
 
-      return result as Skippable extends true ? null | State : State
+      return result as Effect.Effect<never, never, Skippable extends true ? null | State : State>
     }
   }
 
   export interface Channels {
     output: (value: string) => void
-    readLine: () => Promise<string>
+    readLine: () => Effect.Effect<never, never, string>
     readKeyPresses: <K extends KeyPress.Key>(
       params?: ReadKeyPressesParams<K>,
     ) => Stream.Stream<never, never, Exit.Exit<never, void> | KeyPress.KeyPressEvent<K>>

@@ -12,6 +12,7 @@ import type {
 } from '../OpeningArgs/OpeningArgs.js'
 import { match } from '../Pattern/Pattern.js'
 import { createStdioPrompter, prompt } from './prompt.js'
+import { Effect } from 'effect'
 
 export interface ParseProgressPostPromptAnnotation {
   globalErrors: OpeningArgs.ParseResult['globalErrors']
@@ -233,6 +234,6 @@ export const parse = (
   }
 
   return hasPrompt
-    ? prompt(parseProgressPostPromptAnnotation, argInputsTTY).then(tailProcess)
+    ? Effect.runPromise(prompt(parseProgressPostPromptAnnotation, argInputsTTY)).then(tailProcess)
     : tailProcess(parseProgressPostPromptAnnotation as ParseProgressPostPrompt)
 }
