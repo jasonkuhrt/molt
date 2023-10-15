@@ -29,7 +29,7 @@ export const create = (channels: PromptEngine.Channels): Prompter => {
     ask: (params) => {
       const args = { ...params, channels }
       channels.output(params.question + Text.chars.newline)
-      return inputForParameter(args.parameter)
+      return inputForParameter(args)
     },
   }
 }

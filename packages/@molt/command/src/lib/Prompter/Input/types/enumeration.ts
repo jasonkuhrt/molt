@@ -1,10 +1,10 @@
 import type { Pam } from '../../../Pam/index.js'
 import { PromptEngine } from '../../../PromptEngine/PromptEngine.js'
-import type { InputParams } from '../_core.js'
+import type { Params } from '../_core.js'
 import chalk from 'chalk'
 import { Effect } from 'effect'
 
-export const enumeration = (params: InputParams<Pam.Parameter<Pam.Type.Scalar.Enumeration>>) =>
+export const enumeration = (params: Params<Pam.Parameter<Pam.Type.Scalar.Enumeration>>) =>
   Effect.gen(function* (_) {
     interface State {
       active: number

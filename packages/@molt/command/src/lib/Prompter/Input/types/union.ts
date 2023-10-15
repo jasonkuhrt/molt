@@ -2,11 +2,11 @@ import type { Pam } from '../../../Pam/index.js'
 import { PromptEngine } from '../../../PromptEngine/PromptEngine.js'
 import { Text } from '../../../Text/index.js'
 import { create } from '../../Constructors/_core.js'
-import type { InputParams } from '../_core.js'
+import type { Params } from '../_core.js'
 import chalk from 'chalk'
 import { Effect } from 'effect'
 
-export const union = (params: InputParams<Pam.Parameter<Pam.Type.Union>>) =>
+export const union = (params: Params<Pam.Parameter<Pam.Type.Union>>) =>
   Effect.gen(function* (_) {
     interface State {
       active: number

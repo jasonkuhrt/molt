@@ -69,7 +69,7 @@ export const parse = (
   argInputs: RawArgInputs,
 ) => {
   const testDebuggingNoExit = process.env[`testing_molt`] === `true`
-  const argInputsTTY = argInputs?.tty ?? (process.stdout.isTTY ? Prompter.createProcessPrompter() : null)
+  const argInputsPrompter = argInputs?.tty ?? (process.stdout.isTTY ? Prompter.createProcessPrompter() : null)
   const argInputsLine = argInputs?.line ?? process.argv.slice(2)
   const argInputsEnvironment = argInputs?.environment
     ? lowerCaseObjectKeys(argInputs.environment)
@@ -107,7 +107,7 @@ export const parse = (
     ),
   }
 
-  if (argInputsTTY) {
+  if (argInputsPrompter) {
     const basicSpecs = specsResult.specs.filter((_): _ is CommandParameter.Output.Basic => _._tag === `Basic`)
     for (const spec of basicSpecs) {
       const promptEnabled =
@@ -193,7 +193,7 @@ export const parse = (
 
   const hasPrompt =
     Object.values(parseProgressPostPromptAnnotation.basicParameters).some((_) => _.prompt.enabled) &&
-    argInputsTTY
+    argInputsPrompter
 
   /**
    * Progress to the next parse stage wherein we will execute prompts.
@@ -235,6 +235,6 @@ export const parse = (
   }
 
   return hasPrompt
-    ? Effect.runPromise(prompt(parseProgressPostPromptAnnotation, argInputsTTY)).then(tailProcess)
+    ? Effect.runPromise(prompt(parseProgressPostPromptAnnotation, argInputsPrompter)).then(tailProcess)
     : tailProcess(parseProgressPostPromptAnnotation as ParseProgressPostPrompt)
 }

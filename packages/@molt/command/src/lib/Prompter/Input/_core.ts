@@ -3,41 +3,38 @@ import type { Pam } from '../../Pam/index.js'
 import type { PromptEngine } from '../../PromptEngine/PromptEngine.js'
 import * as Inputs from './types/index.js'
 
-export interface InputParams<parameter extends Pam.Parameter> {
+export interface Params<parameter extends Pam.Parameter> {
   channels: PromptEngine.Channels
   prompt: string
   marginLeft?: number
   parameter: parameter
 }
 
-export const inputForParameter = (parameter: Pam.Parameter) => {
+export const inputForParameter = (params: Params<Pam.Parameter>) => {
+  const { parameter } = params
+
   if (parameter.type._tag === `TypeLiteral`) {
     throw new Error(`Literals are not supported yet.`)
   }
 
   if (parameter.type._tag === `TypeUnion`) {
-    // @ts-expect-error todo
-    return Inputs.union(p)
+    return Inputs.union(params as Params<Pam.Parameter<Pam.Type.Union>>)
   }
 
   if (parameter.type._tag === `TypeBoolean`) {
-    // @ts-expect-error todo
-    return Inputs.boolean(p)
+    return Inputs.boolean(params as Params<Pam.Parameter<Pam.Type.Scalar.Boolean>>)
   }
 
   if (parameter.type._tag === `TypeString`) {
-    // @ts-expect-error todo
-    return Inputs.string(p)
+    return Inputs.string(params as Params<Pam.Parameter<Pam.Type.Scalar.String>>)
   }
 
   if (parameter.type._tag === `TypeNumber`) {
-    // @ts-expect-error todo
-    return Inputs.number(p)
+    return Inputs.number(params as Params<Pam.Parameter<Pam.Type.Scalar.Number>>)
   }
 
   if (parameter.type._tag === `TypeEnum`) {
-    // @ts-expect-error todo
-    return Inputs.enumeration(p)
+    return Inputs.enumeration(params as Params<Pam.Parameter<Pam.Type.Scalar.Enumeration>>)
   }
 
   throw casesExhausted(parameter.type)

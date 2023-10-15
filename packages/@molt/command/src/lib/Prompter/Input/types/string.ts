@@ -1,9 +1,9 @@
 import type { Pam } from '../../../Pam/index.js'
 import { PromptEngine } from '../../../PromptEngine/PromptEngine.js'
-import type { InputParams } from '../_core.js'
+import type { Params } from '../_core.js'
 import { Effect } from 'effect'
 
-export const string = (params: InputParams<Pam.Parameter<Pam.Type.Scalar.String>>) =>
+export const string = (params: Params<Pam.Parameter<Pam.Type.Scalar.String>>) =>
   Effect.gen(function* (_) {
     interface State {
       value: string
