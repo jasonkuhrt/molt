@@ -77,7 +77,7 @@ export namespace PromptEngine {
       const initialState = input.initialState
       refresh(initialState)
 
-      const result = pipe(
+      return pipe(
         channels.readKeyPresses(),
         Stream.takeUntil(
           (value) => !Exit.isExit(value) && input.skippable === true && value.name === `escape`,
@@ -98,11 +98,11 @@ export namespace PromptEngine {
           refresh(newState)
           return newState
         }),
-      )
-
-      cleanup()
-
-      return result as Effect.Effect<never, never, Skippable extends true ? null | State : State>
+        (_) => {
+          cleanup()
+          return _
+        },
+      ) as Effect.Effect<never, never, Skippable extends true ? null | State : State>
     }
   }
 
