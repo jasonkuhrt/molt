@@ -4,6 +4,7 @@ import { createEvent } from '../eventPatterns.js'
 import { Help } from '../Help/index.js'
 import { getLowerCaseEnvironment, lowerCaseObjectKeys } from '../helpers.js'
 import type { Settings } from '../index.js'
+import { Prompter } from '../lib/Prompter/index.js'
 import { OpeningArgs } from '../OpeningArgs/index.js'
 import type {
   ParseResultBasicError,
@@ -11,7 +12,7 @@ import type {
   ParseResultExclusiveGroupSupplied,
 } from '../OpeningArgs/OpeningArgs.js'
 import { match } from '../Pattern/Pattern.js'
-import { createStdioPrompter, prompt } from './prompt.js'
+import { prompt } from './prompt.js'
 import { Effect } from 'effect'
 
 export interface ParseProgressPostPromptAnnotation {
@@ -68,7 +69,7 @@ export const parse = (
   argInputs: RawArgInputs,
 ) => {
   const testDebuggingNoExit = process.env[`testing_molt`] === `true`
-  const argInputsTTY = argInputs?.tty ?? (process.stdout.isTTY ? createStdioPrompter() : null)
+  const argInputsPrompter = argInputs?.tty ?? (process.stdout.isTTY ? Prompter.createProcessPrompter() : null)
   const argInputsLine = argInputs?.line ?? process.argv.slice(2)
   const argInputsEnvironment = argInputs?.environment
     ? lowerCaseObjectKeys(argInputs.environment)
@@ -106,7 +107,7 @@ export const parse = (
     ),
   }
 
-  if (argInputsTTY) {
+  if (argInputsPrompter) {
     const basicSpecs = specsResult.specs.filter((_): _ is CommandParameter.Output.Basic => _._tag === `Basic`)
     for (const spec of basicSpecs) {
       const promptEnabled =
@@ -192,7 +193,7 @@ export const parse = (
 
   const hasPrompt =
     Object.values(parseProgressPostPromptAnnotation.basicParameters).some((_) => _.prompt.enabled) &&
-    argInputsTTY
+    argInputsPrompter
 
   /**
    * Progress to the next parse stage wherein we will execute prompts.
@@ -234,6 +235,6 @@ export const parse = (
   }
 
   return hasPrompt
-    ? Effect.runPromise(prompt(parseProgressPostPromptAnnotation, argInputsTTY)).then(tailProcess)
+    ? Effect.runPromise(prompt(parseProgressPostPromptAnnotation, argInputsPrompter)).then(tailProcess)
     : tailProcess(parseProgressPostPromptAnnotation as ParseProgressPostPrompt)
 }
