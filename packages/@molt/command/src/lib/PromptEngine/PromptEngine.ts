@@ -1,7 +1,8 @@
 import type { KeyPress } from '../KeyPress/index.js'
 import { Text } from '../Text/index.js'
 import ansiEscapes from 'ansi-escapes'
-import { Effect, Exit, pipe, Stream } from 'effect'
+import { Effect } from 'effect'
+import { Exit, pipe, Stream } from 'effect'
 
 interface KeyPressPattern {
   name?: KeyPress.Key
@@ -27,9 +28,13 @@ const isKeyPressMatchPattern = (event: KeyPress.KeyPressEvent, keyPressMatchSpec
 }
 
 export namespace PromptEngine {
-  export interface Input<State extends object, Skippable extends boolean = false> {
+  export interface Params<State extends object, Skippable extends boolean = false> {
     initialState: State
     channels: Channels
+    /**
+     * @defaultValue `false`
+     */
+    cursor?: boolean
     draw: (state: State) => string
     on?: {
       match?: KeyPressPatternExpression
@@ -38,10 +43,17 @@ export namespace PromptEngine {
     skippable?: Skippable
   }
 
-  export const create = <State extends object, Skippable extends boolean>(input: Input<State, Skippable>) => {
-    // TODO turn into effect
-    return async (): Promise<Skippable extends true ? null | State : State> => {
-      const matchers = (input?.on ?? []).map(({ match, run }) => {
+  export const create = <State extends object, Skippable extends boolean>(
+    params: Params<State, Skippable>,
+  ) => {
+    return (): Effect.Effect<never, never, Skippable extends true ? null | State : State> => {
+      const args = {
+        cursor: false,
+        skippable: false,
+        on: [],
+        ...params,
+      }
+      const matchers = args.on.map(({ match, run }) => {
         return {
           match: (Array.isArray(match) ? match : [match]).map((_) =>
             typeof _ === `string`
@@ -54,32 +66,33 @@ export namespace PromptEngine {
         }
       })
 
-      const { channels } = input
+      const { channels } = args
+
       const cleanup = () => {
         channels.output(Text.chars.newline)
-        channels.output(ansiEscapes.cursorShow)
+        if (!args.cursor) channels.output(ansiEscapes.cursorShow)
         process.off(`exit`, cleanup)
       }
+
       let previousLineCount = 0
+
       const refresh = (state: State) => {
         channels.output(ansiEscapes.eraseLines(previousLineCount))
         channels.output(ansiEscapes.cursorTo(0))
-        const content = input.draw(state)
+        const content = args.draw(state)
         previousLineCount = content.split(Text.chars.newline).length
         channels.output(content)
       }
 
-      channels.output(ansiEscapes.cursorHide)
+      if (!args.cursor) channels.output(ansiEscapes.cursorHide)
       process.once(`exit`, cleanup)
 
-      const initialState = input.initialState
+      const initialState = args.initialState
       refresh(initialState)
 
-      const result = await pipe(
+      return pipe(
         channels.readKeyPresses(),
-        Stream.takeUntil(
-          (value) => !Exit.isExit(value) && input.skippable === true && value.name === `escape`,
-        ),
+        Stream.takeUntil((value) => !Exit.isExit(value) && args.skippable && value.name === `escape`),
         Stream.takeUntil((value) => !Exit.isExit(value) && value.name === `return`),
         Stream.runFold(initialState as State | null, (state, value): State | null => {
           // todo do higher in the stack
@@ -87,7 +100,7 @@ export namespace PromptEngine {
             process.exit()
           }
           if (state === null) return null
-          if (input.skippable && value.name === `escape`) return null
+          if (args.skippable && value.name === `escape`) return null
           if (value.name === `return`) return state
           const matcher = matchers.find((matcher) =>
             matcher.match.some((match) => isKeyPressMatchPattern(value, match ?? {})),
@@ -96,18 +109,18 @@ export namespace PromptEngine {
           refresh(newState)
           return newState
         }),
-        Effect.runPromise,
+        // @ts-expect-error todo
+        Effect.tap(() => {
+          cleanup()
+          return Effect.unit
+        }),
       )
-
-      cleanup()
-
-      return result as Skippable extends true ? null | State : State
     }
   }
 
   export interface Channels {
     output: (value: string) => void
-    readLine: () => Promise<string>
+    readLine: () => Effect.Effect<never, never, string>
     readKeyPresses: <K extends KeyPress.Key>(
       params?: ReadKeyPressesParams<K>,
     ) => Stream.Stream<never, never, Exit.Exit<never, void> | KeyPress.KeyPressEvent<K>>

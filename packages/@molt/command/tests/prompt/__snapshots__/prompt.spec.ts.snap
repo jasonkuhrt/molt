@@ -542,13 +542,11 @@ exports[`number > optional > when esc is pressed the question is skipped > tty 1
 [
   "[2m[90m1/1[39m[22m  [32ma[39m[2m optional (press esc to skip)[22m
 ",
-  "[?25l",
   "",
   "[1G",
   "     ❯ ",
   "
 ",
-  "[?25h",
   "
 ",
 ]
@@ -560,11 +558,9 @@ exports[`number > optional > when esc is pressed the question is skipped > tty s
 ",
   "",
   "",
-  "",
   "     ❯ ",
   "
 ",
-  "",
   "
 ",
 ]
@@ -581,13 +577,11 @@ exports[`number > optional > when nothing entered then value is undefined > tty 
 [
   "[2m[90m1/1[39m[22m  [32ma[39m[2m optional (press esc to skip)[22m
 ",
-  "[?25l",
   "",
   "[1G",
   "     ❯ ",
   "
 ",
-  "[?25h",
   "
 ",
 ]
@@ -599,11 +593,9 @@ exports[`number > optional > when nothing entered then value is undefined > tty 
 ",
   "",
   "",
-  "",
   "     ❯ ",
   "
 ",
-  "",
   "
 ",
 ]
@@ -620,7 +612,6 @@ exports[`prompt when invalid input > tty 1`] = `
 [
   "[2m[90m1/1[39m[22m  [32ma[39m
 ",
-  "[?25l",
   "",
   "[1G",
   "     ❯ ",
@@ -635,7 +626,6 @@ exports[`prompt when invalid input > tty 1`] = `
   "     ❯ foo",
   "
 ",
-  "[?25h",
   "
 ",
 ]
@@ -647,7 +637,6 @@ exports[`prompt when invalid input > tty strip ansi 1`] = `
 ",
   "",
   "",
-  "",
   "     ❯ ",
   "",
   "",
@@ -660,7 +649,6 @@ exports[`prompt when invalid input > tty strip ansi 1`] = `
   "     ❯ foo",
   "
 ",
-  "",
   "
 ",
 ]
@@ -677,7 +665,6 @@ exports[`prompt when invalid input OR missing input > tty 1`] = `
 [
   "[2m[90m1/1[39m[22m  [32ma[39m
 ",
-  "[?25l",
   "",
   "[1G",
   "     ❯ ",
@@ -692,7 +679,6 @@ exports[`prompt when invalid input OR missing input > tty 1`] = `
   "     ❯ foo",
   "
 ",
-  "[?25h",
   "
 ",
 ]
@@ -704,7 +690,6 @@ exports[`prompt when invalid input OR missing input > tty strip ansi 1`] = `
 ",
   "",
   "",
-  "",
   "     ❯ ",
   "",
   "",
@@ -717,7 +702,6 @@ exports[`prompt when invalid input OR missing input > tty strip ansi 1`] = `
   "     ❯ foo",
   "
 ",
-  "",
   "
 ",
 ]
@@ -734,7 +718,6 @@ exports[`prompt when missing input > tty 1`] = `
 [
   "[2m[90m1/1[39m[22m  [32ma[39m
 ",
-  "[?25l",
   "",
   "[1G",
   "     ❯ ",
@@ -749,7 +732,6 @@ exports[`prompt when missing input > tty 1`] = `
   "     ❯ foo",
   "
 ",
-  "[?25h",
   "
 ",
 ]
@@ -761,7 +743,6 @@ exports[`prompt when missing input > tty strip ansi 1`] = `
 ",
   "",
   "",
-  "",
   "     ❯ ",
   "",
   "",
@@ -774,7 +755,6 @@ exports[`prompt when missing input > tty strip ansi 1`] = `
   "     ❯ foo",
   "
 ",
-  "",
   "
 ",
 ]
@@ -791,7 +771,6 @@ exports[`prompt when omitted > tty 1`] = `
 [
   "[2m[90m1/1[39m[22m  [32ma[39m[2m optional (press esc to skip)[22m
 ",
-  "[?25l",
   "",
   "[1G",
   "     ❯ ",
@@ -806,7 +785,6 @@ exports[`prompt when omitted > tty 1`] = `
   "     ❯ foo",
   "
 ",
-  "[?25h",
   "
 ",
 ]
@@ -818,7 +796,6 @@ exports[`prompt when omitted > tty strip ansi 1`] = `
 ",
   "",
   "",
-  "",
   "     ❯ ",
   "",
   "",
@@ -831,7 +808,6 @@ exports[`prompt when omitted > tty strip ansi 1`] = `
   "     ❯ foo",
   "
 ",
-  "",
   "
 ",
 ]
@@ -848,13 +824,11 @@ exports[`string > optional > when esc is pressed the question is skipped > tty 1
 [
   "[2m[90m1/1[39m[22m  [32ma[39m[2m optional (press esc to skip)[22m
 ",
-  "[?25l",
   "",
   "[1G",
   "     ❯ ",
   "
 ",
-  "[?25h",
   "
 ",
 ]
@@ -866,11 +840,9 @@ exports[`string > optional > when esc is pressed the question is skipped > tty s
 ",
   "",
   "",
-  "",
   "     ❯ ",
   "
 ",
-  "",
   "
 ",
 ]
@@ -887,13 +859,11 @@ exports[`string > optional > when nothing entered then value is undefined > tty 
 [
   "[2m[90m1/1[39m[22m  [32ma[39m[2m optional (press esc to skip)[22m
 ",
-  "[?25l",
   "",
   "[1G",
   "     ❯ ",
   "
 ",
-  "[?25h",
   "
 ",
 ]
@@ -905,11 +875,9 @@ exports[`string > optional > when nothing entered then value is undefined > tty 
 ",
   "",
   "",
-  "",
   "     ❯ ",
   "
 ",
-  "",
   "
 ",
 ]
