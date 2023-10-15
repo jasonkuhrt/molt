@@ -4,6 +4,7 @@ import { createEvent } from '../eventPatterns.js'
 import { Help } from '../Help/index.js'
 import { getLowerCaseEnvironment, lowerCaseObjectKeys } from '../helpers.js'
 import type { Settings } from '../index.js'
+import { Prompter } from '../lib/Prompter/index.js'
 import { OpeningArgs } from '../OpeningArgs/index.js'
 import type {
   ParseResultBasicError,
@@ -11,7 +12,7 @@ import type {
   ParseResultExclusiveGroupSupplied,
 } from '../OpeningArgs/OpeningArgs.js'
 import { match } from '../Pattern/Pattern.js'
-import { createStdioPrompter, prompt } from './prompt.js'
+import { prompt } from './prompt.js'
 import { Effect } from 'effect'
 
 export interface ParseProgressPostPromptAnnotation {
@@ -68,7 +69,7 @@ export const parse = (
   argInputs: RawArgInputs,
 ) => {
   const testDebuggingNoExit = process.env[`testing_molt`] === `true`
-  const argInputsTTY = argInputs?.tty ?? (process.stdout.isTTY ? createStdioPrompter() : null)
+  const argInputsTTY = argInputs?.tty ?? (process.stdout.isTTY ? Prompter.createProcessPrompter() : null)
   const argInputsLine = argInputs?.line ?? process.argv.slice(2)
   const argInputsEnvironment = argInputs?.environment
     ? lowerCaseObjectKeys(argInputs.environment)

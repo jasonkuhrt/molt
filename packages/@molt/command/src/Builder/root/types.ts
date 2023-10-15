@@ -1,6 +1,6 @@
 import type { CommandParameter } from '../../CommandParameter/index.js'
+import type { Prompter } from '../../lib/Prompter/Prompter.js'
 import type { OpeningArgs } from '../../OpeningArgs/index.js'
-import type { Prompter } from '../../parse/prompt.js'
 import type { Settings } from '../../Settings/index.js'
 import type {
   BuilderAfterSettings,
