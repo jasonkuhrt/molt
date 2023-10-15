@@ -208,14 +208,16 @@ namespace Inputs {
       // prettier-ignore
       if (!choice) throw new Error(`No choice selected. Enumeration must be empty. But enumerations should not be empty. This is a bug.`)
 
-      return createPrompter(params.channels).ask({
-        ...params,
-        parameter: {
-          ...parameter,
-          ...choice,
-        },
-        question: ``,
-      })
+      return yield* _(
+        createPrompter(params.channels).ask({
+          ...params,
+          parameter: {
+            ...parameter,
+            ...choice,
+          },
+          question: ``,
+        }),
+      )
     })
 
   export const boolean = (params: InputParams<Pam.Parameter<Pam.Type.Scalar.Boolean>>) =>
@@ -312,6 +314,7 @@ namespace Inputs {
       const marginLeftSpace = ` `.repeat(params.marginLeft ?? 0)
       const prompt = PromptEngine.create({
         channels: params.channels,
+        cursor: true,
         skippable: params.parameter.optionality._tag !== `required`,
         initialState,
         on: [
@@ -342,6 +345,7 @@ namespace Inputs {
       const marginLeftSpace = ` `.repeat(params.marginLeft ?? 0)
       const prompt = PromptEngine.create({
         channels: params.channels,
+        cursor: true,
         skippable: params.parameter.optionality._tag !== `required`,
         initialState,
         on: [
