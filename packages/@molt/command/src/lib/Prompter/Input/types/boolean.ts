@@ -37,7 +37,7 @@ export const boolean = (params: Params<Pam.Parameter<Pam.Type.Scalar.Boolean>>) 
         return marginLeftSpace + params.prompt + (state.answer ? yes : no)
       },
     })
-    const state = yield* _(prompt())
+    const state = yield* _(prompt)
     if (state === null) return undefined
     return state.answer
   })
