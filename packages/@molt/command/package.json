@@ -53,12 +53,12 @@
     "lodash.snakecase": "^4.1.1",
     "string-length": "^6.0.0",
     "strip-ansi": "^7.1.0",
-    "type-fest": "^4.4.0",
+    "type-fest": "^4.5.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@types/lodash.camelcase": "4.3.7",
-    "@types/lodash.snakecase": "^4.1.7",
+    "@types/lodash.camelcase": "4.3.8",
+    "@types/lodash.snakecase": "^4.1.8",
     "conditional-type-checks": "1.0.6",
     "execa": "8.0.1",
     "fast-glob": "3.3.1",
