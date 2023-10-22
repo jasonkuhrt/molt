@@ -45,8 +45,10 @@ export namespace PromptEngine {
 
   export const create = <State extends object, Skippable extends boolean>(
     params: Params<State, Skippable>,
-  ) => {
-    return (): Effect.Effect<never, never, Skippable extends true ? null | State : State> => {
+  ): Effect.Effect<never, never, Skippable extends true ? null | State : State> =>
+    Effect.gen(function* (_) {
+      type Ret = Skippable extends true ? null | State : State
+
       const args = {
         cursor: false,
         skippable: false,
@@ -90,33 +92,33 @@ export namespace PromptEngine {
       const initialState = args.initialState
       refresh(initialState)
 
-      return pipe(
-        channels.readKeyPresses(),
-        Stream.takeUntil((value) => !Exit.isExit(value) && args.skippable && value.name === `escape`),
-        Stream.takeUntil((value) => !Exit.isExit(value) && value.name === `return`),
-        Stream.runFold(initialState as State | null, (state, value): State | null => {
-          // todo do higher in the stack
-          if (Exit.isExit(value)) {
-            process.exit()
-          }
-          if (state === null) return null
-          if (args.skippable && value.name === `escape`) return null
-          if (value.name === `return`) return state
-          const matcher = matchers.find((matcher) =>
-            matcher.match.some((match) => isKeyPressMatchPattern(value, match ?? {})),
-          )
-          const newState = matcher?.run(state, value) ?? state
-          refresh(newState)
-          return newState
-        }),
-        // @ts-expect-error todo
-        Effect.tap(() => {
-          cleanup()
-          return Effect.unit
-        }),
+      return yield* _(
+        pipe(
+          channels.readKeyPresses(),
+          Stream.takeUntil((value) => !Exit.isExit(value) && args.skippable && value.name === `escape`),
+          Stream.takeUntil((value) => !Exit.isExit(value) && value.name === `return`),
+          Stream.runFold(initialState as Ret, (state, value): Ret => {
+            // todo do higher in the stack
+            if (Exit.isExit(value)) {
+              process.exit()
+            }
+            if (state === null) return null as Ret
+            if (args.skippable && value.name === `escape`) return null as Ret
+            if (value.name === `return`) return state
+            const matcher = matchers.find((matcher) =>
+              matcher.match.some((match) => isKeyPressMatchPattern(value, match ?? {})),
+            )
+            const newState = matcher?.run(state, value) ?? state
+            refresh(newState)
+            return newState as Ret
+          }),
+          Effect.tap(() => {
+            cleanup()
+            return Effect.unit
+          }),
+        ),
       )
-    }
-  }
+    })
 
   export interface Channels {
     output: (value: string) => void
