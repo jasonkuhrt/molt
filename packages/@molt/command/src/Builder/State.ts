@@ -40,7 +40,7 @@ export namespace State {
 
   // prettier-ignore
   export type ValidateNameExpression<State extends Base, NameExpression extends string> = 
-    FlagName.Errors.$Is<FlagName.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>> extends true
+    FlagName.IsParseError<FlagName.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>> extends true
         ? FlagName.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>
         : NameExpression
 
