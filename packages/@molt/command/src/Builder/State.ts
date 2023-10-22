@@ -20,7 +20,7 @@ export namespace State {
         Optional: boolean
         Parameters: {
           [canonicalName: string]: {
-            NameParsed: FlagName.Types.FlagNames
+            NameParsed: FlagName.Data.FlagNames
             NameUnion: string
             Schema: CommandParameter.SomeBasicType
           }
@@ -29,7 +29,7 @@ export namespace State {
     }
     Parameters: {
       [nameExpression: string]: {
-        NameParsed: FlagName.Types.FlagNames
+        NameParsed: FlagName.Data.FlagNames
         NameUnion: string
         Schema: CommandParameter.SomeBasicType
       }
@@ -161,7 +161,7 @@ export namespace State {
 
   // prettier-ignore
   export type ToSchema<Spec extends State.Base> = {
-    [K in keyof Spec['Parameters'] & string as FlagName.Types.GetCanonicalName<Spec['Parameters'][K]['NameParsed']>]:
+    [K in keyof Spec['Parameters'] & string as FlagName.Data.GetCanonicalName<Spec['Parameters'][K]['NameParsed']>]:
       Spec['Parameters'][K]['Schema']
   }
 }
