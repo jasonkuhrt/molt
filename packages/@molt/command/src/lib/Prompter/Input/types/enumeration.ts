@@ -41,7 +41,7 @@ export const enumeration = (params: Params<Pam.Parameter<Pam.Type.Scalar.Enumera
         )
       },
     })
-    const state = yield* _(prompt())
+    const state = yield* _(prompt)
 
     if (state === null) return undefined
 
