@@ -20,7 +20,7 @@ export namespace State {
         Optional: boolean
         Parameters: {
           [canonicalName: string]: {
-            NameParsed: FlagName.Types.FlagNames
+            NameParsed: FlagName.Data.FlagNames
             NameUnion: string
             Schema: CommandParameter.SomeBasicType
           }
@@ -29,7 +29,7 @@ export namespace State {
     }
     Parameters: {
       [nameExpression: string]: {
-        NameParsed: FlagName.Types.FlagNames
+        NameParsed: FlagName.Data.FlagNames
         NameUnion: string
         Schema: CommandParameter.SomeBasicType
       }
@@ -40,7 +40,7 @@ export namespace State {
 
   // prettier-ignore
   export type ValidateNameExpression<State extends Base, NameExpression extends string> = 
-    FlagName.Errors.$Is<FlagName.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>> extends true
+    FlagName.Data.IsParseError<FlagName.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>> extends true
         ? FlagName.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>
         : NameExpression
 
@@ -161,7 +161,7 @@ export namespace State {
 
   // prettier-ignore
   export type ToSchema<Spec extends State.Base> = {
-    [K in keyof Spec['Parameters'] & string as FlagName.Types.GetCanonicalName<Spec['Parameters'][K]['NameParsed']>]:
+    [K in keyof Spec['Parameters'] & string as FlagName.Data.GetCanonicalName<Spec['Parameters'][K]['NameParsed']>]:
       Spec['Parameters'][K]['Schema']
   }
 }
