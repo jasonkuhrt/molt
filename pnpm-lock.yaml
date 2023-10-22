@@ -165,10 +165,6 @@ importers:
         version: 1.0.4(vitest@0.34.6)
 
   packages/@molt/types:
-    dependencies:
-      ts-toolbelt:
-        specifier: ^9.6.0
-        version: 9.6.0
     devDependencies:
       conditional-type-checks:
         specifier: 1.0.6
