@@ -1,22 +1,19 @@
 export type SomeParseError = string
 
-export type SomeParseResult = SomeParseError | FlagNames
+export type SomeParseResult = SomeParseError | FlagName
 
 export type IsParseError<T extends SomeParseResult> = T extends SomeParseError ? true : false
 
 export type FlagName = {
-  long: string | undefined
-  short: string | undefined
-}
-
-export type FlagNames = FlagName & {
   aliases: {
     short: [...string[]]
     long: [...string[]]
   }
+  long: string | undefined
+  short: string | undefined
 }
 
-export type FlagNamesEmpty = {
+export type FlagNameEmpty = {
   aliases: {
     short: []
     long: []
@@ -29,7 +26,7 @@ export type FlagNamesEmpty = {
  * Get the canonical name of the flag. If there is a long name, it will be used. Otherwise, the short name will be used.
  */
 // prettier-ignore
-export type GetCanonicalName<Names extends FlagNames> =
+export type GetCanonicalName<Names extends FlagName> =
     Names['long']  extends string ? Names['long'] :
     Names['short'] extends string ? Names['short'] :
                                     never // A valid flag always has either a long or short name
@@ -39,7 +36,7 @@ export type GetCanonicalName<Names extends FlagNames> =
  */
 // prettier-ignore
 export type GetNamesFromParseResult<Names extends SomeParseResult> =
-  Names extends FlagNames ? (
+  Names extends FlagName ? (
                               | (Names['long']  extends undefined ? never : Names['long'])
                               | (Names['short'] extends undefined ? never : Names['short'])
                               | Names['aliases']['long'][number]
@@ -53,5 +50,5 @@ export type GetNamesFromParseResult<Names extends SomeParseResult> =
 // prettier-ignore
 export type GetCanonicalNameOrErrorFromParseResult<result extends SomeParseResult> = 
 	result extends string    ? result :
-  result extends FlagNames ? GetCanonicalName<result> :
+  result extends FlagName ? GetCanonicalName<result> :
                              never // Impossible, all union cases handled

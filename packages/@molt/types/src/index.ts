@@ -1,1 +1,1 @@
-export * as FlagName from './FlagName/index.js'
+export * as Name from './Name/index.js'
