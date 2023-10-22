@@ -26,9 +26,6 @@
   "keywords": [],
   "author": "Jason Kuhrt",
   "license": "MIT",
-  "dependencies": {
-    "ts-toolbelt": "^9.6.0"
-  },
   "devDependencies": {
     "conditional-type-checks": "1.0.6",
     "tsd": "0.29.0"

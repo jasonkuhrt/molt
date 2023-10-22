@@ -1,19 +1,18 @@
-import type { Str } from '../prelude.js'
+import type { Strings } from '../prelude.js'
 import type { FlagNames, FlagNamesEmpty } from './data.js'
-import type { String } from 'ts-toolbelt'
 
 // prettier-ignore
 export namespace Checks {
-	export type LongFlagTooShort<Name extends string> = String.Length<Name> extends 1 ? true : false
-	export type ShortFlagTooLong<Name extends string> = String.Length<Name> extends 1 ? false : true
-	export type AliasDuplicate<Names extends FlagNames, Name extends string> =  Str.KebabToCamelCase<Name> extends Names['long'] | Names['short'] ? true : false
+	export type LongFlagTooShort<Name extends string> = Strings.Length<Name> extends 1 ? true : false
+	export type ShortFlagTooLong<Name extends string> = Strings.Length<Name> extends 1 ? false : true
+	export type AliasDuplicate<Names extends FlagNames, Name extends string> =  Strings.KebabToCamelCase<Name> extends Names['long'] | Names['short'] ? true : false
 	export type NameAlreadyTaken<Limits extends SomeLimits, Name extends string> =
 		Limits['usedNames'] extends undefined 																											     ? false :
-		Str.KebabToCamelCase<Name> extends Str.KebabToCamelCase<Exclude<Limits['usedNames'], undefined>> ? true :
+		Strings.KebabToCamelCase<Name> extends Strings.KebabToCamelCase<Exclude<Limits['usedNames'], undefined>> ? true :
 																																																		   false
 	export type NameReserved<Limits extends SomeLimits, Name extends string> =
 		Limits['reservedNames'] extends undefined 																														? false :
-		Str.KebabToCamelCase<Name> extends Str.KebabToCamelCase<Exclude<Limits['reservedNames'], undefined>> 	? true :
+		Strings.KebabToCamelCase<Name> extends Strings.KebabToCamelCase<Exclude<Limits['reservedNames'], undefined>> 	? true :
 																																																						false
 }
 
@@ -49,11 +48,11 @@ export type DashPrefixedShortFlagNameChecks<name extends string, limits extends 
 	null
 
 // prettier-ignore
-type AddAliasLong<Names extends FlagNames, Name extends string> = Omit<Names, 'aliases'> & { aliases: { long: [...Names['aliases']['long'], Str.KebabToCamelCase<Name>], short: Names['aliases']['short'] }}
+type AddAliasLong<Names extends FlagNames, Name extends string> = Omit<Names, 'aliases'> & { aliases: { long: [...Names['aliases']['long'], Strings.KebabToCamelCase<Name>], short: Names['aliases']['short'] }}
 // prettier-ignore
 type AddAliasShort<Names extends FlagNames, Name extends string> = Omit<Names, 'aliases'> & { aliases: { long: Names['aliases']['long'], short: [...Names['aliases']['short'], Name] }}
 // prettier-ignore
-type AddLong<Names extends FlagNames, Name extends string> = Omit<Names, 'long'> & { long: Str.KebabToCamelCase<Name>  }
+type AddLong<Names extends FlagNames, Name extends string> = Omit<Names, 'long'> & { long: Strings.KebabToCamelCase<Name>  }
 // prettier-ignore
 type AddShort<Names extends FlagNames, Name extends string> = Omit<Names, 'short'> & { short: Name  }
 
@@ -111,7 +110,7 @@ type ParseFlagNameDo<E extends string, Limits extends SomeLimits, $Name extends 
 	// Capture a long flag & continue
 	E extends `${infer v} ${infer tail}`             	? BaseFlagNameChecks<v, Limits, $Name> extends string ?
 																														DashPrefixedLongFlagNameChecks<v, Limits, $Name> :
-																														String.Length<v> extends 1 ?
+																														Strings.Length<v> extends 1 ?
 																															$Name['short'] extends undefined ?
 																																ParseFlagNameDo<tail, Limits, AddShort<$Name, v>> :
 																																ParseFlagNameDo<tail, Limits, AddAliasShort<$Name, v>> :
@@ -122,7 +121,7 @@ type ParseFlagNameDo<E extends string, Limits extends SomeLimits, $Name extends 
 	// Capture a short name & Done!
   E extends `${infer v}`                           	? BaseFlagNameChecks<v, Limits, $Name> extends string ?
 																														DashPrefixedShortFlagNameChecks<v, Limits, $Name> :
-																														String.Length<v> extends 1 ?
+																														Strings.Length<v> extends 1 ?
 																															$Name['short'] extends undefined ?
 																																AddShort<$Name, v> :
 																																AddAliasShort<$Name, v> :
