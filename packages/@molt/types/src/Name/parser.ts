@@ -1,5 +1,5 @@
 import type { Strings } from '../prelude.js'
-import type { FlagName, FlagNameEmpty } from './data.js'
+import type { Name, NameEmpty } from './data.js'
 
 // prettier-ignore
 export namespace Checks {
@@ -9,8 +9,8 @@ export namespace Checks {
 	export type ShortTooLong<Variant extends string> =
 		Strings.Length<Variant> extends 1 ? false : true
 
-	export type AliasDuplicate<Names extends FlagName, Name extends string> =
-		Strings.KebabToCamelCase<Name> extends Names['long'] | Names['short'] ? true : false
+	export type AliasDuplicate<$Name extends Name, Variant extends string> =
+		Strings.KebabToCamelCase<Variant> extends $Name['long'] | $Name['short'] ? true : false
 
 	export type AlreadyTaken<Limits extends SomeLimits, Name extends string> =
 		Limits['usedNames'] extends undefined 																											     					? false :
@@ -35,32 +35,32 @@ export namespace Errors {
 }
 
 // prettier-ignore
-export type BaseFlagNameChecks<Variant extends string, limits extends SomeLimits, $FlagName extends FlagName> = 
+export type BaseFlagNameChecks<Variant extends string, limits extends SomeLimits, $FlagName extends Name> = 
 	Checks.AliasDuplicate<$FlagName, Variant>	extends true 	? Errors.AliasDuplicate<Variant> :
 	Checks.AlreadyTaken<limits, Variant> extends true 			? Errors.AlreadyTaken<Variant> :
 	Checks.Reserved<limits, Variant> extends true 					? Errors.Reserved<Variant> :
 																														null
 
 // prettier-ignore
-export type DashPrefixedLongFlagNameChecks<Variant extends string, limits extends SomeLimits, $FlagName extends FlagName> = 
+export type DashPrefixedLongFlagNameChecks<Variant extends string, limits extends SomeLimits, $FlagName extends Name> = 
 	BaseFlagNameChecks<Variant, limits, $FlagName> extends string 		? BaseFlagNameChecks<Variant, limits, $FlagName> :
-	Checks.LongTooShort<Variant> extends true 										? Errors.LongTooShort<Variant> :
-																															null
+	Checks.LongTooShort<Variant> extends true 												? Errors.LongTooShort<Variant> :
+																																			null
 
 // prettier-ignore
-export type DashPrefixedShortFlagNameChecks<Variant extends string, limits extends SomeLimits, $FlagName extends FlagName> = 
+export type DashPrefixedShortFlagNameChecks<Variant extends string, limits extends SomeLimits, $FlagName extends Name> = 
 	BaseFlagNameChecks<Variant, limits, $FlagName> extends string 	? BaseFlagNameChecks<Variant, limits, $FlagName> :
 	Checks.ShortTooLong<Variant> extends true 											? Errors.ShortTooLong<Variant> :
 																																		null
 
 // prettier-ignore
-type AddAliasLong<$FlagName extends FlagName, Variant extends string> = Omit<$FlagName, 'aliases'> & { aliases: { long: [...$FlagName['aliases']['long'], Strings.KebabToCamelCase<Variant>], short: $FlagName['aliases']['short'] }}
+type AddAliasLong<$FlagName extends Name, Variant extends string> = Omit<$FlagName, 'aliases'> & { aliases: { long: [...$FlagName['aliases']['long'], Strings.KebabToCamelCase<Variant>], short: $FlagName['aliases']['short'] }}
 // prettier-ignore
-type AddAliasShort<$FlagName extends FlagName, Variant extends string> = Omit<$FlagName, 'aliases'> & { aliases: { long: $FlagName['aliases']['long'], short: [...$FlagName['aliases']['short'], Variant] }}
+type AddAliasShort<$FlagName extends Name, Variant extends string> = Omit<$FlagName, 'aliases'> & { aliases: { long: $FlagName['aliases']['long'], short: [...$FlagName['aliases']['short'], Variant] }}
 // prettier-ignore
-type AddLong<$FlagName extends FlagName, Variant extends string> = Omit<$FlagName, 'long'> & { long: Strings.KebabToCamelCase<Variant>  }
+type AddLong<$FlagName extends Name, Variant extends string> = Omit<$FlagName, 'long'> & { long: Strings.KebabToCamelCase<Variant>  }
 // prettier-ignore
-type AddShort<$FlagName extends FlagName, Variant extends string> = Omit<$FlagName, 'short'> & { short: Variant  }
+type AddShort<$FlagName extends Name, Variant extends string> = Omit<$FlagName, 'short'> & { short: Variant  }
 
 type SomeLimits = {
   reservedNames: string | undefined
@@ -75,13 +75,13 @@ type SomeLimitsNone = {
 export type Parse<
   E extends string,
   limits extends SomeLimits = SomeLimitsNone,
-  names extends FlagName = FlagNameEmpty,
+  names extends Name = NameEmpty,
 > = _Parse<E, limits, names>
 
 //prettier-ignore
-type _Parse<E extends string, Limits extends SomeLimits, $FlagName extends FlagName> =
+type _Parse<E extends string, Limits extends SomeLimits, $FlagName extends Name> =
 	// Done!
-	E extends ``                                         	? FlagNameEmpty extends $FlagName ? Errors.Empty : $FlagName :
+	E extends ``                                         	? NameEmpty extends $FlagName ? Errors.Empty : $FlagName :
 
 	// Trim leading and trailing whitespace
 	E extends ` ${infer tail}`                           	? _Parse<tail, Limits, $FlagName> :

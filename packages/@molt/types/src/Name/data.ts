@@ -1,10 +1,10 @@
 export type SomeParseError = string
 
-export type SomeParseResult = SomeParseError | FlagName
+export type SomeParseResult = SomeParseError | Name
 
 export type IsParseError<T extends SomeParseResult> = T extends SomeParseError ? true : false
 
-export type FlagName = {
+export type Name = {
   aliases: {
     short: [...string[]]
     long: [...string[]]
@@ -13,7 +13,7 @@ export type FlagName = {
   short: string | undefined
 }
 
-export type FlagNameEmpty = {
+export type NameEmpty = {
   aliases: {
     short: []
     long: []
@@ -26,7 +26,7 @@ export type FlagNameEmpty = {
  * Get the canonical name of the flag. If there is a long name, it will be used. Otherwise, the short name will be used.
  */
 // prettier-ignore
-export type GetCanonicalName<Names extends FlagName> =
+export type GetCanonicalName<Names extends Name> =
     Names['long']  extends string ? Names['long'] :
     Names['short'] extends string ? Names['short'] :
                                     never // A valid flag always has either a long or short name
@@ -36,7 +36,7 @@ export type GetCanonicalName<Names extends FlagName> =
  */
 // prettier-ignore
 export type GetNamesFromParseResult<Names extends SomeParseResult> =
-  Names extends FlagName ? (
+  Names extends Name ? (
                               | (Names['long']  extends undefined ? never : Names['long'])
                               | (Names['short'] extends undefined ? never : Names['short'])
                               | Names['aliases']['long'][number]
@@ -50,5 +50,5 @@ export type GetNamesFromParseResult<Names extends SomeParseResult> =
 // prettier-ignore
 export type GetCanonicalNameOrErrorFromParseResult<result extends SomeParseResult> = 
 	result extends string    ? result :
-  result extends FlagName ? GetCanonicalName<result> :
+  result extends Name ? GetCanonicalName<result> :
                              never // Impossible, all union cases handled

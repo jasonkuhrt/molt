@@ -20,7 +20,7 @@ export namespace State {
         Optional: boolean
         Parameters: {
           [canonicalName: string]: {
-            NameParsed: Name.Data.FlagNames
+            NameParsed: Name.Data.Name
             NameUnion: string
             Schema: CommandParameter.SomeBasicType
           }
@@ -29,7 +29,7 @@ export namespace State {
     }
     Parameters: {
       [nameExpression: string]: {
-        NameParsed: Name.Data.FlagNames
+        NameParsed: Name.Data.Name
         NameUnion: string
         Schema: CommandParameter.SomeBasicType
       }
