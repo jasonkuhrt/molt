@@ -19,7 +19,6 @@ export namespace Checks {
 
 // prettier-ignore
 export namespace Errors {
-	export type $Is<T> = T extends string ? Str.StartsWith<'Error: ', T> : false
 	export type LongFlagTooShort<Given extends string> = `Error: A long flag must be two (2) or more characters but you have: '--${Given}'.`
 	export type ShortFlagTooLong<Given extends string> = `Error: A short flag must be exactly one (1) character but you have: '-${Given}'.`
 	export type TrailingPipe = `Error: You have a trailing pipe. Pipes are for adding aliases. Add more names after your pipe or remove it.`
@@ -39,13 +38,13 @@ export type BaseFlagNameChecks<name extends string, limits extends SomeLimits, n
 
 // prettier-ignore
 export type DashPrefixedLongFlagNameChecks<name extends string, limits extends SomeLimits, names extends FlagNames> = 
-	Errors.$Is<BaseFlagNameChecks<name, limits, names>> extends true ? BaseFlagNameChecks<name, limits, names> :
+	BaseFlagNameChecks<name, limits, names> extends string ? BaseFlagNameChecks<name, limits, names> :
 	Checks.LongFlagTooShort<name>                       extends true ? Errors.LongFlagTooShort<name> :
 	null
 
 // prettier-ignore
 export type DashPrefixedShortFlagNameChecks<name extends string, limits extends SomeLimits, names extends FlagNames> = 
-	Errors.$Is<BaseFlagNameChecks<name, limits, names>> extends true ? BaseFlagNameChecks<name, limits, names> :
+	BaseFlagNameChecks<name, limits, names> extends string ? BaseFlagNameChecks<name, limits, names> :
 	Checks.ShortFlagTooLong<name>                       extends true ? Errors.ShortFlagTooLong<name> :
 	null
 
@@ -75,60 +74,60 @@ export type Parse<
 > = ParseFlagNameDo<E, limits, names>
 
 //prettier-ignore
-type ParseFlagNameDo<E extends string, limits extends SomeLimits, names extends FlagNames> =
+type ParseFlagNameDo<E extends string, Limits extends SomeLimits, $Name extends FlagNames> =
 	// Done!
-	E extends ``                                         	? FlagNamesEmpty extends names ? Errors.Empty : names :
+	E extends ``                                         	? FlagNamesEmpty extends $Name ? Errors.Empty : $Name :
 
 	// Trim leading and trailing whitespace
-	E extends ` ${infer tail}`                           	? ParseFlagNameDo<tail, limits, names> :
-	E extends `${infer initial} `                        	? ParseFlagNameDo<initial, limits, names> :
+	E extends ` ${infer tail}`                           	? ParseFlagNameDo<tail, Limits, $Name> :
+	E extends `${infer initial} `                        	? ParseFlagNameDo<initial, Limits, $Name> :
 
 	// Capture a long flag & continue
-	E extends `--${infer name} ${infer tail}`            	? Errors.$Is<DashPrefixedLongFlagNameChecks<name, limits, names>> extends true ?
-																												 	DashPrefixedLongFlagNameChecks<name, limits, names> :
-																												 	names['long'] extends undefined ?
-																												 		ParseFlagNameDo<tail, limits, AddLong<names, name>> :
-																												 	 	ParseFlagNameDo<tail, limits, AddAliasLong<names, name>> :
+	E extends `--${infer v} ${infer tail}`            	? DashPrefixedLongFlagNameChecks<v, Limits, $Name> extends string ?
+																												 	DashPrefixedLongFlagNameChecks<v, Limits, $Name> :
+																												 	$Name['long'] extends undefined ?
+																												 		ParseFlagNameDo<tail, Limits, AddLong<$Name, v>> :
+																												 	 	ParseFlagNameDo<tail, Limits, AddAliasLong<$Name, v>> :
 	// Capture a long name & Done!
-	E extends `--${infer name}` 							          	? Errors.$Is<DashPrefixedLongFlagNameChecks<name, limits, names>> extends true ?
-																														DashPrefixedLongFlagNameChecks<name, limits, names> :
-																														names['long'] extends undefined ?
-																															AddLong<names, name> :
-																															AddAliasLong<names, name> :
+	E extends `--${infer v}` 							          	? DashPrefixedLongFlagNameChecks<v, Limits, $Name> extends string ?
+																														DashPrefixedLongFlagNameChecks<v, Limits, $Name> :
+																														$Name['long'] extends undefined ?
+																															AddLong<$Name, v> :
+																															AddAliasLong<$Name, v> :
 
 	// Capture a short flag & continue
-	E extends `-${infer name} ${infer tail}`            	? Errors.$Is<DashPrefixedShortFlagNameChecks<name, limits, names>> extends true ?
-																														DashPrefixedShortFlagNameChecks<name, limits, names> :
-																														names['short'] extends undefined ?
-																															ParseFlagNameDo<tail, limits, AddShort<names, name>> :
-																															ParseFlagNameDo<tail, limits, AddAliasShort<names, name>> :
+	E extends `-${infer v} ${infer tail}`            	? DashPrefixedShortFlagNameChecks<v, Limits, $Name> extends string ?
+																														DashPrefixedShortFlagNameChecks<v, Limits, $Name> :
+																														$Name['short'] extends undefined ?
+																															ParseFlagNameDo<tail, Limits, AddShort<$Name, v>> :
+																															ParseFlagNameDo<tail, Limits, AddAliasShort<$Name, v>> :
 	// Capture a short name & Done!
-	E extends `-${infer name}` 							            	? Errors.$Is<DashPrefixedShortFlagNameChecks<name, limits, names>> extends true ?
-																														DashPrefixedShortFlagNameChecks<name, limits, names> :
-																														names['short'] extends undefined ?
-																															AddShort<names, name> :
-																															AddAliasShort<names, name> :
+	E extends `-${infer v}` 							            	? DashPrefixedShortFlagNameChecks<v, Limits, $Name> extends string ?
+																														DashPrefixedShortFlagNameChecks<v, Limits, $Name> :
+																														$Name['short'] extends undefined ?
+																															AddShort<$Name, v> :
+																															AddAliasShort<$Name, v> :
 
 	// Capture a long flag & continue
-	E extends `${infer name} ${infer tail}`             	? Errors.$Is<BaseFlagNameChecks<name, limits, names>> extends true ?
-																														DashPrefixedLongFlagNameChecks<name, limits, names> :
-																														String.Length<name> extends 1 ?
-																															names['short'] extends undefined ?
-																																ParseFlagNameDo<tail, limits, AddShort<names, name>> :
-																																ParseFlagNameDo<tail, limits, AddAliasShort<names, name>> :
-																															names['long'] extends undefined ?
-																																ParseFlagNameDo<tail, limits, AddLong<names, name>> :
-																																ParseFlagNameDo<tail, limits, AddAliasLong<names, name>> :
+	E extends `${infer v} ${infer tail}`             	? BaseFlagNameChecks<v, Limits, $Name> extends string ?
+																														DashPrefixedLongFlagNameChecks<v, Limits, $Name> :
+																														String.Length<v> extends 1 ?
+																															$Name['short'] extends undefined ?
+																																ParseFlagNameDo<tail, Limits, AddShort<$Name, v>> :
+																																ParseFlagNameDo<tail, Limits, AddAliasShort<$Name, v>> :
+																															$Name['long'] extends undefined ?
+																																ParseFlagNameDo<tail, Limits, AddLong<$Name, v>> :
+																																ParseFlagNameDo<tail, Limits, AddAliasLong<$Name, v>> :
 
 	// Capture a short name & Done!
-  E extends `${infer name}`                           	? Errors.$Is<BaseFlagNameChecks<name, limits, names>> extends true ?
-																														DashPrefixedShortFlagNameChecks<name, limits, names> :
-																														String.Length<name> extends 1 ?
-																															names['short'] extends undefined ?
-																																AddShort<names, name> :
-																																AddAliasShort<names, name> :
-																															names['long'] extends undefined ?
-																																AddLong<names, name> :
-																																AddAliasLong<names, name> :
+  E extends `${infer v}`                           	? BaseFlagNameChecks<v, Limits, $Name> extends string ?
+																														DashPrefixedShortFlagNameChecks<v, Limits, $Name> :
+																														String.Length<v> extends 1 ?
+																															$Name['short'] extends undefined ?
+																																AddShort<$Name, v> :
+																																AddAliasShort<$Name, v> :
+																															$Name['long'] extends undefined ?
+																																AddLong<$Name, v> :
+																																AddAliasLong<$Name, v> :
 
 	Errors.Unknown
