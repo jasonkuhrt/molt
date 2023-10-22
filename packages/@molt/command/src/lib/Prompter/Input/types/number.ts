@@ -28,7 +28,7 @@ export const number = (params: Params<Pam.Parameter<Pam.Type.Scalar.Number>>) =>
         return marginLeftSpace + params.prompt + state.value
       },
     })
-    const state = yield* _(prompt())
+    const state = yield* _(prompt)
     if (state === null) return undefined
     if (state.value === ``) return undefined
     const valueParsed = parseFloat(state.value)

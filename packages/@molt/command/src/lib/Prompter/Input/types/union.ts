@@ -59,7 +59,7 @@ export const union = (params: Params<Pam.Parameter<Pam.Type.Union>>) =>
       },
     })
 
-    const state = yield* _(prompt())
+    const state = yield* _(prompt)
 
     if (state === null) return undefined
 

@@ -1,6 +1,6 @@
 import type { CommandParameter } from '../../CommandParameter/index.js'
+import { parse } from '../../executor/parse.js'
 import { getLowerCaseEnvironment, lowerCaseObjectKeys } from '../../helpers.js'
-import { parse } from '../../parse/parse.js'
 import { Settings } from '../../Settings/index.js'
 import * as ExclusiveBuilder from '../exclusive/constructor.js'
 import type { ParameterConfiguration, RawArgInputs, RootBuilder } from './types.js'
