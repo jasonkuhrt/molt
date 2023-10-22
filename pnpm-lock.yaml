@@ -120,6 +120,9 @@ importers:
       effect:
         specifier: 2.0.0-next.48
         version: 2.0.0-next.48
+      hotscript:
+        specifier: ^1.0.13
+        version: 1.0.13
       lodash.camelcase:
         specifier: ^4.3.0
         version: 4.3.0
@@ -169,9 +172,15 @@ importers:
 
   packages/@molt/types:
     dependencies:
+      hotscript:
+        specifier: ^1.0.13
+        version: 1.0.13
       ts-toolbelt:
         specifier: ^9.6.0
         version: 9.6.0
+      type-fest:
+        specifier: ^4.4.0
+        version: 4.4.0
     devDependencies:
       conditional-type-checks:
         specifier: 1.0.6
@@ -1869,6 +1878,10 @@ packages:
     dependencies:
       lru-cache: 6.0.0
     dev: true
+
+  /hotscript@1.0.13:
+    resolution: {integrity: sha512-C++tTF1GqkGYecL+2S1wJTfoH6APGAsbb7PAWQ3iVIwgG/EFseAfEVOKFgAFq4yK3+6j1EjUD4UQ9dRJHX/sSQ==}
+    dev: false
 
   /human-signals@5.0.0:
     resolution: {integrity: sha512-AXcZb6vzzrFAUE61HnN4mpLqd/cSIwNQjtNWR0euPm6y0iqx3G4gOXaIDdtdDwZmhwe82LA6+zinmW4UBWVePQ==}

@@ -1,9 +1,9 @@
 import type { Settings } from '../../../index.js'
+import { parseExpression } from '../../../Parameter/name/name.js'
+import { analyzeZodType } from '../../../TypeAdaptors/zod/helpers.js'
 import type { Input } from '../../input.js'
 import type { Output } from '../../output.js'
-import { processEnvironment } from '../helpers/environment.js'
-import { processName } from '../helpers/name.js'
-import { analyzeZodType } from '../helpers/zod.js'
+import { processEnvironment } from '../environment.js'
 import { Alge } from 'alge'
 
 export const processExclusive = (
@@ -12,7 +12,7 @@ export const processExclusive = (
   settings: Settings.Output,
 ): Output.Exclusive[] => {
   const parameters = input.parameters.map((_) => {
-    const name = processName(_.nameExpression)
+    const name = parseExpression(_.nameExpression)
     const environment = processEnvironment(settings, name)
     const typeAnalysis = analyzeZodType(_.type)
     return {

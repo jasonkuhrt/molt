@@ -1,6 +1,6 @@
 import type { Pam } from '../lib/Pam/index.js'
 
-export * from './zod.js'
+export * from '../TypeAdaptors/zod/types.js'
 
 export type ArgumentValueMutuallyExclusive = {
   _tag: string

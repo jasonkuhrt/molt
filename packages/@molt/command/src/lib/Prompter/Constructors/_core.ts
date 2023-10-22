@@ -1,4 +1,5 @@
-import type { Pam } from '../../Pam/index.js'
+import type { Parameter } from '../../../Parameter/Parameter.js'
+import type { Type } from '../../../Type/index.js'
 import type { PromptEngine } from '../../PromptEngine/PromptEngine.js'
 import { Text } from '../../Text/index.js'
 import { inputForParameter } from '../Input/_core.js'
@@ -13,12 +14,12 @@ export interface Prompter {
    * Receive input from the user.
    * TODO remove prompt config from here.
    */
-  ask: <T extends Pam.Type>(params: {
-    parameter: Pam.Parameter<T>
+  ask: <T extends Type.Type>(params: {
+    parameter: Parameter.BuilderState
     prompt: string
     question: string
     marginLeft?: number
-  }) => Effect.Effect<never, never, Pam.TypeToValueMapping<T>>
+  }) => Effect.Effect<never, never, Type.Infer<T>>
 }
 
 export const create = (channels: PromptEngine.Channels): Prompter => {

@@ -27,7 +27,9 @@
   "author": "Jason Kuhrt",
   "license": "MIT",
   "dependencies": {
-    "ts-toolbelt": "^9.6.0"
+    "hotscript": "^1.0.13",
+    "ts-toolbelt": "^9.6.0",
+    "type-fest": "^4.4.0"
   },
   "devDependencies": {
     "conditional-type-checks": "1.0.6",

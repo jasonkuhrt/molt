@@ -6,7 +6,7 @@
   "tsBuildInfoFile": "node_modules/.cache/.tsbuildinfo",
   // Prevent auto-import from build
   "exclude": ["./build"],
-  "include": ["./src", "./tests"],
+  "include": ["./src", "./tests", "examples/prompt.ts"],
   "references": [
     {
       "path": "../types"

@@ -5,7 +5,6 @@ export * from './transform.js'
 export * from './types.js'
 export * from './validate.js'
 import { stripeNegatePrefix } from '../helpers.js'
-import type { Pam } from '../lib/Pam/index.js'
 import type { Output } from './output.js'
 
 export const findByName = (name: string, specs: Output[]): null | Output => {
@@ -14,17 +13,6 @@ export const findByName = (name: string, specs: Output[]): null | Output => {
     if (result !== null) return spec
   }
   return null
-}
-/**
- * Get all the names of a parameter in array form.
- */
-export const getNames = (spec: Output): [string, ...string[]] => {
-  return [
-    ...spec.name.aliases.long,
-    ...spec.name.aliases.short,
-    ...(spec.name.long === null ? [] : [spec.name.long]),
-    ...(spec.name.short === null ? [] : [spec.name.short]),
-  ] as [string, ...string[]]
 }
 
 type NameHit =

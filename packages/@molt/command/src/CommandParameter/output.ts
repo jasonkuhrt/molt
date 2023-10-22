@@ -1,5 +1,6 @@
 import type { EventPatternsInput } from '../eventPatterns.js'
-import type { Pam } from '../lib/Pam/index.js'
+import type { Parameter } from '../Parameter/Parameter.js'
+import type { Type } from '../Type/index.js'
 import type { CommandParameter } from './index.js'
 
 export type Output = Output.Exclusive | Output.Basic //| Output.Union
@@ -10,7 +11,7 @@ export namespace Output {
     when: EventPatternsInput<S> | null
   }
 
-  export interface Basic extends Omit<Pam.Parameter, '_tag'> {
+  export interface Basic extends Omit<Parameter, '_tag'> {
     _tag: 'Basic'
     environment: Environment
     prompt: Prompt
@@ -24,7 +25,7 @@ export namespace Output {
   export interface Exclusive {
     _tag: 'Exclusive'
     name: Name
-    type: Pam.Type
+    type: Type.Type
     description: string | null
     environment: Environment
     group: ExclusiveGroup

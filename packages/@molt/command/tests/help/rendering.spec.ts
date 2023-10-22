@@ -1,4 +1,4 @@
-import type { RootBuilder } from '../../src/Builder/root/types.js'
+import type { RootBuilder } from '../../src/Command/root/types.js'
 import { Command } from '../../src/index.js'
 import { s } from '../_/helpers.js'
 import { createState } from '../environment/__helpers__.js'

@@ -1,2 +1,2 @@
-export { create } from './Builder/root/constructor.js'
+export { create } from './Command/constructor.js'
 export { eventPatterns } from './eventPatterns.js'

@@ -1,25 +1,26 @@
-import type { Str } from '../prelude.js'
 import type { FlagNames, FlagNamesEmpty } from './data.js'
+import type { $, Objects, Strings } from 'hotscript'
 import type { String } from 'ts-toolbelt'
+import type { Simplify } from 'type-fest'
 
 // prettier-ignore
 export namespace Checks {
 	export type LongFlagTooShort<Name extends string> = String.Length<Name> extends 1 ? true : false
 	export type ShortFlagTooLong<Name extends string> = String.Length<Name> extends 1 ? false : true
-	export type AliasDuplicate<Names extends FlagNames, Name extends string> =  Str.KebabToCamelCase<Name> extends Names['long'] | Names['short'] ? true : false
+	export type AliasDuplicate<Names extends FlagNames, Name extends string> =  $<Strings.CamelCase, Name> extends Names['long'] | Names['short'] ? true : false
 	export type NameAlreadyTaken<Limits extends SomeLimits, Name extends string> =
 		Limits['usedNames'] extends undefined 																											     ? false :
-		Str.KebabToCamelCase<Name> extends Str.KebabToCamelCase<Exclude<Limits['usedNames'], undefined>> ? true :
+		$<Strings.CamelCase,Name> extends $<Strings.CamelCase, Exclude<Limits['usedNames'], undefined>> ? true :
 																																																		   false
 	export type NameReserved<Limits extends SomeLimits, Name extends string> =
 		Limits['reservedNames'] extends undefined 																														? false :
-		Str.KebabToCamelCase<Name> extends Str.KebabToCamelCase<Exclude<Limits['reservedNames'], undefined>> 	? true :
+		$<Strings.CamelCase,Name> extends $<Strings.CamelCase, Exclude<Limits['reservedNames'], undefined>> 	? true :
 																																																						false
 }
 
 // prettier-ignore
 export namespace Errors {
-	export type $Is<T> = T extends string ? Str.StartsWith<'Error: ', T> : false
+	export type $Is<T> = T extends string ? $<Strings.StartsWith<'Error: '>, T> : false
 	export type LongFlagTooShort<Given extends string> = `Error: A long flag must be two (2) or more characters but you have: '--${Given}'.`
 	export type ShortFlagTooLong<Given extends string> = `Error: A short flag must be exactly one (1) character but you have: '-${Given}'.`
 	export type TrailingPipe = `Error: You have a trailing pipe. Pipes are for adding aliases. Add more names after your pipe or remove it.`
@@ -50,13 +51,17 @@ export type DashPrefixedShortFlagNameChecks<name extends string, limits extends 
 	null
 
 // prettier-ignore
-type AddAliasLong<Names extends FlagNames, Name extends string> = Omit<Names, 'aliases'> & { aliases: { long: [...Names['aliases']['long'], Str.KebabToCamelCase<Name>], short: Names['aliases']['short'] }}
+type AddAliasLong<Names extends FlagNames, Name extends string> =
+	$<Objects.Update<'aliases.long', [...Names['aliases']['long'], $<Strings.CamelCase,Name>], Names>>
 // prettier-ignore
-type AddAliasShort<Names extends FlagNames, Name extends string> = Omit<Names, 'aliases'> & { aliases: { long: Names['aliases']['long'], short: [...Names['aliases']['short'], Name] }}
+type AddAliasShort<Names extends FlagNames, Name extends string> =
+	$<Objects.Update<'aliases.short', [...Names['aliases']['short'], Name], Names>>
 // prettier-ignore
-type AddLong<Names extends FlagNames, Name extends string> = Omit<Names, 'long'> & { long: Str.KebabToCamelCase<Name>  }
+type AddLong<Names extends FlagNames, Name extends string> =
+	$<Objects.Update<'long', $<Strings.CamelCase,Name>, Names>>
 // prettier-ignore
-type AddShort<Names extends FlagNames, Name extends string> = Omit<Names, 'short'> & { short: Name  }
+type AddShort<Names extends FlagNames, Name extends string> =
+	$<Objects.Update<'short', Name, Names>>
 
 type SomeLimits = {
   reservedNames: string | undefined
@@ -68,6 +73,8 @@ type SomeLimitsNone = {
   usedNames: undefined
 }
 
+type AddCanonical<Names extends FlagNames> = $<Objects.Update<'canonical', GetCanonicalName<Names>, Names>>
+
 export type Parse<
   E extends string,
   limits extends SomeLimits = SomeLimitsNone,
@@ -75,9 +82,9 @@ export type Parse<
 > = ParseFlagNameDo<E, limits, names>
 
 //prettier-ignore
-type ParseFlagNameDo<E extends string, limits extends SomeLimits, names extends FlagNames> =
+type ParseFlagNameDo<E extends string, limits extends SomeLimits, names extends FlagNames> = Simplify<
 	// Done!
-	E extends ``                                         	? FlagNamesEmpty extends names ? Errors.Empty : names :
+	E extends ``                                         	? FlagNamesEmpty extends names ? Errors.Empty : AddCanonical<names> :
 
 	// Trim leading and trailing whitespace
 	E extends ` ${infer tail}`                           	? ParseFlagNameDo<tail, limits, names> :
@@ -86,37 +93,37 @@ type ParseFlagNameDo<E extends string, limits extends SomeLimits, names extends 
 	// Capture a long flag & continue
 	E extends `--${infer name} ${infer tail}`            	? Errors.$Is<DashPrefixedLongFlagNameChecks<name, limits, names>> extends true ?
 																												 	DashPrefixedLongFlagNameChecks<name, limits, names> :
-																												 	names['long'] extends undefined ?
+																												 	names['long'] extends null ?
 																												 		ParseFlagNameDo<tail, limits, AddLong<names, name>> :
 																												 	 	ParseFlagNameDo<tail, limits, AddAliasLong<names, name>> :
 	// Capture a long name & Done!
 	E extends `--${infer name}` 							          	? Errors.$Is<DashPrefixedLongFlagNameChecks<name, limits, names>> extends true ?
 																														DashPrefixedLongFlagNameChecks<name, limits, names> :
-																														names['long'] extends undefined ?
-																															AddLong<names, name> :
-																															AddAliasLong<names, name> :
+																														names['long'] extends null ?
+																															ParseFlagNameDo<'', limits,AddLong<names, name>> :
+																															ParseFlagNameDo<'', limits,AddAliasLong<names, name>> :
 
 	// Capture a short flag & continue
 	E extends `-${infer name} ${infer tail}`            	? Errors.$Is<DashPrefixedShortFlagNameChecks<name, limits, names>> extends true ?
 																														DashPrefixedShortFlagNameChecks<name, limits, names> :
-																														names['short'] extends undefined ?
+																														names['short'] extends null ?
 																															ParseFlagNameDo<tail, limits, AddShort<names, name>> :
 																															ParseFlagNameDo<tail, limits, AddAliasShort<names, name>> :
 	// Capture a short name & Done!
 	E extends `-${infer name}` 							            	? Errors.$Is<DashPrefixedShortFlagNameChecks<name, limits, names>> extends true ?
 																														DashPrefixedShortFlagNameChecks<name, limits, names> :
-																														names['short'] extends undefined ?
-																															AddShort<names, name> :
-																															AddAliasShort<names, name> :
+																														names['short'] extends null ?
+																															ParseFlagNameDo<'', limits, AddShort<names, name>> :
+																															ParseFlagNameDo<'', limits, AddAliasShort<names, name>> :
 
 	// Capture a long flag & continue
 	E extends `${infer name} ${infer tail}`             	? Errors.$Is<BaseFlagNameChecks<name, limits, names>> extends true ?
 																														DashPrefixedLongFlagNameChecks<name, limits, names> :
 																														String.Length<name> extends 1 ?
-																															names['short'] extends undefined ?
+																															names['short'] extends null ?
 																																ParseFlagNameDo<tail, limits, AddShort<names, name>> :
 																																ParseFlagNameDo<tail, limits, AddAliasShort<names, name>> :
-																															names['long'] extends undefined ?
+																															names['long'] extends null ?
 																																ParseFlagNameDo<tail, limits, AddLong<names, name>> :
 																																ParseFlagNameDo<tail, limits, AddAliasLong<names, name>> :
 
@@ -124,11 +131,21 @@ type ParseFlagNameDo<E extends string, limits extends SomeLimits, names extends 
   E extends `${infer name}`                           	? Errors.$Is<BaseFlagNameChecks<name, limits, names>> extends true ?
 																														DashPrefixedShortFlagNameChecks<name, limits, names> :
 																														String.Length<name> extends 1 ?
-																															names['short'] extends undefined ?
-																																AddShort<names, name> :
-																																AddAliasShort<names, name> :
-																															names['long'] extends undefined ?
-																																AddLong<names, name> :
-																																AddAliasLong<names, name> :
+																															names['short'] extends null ?
+																																ParseFlagNameDo<'', limits, AddShort<names, name>> :
+																																ParseFlagNameDo<'', limits, AddAliasShort<names, name>> :
+																															names['long'] extends null ?
+																																ParseFlagNameDo<'', limits, AddLong<names, name>> :
+																																ParseFlagNameDo<'', limits, AddAliasLong<names, name>> :
 
 	Errors.Unknown
+	>
+
+/**
+ * Get the canonical name of the flag. If there is a long name, it will be used. Otherwise, the short name will be used.
+ */
+// prettier-ignore
+type GetCanonicalName<Names extends FlagNames> =
+    Names['long']  extends string ? Names['long'] :
+    Names['short'] extends string ? Names['short'] :
+                                    never // A valid flag always has either a long or short name
