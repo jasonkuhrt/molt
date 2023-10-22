@@ -5,7 +5,7 @@ import { eventPatterns } from '../eventPatterns.js'
 import type { Values } from '../helpers.js'
 import { parseEnvironmentVariableBooleanOrThrow } from '../helpers.js'
 import { defaultParameterNamePrefixes } from '../OpeningArgs/Environment/Environment.js'
-import type { FlagName } from '@molt/types'
+import type { Name } from '@molt/types'
 import snakeCase from 'lodash.snakecase'
 
 export type OnErrorReaction = 'exit' | 'throw'
@@ -37,7 +37,7 @@ export interface Input<ParametersObject extends State.ParametersSchemaObjectBase
     environment?:
       | boolean
       | ({
-          [FlagSpecExpression in keyof ParametersObject as FlagName.Data.GetCanonicalNameOrErrorFromParseResult<FlagName.Parse<FlagSpecExpression & string>>]?: boolean | SettingInputEnvironmentParameter
+          [FlagSpecExpression in keyof ParametersObject as Name.Data.GetCanonicalNameOrErrorFromParseResult<Name.Parse<FlagSpecExpression & string>>]?: boolean | SettingInputEnvironmentParameter
         } & {
           $default?: boolean | SettingInputEnvironmentParameter
         })

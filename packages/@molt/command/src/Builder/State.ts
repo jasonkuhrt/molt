@@ -2,7 +2,7 @@ import type { CommandParameter } from '../CommandParameter/index.js'
 import type { Values } from '../helpers.js'
 import type { ExclusiveParameterConfiguration } from './exclusive/types.js'
 import type { ParameterConfiguration } from './root/types.js'
-import type { FlagName } from '@molt/types'
+import type { Name } from '@molt/types'
 import type { Simplify } from 'type-fest'
 import type { z } from 'zod'
 
@@ -20,7 +20,7 @@ export namespace State {
         Optional: boolean
         Parameters: {
           [canonicalName: string]: {
-            NameParsed: FlagName.Data.FlagNames
+            NameParsed: Name.Data.Name
             NameUnion: string
             Schema: CommandParameter.SomeBasicType
           }
@@ -29,7 +29,7 @@ export namespace State {
     }
     Parameters: {
       [nameExpression: string]: {
-        NameParsed: FlagName.Data.FlagNames
+        NameParsed: Name.Data.Name
         NameUnion: string
         Schema: CommandParameter.SomeBasicType
       }
@@ -40,8 +40,8 @@ export namespace State {
 
   // prettier-ignore
   export type ValidateNameExpression<State extends Base, NameExpression extends string> = 
-    FlagName.Data.IsParseError<FlagName.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>> extends true
-        ? FlagName.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>
+    Name.Data.IsParseError<Name.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>> extends true
+        ? Name.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>
         : NameExpression
 
   export type GetUsedNames<State extends Base> = Values<State['Parameters']>['NameUnion']
@@ -94,11 +94,11 @@ export namespace State {
         Optional: State['ParametersExclusive'][_]['Optional']
         Parameters: {
           // @ts-expect-error - Trust the name expression here...
-          [_ in NameExpression as FlagName.Data.GetCanonicalName<FlagName.Parse<NameExpression>>]: {
+          [_ in NameExpression as Name.Data.GetCanonicalName<Name.Parse<NameExpression>>]: {
             Schema: Configuration['schema']
-            NameParsed: FlagName.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>
-            NameUnion: FlagName.Data.GetNamesFromParseResult<
-              FlagName.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>
+            NameParsed: Name.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>
+            NameUnion: Name.Data.GetNamesFromParseResult<
+              Name.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>
             >
           }
 
@@ -113,8 +113,8 @@ export namespace State {
     Configuration   extends ParameterConfiguration,
   > = {
     Schema: Configuration['schema']
-    NameParsed: FlagName.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>
-    NameUnion: FlagName.Data.GetNamesFromParseResult<FlagName.Parse<NameExpression,{ usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>>
+    NameParsed: Name.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>
+    NameUnion: Name.Data.GetNamesFromParseResult<Name.Parse<NameExpression,{ usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>>
   }
 
   // prettier-ignore
@@ -128,7 +128,7 @@ export namespace State {
     Simplify<
     // Any.Compute<
       {
-        [Name in keyof State['Parameters'] & string as FlagName.Data.GetCanonicalName<State['Parameters'][Name]['NameParsed']>]:
+        [Name in keyof State['Parameters'] & string as Name.Data.GetCanonicalName<State['Parameters'][Name]['NameParsed']>]:
           z.infer<State['Parameters'][Name]['Schema']>
       } &
       // In order to make keys optional we have to do some ugly gymnastics. Would be great if there was a better way.
@@ -141,7 +141,7 @@ export namespace State {
               Simplify<Values<{
                 [Name in keyof State['ParametersExclusive'][Label]['Parameters']]:
                   {
-                    _tag: FlagName.Data.GetCanonicalName<State['ParametersExclusive'][Label]['Parameters'][Name]['NameParsed']>
+                    _tag: Name.Data.GetCanonicalName<State['ParametersExclusive'][Label]['Parameters'][Name]['NameParsed']>
                     value: z.infer<State['ParametersExclusive'][Label]['Parameters'][Name]['Schema']>
                   }
               }>>
@@ -150,7 +150,7 @@ export namespace State {
               Simplify<Values<{
                 [Name in keyof State['ParametersExclusive'][Label]['Parameters']]:
                   {
-                    _tag: FlagName.Data.GetCanonicalName<State['ParametersExclusive'][Label]['Parameters'][Name]['NameParsed']>
+                    _tag: Name.Data.GetCanonicalName<State['ParametersExclusive'][Label]['Parameters'][Name]['NameParsed']>
                     value: z.infer<State['ParametersExclusive'][Label]['Parameters'][Name]['Schema']>
                   }
               }>>
@@ -161,7 +161,7 @@ export namespace State {
 
   // prettier-ignore
   export type ToSchema<Spec extends State.Base> = {
-    [K in keyof Spec['Parameters'] & string as FlagName.Data.GetCanonicalName<Spec['Parameters'][K]['NameParsed']>]:
+    [K in keyof Spec['Parameters'] & string as Name.Data.GetCanonicalName<Spec['Parameters'][K]['NameParsed']>]:
       Spec['Parameters'][K]['Schema']
   }
 }
