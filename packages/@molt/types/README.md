@@ -58,7 +58,7 @@ FlagName.Parse<'--foo --foo'>
 import { FlagName } from '@molt/types'
 
 const defineFlag = <Name>(
-  name: FlagName.IsParseError<FlagName.Parse<Name>> extends true ? FlagName.Parse<Name> : Name,
+  name: FlagName.Data.IsParseError<FlagName.Parse<Name>> extends true ? FlagName.Parse<Name> : Name,
 ) => {
   // ...
 }
