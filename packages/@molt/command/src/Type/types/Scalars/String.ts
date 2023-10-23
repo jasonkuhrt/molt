@@ -51,6 +51,6 @@ interface Refinements {
 }
 
 // eslint-disable-next-line
-export const string = (refinements: Refinements): String => {
+export const string = (refinements?: Refinements): String => {
   return { _tag: `TypeString`, ...refinements }
 }

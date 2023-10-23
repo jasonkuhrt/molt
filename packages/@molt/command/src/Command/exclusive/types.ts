@@ -1,16 +1,19 @@
 import type { CommandParameter } from '../../CommandParameter/index.js'
+import type { Type } from '../../Type/index.js'
+import type { TypeAdaptors } from '../../TypeAdaptors/index.js'
 import type { RawArgInputs } from '../root/types.js'
 import type { State } from '../State.js'
 import type { z } from 'zod'
 
 export interface ExclusiveParameterConfiguration {
   schema: CommandParameter.SomeExclusiveZodType
+  type: Type.Scalar
 }
 
 // prettier-ignore
 interface Parameter<State extends State.Base, Label extends string> {
   <NameExpression extends string, Configuration extends ExclusiveParameterConfiguration   >(name: State.ValidateNameExpression<State, NameExpression>, configuration: Configuration): BuilderExclusiveInitial<State.AddExclusiveParameter<State, Label, NameExpression, Configuration>, Label>
-  <NameExpression extends string, Schema        extends CommandParameter.SomeExclusiveZodType>(name: State.ValidateNameExpression<State, NameExpression>, schema: Schema              ): BuilderExclusiveInitial<State.AddExclusiveParameter<State, Label, NameExpression, {schema:Schema}>, Label>
+  <NameExpression extends string, Schema        extends CommandParameter.SomeExclusiveZodType>(name: State.ValidateNameExpression<State, NameExpression>, schema: Schema              ): BuilderExclusiveInitial<State.AddExclusiveParameter<State, Label, NameExpression, {schema:Schema,type:TypeAdaptors.Zod.FromZod<Schema>}>, Label>
 }
 
 /**

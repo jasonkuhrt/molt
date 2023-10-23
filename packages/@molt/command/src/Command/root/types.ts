@@ -2,6 +2,8 @@ import type { CommandParameter } from '../../CommandParameter/index.js'
 import type { Prompter } from '../../lib/Prompter/Prompter.js'
 import type { OpeningArgs } from '../../OpeningArgs/index.js'
 import type { Settings } from '../../Settings/index.js'
+import type { Type } from '../../Type/index.js'
+import type { TypeAdaptors } from '../../TypeAdaptors/index.js'
 import type {
   BuilderAfterSettings,
   BuilderExclusiveInitial,
@@ -14,6 +16,7 @@ export type Schema = CommandParameter.SomeBasicType | CommandParameter.SomeUnion
 
 export interface ParameterConfiguration {
   schema: Schema
+  type: Type.Type
   prompt?: CommandParameter.Input.Prompt<this['schema']>
 }
 
@@ -57,7 +60,7 @@ export interface RootBuilder<State extends State.Base = State.BaseEmpty> {
     RootBuilder<{
       IsPromptEnabled    : State['IsPromptEnabled']
       ParametersExclusive: State['ParametersExclusive']
-      Parameters         : State['Parameters'] & { [_ in NameExpression]: State.CreateParameter<State,NameExpression,{schema:S}> }
+      Parameters         : State['Parameters'] & { [_ in NameExpression]: State.CreateParameter<State,NameExpression,{schema:S;type:TypeAdaptors.Zod.FromZod<S>}> }
     }>
   parametersExclusive<Label extends string, BuilderExclusive extends SomeBuilderExclusive>  (this:void, label:Label, ExclusiveBuilderContainer: (builder:BuilderExclusiveInitial<State,Label>) => BuilderExclusive):
     RootBuilder<BuilderExclusive['_']['typeState']>
