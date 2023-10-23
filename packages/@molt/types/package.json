@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@types/lodash.camelcase": "4.3.8",
-    "lodash.camelcase": "^4.3.0"
+    "lodash.camelcase": "^4.3.0",
+    "type-fest": "^4.5.0"
   }
 }

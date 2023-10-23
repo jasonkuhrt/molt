@@ -1,6 +1,7 @@
 import type { Strings } from '../prelude.js'
 import type { BaseChecks, LongChecks, ReportFailures, ShortChecks, SomeFailures } from './checks.js'
 import type { Name, NameEmpty } from './data.js'
+import type { Simplify } from 'type-fest'
 
 // prettier-ignore
 export namespace Errors {
@@ -39,7 +40,7 @@ export type Parse<
   E extends string,
   limits extends SomeLimits = SomeLimitsNone,
   names extends Name = NameEmpty,
-> = _Parse<E, limits, names>
+> = Simplify<_Parse<E, limits, names>>
 
 //prettier-ignore
 type _Parse<E extends string, Limits extends SomeLimits, $Name extends Name> =
