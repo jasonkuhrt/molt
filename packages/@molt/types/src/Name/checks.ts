@@ -44,6 +44,30 @@ export namespace Kinds {
 	}
 }
 
+export type BaseChecks<
+  Variant extends string,
+  limits extends SomeLimits,
+  $FlagName extends Name,
+> = FilterFailures<
+  [
+    Kinds.AliasDuplicate<$FlagName, Variant>,
+    Kinds.AlreadyTaken<limits, Variant>,
+    Kinds.Reserved<limits, Variant>,
+  ]
+>
+
+export type LongChecks<
+  Variant extends string,
+  limits extends SomeLimits,
+  $FlagName extends Name,
+> = FilterFailures<[...BaseChecks<Variant, limits, $FlagName>, Kinds.LongTooShort<Variant>]>
+
+export type ShortChecks<
+  Variant extends string,
+  limits extends SomeLimits,
+  $FlagName extends Name,
+> = FilterFailures<[...BaseChecks<Variant, limits, $FlagName>, Kinds.ShortTooLong<Variant>]>
+
 export interface Result {
   predicate: boolean
   message: string
@@ -62,7 +86,7 @@ export type ReportFailures<Results extends [...Result[]], Accumulator extends st
 		: Accumulator
 
 // prettier-ignore
-export type FilterFailures<Results extends [...Result[]], Accumulator extends Result[] = []> =
+type FilterFailures<Results extends [...Result[]], Accumulator extends Result[] = []> =
 	Results extends [infer Head extends Result, ...infer Tail extends Result[]]
 		? Head['predicate'] extends true
 			? FilterFailures<Tail, [...Accumulator, Head]>

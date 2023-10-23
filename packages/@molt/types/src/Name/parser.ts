@@ -1,5 +1,5 @@
 import type { Strings } from '../prelude.js'
-import type { FilterFailures, Kinds, ReportFailures, SomeFailures } from './checks.js'
+import type { BaseChecks, LongChecks, ReportFailures, ShortChecks, SomeFailures } from './checks.js'
 import type { Name, NameEmpty } from './data.js'
 
 // prettier-ignore
@@ -8,30 +8,6 @@ export namespace Errors {
 	export type Empty = `Error: You must specify at least one name for your flag.`
 	export type Unknown = `Error: Cannot parse your flag expression.`
 }
-
-export type BaseChecks<
-  Variant extends string,
-  limits extends SomeLimits,
-  $FlagName extends Name,
-> = FilterFailures<
-  [
-    Kinds.AliasDuplicate<$FlagName, Variant>,
-    Kinds.AlreadyTaken<limits, Variant>,
-    Kinds.Reserved<limits, Variant>,
-  ]
->
-
-export type LongChecks<
-  Variant extends string,
-  limits extends SomeLimits,
-  $FlagName extends Name,
-> = FilterFailures<[...BaseChecks<Variant, limits, $FlagName>, Kinds.LongTooShort<Variant>]>
-
-export type ShortChecks<
-  Variant extends string,
-  limits extends SomeLimits,
-  $FlagName extends Name,
-> = FilterFailures<[...BaseChecks<Variant, limits, $FlagName>, Kinds.ShortTooLong<Variant>]>
 
 // prettier-ignore
 type AddAliasLong<$FlagName extends Name, Variant extends string> = Omit<$FlagName, 'aliases'> & { aliases: { long: [...$FlagName['aliases']['long'], Strings.KebabToCamelCase<Variant>], short: $FlagName['aliases']['short'] }}
@@ -42,18 +18,15 @@ type AddLong<$FlagName extends Name, Variant extends string> = Omit<$FlagName, '
 // prettier-ignore
 type AddShort<$FlagName extends Name, Variant extends string> = Omit<$FlagName, 'short'> & { short: Variant  }
 
-export type SomeLimits = {
+export interface SomeLimits {
   reservedNames: string | undefined
   usedNames: string | undefined
 }
 
-type SomeLimitsNone = {
+interface SomeLimitsNone {
   reservedNames: undefined
   usedNames: undefined
 }
-
-// type x = Parse<'foo foo-bar',   { reservedNames: 'fooBar';  usedNames: undefined }>
-// type x2 = LongChecks<'foo foo-bar',   { reservedNames: 'fooBar';  usedNames: undefined },NameEmpty>
 
 export type Parse<
   E extends string,
