@@ -22,7 +22,19 @@ export const fromZod = (zodType: z.ZodFirstPartySchemaTypes): Type.Type => {
   if (zt instanceof z.ZodEnum)            return Type.enumeration(zt._def.values)
   if (zt instanceof z.ZodNativeEnum)      return Type.enumeration(zt._def.values)
   if (zt instanceof z.ZodBoolean)         return Type.boolean()
-  if (zt instanceof z.ZodUnion)           return Type.union(zt._def.options.map(fromZod))
+  if (zt instanceof z.ZodUnion)           {
+    if (!Array.isArray(zt._def.options)) {
+      throw new Error(`Unsupported zodType: ${JSON.stringify(zt[`_def`])}`)
+    }
+    return Type.union(
+      zt._def.options.map(_ => {
+        return {
+          description: null, // todo forward from zod
+          type: fromZod(_)
+        }
+      })
+    )
+  }
   if (zt instanceof z.ZodLiteral)         return Type.literal(zt._def.value)
   console.log(zt)
   throw new Error(`Unsupported zodType: ${JSON.stringify(zt[`_def`])}`)
