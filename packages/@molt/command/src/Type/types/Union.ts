@@ -5,7 +5,7 @@ export interface Union<Members extends Member[] = Member[]> {
   members: Members
 }
 
-interface Member {
+export interface Member {
   type: Scalar | Union<Member[]>
   description: string | null
 }
