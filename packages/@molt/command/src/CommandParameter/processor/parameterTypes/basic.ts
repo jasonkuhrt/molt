@@ -4,8 +4,8 @@ import type { Input } from '../../input.js'
 import type { Output } from '../../output.js'
 import type { SomeBasicType, SomeUnionType } from '../../types.js'
 import { processEnvironment } from '../helpers/environment.js'
-import { processName } from '../helpers/name.js'
 import { analyzeZodType } from '../helpers/zod.js'
+import { Name } from '@molt/types'
 import { z } from 'zod'
 
 export const processBasic = (
@@ -13,7 +13,7 @@ export const processBasic = (
   input: Input.Basic,
   settings: Settings.Output,
 ): Output.Basic => {
-  const name = processName(expression)
+  const name = Name.parse(expression)
   const environment = processEnvironment(settings, name)
   const inferredProperties = inferPropsFromZodType(input.type)
   const parameter = {

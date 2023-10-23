@@ -1,19 +1,15 @@
-import { stripeDashPrefix } from '../../../helpers.js'
-import { partition } from '../../../lib/prelude.js'
-import type { Output } from '../../output.js'
+import { partition, stripeDashPrefix } from '../prelude.js'
+import type { NameParsed } from './data.js'
 import camelCase from 'lodash.camelcase'
 
-/**
- * Parse the specification for a parameter name.
- */
-export const processName = (expression: string): Output.Name => {
+export const parse = (expression: string): NameParsed => {
   const names = expression
     .trim()
     .split(` `)
-    .map((exp) => exp.trim())
+    .map((_) => _.trim())
     .map(stripeDashPrefix)
     .map(camelCase)
-    .filter((exp) => exp.length > 0)
+    .filter((_) => _.length > 0)
 
   const [shorts, longs] = partition(names, (name) => name.length > 1)
 
