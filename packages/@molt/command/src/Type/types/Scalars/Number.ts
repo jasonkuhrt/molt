@@ -2,7 +2,7 @@ export interface Number extends Refinements {
   _tag: 'TypeNumber'
 }
 
-export interface Refinements {
+interface Refinements {
   int?: boolean
   min?: number
   max?: number

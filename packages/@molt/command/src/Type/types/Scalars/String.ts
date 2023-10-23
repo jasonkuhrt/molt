@@ -2,7 +2,7 @@ export interface String extends Refinements {
   _tag: 'TypeString'
 }
 
-export interface Refinements {
+interface Refinements {
   transformations?: {
     trim?: boolean
     toCase?: 'upper' | 'lower'
