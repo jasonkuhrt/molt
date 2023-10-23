@@ -6,24 +6,24 @@ export type IsParseError<T extends SomeParseResult> = T extends SomeParseError ?
 
 export type Name = {
   expression: string
-  canonical: string | undefined
+  canonical: string | null
   aliases: {
     short: [...string[]]
     long: [...string[]]
   }
-  long: string | undefined
-  short: string | undefined
+  long: string | null
+  short: string | null
 }
 
 export type NameEmpty = {
   expression: string
-  canonical: undefined
+  canonical: null
   aliases: {
     short: []
     long: []
   }
-  long: undefined
-  short: undefined
+  long: null
+  short: null
 }
 
 export type NameParsed = {
@@ -33,8 +33,8 @@ export type NameParsed = {
     short: string[]
     long: string[]
   }
-  long: string | undefined
-  short: string | undefined
+  long: string | null
+  short: string | null
 }
 
 /**
@@ -43,12 +43,12 @@ export type NameParsed = {
 // prettier-ignore
 export type GetNamesFromParseResult<Names extends SomeParseResult> =
   Names extends Name ? (
-                          | (Names['long']  extends undefined ? never : Names['long'])
-                          | (Names['short'] extends undefined ? never : Names['short'])
-                          | Names['aliases']['long'][number]
-                          | Names['aliases']['short'][number]
-                        )
-                      : ''
+                            | (Names['long']  extends undefined ? never : Names['long'])
+                            | (Names['short'] extends undefined ? never : Names['short'])
+                            | Names['aliases']['long'][number]
+                            | Names['aliases']['short'][number]
+                          )
+                        : ''
 
 /**
  * Get the canonical name of the flag from a successful parse result, or, if parsing failed, the error message.
