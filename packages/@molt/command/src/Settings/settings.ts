@@ -1,4 +1,4 @@
-import type { State } from '../Builder/State.js'
+import type { State } from '../Command/State.js'
 import type { CommandParameter } from '../CommandParameter/index.js'
 import type { EventPatternsInput, EventPatternsInputAtLeastOne } from '../eventPatterns.js'
 import { eventPatterns } from '../eventPatterns.js'
