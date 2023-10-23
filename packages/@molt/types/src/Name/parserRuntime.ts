@@ -11,7 +11,7 @@ export const parse = (expression: string): NameParsed => {
     .map(camelCase)
     .filter((_) => _.length > 0)
 
-  const [shorts, longs] = partition(names, (name) => name.length > 1)
+  const [longs, shorts] = partition(names, (name) => name.length > 1)
 
   // User should static error before hitting this at runtime thanks to
   // @molt/types.
