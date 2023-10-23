@@ -1,5 +1,6 @@
 import type { EventPatternsInput } from '../eventPatterns.js'
 import type { Pam } from '../lib/Pam/index.js'
+import type { Type } from '../Type/index.js'
 import type { CommandParameter } from './index.js'
 import type { Name as MoltName } from '@molt/types'
 
@@ -25,7 +26,7 @@ export namespace Output {
   export interface Exclusive {
     _tag: 'Exclusive'
     name: Name
-    type: Pam.Type
+    type: Type.Type
     description: string | null
     environment: Environment
     group: ExclusiveGroup

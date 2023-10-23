@@ -1,6 +1,6 @@
 import type { CommandParameter } from '../CommandParameter/index.js'
 import { BooleanLookup, negateNamePattern, parseEnvironmentVariableBoolean } from '../helpers.js'
-import type { Pam } from '../lib/Pam/index.js'
+import type { Type } from '../Type/index.js'
 import type { Value } from './types.js'
 import { Alge } from 'alge'
 import camelCase from 'lodash.camelcase'
@@ -59,9 +59,9 @@ const stripeNamespace = (name: string, spec: CommandParameter.Output): string =>
  * For example a number is a subset of string type. If there is a string and number variant
  * we should first check if the value could be a number, than a string.
  */
-const variantOrder: Pam.Type['_tag'][] = [`TypeNumber`, `TypeBoolean`, `TypeString`, `TypeEnum`, `TypeUnion`]
+const variantOrder: Type.Type['_tag'][] = [`TypeNumber`, `TypeBoolean`, `TypeString`, `TypeEnum`, `TypeUnion`]
 
-export const parseRawValue = (value: string, type: Pam.Type): null | boolean | number | string => {
+export const parseRawValue = (value: string, type: Type.Type): null | boolean | number | string => {
   return Alge.match(type)
     .TypeLiteral((t) => parseLiteral(t, value))
     .TypeString(() => value)
@@ -92,13 +92,13 @@ export const parseRawValue = (value: string, type: Pam.Type): null | boolean | n
  *
  * When we receive a raw value, we infer its base  type based on checking the type first member of the enum.
  */
-export const parseEnum = (spec: Pam.Type.Scalar.Enumeration, value: string): string | number => {
+export const parseEnum = (spec: Type.Scalar.Enumeration, value: string): string | number => {
   const isNumberEnum = spec.members.find((_) => typeof _ === `number`)
   if (isNumberEnum) return Number(value)
   return value
 }
 
-export const parseLiteral = (spec: Pam.Type.Scalar.Literal, value: string): boolean | string | number => {
+export const parseLiteral = (spec: Type.Scalar.Literal, value: string): boolean | string | number => {
   if (typeof spec.value === `string`) return value
   if (typeof spec.value === `number`) return Number(value)
   if (typeof spec.value === `boolean`) {

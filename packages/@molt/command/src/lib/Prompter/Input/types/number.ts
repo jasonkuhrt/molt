@@ -2,8 +2,9 @@ import type { Pam } from '../../../Pam/index.js'
 import { PromptEngine } from '../../../PromptEngine/PromptEngine.js'
 import type { Params } from '../_core.js'
 import { Effect } from 'effect'
+import type { Type } from 'packages/@molt/command/src/Type/index.js'
 
-export const number = (params: Params<Pam.Parameter<Pam.Type.Scalar.Number>>) =>
+export const number = (params: Params<Pam.Parameter<Type.Scalar.Number>>) =>
   Effect.gen(function* (_) {
     interface State {
       value: string

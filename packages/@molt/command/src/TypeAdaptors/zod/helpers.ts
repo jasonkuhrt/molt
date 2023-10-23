@@ -1,8 +1,12 @@
-import type { Pam } from '../../../lib/Pam/index.js'
-import { ZodHelpers } from '../../../lib/zodHelpers/index.js'
-import { type ZodNumberCheck, type ZodStringCheck } from '../../../lib/zodHelpers/index_.js'
-import type { Type } from '../../../Type/index.js'
-import type { SomeBasicType, SomeType, SomeUnionType, SomeUnionTypeScalar } from '../../types.js'
+import type {
+  SomeBasicType,
+  SomeType,
+  SomeUnionType,
+  SomeUnionTypeScalar,
+} from '../../CommandParameter/types.js'
+import { ZodHelpers } from '../../lib/zodHelpers/index.js'
+import { type ZodNumberCheck, type ZodStringCheck } from '../../lib/zodHelpers/index_.js'
+import type { Type } from '../../Type/index.js'
 import { Alge } from 'alge'
 import { z } from 'zod'
 
@@ -40,7 +44,7 @@ const analyzeZodType_ = <ZT extends SomeType>(
   }
 
   // @ts-expect-error todo
-  const type: null | Pam.Type = ZodHelpers.isUnion(zodType)
+  const type: null | Type.Type = ZodHelpers.isUnion(zodType)
     ? analyzeZodUnionType(zodType)
     : ZodHelpers.isLiteral(zodType)
     ? { _tag: `TypeLiteral`, value: zodType._def.value }

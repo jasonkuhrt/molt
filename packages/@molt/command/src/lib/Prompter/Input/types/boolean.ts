@@ -3,8 +3,9 @@ import { PromptEngine } from '../../../PromptEngine/PromptEngine.js'
 import type { Params } from '../_core.js'
 import chalk from 'chalk'
 import { Effect } from 'effect'
+import type { Type } from 'packages/@molt/command/src/Type/index.js'
 
-export const boolean = (params: Params<Pam.Parameter<Pam.Type.Scalar.Boolean>>) =>
+export const boolean = (params: Params<Pam.Parameter<Type.Scalar.Boolean>>) =>
   Effect.gen(function* (_) {
     interface State {
       answer: boolean

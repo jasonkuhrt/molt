@@ -5,8 +5,9 @@ import { create } from '../../Constructors/_core.js'
 import type { Params } from '../_core.js'
 import chalk from 'chalk'
 import { Effect } from 'effect'
+import type { Type } from 'packages/@molt/command/src/Type/index.js'
 
-export const union = (params: Params<Pam.Parameter<Pam.Type.Union>>) =>
+export const union = (params: Params<Pam.Parameter<Type.Union>>) =>
   Effect.gen(function* (_) {
     interface State {
       active: number
@@ -37,7 +38,7 @@ export const union = (params: Params<Pam.Parameter<Pam.Type.Union>>) =>
         // prettier-ignore
         const intro = marginLeftSpace + `Different kinds of answers are accepted.` + Text.chars.newline + marginLeftSpace + `Which kind do you want to give?`
         // prettier-ignore
-        const typeNameMapping: Record<Pam.Type['_tag'],string> = {
+        const typeNameMapping: Record<Type.Type['_tag'],string> = {
         TypeBoolean:`boolean`,
         TypeEnum: `enum`,
         TypeLiteral: `literal`,
