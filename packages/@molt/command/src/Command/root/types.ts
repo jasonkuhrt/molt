@@ -2,7 +2,6 @@ import type { CommandParameter } from '../../CommandParameter/index.js'
 import type { Prompter } from '../../lib/Prompter/Prompter.js'
 import type { OpeningArgs } from '../../OpeningArgs/index.js'
 import type { Settings } from '../../Settings/index.js'
-import type { Type } from '../../Type/index.js'
 import type { TypeAdaptors } from '../../TypeAdaptors/index.js'
 import type {
   BuilderAfterSettings,
@@ -16,7 +15,6 @@ export type Schema = CommandParameter.SomeBasicType | CommandParameter.SomeUnion
 
 export interface ParameterConfiguration {
   schema: Schema
-  type: Type.Type
   prompt?: CommandParameter.Input.Prompt<this['schema']>
 }
 

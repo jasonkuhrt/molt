@@ -1,6 +1,6 @@
 import { Command } from '../../../src/index.js'
 import { expectType } from 'tsd'
-import { it } from 'vitest'
+import { expect, it } from 'vitest'
 import { z } from 'zod'
 
 // prettier-ignore
@@ -28,5 +28,5 @@ it(`Statically accepts or rejects zod types for the schema`, () => {
   expectType<() => {a:1}>(Command.create().parameter(`a`, z.literal(1).default(1)).parse)
 	// unsupported
 	// @ts-expect-error not supported
-	Command.create().parameter(`a`, z.unknown())
+	expect(() => Command.create().parameter(`a`, z.unknown())).throws()
 })

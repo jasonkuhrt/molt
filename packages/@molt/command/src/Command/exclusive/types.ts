@@ -1,5 +1,4 @@
 import type { CommandParameter } from '../../CommandParameter/index.js'
-import type { Type } from '../../Type/index.js'
 import type { TypeAdaptors } from '../../TypeAdaptors/index.js'
 import type { RawArgInputs } from '../root/types.js'
 import type { State } from '../State.js'
@@ -7,7 +6,6 @@ import type { z } from 'zod'
 
 export interface ExclusiveParameterConfiguration {
   schema: CommandParameter.SomeExclusiveZodType
-  type: Type.Scalar
 }
 
 // prettier-ignore

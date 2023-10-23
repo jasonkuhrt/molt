@@ -1,6 +1,7 @@
 import type { CommandParameter } from '../CommandParameter/index.js'
 import type { Values } from '../helpers.js'
 import type { Type } from '../Type/index.js'
+import type { TypeAdaptors } from '../TypeAdaptors/index.js'
 import type { ExclusiveParameterConfiguration } from './exclusive/types.js'
 import type { ParameterConfiguration } from './root/types.js'
 import type { Name } from '@molt/types'
@@ -97,7 +98,7 @@ export namespace State {
         Parameters: {
           [_ in NameExpression as Name.Data.GetCanonicalNameOrErrorFromParseResult<Name.Parse<NameExpression>>]: {
             Schema: Configuration['schema']
-            Type: Configuration['type']
+            Type: TypeAdaptors.Zod.FromZod<Configuration['schema']>
             NameParsed: Name.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>
             NameUnion: Name.Data.GetNamesFromParseResult<
               Name.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>
@@ -115,7 +116,7 @@ export namespace State {
     Configuration   extends ParameterConfiguration,
   > = {
     Schema: Configuration['schema']
-    Type: Configuration['type']
+    Type: TypeAdaptors.Zod.FromZod<Configuration['schema']>
     NameParsed: Name.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>
     NameUnion: Name.Data.GetNamesFromParseResult<Name.Parse<NameExpression,{ usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>>
   }

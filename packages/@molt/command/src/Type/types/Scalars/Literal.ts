@@ -3,7 +3,7 @@ export interface Literal<$Value extends Value = Value> {
   value: $Value
 }
 
-type Value = number | string | boolean
+export type Value = number | string | boolean
 
 export const literal = <const $Value extends Value>(value: $Value): Literal<$Value> => {
   return { _tag: `TypeLiteral`, value }
