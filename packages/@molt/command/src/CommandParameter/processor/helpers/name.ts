@@ -39,6 +39,7 @@ export const processName = (expression: string): Output.Name => {
   const canonical = (long ?? short)!
 
   return {
+    expression,
     canonical,
     short,
     long,

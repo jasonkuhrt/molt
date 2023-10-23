@@ -20,7 +20,7 @@ export namespace State {
         Optional: boolean
         Parameters: {
           [canonicalName: string]: {
-            NameParsed: Name.Data.Name
+            NameParsed: Name.Data.NameParsed
             NameUnion: string
             Schema: CommandParameter.SomeBasicType
           }
@@ -29,7 +29,7 @@ export namespace State {
     }
     Parameters: {
       [nameExpression: string]: {
-        NameParsed: Name.Data.Name
+        NameParsed: Name.Data.NameParsed
         NameUnion: string
         Schema: CommandParameter.SomeBasicType
       }
@@ -93,8 +93,7 @@ export namespace State {
       [_ in Label]: {
         Optional: State['ParametersExclusive'][_]['Optional']
         Parameters: {
-          // @ts-expect-error - Trust the name expression here...
-          [_ in NameExpression as Name.Data.GetCanonicalName<Name.Parse<NameExpression>>]: {
+          [_ in NameExpression as Name.Data.GetCanonicalNameOrErrorFromParseResult<Name.Parse<NameExpression>>]: {
             Schema: Configuration['schema']
             NameParsed: Name.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>
             NameUnion: Name.Data.GetNamesFromParseResult<
@@ -128,7 +127,7 @@ export namespace State {
     Simplify<
     // Any.Compute<
       {
-        [Name in keyof State['Parameters'] & string as Name.Data.GetCanonicalName<State['Parameters'][Name]['NameParsed']>]:
+        [Name in keyof State['Parameters'] & string as State['Parameters'][Name]['NameParsed']['canonical']]:
           z.infer<State['Parameters'][Name]['Schema']>
       } &
       // In order to make keys optional we have to do some ugly gymnastics. Would be great if there was a better way.
@@ -141,7 +140,7 @@ export namespace State {
               Simplify<Values<{
                 [Name in keyof State['ParametersExclusive'][Label]['Parameters']]:
                   {
-                    _tag: Name.Data.GetCanonicalName<State['ParametersExclusive'][Label]['Parameters'][Name]['NameParsed']>
+                    _tag: State['ParametersExclusive'][Label]['Parameters'][Name]['NameParsed']['canonical']
                     value: z.infer<State['ParametersExclusive'][Label]['Parameters'][Name]['Schema']>
                   }
               }>>
@@ -150,7 +149,7 @@ export namespace State {
               Simplify<Values<{
                 [Name in keyof State['ParametersExclusive'][Label]['Parameters']]:
                   {
-                    _tag: Name.Data.GetCanonicalName<State['ParametersExclusive'][Label]['Parameters'][Name]['NameParsed']>
+                    _tag: State['ParametersExclusive'][Label]['Parameters'][Name]['NameParsed']['canonical']
                     value: z.infer<State['ParametersExclusive'][Label]['Parameters'][Name]['Schema']>
                   }
               }>>
@@ -161,7 +160,7 @@ export namespace State {
 
   // prettier-ignore
   export type ToSchema<Spec extends State.Base> = {
-    [K in keyof Spec['Parameters'] & string as Name.Data.GetCanonicalName<Spec['Parameters'][K]['NameParsed']>]:
+    [K in keyof Spec['Parameters'] & string as Spec['Parameters'][K]['NameParsed']['canonical']]:
       Spec['Parameters'][K]['Schema']
   }
 }
