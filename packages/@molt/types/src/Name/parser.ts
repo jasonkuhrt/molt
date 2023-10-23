@@ -10,13 +10,20 @@ export namespace Errors {
 }
 
 // prettier-ignore
-type AddAliasLong<$FlagName extends Name, Variant extends string> = Omit<$FlagName, 'aliases'> & { aliases: { long: [...$FlagName['aliases']['long'], Strings.KebabToCamelCase<Variant>], short: $FlagName['aliases']['short'] }}
+type AddAliasLong<$Name extends Name, Variant extends string> = Omit<$Name, 'aliases'> & { aliases: { long: [...$Name['aliases']['long'], Strings.KebabToCamelCase<Variant>], short: $Name['aliases']['short'] }}
 // prettier-ignore
-type AddAliasShort<$FlagName extends Name, Variant extends string> = Omit<$FlagName, 'aliases'> & { aliases: { long: $FlagName['aliases']['long'], short: [...$FlagName['aliases']['short'], Variant] }}
+type AddAliasShort<$Name extends Name, Variant extends string> = Omit<$Name, 'aliases'> & { aliases: { long: $Name['aliases']['long'], short: [...$Name['aliases']['short'], Variant] }}
 // prettier-ignore
-type AddLong<$FlagName extends Name, Variant extends string> = Omit<$FlagName, 'long'> & { long: Strings.KebabToCamelCase<Variant>  }
+type AddLong<$Name extends Name, Variant extends string> = Omit<$Name, 'long'> & { long: Strings.KebabToCamelCase<Variant>  }
 // prettier-ignore
-type AddShort<$FlagName extends Name, Variant extends string> = Omit<$FlagName, 'short'> & { short: Variant  }
+type AddShort<$Name extends Name, Variant extends string> = Omit<$Name, 'short'> & { short: Variant  }
+// prettier-ignore
+type addCanonical<$Name extends Name> =
+	Omit<$Name, 'canonical'> & {
+		canonical:	$Name['long']  extends string ? $Name['long'] :
+								$Name['short'] extends string ? $Name['short'] :
+																								never // A valid flag always has either a long or short name
+	}
 
 export interface SomeLimits {
   reservedNames: string | undefined
@@ -35,54 +42,54 @@ export type Parse<
 > = _Parse<E, limits, names>
 
 //prettier-ignore
-type _Parse<E extends string, Limits extends SomeLimits, $FlagName extends Name> =
+type _Parse<E extends string, Limits extends SomeLimits, $Name extends Name> =
 	// Done!
-	E extends ``                                         	? NameEmpty extends $FlagName ? Errors.Empty : $FlagName :
+	E extends ``                                         	? NameEmpty extends $Name ? Errors.Empty : addCanonical<$Name> :
 
 	// Trim leading and trailing whitespace
-	E extends ` ${infer tail}`                           	? _Parse<tail, Limits, $FlagName> :
-	E extends `${infer initial} `                        	? _Parse<initial, Limits, $FlagName> :
+	E extends ` ${infer tail}`                           	? _Parse<tail, Limits, $Name> :
+	E extends `${infer initial} `                        	? _Parse<initial, Limits, $Name> :
 
 	// Capture a long flag & continue
-	E extends `--${infer v} ${infer tail}`            	? LongChecks<v, Limits, $FlagName> extends SomeFailures ? ReportFailures<LongChecks<v, Limits, $FlagName>> :
-																												 	$FlagName['long'] extends undefined ?
-																												 		_Parse<tail, Limits, AddLong<$FlagName, v>> :
-																												 	 	_Parse<tail, Limits, AddAliasLong<$FlagName, v>> :
+	E extends `--${infer v} ${infer tail}`            	? LongChecks<v, Limits, $Name> extends SomeFailures ? ReportFailures<LongChecks<v, Limits, $Name>> :
+																												 	$Name['long'] extends undefined ?
+																												 		_Parse<tail, Limits, AddLong<$Name, v>> :
+																												 	 	_Parse<tail, Limits, AddAliasLong<$Name, v>> :
 	// Capture a long name & Done!
-	E extends `--${infer v}` 							          	? LongChecks<v, Limits, $FlagName> extends SomeFailures ? ReportFailures<LongChecks<v, Limits, $FlagName>> :
-																														$FlagName['long'] extends undefined ?
-																															AddLong<$FlagName, v> :
-																															AddAliasLong<$FlagName, v> :
+	E extends `--${infer v}` 							          	? LongChecks<v, Limits, $Name> extends SomeFailures ? ReportFailures<LongChecks<v, Limits, $Name>> :
+																														$Name['long'] extends undefined ?
+																														_Parse<'', Limits, AddLong<$Name, v>> :
+																														_Parse<'', Limits, AddAliasLong<$Name, v>> :
 
 	// Capture a short flag & continue
-	E extends `-${infer v} ${infer tail}`            	? ShortChecks<v, Limits, $FlagName> extends SomeFailures ? ReportFailures<ShortChecks<v, Limits, $FlagName>> :
-																														$FlagName['short'] extends undefined ?
-																															_Parse<tail, Limits, AddShort<$FlagName, v>> :
-																															_Parse<tail, Limits, AddAliasShort<$FlagName, v>> :
+	E extends `-${infer v} ${infer tail}`            	? ShortChecks<v, Limits, $Name> extends SomeFailures ? ReportFailures<ShortChecks<v, Limits, $Name>> :
+																														$Name['short'] extends undefined ?
+																															_Parse<tail, Limits, AddShort<$Name, v>> :
+																															_Parse<tail, Limits, AddAliasShort<$Name, v>> :
 	// Capture a short name & Done!
-	E extends `-${infer v}` 							            	? ShortChecks<v, Limits, $FlagName> extends SomeFailures ? ReportFailures<ShortChecks<v, Limits, $FlagName>> :
-																														$FlagName['short'] extends undefined ?
-																															AddShort<$FlagName, v> :
-																															AddAliasShort<$FlagName, v> :
+	E extends `-${infer v}` 							            	? ShortChecks<v, Limits, $Name> extends SomeFailures ? ReportFailures<ShortChecks<v, Limits, $Name>> :
+																														$Name['short'] extends undefined ?
+																														_Parse<'', Limits, AddShort<$Name, v>> :
+																														_Parse<'', Limits, AddAliasShort<$Name, v>> :
 
 	// Capture a long flag & continue
-	E extends `${infer v} ${infer tail}`             	? BaseChecks<v, Limits, $FlagName> extends SomeFailures ? ReportFailures<BaseChecks<v, Limits, $FlagName>> :
+	E extends `${infer v} ${infer tail}`             	? BaseChecks<v, Limits, $Name> extends SomeFailures ? ReportFailures<BaseChecks<v, Limits, $Name>> :
 																														Strings.Length<v> extends 1 ?
-																															$FlagName['short'] extends undefined ?
-																																_Parse<tail, Limits, AddShort<$FlagName, v>> :
-																																_Parse<tail, Limits, AddAliasShort<$FlagName, v>> :
-																															$FlagName['long'] extends undefined ?
-																																_Parse<tail, Limits, AddLong<$FlagName, v>> :
-																																_Parse<tail, Limits, AddAliasLong<$FlagName, v>> :
+																															$Name['short'] extends undefined ?
+																																_Parse<tail, Limits, AddShort<$Name, v>> :
+																																_Parse<tail, Limits, AddAliasShort<$Name, v>> :
+																															$Name['long'] extends undefined ?
+																																_Parse<tail, Limits, AddLong<$Name, v>> :
+																																_Parse<tail, Limits, AddAliasLong<$Name, v>> :
 
 	// Capture a short name & Done!
-  E extends `${infer v}`                           	? BaseChecks<v, Limits, $FlagName> extends SomeFailures ? ReportFailures<BaseChecks<v, Limits, $FlagName>> :
+  E extends `${infer v}`                           	? BaseChecks<v, Limits, $Name> extends SomeFailures ? ReportFailures<BaseChecks<v, Limits, $Name>> :
 																														Strings.Length<v> extends 1 ?
-																															$FlagName['short'] extends undefined ?
-																																AddShort<$FlagName, v> :
-																																AddAliasShort<$FlagName, v> :
-																															$FlagName['long'] extends undefined ?
-																																AddLong<$FlagName, v> :
-																																AddAliasLong<$FlagName, v> :
+																															$Name['short'] extends undefined ?
+																																_Parse<'', Limits, AddShort<$Name, v>> :
+																																_Parse<'', Limits, AddAliasShort<$Name, v>> :
+																															$Name['long'] extends undefined ?
+																																_Parse<'', Limits, AddLong<$Name, v>> :
+																																_Parse<'', Limits, AddAliasLong<$Name, v>> :
 
 	Errors.Unknown

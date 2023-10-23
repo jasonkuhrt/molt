@@ -44,6 +44,7 @@ export namespace Output {
   export type Environment = null | { enabled: boolean; namespaces: string[] }
 
   export interface Name {
+    expression: string
     canonical: string
     aliases: {
       short: string[]
