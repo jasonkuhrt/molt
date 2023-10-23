@@ -1,6 +1,7 @@
 import type { EventPatternsInput } from '../eventPatterns.js'
 import type { Pam } from '../lib/Pam/index.js'
 import type { CommandParameter } from './index.js'
+import type { Name as MoltName } from '@molt/types'
 
 export type Output = Output.Exclusive | Output.Basic //| Output.Union
 
@@ -43,16 +44,7 @@ export namespace Output {
 
   export type Environment = null | { enabled: boolean; namespaces: string[] }
 
-  export interface Name {
-    expression: string
-    canonical: string
-    aliases: {
-      short: string[]
-      long: string[]
-    }
-    short: null | string
-    long: null | string
-  }
+  export type Name = MoltName.Data.NameParsed
 
   export interface ExclusiveGroup {
     // _tag: 'Exclusive'

@@ -60,24 +60,24 @@ namespace _testErrors {
 
 //prettier-ignore
 namespace _case {
-	expectType<{ long: 'filePath'; short: undefined; aliases: { short: []; long: [] } }>(as<Name.Parse<'--file-path'>>())
+	expectType<{ long: 'filePath'; short: null; aliases: { short: []; long: [] } }>(as<Name.Parse<'--file-path'>>())
 }
 
 //prettier-ignore
 namespace _mixed {
-	expectType<{ long: undefined; short: 'v'; aliases: { short: []; long: [] } }>(as<							Name.Parse<'-v'>>())
-	expectType<{ long: undefined; short: 'v'; aliases: { short: ['x']; long: [] } }>(as<					Name.Parse<'-v -x'>>())
-	expectType<{ long: undefined; short: 'v'; aliases: { short: ['x', 'y']; long: [] } }>(as<			Name.Parse<'-v -x -y'>>())
-	expectType<{ long: 'vv'; short: undefined; aliases: { short: []; long: ['xx'] } }>(as<				Name.Parse<'--vv --xx'>>())
-	expectType<{ long: 'vv'; short: undefined; aliases: { short: []; long: ['xx', 'yy'] } }>(as<	Name.Parse<'--vv --xx --yy'>>())
-	expectType<{ long: 'vv'; short: 'v'; aliases: { short: ['x']; long: ['xx'] } }>(as<						Name.Parse<'-v --vv -x --xx'>>())
-	expectType<{ long: 'vv'; short: 'v'; aliases: { short: ['x']; long: ['xx'] } }>(as<						Name.Parse<'v vv x xx'>>())
-	expectType<{ long: 'vv'; short: 'v'; aliases: { short: ['x']; long: ['xx'] } }>(as<						Name.Parse<'v --vv x xx'>>())
+	expectType<{ long: null; short: 'v'; aliases: { short: []; long: [] } }>(as<							Name.Parse<'-v'>>())
+	expectType<{ long: null; short: 'v'; aliases: { short: ['x']; long: [] } }>(as<						Name.Parse<'-v -x'>>())
+	expectType<{ long: null; short: 'v'; aliases: { short: ['x', 'y']; long: [] } }>(as<			Name.Parse<'-v -x -y'>>())
+	expectType<{ long: 'vv'; short: null; aliases: { short: []; long: ['xx'] } }>(as<					Name.Parse<'--vv --xx'>>())
+	expectType<{ long: 'vv'; short: null; aliases: { short: []; long: ['xx', 'yy'] } }>(as<		Name.Parse<'--vv --xx --yy'>>())
+	expectType<{ long: 'vv'; short: 'v'; aliases: { short: ['x']; long: ['xx'] } }>(as<				Name.Parse<'-v --vv -x --xx'>>())
+	expectType<{ long: 'vv'; short: 'v'; aliases: { short: ['x']; long: ['xx'] } }>(as<				Name.Parse<'v vv x xx'>>())
+	expectType<{ long: 'vv'; short: 'v'; aliases: { short: ['x']; long: ['xx'] } }>(as<				Name.Parse<'v --vv x xx'>>())
 }
 
 interface SomeLong {
   long: 'version'
-  short: undefined
+  short: null
   aliases: { short: []; long: [] }
 }
 
@@ -89,7 +89,7 @@ expectType<SomeLong>(as<Name.Parse<' --version  '>>())
 expectType<SomeLong>(as<Name.Parse<'version  '>>())
 
 interface SomeShort {
-  long: undefined
+  long: null
   short: 'v'
   aliases: { short: []; long: [] }
 }
@@ -128,7 +128,7 @@ expectType<SomeLongShort>(as<Name.Parse<'v version'>>())
 
 interface SomeLongCamelCase {
   long: 'fooBar'
-  short: undefined
+  short: null
   aliases: { short: []; long: [] }
 }
 

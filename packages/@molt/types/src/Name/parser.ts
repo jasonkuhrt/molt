@@ -52,43 +52,43 @@ type _Parse<E extends string, Limits extends SomeLimits, $Name extends Name> =
 
 	// Capture a long flag & continue
 	E extends `--${infer v} ${infer tail}`            	? LongChecks<v, Limits, $Name> extends SomeFailures ? ReportFailures<LongChecks<v, Limits, $Name>> :
-																												 	$Name['long'] extends undefined ?
+																												 	$Name['long'] extends null ?
 																												 		_Parse<tail, Limits, AddLong<$Name, v>> :
 																												 	 	_Parse<tail, Limits, AddAliasLong<$Name, v>> :
 	// Capture a long name & Done!
 	E extends `--${infer v}` 							          	? LongChecks<v, Limits, $Name> extends SomeFailures ? ReportFailures<LongChecks<v, Limits, $Name>> :
-																														$Name['long'] extends undefined ?
+																														$Name['long'] extends null ?
 																														_Parse<'', Limits, AddLong<$Name, v>> :
 																														_Parse<'', Limits, AddAliasLong<$Name, v>> :
 
 	// Capture a short flag & continue
 	E extends `-${infer v} ${infer tail}`            	? ShortChecks<v, Limits, $Name> extends SomeFailures ? ReportFailures<ShortChecks<v, Limits, $Name>> :
-																														$Name['short'] extends undefined ?
+																														$Name['short'] extends null ?
 																															_Parse<tail, Limits, AddShort<$Name, v>> :
 																															_Parse<tail, Limits, AddAliasShort<$Name, v>> :
 	// Capture a short name & Done!
 	E extends `-${infer v}` 							            	? ShortChecks<v, Limits, $Name> extends SomeFailures ? ReportFailures<ShortChecks<v, Limits, $Name>> :
-																														$Name['short'] extends undefined ?
+																														$Name['short'] extends null ?
 																														_Parse<'', Limits, AddShort<$Name, v>> :
 																														_Parse<'', Limits, AddAliasShort<$Name, v>> :
 
 	// Capture a long flag & continue
 	E extends `${infer v} ${infer tail}`             	? BaseChecks<v, Limits, $Name> extends SomeFailures ? ReportFailures<BaseChecks<v, Limits, $Name>> :
 																														Strings.Length<v> extends 1 ?
-																															$Name['short'] extends undefined ?
+																															$Name['short'] extends null ?
 																																_Parse<tail, Limits, AddShort<$Name, v>> :
 																																_Parse<tail, Limits, AddAliasShort<$Name, v>> :
-																															$Name['long'] extends undefined ?
+																															$Name['long'] extends null ?
 																																_Parse<tail, Limits, AddLong<$Name, v>> :
 																																_Parse<tail, Limits, AddAliasLong<$Name, v>> :
 
 	// Capture a short name & Done!
   E extends `${infer v}`                           	? BaseChecks<v, Limits, $Name> extends SomeFailures ? ReportFailures<BaseChecks<v, Limits, $Name>> :
 																														Strings.Length<v> extends 1 ?
-																															$Name['short'] extends undefined ?
+																															$Name['short'] extends null ?
 																																_Parse<'', Limits, AddShort<$Name, v>> :
 																																_Parse<'', Limits, AddAliasShort<$Name, v>> :
-																															$Name['long'] extends undefined ?
+																															$Name['long'] extends null ?
 																																_Parse<'', Limits, AddLong<$Name, v>> :
 																																_Parse<'', Limits, AddAliasLong<$Name, v>> :
 

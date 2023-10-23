@@ -29,5 +29,9 @@
   "devDependencies": {
     "conditional-type-checks": "1.0.6",
     "tsd": "0.29.0"
+  },
+  "dependencies": {
+    "@types/lodash.camelcase": "4.3.8",
+    "lodash.camelcase": "^4.3.0"
   }
 }
