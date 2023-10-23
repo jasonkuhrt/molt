@@ -1,5 +1,8 @@
-export interface Number {
+export interface Number extends Refinements {
   _tag: 'TypeNumber'
+}
+
+export interface Refinements {
   int?: boolean
   min?: number
   max?: number
@@ -8,6 +11,6 @@ export interface Number {
 }
 
 // eslint-disable-next-line
-export const number = (): Number => {
-  return { _tag: `TypeNumber` }
+export const number = (refinements?: Refinements): Number => {
+  return { _tag: `TypeNumber`, ...refinements }
 }

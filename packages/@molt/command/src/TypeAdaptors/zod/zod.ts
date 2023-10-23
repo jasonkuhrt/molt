@@ -3,7 +3,7 @@ import type { z } from 'zod'
 
 export * from './helpers.js'
 
-export const fromZod = (type: z.ZodType): Type => {
+export const fromZod = (_type: z.ZodType): Type => {
   return {
     _tag: `TypeString`,
   }

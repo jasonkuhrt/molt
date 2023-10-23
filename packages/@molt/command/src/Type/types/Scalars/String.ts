@@ -1,5 +1,8 @@
-export interface String {
+export interface String extends Refinements {
   _tag: 'TypeString'
+}
+
+export interface Refinements {
   transformations?: {
     trim?: boolean
     toCase?: 'upper' | 'lower'
@@ -48,6 +51,6 @@ export interface String {
 }
 
 // eslint-disable-next-line
-export const string = (): String => {
-  return { _tag: `TypeString` }
+export const string = (refinements: Refinements): String => {
+  return { _tag: `TypeString`, ...refinements }
 }

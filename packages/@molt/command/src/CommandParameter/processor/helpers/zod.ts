@@ -1,7 +1,6 @@
-import type { Pam } from '../../../lib/Pam/index.js'
 import { ZodHelpers } from '../../../lib/zodHelpers/index.js'
 import { type ZodNumberCheck, type ZodStringCheck } from '../../../lib/zodHelpers/index_.js'
-import type { Type } from '../../../Type/index.js'
+import { Type } from '../../../Type/index.js'
 import type { SomeBasicType, SomeType, SomeUnionType, SomeUnionTypeScalar } from '../../types.js'
 import { Alge } from 'alge'
 import { z } from 'zod'
@@ -40,20 +39,20 @@ const analyzeZodType_ = <ZT extends SomeType>(
   }
 
   // @ts-expect-error todo
-  const type: null | Pam.Type = ZodHelpers.isUnion(zodType)
+  const type: null | Type.Type = ZodHelpers.isUnion(zodType)
     ? analyzeZodUnionType(zodType)
     : ZodHelpers.isLiteral(zodType)
-    ? { _tag: `TypeLiteral`, value: zodType._def.value }
+    ? Type.literal(zodType._def.value)
     : ZodHelpers.isString(zodType)
-    ? { _tag: `TypeString`, ...mapZodStringChecks(zodType._def.checks) }
+    ? Type.string(mapZodStringChecks(zodType._def.checks))
     : zodType._def.typeName === z.ZodFirstPartyTypeKind.ZodBoolean
-    ? { _tag: `TypeBoolean` }
+    ? Type.boolean()
     : ZodHelpers.isNumber(zodType)
-    ? { _tag: `TypeNumber`, ...mapZodNumberChecks(zodType._def.checks) }
+    ? Type.number(mapZodNumberChecks(zodType._def.checks))
     : ZodHelpers.isNativeEnum(zodType)
-    ? { _tag: `TypeEnum`, members: Object.values(zodType._def.values) }
+    ? Type.enumeration(Object.values(zodType._def.values))
     : ZodHelpers.isEnum(zodType)
-    ? { _tag: `TypeEnum`, members: zodType._def.values }
+    ? Type.enumeration(zodType._def.values)
     : null
 
   if (!type) throw new Error(`Unsupported zod type: ${zodType._def.typeName}`)
