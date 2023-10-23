@@ -1,10 +1,10 @@
 import type { CommandParameter } from '../CommandParameter/index.js'
-import type { Pam } from '../lib/Pam/index.js'
 import { groupBy } from '../lib/prelude.js'
 import { Tex } from '../lib/Tex/index.js'
 import { Text } from '../lib/Text/index.js'
 import type { Settings } from '../Settings/index.js'
 import { Term } from '../term.js'
+import type { Type } from '../Type/index.js'
 import chalk from 'chalk'
 import camelCase from 'lodash.camelcase'
 import snakeCase from 'lodash.snakecase'
@@ -341,7 +341,7 @@ const parameterEnvironment = (spec: CommandParameter.Output, settings: Settings.
 /**
  * Render an enum type into a column.
  */
-const typeEnum = (type: Pam.Type.Scalar.Enumeration) => {
+const typeEnum = (type: Type.Scalar.Enumeration) => {
   const separator = Term.colors.accent(` ${Text.chars.pipe} `)
   const members = Object.values(type.members)
   const lines = members.map((member) => Term.colors.positive(String(member))).join(separator)
@@ -354,7 +354,7 @@ const title = (string: string) => {
   return Text.line(string.toUpperCase())
 }
 
-const typeScalar = (type: Pam.Type): string => {
+const typeScalar = (type: Type.Type): string => {
   if (type._tag === `TypeEnum`) return typeEnum(type)
   return Term.colors.positive(typeTagsToTypeScriptName[type._tag])
 }

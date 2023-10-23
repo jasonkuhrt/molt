@@ -1,10 +1,11 @@
-import type { Type } from './kinds.js'
+import type { Type } from '../../Type/index.js'
 import type { Value } from './types.js'
+import type { Name } from '@molt/types'
 
-export interface Parameter<T extends Type = Type> {
+export interface Parameter<$Type extends Type.Type = Type.Type> {
   _tag: 'Basic'
-  name: Name
-  type: T
+  name: Name.Data.NameParsed
+  type: $Type
   optionality: Optionality
   description: null | string
 }
@@ -14,13 +15,3 @@ export type Optionality =
     | { _tag: 'required' }
     | { _tag: 'optional' }
     | { _tag: 'default', getValue: () => Value }
-
-export interface Name {
-  canonical: string
-  aliases: {
-    short: string[]
-    long: string[]
-  }
-  short: null | string
-  long: null | string
-}

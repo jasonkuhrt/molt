@@ -3,8 +3,9 @@ import { PromptEngine } from '../../../PromptEngine/PromptEngine.js'
 import type { Params } from '../_core.js'
 import chalk from 'chalk'
 import { Effect } from 'effect'
+import type { Type } from 'packages/@molt/command/src/Type/index.js'
 
-export const enumeration = (params: Params<Pam.Parameter<Pam.Type.Scalar.Enumeration>>) =>
+export const enumeration = (params: Params<Pam.Parameter<Type.Scalar.Enumeration>>) =>
   Effect.gen(function* (_) {
     interface State {
       active: number

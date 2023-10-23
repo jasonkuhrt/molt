@@ -36,14 +36,13 @@ export const prompt = (
       .render()
       // eslint-disable-next-line no-constant-condition
       while (true) {
-        const arg = yield* _(
-          prompter.ask({
-            question,
-            prompt: `❯ `,
-            marginLeft: gutterWidth,
-            parameter: param,
-          }),
-        )
+        const asking = prompter.ask({
+          question,
+          prompt: `❯ `,
+          marginLeft: gutterWidth,
+          parameter: param,
+        })
+        const arg = yield* _(asking)
         const validationResult = CommandParameter.validate(param, arg)
         if (validationResult._tag === `Right`) {
           args[param.name.canonical] = validationResult.right
