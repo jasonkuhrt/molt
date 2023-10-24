@@ -133,29 +133,17 @@ export namespace State {
       // In order to make keys optional we have to do some ugly gymnastics. Would be great if there was a better way.
       // We create an inner object that could be optional or not, then stripe off the outer object which results in a
       // union of objects that we need to merge together... :(
-      UnionToIntersection<Values<{
+      {
         [Label in keyof State['ParametersExclusive'] & string]:
-          State['ParametersExclusive'][Label]['Optional'] extends true
-          ? { [_ in Label]?:
-              Simplify<Values<{
+           | Simplify<Values<{
                 [Name in keyof State['ParametersExclusive'][Label]['Parameters']]:
                   {
                     _tag: State['ParametersExclusive'][Label]['Parameters'][Name]['NameParsed']['canonical']
                     value: z.infer<State['ParametersExclusive'][Label]['Parameters'][Name]['Schema']>
                   }
               }>>
-            }
-          : { [_ in Label]: 
-              Simplify<Values<{
-                [Name in keyof State['ParametersExclusive'][Label]['Parameters']]:
-                  {
-                    _tag: State['ParametersExclusive'][Label]['Parameters'][Name]['NameParsed']['canonical']
-                    value: z.infer<State['ParametersExclusive'][Label]['Parameters'][Name]['Schema']>
-                  }
-              }>>
-            }
-          
-      }>>
+            | (State['ParametersExclusive'][Label]['Optional'] extends true ? undefined : never)
+      }
     >
 
   // prettier-ignore
