@@ -1,6 +1,7 @@
-import type { Strings } from '../prelude.js'
+// import type { Strings } from '../prelude.js'
 import type { BaseChecks, LongChecks, ReportFailures, ShortChecks, SomeFailures } from './checks.js'
 import type { Name, NameEmpty } from './data.js'
+import type { $, Objects, Strings, Tuples } from 'hotscript'
 
 // prettier-ignore
 export namespace Errors {
@@ -10,20 +11,29 @@ export namespace Errors {
 }
 
 // prettier-ignore
-type AddAliasLong<$Name extends Name, Variant extends string> = Omit<$Name, 'aliases'> & { aliases: { long: [...$Name['aliases']['long'], Strings.KebabToCamelCase<Variant>], short: $Name['aliases']['short'] }}
+type AddAliasLong<$Name extends Name, Variant extends string> =
+	$<Objects.Update<'aliases.long', Tuples.Append<$<Strings.CamelCase,Variant>>>, $Name>
+// $<Objects.Update<'aliases.long', [...$Name['aliases']['long'], Strings.KebabToCamelCase<Variant>]>,$Name>
+
 // prettier-ignore
-type AddAliasShort<$Name extends Name, Variant extends string> = Omit<$Name, 'aliases'> & { aliases: { long: $Name['aliases']['long'], short: [...$Name['aliases']['short'], Variant] }}
+type AddAliasShort<$Name extends Name, Variant extends string> =
+	$<Objects.Update<'aliases.short', Tuples.Append<Variant>>, $Name>
+
 // prettier-ignore
-type AddLong<$Name extends Name, Variant extends string> = Omit<$Name, 'long'> & { long: Strings.KebabToCamelCase<Variant>  }
+type AddLong<$Name extends Name, Variant extends string> =
+	$<Objects.Update<'long', $<Strings.CamelCase,Variant>>, $Name>
+
 // prettier-ignore
-type AddShort<$Name extends Name, Variant extends string> = Omit<$Name, 'short'> & { short: Variant  }
+type AddShort<$Name extends Name, Variant extends string> =
+	$<Objects.Update<'short', Variant>, $Name>
+
 // prettier-ignore
 type addCanonical<$Name extends Name> =
-	Omit<$Name, 'canonical'> & {
-		canonical:	$Name['long']  extends string ? $Name['long'] :
-								$Name['short'] extends string ? $Name['short'] :
-																								never // A valid flag always has either a long or short name
-	}
+	$<Objects.Update<'canonical', 
+			$Name['long']  extends string ? $Name['long'] :
+			$Name['short'] extends string ? $Name['short'] :
+																			never // A valid flag always has either a long or short name
+	>, $Name>
 
 export interface SomeLimits {
   reservedNames: string | undefined

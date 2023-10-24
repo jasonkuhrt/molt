@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@types/lodash.camelcase": "4.3.8",
+    "hotscript": "^1.0.13",
     "lodash.camelcase": "^4.3.0"
   }
 }
