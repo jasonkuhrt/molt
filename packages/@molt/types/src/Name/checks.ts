@@ -1,6 +1,6 @@
-import type { Strings } from '../prelude.js'
 import type { Name } from './data.js'
 import type { SomeLimits } from './parser.js'
+import type { $, Strings } from 'hotscript'
 
 // prettier-ignore
 export namespace Messages {
@@ -15,30 +15,30 @@ export namespace Messages {
 // prettier-ignore
 export namespace Kinds {
 	export type LongTooShort<Variant extends string> = {
-		predicate: Strings.Length<Variant> extends 1 ? true : false
+		predicate: $<Strings.Length,Variant> extends 1 ? true : false
 		message: Messages.LongTooShort<Variant>
 	}
 
 	export type ShortTooLong<Variant extends string> = {
-		predicate: Strings.Length<Variant> extends 1 ? false : true
+		predicate: $<Strings.Length,Variant> extends 1 ? false : true
 		message: Messages.ShortTooLong<Variant>
 	}
 
 	export type AliasDuplicate<$Name extends Name, Variant extends string> = {
-		predicate: Strings.KebabToCamelCase<Variant> extends $Name['long'] | $Name['short'] ? true : false
+		predicate: $<Strings.CamelCase,Variant> extends $Name['long'] | $Name['short'] ? true : false
 		message: Messages.AliasDuplicate<Variant>
 	}
 		
 	export type AlreadyTaken<Limits extends SomeLimits, Variant extends string> = {
 		predicate:	Limits['usedNames'] extends undefined 																											     							? false :
-								Strings.KebabToCamelCase<Variant> extends Strings.KebabToCamelCase<Exclude<Limits['usedNames'], undefined>> 	? true :
+								$<Strings.CamelCase,Variant> extends $<Strings.CamelCase,Exclude<Limits['usedNames'], undefined>> 	? true :
 																																																		   													false
 		message: Messages.AlreadyTaken<Variant>
 	}
 
 	export type Reserved<Limits extends SomeLimits, Variant extends string> = {
 		predicate:	Limits['reservedNames'] extends undefined 																																				? false :
-								Strings.KebabToCamelCase<Variant> extends Strings.KebabToCamelCase<Exclude<Limits['reservedNames'], undefined>> 	? true :
+								$<Strings.CamelCase,Variant> extends $<Strings.CamelCase,Exclude<Limits['reservedNames'], undefined>> 	? true :
 																																																																		false
 		message: Messages.Reserved<Variant>
 	}

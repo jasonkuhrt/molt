@@ -36,6 +36,10 @@ export const isString = (type: z.ZodFirstPartySchemaTypes): type is z.ZodString 
   return type._def.typeName === z.ZodFirstPartyTypeKind.ZodString
 }
 
+export const isBoolean = (type: z.ZodFirstPartySchemaTypes): type is z.ZodBoolean => {
+  return type._def.typeName === z.ZodFirstPartyTypeKind.ZodBoolean
+}
+
 export const isNumber = (type: z.ZodFirstPartySchemaTypes): type is z.ZodNumber => {
   return type._def.typeName === z.ZodFirstPartyTypeKind.ZodNumber
 }
