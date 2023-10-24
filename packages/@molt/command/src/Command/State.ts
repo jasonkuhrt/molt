@@ -130,9 +130,6 @@ export namespace State {
         [Name in keyof State['Parameters'] & string as State['Parameters'][Name]['NameParsed']['canonical']]:
           z.infer<State['Parameters'][Name]['Schema']>
       } &
-      // In order to make keys optional we have to do some ugly gymnastics. Would be great if there was a better way.
-      // We create an inner object that could be optional or not, then stripe off the outer object which results in a
-      // union of objects that we need to merge together... :(
       {
         [Label in keyof State['ParametersExclusive'] & string]:
            | Simplify<Values<{
