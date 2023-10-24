@@ -15,7 +15,7 @@ describe(`optional`, () => {
 
     expectType<typeof c>(
       as<{
-        method?:
+        method:
           | {
               _tag: 'version'
               value: string
@@ -24,6 +24,7 @@ describe(`optional`, () => {
               _tag: 'bump'
               value: 'major' | 'minor' | 'patch'
             }
+          | undefined
       }>(),
     )
   })

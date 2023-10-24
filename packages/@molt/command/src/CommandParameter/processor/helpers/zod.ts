@@ -39,21 +39,16 @@ const analyzeZodType_ = <ZT extends SomeType>(
   }
 
   // @ts-expect-error todo
-  const type: null | Type.Type = ZodHelpers.isUnion(zodType)
-    ? analyzeZodUnionType(zodType)
-    : ZodHelpers.isLiteral(zodType)
-    ? Type.literal(zodType._def.value)
-    : ZodHelpers.isString(zodType)
-    ? Type.string(mapZodStringChecks(zodType._def.checks))
-    : zodType._def.typeName === z.ZodFirstPartyTypeKind.ZodBoolean
-    ? Type.boolean()
-    : ZodHelpers.isNumber(zodType)
-    ? Type.number(mapZodNumberChecks(zodType._def.checks))
-    : ZodHelpers.isNativeEnum(zodType)
-    ? Type.enumeration(Object.values(zodType._def.values))
-    : ZodHelpers.isEnum(zodType)
-    ? Type.enumeration(zodType._def.values)
-    : null
+  // prettier-ignore
+  const type: null | Type.Type =
+    ZodHelpers.isUnion(zodType)       ? analyzeZodUnionType(zodType) :
+    ZodHelpers.isLiteral(zodType)     ? Type.literal(zodType._def.value) :
+    ZodHelpers.isString(zodType)      ? Type.string(mapZodStringChecks(zodType._def.checks)) :
+    ZodHelpers.isBoolean(zodType)     ? Type.boolean() :
+    ZodHelpers.isNumber(zodType)      ? Type.number(mapZodNumberChecks(zodType._def.checks)) :
+    ZodHelpers.isNativeEnum(zodType)  ? Type.enumeration(Object.values(zodType._def.values)) :
+    ZodHelpers.isEnum(zodType)        ? Type.enumeration(zodType._def.values) :
+                                        null
 
   if (!type) throw new Error(`Unsupported zod type: ${zodType._def.typeName}`)
 
