@@ -58,14 +58,26 @@ export const isUnionUnwrapped = (type: z.ZodFirstPartySchemaTypes) => {
   return isUnion
 }
 
-export const isOptional = (schema: z.ZodTypeAny) => {
-  if (schema instanceof z.ZodOptional) {
-    return true
-  }
-  if (schema instanceof z.ZodDefault) {
-    return true
-  }
-  return false
+export const isOptional = (
+  type: z.ZodFirstPartySchemaTypes,
+): type is z.ZodOptional<z.ZodFirstPartySchemaTypes> => {
+  return type._def.typeName === z.ZodFirstPartyTypeKind.ZodOptional
+}
+
+export const isDefault = (
+  type: z.ZodFirstPartySchemaTypes,
+): type is z.ZodDefault<z.ZodFirstPartySchemaTypes> => {
+  return type._def.typeName === z.ZodFirstPartyTypeKind.ZodDefault
+}
+
+export const isFirstParty = (type: z.ZodFirstPartySchemaTypes): type is z.ZodFirstPartySchemaTypes => {
+  return type._def.typeName in z.ZodFirstPartyTypeKind
+}
+
+export const isOptionalOrDefault = (
+  type: z.ZodFirstPartySchemaTypes,
+): type is z.ZodOptional<z.ZodFirstPartySchemaTypes> | z.ZodDefault<z.ZodFirstPartySchemaTypes> => {
+  return isOptional(type) || isDefault(type)
 }
 
 export const getEnum = (type: z.ZodTypeAny): null | z.ZodEnum<[string, ...string[]]> => {

@@ -1,6 +1,6 @@
 import { ZodHelpers } from '../../lib/zodHelpers/index.js'
 import { Type } from '../../Type/index.js'
-import { z } from 'zod'
+import type { z } from 'zod'
 
 export * from './helpers.js'
 
@@ -11,18 +11,23 @@ export type FromZod<ZodType extends z.ZodType> =
   ZodType extends z.ZodLiteral<infer T extends boolean|string|number>   ? Type.Scalar.Literal<T> :
   ZodType extends z.ZodNumber                                           ? Type.Scalar.Number :
   ZodType extends z.ZodEnum<infer T>                                    ? Type.Scalar.Enumeration<T> :
+  ZodType extends z.ZodOptional<infer T>                                ? FromZod<T> :
+  ZodType extends z.ZodDefault<infer T>                                 ? FromZod<T> :
   // ZodType extends z.ZodNativeEnum<infer T>                                    ? Type.Scalar.Enumeration<T> :
                                                                           never
 
 // prettier-ignore
 export const fromZod = (zodType: z.ZodFirstPartySchemaTypes): Type.Type => {
-  const zt = ZodHelpers.stripOptionalAndDefault(zodType)
-  if (zt instanceof z.ZodString)          return Type.string() // todo forward refinements
-  if (zt instanceof z.ZodNumber)          return Type.number() // todo forward refinements
-  if (zt instanceof z.ZodEnum)            return Type.enumeration(zt._def.values)
-  if (zt instanceof z.ZodNativeEnum)      return Type.enumeration(zt._def.values)
-  if (zt instanceof z.ZodBoolean)         return Type.boolean()
-  if (zt instanceof z.ZodUnion)           {
+  const zt = zodType
+  if (ZodHelpers.isString(zt))          return Type.string() // todo forward refinements
+  if (ZodHelpers.isNumber(zt))          return Type.number() // todo forward refinements
+  if (ZodHelpers.isEnum(zt))            return Type.enumeration(zt._def.values)
+  if (ZodHelpers.isNativeEnum(zt))      return Type.enumeration(zt._def.values)
+  if (ZodHelpers.isBoolean(zt))         return Type.boolean()
+  if (ZodHelpers.isLiteral(zt))         return Type.literal(zt._def.value)
+  if (ZodHelpers.isDefault(zt))         return fromZod(zt._def.innerType)
+  if (ZodHelpers.isOptional(zt))        return fromZod(zt._def.innerType)
+  if (ZodHelpers.isUnion(zt))           {
     if (!Array.isArray(zt._def.options)) {
       throw new Error(`Unsupported zodType: ${JSON.stringify(zt[`_def`])}`)
     }
@@ -35,7 +40,6 @@ export const fromZod = (zodType: z.ZodFirstPartySchemaTypes): Type.Type => {
       })
     )
   }
-  if (zt instanceof z.ZodLiteral)         return Type.literal(zt._def.value)
   console.log(zt)
   throw new Error(`Unsupported zodType: ${JSON.stringify(zt[`_def`])}`)
 }

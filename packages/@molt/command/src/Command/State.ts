@@ -136,14 +136,14 @@ export namespace State {
       } &
       {
         [Label in keyof State['ParametersExclusive'] & string]:
-           | Simplify<Values<{
-                [Name in keyof State['ParametersExclusive'][Label]['Parameters']]:
-                  {
-                    _tag: State['ParametersExclusive'][Label]['Parameters'][Name]['NameParsed']['canonical']
-                    value: Type.Infer<State['ParametersExclusive'][Label]['Parameters'][Name]['Type']>
-                  }
-              }>>
-            | (State['ParametersExclusive'][Label]['Optional'] extends true ? undefined : never)
+          | Simplify<Values<{
+              [Name in keyof State['ParametersExclusive'][Label]['Parameters']]:
+                {
+                  _tag: State['ParametersExclusive'][Label]['Parameters'][Name]['NameParsed']['canonical']
+                  value: Type.Infer<State['ParametersExclusive'][Label]['Parameters'][Name]['Type']>
+                }
+            }>>
+          | (State['ParametersExclusive'][Label]['Optional'] extends true ? undefined : never)
       }
     >
 
