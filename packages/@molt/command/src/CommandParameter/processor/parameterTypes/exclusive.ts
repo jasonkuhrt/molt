@@ -1,8 +1,8 @@
 import type { Settings } from '../../../index.js'
+import { TypeAdaptors } from '../../../TypeAdaptors/index.js'
 import type { Input } from '../../input.js'
 import type { Output } from '../../output.js'
 import { processEnvironment } from '../helpers/environment.js'
-import { analyzeZodType } from '../helpers/zod.js'
 import { Name } from '@molt/types'
 import { Alge } from 'alge'
 
@@ -14,7 +14,7 @@ export const processExclusive = (
   const parameters = input.parameters.map((_) => {
     const name = Name.parse(_.nameExpression)
     const environment = processEnvironment(settings, name)
-    const typeAnalysis = analyzeZodType(_.type)
+    const typeAnalysis = TypeAdaptors.Zod.analyzeZodType(_.type)
     return {
       _tag: `Exclusive`,
       description: typeAnalysis.description,

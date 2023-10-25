@@ -1,6 +1,7 @@
 import type { CommandParameter } from '../CommandParameter/index.js'
 import { BooleanLookup, negateNamePattern, parseEnvironmentVariableBoolean } from '../helpers.js'
 import type { Type } from '../Type/index.js'
+import type { LiteralValue } from '../Type/Type.js'
 import type { Value } from './types.js'
 import { Alge } from 'alge'
 import camelCase from 'lodash.camelcase'
@@ -21,6 +22,7 @@ export const parseRawInput = (name: string, rawValue: string, spec: CommandParam
   }
   if (typeof parsedValue === `string`) return { _tag: `string`, value: parsedValue }
   if (typeof parsedValue === `number`) return { _tag: `number`, value: parsedValue }
+  if (typeof parsedValue === `undefined`) return { _tag: `undefined`, value: undefined }
   if (typeof parsedValue === `boolean`){
   // dump(isEnvarNegated(name, spec))
   return { _tag: `boolean`, value: parsedValue, negated: isEnvarNegated(name, spec) }
@@ -61,7 +63,10 @@ const stripeNamespace = (name: string, spec: CommandParameter.Output): string =>
  */
 const variantOrder: Type.Type['_tag'][] = [`TypeNumber`, `TypeBoolean`, `TypeString`, `TypeEnum`, `TypeUnion`]
 
-export const parseRawValue = (value: string, type: Type.Type): null | boolean | number | string => {
+export const parseRawValue = (
+  value: string,
+  type: Type.Type,
+): null | undefined | boolean | number | string => {
   return Alge.match(type)
     .TypeLiteral((t) => parseLiteral(t, value))
     .TypeString(() => value)
@@ -98,8 +103,9 @@ export const parseEnum = (spec: Type.Scalar.Enumeration, value: string): string 
   return value
 }
 
-export const parseLiteral = (spec: Type.Scalar.Literal, value: string): boolean | string | number => {
+export const parseLiteral = (spec: Type.Scalar.Literal, value: string): LiteralValue => {
   if (typeof spec.value === `string`) return value
+  if (typeof spec.value === `undefined`) return undefined
   if (typeof spec.value === `number`) return Number(value)
   if (typeof spec.value === `boolean`) {
     const v = (BooleanLookup as Record<string, boolean>)[value]

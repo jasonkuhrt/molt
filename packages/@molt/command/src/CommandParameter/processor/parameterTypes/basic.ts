@@ -1,10 +1,10 @@
 import type { Settings } from '../../../index.js'
 import type { Pam } from '../../../lib/Pam/index.js'
+import { TypeAdaptors } from '../../../TypeAdaptors/index.js'
 import type { Input } from '../../input.js'
 import type { Output } from '../../output.js'
 import type { SomeBasicType, SomeUnionType } from '../../types.js'
 import { processEnvironment } from '../helpers/environment.js'
-import { analyzeZodType } from '../helpers/zod.js'
 import { Name } from '@molt/types'
 import { z } from 'zod'
 
@@ -48,7 +48,7 @@ export const inferPropsFromZodType = (zodType: SomeBasicType | SomeUnionType) =>
     ? { _tag: `optional` }
     : { _tag: `required` }
 
-  const { type, description } = analyzeZodType(zodType)
+  const { type, description } = TypeAdaptors.Zod.analyzeZodType(zodType)
 
   return {
     optionality,
