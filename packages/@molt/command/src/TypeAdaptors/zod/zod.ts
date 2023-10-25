@@ -1,6 +1,8 @@
 import { ZodHelpers } from '../../lib/zodHelpers/index.js'
 import { Type } from '../../Type/index.js'
 import { Alge } from 'alge'
+import type { Objects, Pipe } from 'hotscript'
+import type { Unions } from 'hotscript'
 import type { Simplify } from 'type-fest'
 import type { z } from 'zod'
 
@@ -15,8 +17,9 @@ export type FromZod<ZodType extends z.ZodType> =
   ZodType extends z.ZodEnum<infer T>                                    ? Type.Scalar.Enumeration<T> :
   ZodType extends z.ZodOptional<infer T>                                ? Type.Union<[{ type:FromZod<T>, description:null }, { type:Type.Literal<undefined>, description:null }]> :
   ZodType extends z.ZodDefault<infer T>                                 ? FromZod<T> :
+  // @ts-expect-error ignoreme
+  ZodType extends z.ZodNativeEnum<infer T extends z.EnumLike>           ? Type.Scalar.Enumeration<Pipe<T,[Objects.Values,Unions.ToTuple]>> :
   // ZodType extends z.ZodUnion<infer T>                                   ? Type.Union<T> :
-  // ZodType extends z.ZodNativeEnum<infer T>                                    ? Type.Scalar.Enumeration<T[keyof T]> :
                                                                           never
 
 // prettier-ignore
@@ -31,7 +34,7 @@ export const fromZod = (zodType: z.ZodFirstPartySchemaTypes): Type.Type => {
     return Type.number(checks)
   }
   if (ZodHelpers.isEnum(zt))            return Type.enumeration(zt._def.values)
-  if (ZodHelpers.isNativeEnum(zt))      return Type.enumeration(zt._def.values)
+  if (ZodHelpers.isNativeEnum(zt))      return Type.enumeration(Object.values(zt._def.values))
   if (ZodHelpers.isBoolean(zt))         return Type.boolean()
   if (ZodHelpers.isLiteral(zt))         return Type.literal(zt._def.value)
   if (ZodHelpers.isDefault(zt))         return fromZod(zt._def.innerType)

@@ -3,10 +3,10 @@ import { type FromZod, fromZod } from './zod.js'
 import { z } from 'zod'
 
 export const analyzeZodType = (zodType: SomeType) => {
-  return analyzeZodType_(zodType, zodType.description ?? null)
+  return _analyzeZodType(zodType, zodType.description ?? null)
 }
 
-const analyzeZodType_ = <ZT extends SomeType>(
+const _analyzeZodType = <ZT extends SomeType>(
   zt: ZT,
   description: null | string,
 ): {
@@ -14,11 +14,11 @@ const analyzeZodType_ = <ZT extends SomeType>(
   description: null | string
 } => {
   if (zt._def.typeName === z.ZodFirstPartyTypeKind.ZodDefault) {
-    return analyzeZodType_(zt._def.innerType as ZT, description)
+    return _analyzeZodType(zt._def.innerType as ZT, description)
   }
 
   if (zt._def.typeName === z.ZodFirstPartyTypeKind.ZodOptional) {
-    return analyzeZodType_(zt._def.innerType as ZT, description)
+    return _analyzeZodType(zt._def.innerType as ZT, description)
   }
 
   const type = fromZod(zt)

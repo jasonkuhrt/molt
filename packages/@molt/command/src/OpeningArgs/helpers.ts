@@ -97,8 +97,8 @@ export const parseRawValue = (
  *
  * When we receive a raw value, we infer its base  type based on checking the type first member of the enum.
  */
-export const parseEnum = (spec: Type.Scalar.Enumeration, value: string): string | number => {
-  const isNumberEnum = spec.members.find((_) => typeof _ === `number`)
+export const parseEnum = (type: Type.Scalar.Enumeration, value: string): string | number => {
+  const isNumberEnum = type.members.find((_) => typeof _ === `number`)
   if (isNumberEnum) return Number(value)
   return value
 }
