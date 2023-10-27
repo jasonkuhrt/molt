@@ -15,7 +15,7 @@ export const processExclusive = (
     const name = Name.parse(_.nameExpression)
     const environment = processEnvironment(settings, name)
     const typeAnalysis = TypeAdaptors.Zod.analyzeZodType(_.type)
-    return {
+    const parameter = {
       _tag: `Exclusive`,
       description: typeAnalysis.description,
       type: typeAnalysis.type,
@@ -24,6 +24,7 @@ export const processExclusive = (
       // See comment/code below: (1)
       group: null as any, // eslint-disable-line
     } satisfies Output.Exclusive
+    return parameter
   })
 
   /**

@@ -10,18 +10,22 @@ export * from './helpers.js'
 
 // prettier-ignore
 export type FromZod<ZodType extends z.ZodType> =
+  ZodType extends z.ZodOptional<infer T>
+    ? Type.Union<[{ type: FromZodNonOptional<T>, description:null|string }, { type:Type.Literal<undefined>, description:null|string }]>
+    : FromZodNonOptional<ZodType>
+
+// prettier-ignore
+export type FromZodNonOptional<ZodType extends z.ZodType> =
   ZodType extends z.ZodString                                           ? Type.Scalar.String :
   ZodType extends z.ZodBoolean                                          ? Type.Scalar.Boolean :
   ZodType extends z.ZodLiteral<infer T extends boolean|string|number>   ? Type.Scalar.Literal<T> :
   ZodType extends z.ZodNumber                                           ? Type.Scalar.Number :
   ZodType extends z.ZodEnum<infer T>                                    ? Type.Scalar.Enumeration<T> :
-  ZodType extends z.ZodOptional<infer T>                                ? Type.Union<[{ type:FromZod<T>, description:null }, { type:Type.Literal<undefined>, description:null }]> :
   ZodType extends z.ZodDefault<infer T>                                 ? FromZod<T> :
   // @ts-expect-error ignoreme
   ZodType extends z.ZodNativeEnum<infer T extends z.EnumLike>           ? Type.Scalar.Enumeration<Pipe<T,[Objects.Values,Unions.ToTuple]>> :
   // ZodType extends z.ZodUnion<infer T>                                   ? Type.Union<T> :
                                                                           never
-
 // prettier-ignore
 export const fromZod = (zodType: z.ZodFirstPartySchemaTypes): Type.Type => {
   const zt = zodType
