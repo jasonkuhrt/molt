@@ -14,17 +14,30 @@ export type FromZod<ZodType extends z.ZodType> =
 
 // prettier-ignore
 export type FromZodNonOptional<ZodType extends z.ZodType> =
+  ZodType extends ZodTypeScalar              ? FromZodScalar<ZodType> :
+  ZodType extends z.ZodDefault<infer T>      ? FromZodScalar<T> :
+  // ZodType extends z.ZodUnion<infer T>                                   ? Type.Union<T> :
+                                                never
+
+// prettier-ignore
+export type FromZodScalar<ZodType extends ZodTypeScalar> =
   ZodType extends z.ZodString                                           ? Type.Scalar.String :
   ZodType extends z.ZodBoolean                                          ? Type.Scalar.Boolean :
   ZodType extends z.ZodLiteral<infer T extends boolean|string|number>   ? Type.Scalar.Literal<T> :
   ZodType extends z.ZodNumber                                           ? Type.Scalar.Number :
   ZodType extends z.ZodEnum<infer T>                                    ? Type.Scalar.Enumeration<T> :
-  ZodType extends z.ZodDefault<infer T>                                 ? FromZod<T> :
-  ZodType extends z.ZodNativeEnum<infer T extends z.EnumLike>           ? Type.Scalar.Enumeration<y2<T>> :
-  // ZodType extends z.ZodUnion<infer T>                                   ? Type.Union<T> :
+  ZodType extends z.ZodNativeEnum<infer T extends z.EnumLike>           ? Type.Scalar.Enumeration<EnumerationMembersFromZodEnumLike<T>> :
                                                                           never
+type EnumerationMembersFromZodEnumLike<T extends z.EnumLike> = T[keyof T][]
 
-type y2<T extends z.EnumLike> = T[keyof T][]
+type ZodTypeScalar =
+  | z.ZodString
+  | z.ZodBoolean
+  | z.ZodLiteral<any>
+  | z.ZodNumber
+  | z.ZodEnum<any>
+  | z.ZodNativeEnum<any>
+// prettier-ignore
 
 // prettier-ignore
 export const fromZod = (zodType: z.ZodFirstPartySchemaTypes): Type.Type => {

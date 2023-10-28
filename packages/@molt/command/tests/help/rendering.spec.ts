@@ -1,4 +1,3 @@
-import type { RootBuilder } from '../../src/Command/root/types.js'
 import { Command } from '../../src/index.js'
 import { s } from '../_/helpers.js'
 import { createState } from '../environment/__helpers__.js'
@@ -15,26 +14,15 @@ const output = createState<string>({
 
 const onOutput = output.set
 
-const $ = (description: string, builder: RootBuilder<any>) => {
-  it(description, () => {
-    builder.settings({ onOutput }).parse({ line: [`-h`] })
-    expect(stripAnsi(output.value)).toMatchSnapshot(`monochrome`)
-    expect(output.value).toMatchSnapshot(`polychrome`)
-  })
-}
-
-$.only = (description: string, builder: RootBuilder<any>) => {
-  it.only(description, () => {
-    builder.settings({ onOutput }).parse({ line: [`-h`] })
-    expect(stripAnsi(output.value)).toMatchSnapshot(`monochrome`)
-    expect(output.value).toMatchSnapshot(`polychrome`)
-  })
-}
-
-$(
-  `if command has description it is shown`,
-  Command.create().description(`Blah blah blah`).parameter(`foo`, s.optional()),
-)
+it(`if command has description it is shown`, () => {
+  Command.create()
+    .description(`Blah blah blah`)
+    .parameter(`foo`, s.optional())
+    .settings({ onOutput })
+    .parse({ line: [`-h`] })
+  expect(stripAnsi(output.value)).toMatchSnapshot(`monochrome`)
+  expect(output.value).toMatchSnapshot(`polychrome`)
+})
 
 it(`if there is optional param it is shown`, () => {
   Command.create()
