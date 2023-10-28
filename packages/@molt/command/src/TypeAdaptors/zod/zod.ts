@@ -4,8 +4,6 @@ import { Alge } from 'alge'
 import type { Simplify } from 'type-fest'
 import type { z } from 'zod'
 
-export * from './helpers.js'
-
 // prettier-ignore
 export type FromZod<ZodType extends z.ZodType> =
   ZodType extends z.ZodOptional<infer T>
@@ -39,34 +37,40 @@ type ZodTypeScalar =
   | z.ZodNativeEnum<any>
 // prettier-ignore
 
+export const fromZod = (zodType: z.ZodFirstPartySchemaTypes): Type.Type => _fromZod(zodType,undefined)
+
 // prettier-ignore
-export const fromZod = (zodType: z.ZodFirstPartySchemaTypes): Type.Type => {
+const _fromZod = (zodType: z.ZodFirstPartySchemaTypes,previousDescription?:string): Type.Type => {
   const zt = zodType
+  const description = zt.description??previousDescription
+  
   if (ZodHelpers.isString(zt)) {
     const checks = mapZodStringChecks(zt._def.checks)
-    return Type.string(checks)
+    return Type.string(checks,description)
   }
   if (ZodHelpers.isNumber(zt)) {
     const checks = mapZodNumberChecks(zt._def.checks)
-    return Type.number(checks)
+    return Type.number(checks,description)
   }
-  if (ZodHelpers.isEnum(zt))            return Type.enumeration(zt._def.values)
-  if (ZodHelpers.isNativeEnum(zt))      return Type.enumeration(Object.values(zt._def.values))
-  if (ZodHelpers.isBoolean(zt))         return Type.boolean()
-  if (ZodHelpers.isLiteral(zt))         return Type.literal(zt._def.value)
-  if (ZodHelpers.isDefault(zt))         return fromZod(zt._def.innerType)
-  if (ZodHelpers.isOptional(zt))        return fromZod(zt._def.innerType)
+  if (ZodHelpers.isEnum(zt))            return Type.enumeration(zt._def.values,description)
+  if (ZodHelpers.isNativeEnum(zt))      return Type.enumeration(Object.values(zt._def.values),description)
+  if (ZodHelpers.isBoolean(zt))         return Type.boolean(description)
+  if (ZodHelpers.isLiteral(zt))         return Type.literal(zt._def.value,description)
+  if (ZodHelpers.isDefault(zt))         return _fromZod(zt._def.innerType,description)
+  if (ZodHelpers.isOptional(zt))        return _fromZod(zt._def.innerType,description)
   if (ZodHelpers.isUnion(zt))           {
     if (!Array.isArray(zt._def.options)) {
       throw new Error(`Unsupported zodType: ${JSON.stringify(zt[`_def`])}`)
     }
     return Type.union(
-      zt._def.options.map(_ => {
+      zt._def.options.map((_: {_def:{description:undefined|string}}) => {
+        const description = _._def.description 
         return {
-          description: null, // todo forward from zod
-          type: fromZod(_)
+          description: description ?? null,
+          type: _fromZod(_ as any,description)
         }
-      })
+      }),
+      description
     )
   }
   // console.log(zt)
@@ -92,11 +96,11 @@ const mapZodNumberChecks = (checks: z.ZodNumberCheck[]) => {
         }))
         .done()
     },
-    {} as Simplify<Omit<Type.Scalar.Number, '_tag'>>,
+    {} as Simplify<Omit<Type.Scalar.Number, '_tag' | 'description'>>,
   )
 }
 
-const mapZodStringChecks = (checks: z.ZodStringCheck[]): Omit<Type.Scalar.String, '_tag'> => {
+const mapZodStringChecks = (checks: z.ZodStringCheck[]): Omit<Type.Scalar.String, '_tag' | 'description'> => {
   return checks.reduce(
     (acc, check) => {
       return {

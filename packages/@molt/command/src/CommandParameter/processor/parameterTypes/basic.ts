@@ -48,11 +48,11 @@ export const inferPropsFromZodType = (zodType: SomeBasicType | SomeUnionType) =>
     ? { _tag: `optional` }
     : { _tag: `required` }
 
-  const { type, description } = TypeAdaptors.Zod.analyzeZodType(zodType)
+  const type = TypeAdaptors.Zod.fromZod(zodType)
 
   return {
     optionality,
-    description,
+    description: type.description,
     // Cannot use @ts-expect-error because someone the build then
     // does _not_ detect an error here, in which case the expect error
     // itself triggers the error... chicken and egg problem.

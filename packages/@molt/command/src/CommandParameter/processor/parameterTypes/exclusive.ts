@@ -14,11 +14,11 @@ export const processExclusive = (
   const parameters = input.parameters.map((_) => {
     const name = Name.parse(_.nameExpression)
     const environment = processEnvironment(settings, name)
-    const typeAnalysis = TypeAdaptors.Zod.analyzeZodType(_.type)
+    const type = TypeAdaptors.Zod.fromZod(_.type)
     const parameter = {
       _tag: `Exclusive`,
-      description: typeAnalysis.description,
-      type: typeAnalysis.type,
+      description: type.description,
+      type: type,
       environment,
       name,
       // See comment/code below: (1)

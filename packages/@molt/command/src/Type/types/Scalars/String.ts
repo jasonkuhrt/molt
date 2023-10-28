@@ -1,5 +1,6 @@
 export interface String extends Refinements {
   _tag: 'TypeString'
+  description: string | null
 }
 
 interface Refinements {
@@ -51,6 +52,10 @@ interface Refinements {
 }
 
 // eslint-disable-next-line
-export const string = (refinements?: Refinements): String => {
-  return { _tag: `TypeString`, ...refinements }
+export const string = (refinements?: Refinements, description?: string): String => {
+  return {
+    _tag: `TypeString`,
+    ...refinements,
+    description: description ?? null,
+  }
 }
