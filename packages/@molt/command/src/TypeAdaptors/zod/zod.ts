@@ -69,7 +69,7 @@ export const fromZod = (zodType: z.ZodFirstPartySchemaTypes): Type.Type => {
       })
     )
   }
-  console.log(zt)
+  // console.log(zt)
   throw new Error(`Unsupported zodType: ${JSON.stringify(zt[`_def`])}`)
 }
 
