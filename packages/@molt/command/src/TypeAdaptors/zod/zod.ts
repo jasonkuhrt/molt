@@ -1,8 +1,6 @@
 import { ZodHelpers } from '../../lib/zodHelpers/index.js'
 import { Type } from '../../Type/index.js'
 import { Alge } from 'alge'
-import type { Objects, Pipe } from 'hotscript'
-import type { Unions } from 'hotscript'
 import type { Simplify } from 'type-fest'
 import type { z } from 'zod'
 
@@ -22,10 +20,12 @@ export type FromZodNonOptional<ZodType extends z.ZodType> =
   ZodType extends z.ZodNumber                                           ? Type.Scalar.Number :
   ZodType extends z.ZodEnum<infer T>                                    ? Type.Scalar.Enumeration<T> :
   ZodType extends z.ZodDefault<infer T>                                 ? FromZod<T> :
-  // @ts-expect-error ignoreme
-  ZodType extends z.ZodNativeEnum<infer T extends z.EnumLike>           ? Type.Scalar.Enumeration<Pipe<T,[Objects.Values,Unions.ToTuple]>> :
+  ZodType extends z.ZodNativeEnum<infer T extends z.EnumLike>           ? Type.Scalar.Enumeration<y2<T>> :
   // ZodType extends z.ZodUnion<infer T>                                   ? Type.Union<T> :
                                                                           never
+
+type y2<T extends z.EnumLike> = T[keyof T][]
+
 // prettier-ignore
 export const fromZod = (zodType: z.ZodFirstPartySchemaTypes): Type.Type => {
   const zt = zodType
