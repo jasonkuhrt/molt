@@ -19,7 +19,7 @@ export interface Prompter {
     prompt: string
     question: string
     marginLeft?: number
-  }) => Effect.Effect<never, never, Type.InferPrimitive<T>>
+  }) => Effect.Effect<never, never, Type.Infer<T>>
 }
 
 export const create = (channels: PromptEngine.Channels): Prompter => {
