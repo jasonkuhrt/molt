@@ -42,7 +42,7 @@ export const fromZod = (zodType: z.ZodFirstPartySchemaTypes): Type.Type => _from
 // prettier-ignore
 const _fromZod = (zodType: z.ZodFirstPartySchemaTypes,previousDescription?:string): Type.Type => {
   const zt = zodType
-  const description = zt.description??previousDescription
+  const description = previousDescription??zt.description
   
   if (ZodHelpers.isString(zt)) {
     const checks = mapZodStringChecks(zt._def.checks)
