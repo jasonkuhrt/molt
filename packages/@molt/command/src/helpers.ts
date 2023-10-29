@@ -67,7 +67,7 @@ export const invertTable = <T>(rows: T[][]): T[][] => {
   return columns
 }
 
-export const entries = <O extends Record<string, unknown>>(
+export const entries = <O extends object>(
   obj: O,
 ): Exclude<{ [k in keyof O]: [k, O[k]] }[keyof O], undefined>[] => Object.entries(obj) as any
 

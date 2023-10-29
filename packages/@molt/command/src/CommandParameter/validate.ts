@@ -1,4 +1,4 @@
-import { Type } from '../Type/index.js'
+import type { Type } from '../Type/index.js'
 import type { Output } from './output.js'
 import { Alge } from 'alge'
 import { Either } from 'effect'
@@ -17,7 +17,7 @@ const validateBasic = <T>(spec: Output.Basic, value: T): Type.ValidationResult<T
     }
     return Either.right(value)
   }
-  return Type.validate(spec.type, value)
+  return spec.type.validate(value)
 }
 
 const validateExclusive = <T>(_spec: Output.Exclusive, _value: T): Type.ValidationResult<T> => {

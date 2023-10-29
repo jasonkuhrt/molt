@@ -1,13 +1,19 @@
-export interface String extends Refinements {
+import { casesExhausted, entries } from '../../../helpers.js'
+import { Patterns } from '../../../lib/Patterns/index.js'
+import { runtimeIgnore, type Type, TypeSymbol } from '../../helpers.js'
+import { Alge } from 'alge'
+import { Either } from 'effect'
+
+export interface String extends Type<string>, Refinements {
   _tag: 'TypeString'
-  description: string | null
+}
+
+interface Transformations {
+  trim?: boolean
+  toCase?: 'upper' | 'lower'
 }
 
 interface Refinements {
-  transformations?: {
-    trim?: boolean
-    toCase?: 'upper' | 'lower'
-  }
   regex?: RegExp
   min?: number
   max?: number
@@ -52,10 +58,140 @@ interface Refinements {
 }
 
 // eslint-disable-next-line
-export const string = (refinements?: Refinements, description?: string): String => {
+export const string = (
+  refinements?: Refinements,
+  transformations?: Transformations,
+  description?: string,
+  // eslint-disable-next-line
+): String => {
   return {
     _tag: `TypeString`,
     ...refinements,
+    ...transformations,
     description: description ?? null,
+    [TypeSymbol]: runtimeIgnore, // eslint-disable-line
+    validate: (value) => {
+      const errors: string[] = []
+
+      if (typeof value !== `string`) {
+        return Either.left({ value, errors: [`Value is not a string.`] })
+      }
+
+      if (!refinements) return Either.right(value)
+
+      if (refinements.regex && !refinements.regex.test(value)) {
+        errors.push(`Value does not conform to Regular Expression.`)
+      }
+      if (refinements.min) {
+        if (value.length < refinements.min) {
+          errors.push(`Value is too short.`)
+        }
+      }
+      if (refinements.max) {
+        if (value.length > refinements.max) {
+          errors.push(`Value is too long.`)
+        }
+      }
+      if (refinements.includes) {
+        if (!value.includes(refinements.includes)) {
+          errors.push(`Value does not include ${refinements.includes}.`)
+        }
+      }
+
+      if (refinements.pattern) {
+        Alge.match(refinements.pattern)
+          .cuid(() => {
+            if (!Patterns.cuid.test(value)) {
+              errors.push(`Value is not a cuid.`)
+            }
+          })
+          .url(() => {
+            try {
+              new URL(value)
+            } catch (error) {
+              errors.push(`Value is not a URL.`)
+            }
+          })
+          .email(() => {
+            if (!Patterns.email.test(value)) {
+              errors.push(`Value is not an email address.`)
+            }
+          })
+          .uuid(() => {
+            if (!Patterns.uuid.test(value)) {
+              errors.push(`Value is not a uuid.`)
+            }
+          })
+          .ulid(() => {
+            if (!Patterns.ulid.test(value)) {
+              errors.push(`Value is not a ulid.`)
+            }
+          })
+          .dateTime((type) => {
+            if (!Patterns.dateTime({ offset: type.offset, precision: type.precision }).test(value)) {
+              errors.push(`Value is not a conforming datetime.`)
+            }
+          })
+          .cuid2(() => {
+            if (!Patterns.cuid2.test(value)) {
+              errors.push(`Value is not a cuid2.`)
+            }
+          })
+          .ip((type) => {
+            const ip4 = Patterns.ipv4.test(value)
+            if (type.version === 4 && !ip4) {
+              errors.push(`Value is not an ipv4 address.`)
+              return
+            }
+            const ip6 = Patterns.ipv6.test(value)
+            if (type.version === 6 && !ip6) {
+              errors.push(`Value is not an ipv6 address.`)
+              return
+            }
+            if (!ip4 && !ip6) {
+              errors.push(`Value is not an ipv4 or ipv6 address.`)
+            }
+          })
+          .emoji(() => {
+            if (!Patterns.emoji.test(value)) {
+              errors.push(`Value is not an emoji.`)
+            }
+          })
+          .done()
+      }
+
+      if (refinements.startsWith) {
+        if (!value.startsWith(refinements.startsWith)) {
+          errors.push(`Value does not start with ${refinements.startsWith}.`)
+        }
+      }
+      if (refinements.endsWith) {
+        if (!value.endsWith(refinements.endsWith)) {
+          errors.push(`Value does not end with ${refinements.endsWith}.`)
+        }
+      }
+      if (refinements.length) {
+        if (value.length !== refinements.length) {
+          errors.push(`Value does not have the length ${refinements.length}.`)
+        }
+      }
+      if (errors.length > 0) {
+        return Either.left({ value, errors })
+      }
+      return Either.right(value)
+    },
+    transform: (value) => {
+      if (!transformations) return value
+
+      return entries(transformations ?? {}).reduce((_value, [kind, kindValue]) => {
+        return kind === `trim`
+          ? _value.trim()
+          : kind === `toCase`
+          ? kindValue === `upper`
+            ? _value.toUpperCase()
+            : _value.toLowerCase()
+          : casesExhausted(kind)
+      }, value)
+    },
   }
 }
