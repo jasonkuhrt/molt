@@ -2,6 +2,7 @@ import type { CommandParameter } from '../../CommandParameter/index.js'
 import { parse } from '../../executor/parse.js'
 import { getLowerCaseEnvironment, lowerCaseObjectKeys } from '../../helpers.js'
 import { Settings } from '../../Settings/index.js'
+import { TypeAdaptors } from '../../TypeAdaptors/index.js'
 import * as ExclusiveBuilder from '../exclusive/constructor.js'
 import type { ParameterConfiguration, RawArgInputs, RootBuilder } from './types.js'
 
@@ -38,7 +39,9 @@ export const create = (): RootBuilder => {
     },
     parameter: (nameExpression, typeOrConfiguration) => {
       const configuration =
-        `schema` in typeOrConfiguration ? typeOrConfiguration : { schema: typeOrConfiguration }
+        `schema` in typeOrConfiguration
+          ? typeOrConfiguration
+          : { schema: typeOrConfiguration, type: TypeAdaptors.Zod.fromZod(typeOrConfiguration) }
       $$.addParameterBasic(nameExpression, configuration)
 
       return chain

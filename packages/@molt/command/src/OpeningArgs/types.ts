@@ -24,6 +24,7 @@ export type Value =
   | { _tag: 'boolean'; value: boolean; negated: boolean }
   | { _tag: 'number'; value: number }
   | { _tag: 'string'; value: string }
+  | { _tag: 'undefined'; value: undefined }
 
 type ArgumentSource = LineSource | EnvironmentSource
 

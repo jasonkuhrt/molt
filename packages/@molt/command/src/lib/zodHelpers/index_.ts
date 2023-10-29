@@ -2,6 +2,8 @@ import type { RenameKey } from '../prelude.js'
 import type { Simplify } from 'type-fest'
 import { z } from 'zod'
 
+export * from './guards.js'
+
 export type ZodDateCheck = Simplify<RenameKey<z.ZodDateCheck, 'kind', '_tag'>>
 
 export type ZodNumberCheck = Simplify<RenameKey<z.ZodNumberCheck, 'kind', '_tag'>>
@@ -24,48 +26,10 @@ export const stripOptionalAndDefault = <T extends z.ZodFirstPartySchemaTypes>(
   return type as any
 }
 
-export const isUnion = (type: z.ZodFirstPartySchemaTypes): type is z.ZodUnion<any> => {
-  return type._def.typeName === z.ZodFirstPartyTypeKind.ZodUnion
-}
-
-export const isLiteral = (type: z.ZodFirstPartySchemaTypes): type is z.ZodLiteral<any> => {
-  return type._def.typeName === z.ZodFirstPartyTypeKind.ZodLiteral
-}
-
-export const isString = (type: z.ZodFirstPartySchemaTypes): type is z.ZodString => {
-  return type._def.typeName === z.ZodFirstPartyTypeKind.ZodString
-}
-
-export const isBoolean = (type: z.ZodFirstPartySchemaTypes): type is z.ZodBoolean => {
-  return type._def.typeName === z.ZodFirstPartyTypeKind.ZodBoolean
-}
-
-export const isNumber = (type: z.ZodFirstPartySchemaTypes): type is z.ZodNumber => {
-  return type._def.typeName === z.ZodFirstPartyTypeKind.ZodNumber
-}
-
-export const isNativeEnum = (type: z.ZodFirstPartySchemaTypes): type is z.ZodNativeEnum<any> => {
-  return type._def.typeName === z.ZodFirstPartyTypeKind.ZodNativeEnum
-}
-
-export const isEnum = (type: z.ZodFirstPartySchemaTypes): type is z.ZodEnum<any> => {
-  return type._def.typeName === z.ZodFirstPartyTypeKind.ZodEnum
-}
-
 export const isUnionUnwrapped = (type: z.ZodFirstPartySchemaTypes) => {
   const type_ = stripOptionalAndDefault(type)
   const isUnion = type_._def.typeName === z.ZodFirstPartyTypeKind.ZodUnion
   return isUnion
-}
-
-export const isOptional = (schema: z.ZodTypeAny) => {
-  if (schema instanceof z.ZodOptional) {
-    return true
-  }
-  if (schema instanceof z.ZodDefault) {
-    return true
-  }
-  return false
 }
 
 export const getEnum = (type: z.ZodTypeAny): null | z.ZodEnum<[string, ...string[]]> => {

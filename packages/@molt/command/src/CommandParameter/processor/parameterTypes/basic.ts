@@ -1,10 +1,10 @@
 import type { Settings } from '../../../index.js'
 import type { Pam } from '../../../lib/Pam/index.js'
+import { TypeAdaptors } from '../../../TypeAdaptors/index.js'
 import type { Input } from '../../input.js'
 import type { Output } from '../../output.js'
 import type { SomeBasicType, SomeUnionType } from '../../types.js'
 import { processEnvironment } from '../helpers/environment.js'
-import { analyzeZodType } from '../helpers/zod.js'
 import { Name } from '@molt/types'
 import { z } from 'zod'
 
@@ -48,11 +48,11 @@ export const inferPropsFromZodType = (zodType: SomeBasicType | SomeUnionType) =>
     ? { _tag: `optional` }
     : { _tag: `required` }
 
-  const { type, description } = analyzeZodType(zodType)
+  const type = TypeAdaptors.Zod.fromZod(zodType)
 
   return {
     optionality,
-    description,
+    description: type.description,
     // Cannot use @ts-expect-error because someone the build then
     // does _not_ detect an error here, in which case the expect error
     // itself triggers the error... chicken and egg problem.

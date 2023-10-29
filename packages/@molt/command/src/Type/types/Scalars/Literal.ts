@@ -1,10 +1,18 @@
-export interface Literal<$Value extends Value = Value> {
+export interface Literal<$Value extends LiteralValue = LiteralValue> {
   _tag: 'TypeLiteral'
   value: $Value
+  description: string | null
 }
 
-type Value = number | string | boolean
+export type LiteralValue = number | string | boolean | undefined
 
-export const literal = <const $Value extends Value>(value: $Value): Literal<$Value> => {
-  return { _tag: `TypeLiteral`, value }
+export const literal = <const $Value extends LiteralValue>(
+  value: $Value,
+  description?: string,
+): Literal<$Value> => {
+  return {
+    _tag: `TypeLiteral`,
+    value,
+    description: description ?? null,
+  }
 }

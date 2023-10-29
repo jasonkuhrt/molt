@@ -52,8 +52,8 @@ export const union = (params: Params<Pam.Parameter<Type.Union>>) =>
           parameter.type.members
             .map((item, i) =>
               i === state.active
-                ? `${chalk.green(chalk.bold(typeNameMapping[item.type._tag]))}`
-                : typeNameMapping[item.type._tag],
+                ? `${chalk.green(chalk.bold(typeNameMapping[item._tag]))}`
+                : typeNameMapping[item._tag],
             )
             .join(chalk.dim(` | `))
         return Text.chars.newline + intro + Text.chars.newline + Text.chars.newline + choices
@@ -73,7 +73,7 @@ export const union = (params: Params<Pam.Parameter<Type.Union>>) =>
         ...params,
         parameter: {
           ...parameter,
-          ...choice,
+          ...{ type: choice },
         },
         question: ``,
       }),

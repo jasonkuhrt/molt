@@ -1,5 +1,6 @@
 export interface Number extends Refinements {
   _tag: 'TypeNumber'
+  description: string | null
 }
 
 interface Refinements {
@@ -11,6 +12,10 @@ interface Refinements {
 }
 
 // eslint-disable-next-line
-export const number = (refinements?: Refinements): Number => {
-  return { _tag: `TypeNumber`, ...refinements }
+export const number = (refinements?: Refinements, description?: string): Number => {
+  return {
+    _tag: `TypeNumber`,
+    ...refinements,
+    description: description ?? null,
+  }
 }

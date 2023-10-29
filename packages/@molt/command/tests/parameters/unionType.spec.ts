@@ -7,7 +7,7 @@ it(`arg static type is the union`, () => {
   const args = Command.create()
     .parameter(`x`, z.union([z.string(), z.number()]))
     .parse({ line: [`-x`, `1`] })
-  expectType<string | number>(args.x)
+  expectType<typeof args>(0 as any as { x: string | number })
 })
 
 it(`spec of number|string parses arg as number if number given`, () => {

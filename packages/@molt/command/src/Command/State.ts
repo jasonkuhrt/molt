@@ -1,10 +1,11 @@
 import type { CommandParameter } from '../CommandParameter/index.js'
 import type { Values } from '../helpers.js'
+import type { Type } from '../Type/index.js'
+import type { TypeAdaptors } from '../TypeAdaptors/index.js'
 import type { ExclusiveParameterConfiguration } from './exclusive/types.js'
 import type { ParameterConfiguration } from './root/types.js'
 import type { Name } from '@molt/types'
 import type { Simplify } from 'type-fest'
-import type { z } from 'zod'
 
 export namespace State {
   export interface BaseEmpty extends Base {
@@ -22,6 +23,7 @@ export namespace State {
           [canonicalName: string]: {
             NameParsed: Name.Data.NameParsed
             NameUnion: string
+            Type: Type.Type
             Schema: CommandParameter.SomeBasicType
           }
         }
@@ -31,6 +33,7 @@ export namespace State {
       [nameExpression: string]: {
         NameParsed: Name.Data.NameParsed
         NameUnion: string
+        Type: Type.Type
         Schema: CommandParameter.SomeBasicType
       }
     }
@@ -95,6 +98,7 @@ export namespace State {
         Parameters: {
           [_ in NameExpression as Name.Data.GetCanonicalNameOrErrorFromParseResult<Name.Parse<NameExpression>>]: {
             Schema: Configuration['schema']
+            Type: TypeAdaptors.Zod.FromZod<Configuration['schema']>
             NameParsed: Name.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>
             NameUnion: Name.Data.GetNamesFromParseResult<
               Name.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>
@@ -112,6 +116,7 @@ export namespace State {
     Configuration   extends ParameterConfiguration,
   > = {
     Schema: Configuration['schema']
+    Type: TypeAdaptors.Zod.FromZod<Configuration['schema']>
     NameParsed: Name.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>
     NameUnion: Name.Data.GetNamesFromParseResult<Name.Parse<NameExpression,{ usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>>
   }
@@ -125,21 +130,20 @@ export namespace State {
   // prettier-ignore
   type ToArgs_<State extends Base> =
     Simplify<
-    // Any.Compute<
       {
         [Name in keyof State['Parameters'] & string as State['Parameters'][Name]['NameParsed']['canonical']]:
-          z.infer<State['Parameters'][Name]['Schema']>
+          Type.Infer<State['Parameters'][Name]['Type']>
       } &
       {
         [Label in keyof State['ParametersExclusive'] & string]:
-           | Simplify<Values<{
-                [Name in keyof State['ParametersExclusive'][Label]['Parameters']]:
-                  {
-                    _tag: State['ParametersExclusive'][Label]['Parameters'][Name]['NameParsed']['canonical']
-                    value: z.infer<State['ParametersExclusive'][Label]['Parameters'][Name]['Schema']>
-                  }
-              }>>
-            | (State['ParametersExclusive'][Label]['Optional'] extends true ? undefined : never)
+          | Simplify<Values<{
+              [Name in keyof State['ParametersExclusive'][Label]['Parameters']]:
+                {
+                  _tag: State['ParametersExclusive'][Label]['Parameters'][Name]['NameParsed']['canonical']
+                  value: Type.Infer<State['ParametersExclusive'][Label]['Parameters'][Name]['Type']>
+                }
+            }>>
+          | (State['ParametersExclusive'][Label]['Optional'] extends true ? undefined : never)
       }
     >
 

@@ -18,7 +18,7 @@ export type InferPrimitive<$Type extends Type> =
   $Type extends Scalar.Number                       ? number  :
   $Type extends Scalar.String                       ? string  :
   $Type extends Scalar.Enumeration<infer Members>   ? Members[number] :
-  $Type extends Union<infer Members>                ? InferPrimitive<Exclude<Members[number]['type'], {_tag: 'TypeUnion'}>> :
+  $Type extends Union<infer Members>                ? InferPrimitive<Exclude<Members[number], {_tag: 'TypeUnion'}>> :
   $Type extends Scalar.Literal<infer Value>         ? Value :
                                                       never
 
@@ -28,7 +28,7 @@ export type Infer<$Type extends Type> =
   $Type extends Scalar.Number                       ? number  :
   $Type extends Scalar.String                       ? string  :
   $Type extends Scalar.Enumeration<infer Members>   ? Members[number] :
-  $Type extends Union<infer Members>                ? Infer<Members[number]['type']> :
+  $Type extends Union<infer Members>                ? Infer<Members[number]> :
   $Type extends Scalar.Literal<infer Value>         ? Value :
                                                       never
 
@@ -182,7 +182,7 @@ export const validate = <T>(type: Type, value: T): ValidationResult<T> => {
       return Either.right(value)
     })
     .TypeUnion((type) => {
-      const result = type.members.find((member) => validate(member.type, value))
+      const result = type.members.find((member) => validate(member, value))
       if (!result) {
         return Either.left({ value, errors: [`Value does not fit any member of the union.`] })
       }
