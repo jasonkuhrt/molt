@@ -13,16 +13,6 @@ export type Type = Scalar | Union
 export type ValidationResult<T> = Either.Either<{ value: T; errors: string[] }, T>
 
 // prettier-ignore
-export type InferPrimitive<$Type extends Type> =
-  $Type extends Scalar.Boolean                      ? boolean :
-  $Type extends Scalar.Number                       ? number  :
-  $Type extends Scalar.String                       ? string  :
-  $Type extends Scalar.Enumeration<infer Members>   ? Members[number] :
-  $Type extends Union<infer Members>                ? InferPrimitive<Exclude<Members[number], {_tag: 'TypeUnion'}>> :
-  $Type extends Scalar.Literal<infer Value>         ? Value :
-                                                      never
-
-// prettier-ignore
 export type Infer<$Type extends Type> =
   $Type extends Scalar.Boolean                      ? boolean :
   $Type extends Scalar.Number                       ? number  :
