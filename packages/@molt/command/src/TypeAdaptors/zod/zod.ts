@@ -7,14 +7,14 @@ import type { z } from 'zod'
 // prettier-ignore
 export type FromZod<ZodType extends z.ZodType> =
   ZodType extends z.ZodOptional<infer T>
-    ? Type.Union<[{ type: FromZodNonOptional<T>, description:null|string }, { type:Type.Literal<undefined>, description:null|string }]>
+    ? Type.Union<[FromZodNonOptional<T>, Type.Literal<undefined>]>
     : FromZodNonOptional<ZodType>
 
 // prettier-ignore
 export type FromZodNonOptional<ZodType extends z.ZodType> =
   ZodType extends ZodTypeScalar              ? FromZodScalar<ZodType> :
   ZodType extends z.ZodDefault<infer T>      ? FromZodScalar<T> :
-  // ZodType extends z.ZodUnion<infer T>                                   ? Type.Union<T> :
+  ZodType extends z.ZodUnion<infer T>        ? Type.Union<{[i in keyof T]: FromZodScalar<T[i]>}> :
                                                 never
 
 // prettier-ignore
@@ -65,10 +65,7 @@ const _fromZod = (zodType: z.ZodFirstPartySchemaTypes,previousDescription?:strin
     return Type.union(
       zt._def.options.map((_: {_def:{description:undefined|string}}) => {
         const description = _._def.description 
-        return {
-          description: description ?? null,
-          type: _fromZod(_ as any,description)
-        }
+        return _fromZod(_ as any,description)
       }),
       description
     )

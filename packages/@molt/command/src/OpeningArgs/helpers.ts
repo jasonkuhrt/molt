@@ -79,8 +79,8 @@ export const parseRawValue = (
     .TypeUnion((t) => {
       return (
         t.members
-          .sort((a, b) => variantOrder.indexOf(a.type._tag) - variantOrder.indexOf(b.type._tag))
-          .map((m) => parseRawValue(value, m.type))
+          .sort((a, b) => variantOrder.indexOf(a._tag) - variantOrder.indexOf(b._tag))
+          .map((m) => parseRawValue(value, m))
           .find((m) => m !== null) ?? null
       )
     })

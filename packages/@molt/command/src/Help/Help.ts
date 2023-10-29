@@ -294,7 +294,7 @@ const parameterTypeAndDescription = (settings: Settings.Output, spec: CommandPar
                 `${index === 0 ? unionMemberIcon : Term.colors.dim(Text.chars.borders.vertical)} `,
             },
           },
-          (__) => __.block(typeScalar(m.type)).block(m.description),
+          (__) => __.block(typeScalar(m)).block(m.description),
         )
       })
       return Tex.block((__) =>
@@ -307,7 +307,7 @@ const parameterTypeAndDescription = (settings: Settings.Output, spec: CommandPar
           .block(Term.colors.dim(Text.chars.borders.leftBottom + Text.chars.borders.horizontal)),
       )
     } else {
-      const types = t.members.map((m) => typeTagsToTypeScriptName[m.type._tag]).join(` | `)
+      const types = t.members.map((m) => typeTagsToTypeScriptName[m._tag]).join(` | `)
       return Tex.block(($) => $.block(types).block(spec.description ?? null))
     }
   }

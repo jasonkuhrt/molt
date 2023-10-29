@@ -1,15 +1,12 @@
 import type { Scalar } from './Scalar.js'
 
-export interface Union<Members extends Member[] = Member[]> {
+export interface Union<Members extends readonly Member[] = Member[]> {
   _tag: 'TypeUnion'
   members: Members
   description: string | null
 }
 
-export interface Member {
-  type: Scalar | Union<Member[]>
-  description: string | null
-}
+export type Member = Scalar | Union<Member[]>
 
 export const union = <$Members extends Member[]>(
   members: $Members,
