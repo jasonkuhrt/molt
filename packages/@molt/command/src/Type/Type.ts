@@ -18,7 +18,7 @@ export type Infer<$Type extends Type> =
   $Type extends Scalar.Number                       ? number  :
   $Type extends Scalar.String                       ? string  :
   $Type extends Scalar.Enumeration<infer Members>   ? Members[number] :
-  $Type extends Union<infer Members>                ? Infer<Members[number]> :
+  $Type extends Union<infer Members>                ? Infer<Exclude<Members[number], {_tag: 'TypeUnion'}>> :
   $Type extends Scalar.Literal<infer Value>         ? Value :
                                                       never
 
