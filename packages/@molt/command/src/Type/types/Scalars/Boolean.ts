@@ -1,3 +1,4 @@
+import { Term } from '../../../term.js'
 import type { Type } from '../../helpers.js'
 import { runtimeIgnore, TypeSymbol } from '../../helpers.js'
 import { Either } from 'effect'
@@ -17,6 +18,9 @@ export const boolean = (description?: string): Boolean => {
       return typeof value === `boolean`
         ? Either.right(value)
         : Either.left({ value, errors: [`Value is not a boolean.`] })
+    },
+    help: () => {
+      return Term.colors.positive(`boolean`)
     },
   }
 }

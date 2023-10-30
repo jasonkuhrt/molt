@@ -1,3 +1,4 @@
+import { Term } from '../../../term.js'
 import { runtimeIgnore, type Type, TypeSymbol } from '../../helpers.js'
 import { Either } from 'effect'
 
@@ -20,6 +21,9 @@ export const number = (refinements?: Refinements, description?: string): Number 
     ...refinements,
     description: description ?? null,
     [TypeSymbol]: runtimeIgnore, // eslint-disable-line
+    help: () => {
+      return Term.colors.positive(`number`)
+    },
     validate: (value) => {
       const errors: string[] = []
 

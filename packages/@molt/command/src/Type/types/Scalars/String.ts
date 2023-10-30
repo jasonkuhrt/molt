@@ -1,5 +1,6 @@
 import { casesExhausted, entries } from '../../../helpers.js'
 import { Patterns } from '../../../lib/Patterns/index.js'
+import { Term } from '../../../term.js'
 import { runtimeIgnore, type Type, TypeSymbol } from '../../helpers.js'
 import { Alge } from 'alge'
 import { Either } from 'effect'
@@ -70,6 +71,9 @@ export const string = (
     ...transformations,
     description: description ?? null,
     [TypeSymbol]: runtimeIgnore, // eslint-disable-line
+    help: () => {
+      return Term.colors.positive(`string`)
+    },
     validate: (value) => {
       const errors: string[] = []
 
