@@ -2,7 +2,7 @@ import type { Type } from '../../../Type/index.js'
 import type { Pam } from '../../Pam/index.js'
 import type { PromptEngine } from '../../PromptEngine/PromptEngine.js'
 import { Text } from '../../Text/index.js'
-import { inputForParameter } from '../Input/_core.js'
+import { inputForParameter } from '../input.js'
 import type { Effect } from 'effect'
 
 export interface Prompter {

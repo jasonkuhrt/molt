@@ -45,12 +45,12 @@ const _fromZod = (zodType: z.ZodFirstPartySchemaTypes,previousDescription?:strin
   const description = previousDescription??zt.description
   
   if (ZodHelpers.isString(zt)) {
-    const checks = mapZodStringChecks(zt._def.checks)
-    return Type.string(checks,description)
+    const checks = mapZodStringChecksAndTransformations(zt._def.checks)
+    return Type.string(checks, undefined, description)
   }
   if (ZodHelpers.isNumber(zt)) {
-    const checks = mapZodNumberChecks(zt._def.checks)
-    return Type.number(checks,description)
+    const checks = mapZodNumberChecksAndTransformations(zt._def.checks)
+    return Type.number(checks, description)
   }
   if (ZodHelpers.isEnum(zt))            return Type.enumeration(zt._def.values,description)
   if (ZodHelpers.isNativeEnum(zt))      return Type.enumeration(Object.values(zt._def.values),description)
@@ -74,7 +74,7 @@ const _fromZod = (zodType: z.ZodFirstPartySchemaTypes,previousDescription?:strin
   throw new Error(`Unsupported zodType: ${JSON.stringify(zt[`_def`])}`)
 }
 
-const mapZodNumberChecks = (checks: z.ZodNumberCheck[]) => {
+const mapZodNumberChecksAndTransformations = (checks: z.ZodNumberCheck[]) => {
   return checks.reduce(
     (acc, check) => {
       return Alge.match(check)
@@ -97,7 +97,9 @@ const mapZodNumberChecks = (checks: z.ZodNumberCheck[]) => {
   )
 }
 
-const mapZodStringChecks = (checks: z.ZodStringCheck[]): Omit<Type.Scalar.String, '_tag' | 'description'> => {
+const mapZodStringChecksAndTransformations = (
+  checks: z.ZodStringCheck[],
+): Omit<Type.Scalar.String, '_tag' | 'description'> => {
   return checks.reduce(
     (acc, check) => {
       return {

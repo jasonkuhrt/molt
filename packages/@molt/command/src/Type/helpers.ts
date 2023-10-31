@@ -1,6 +1,8 @@
+import type { Optionality } from '../lib/Pam/parameter.js'
+import type { PromptEngine } from '../lib/PromptEngine/PromptEngine.js'
 import type { Tex } from '../lib/Tex/index.js'
-import { Term } from '../term.js'
 import type { ValidationResult } from './Type.js'
+import type { Effect, Either } from 'effect'
 
 export const TypeSymbol = Symbol(`type`)
 
@@ -15,26 +17,14 @@ export interface Type<T = any> {
   validate: (value: unknown) => ValidationResult<T>
   transform?: (value: T) => T
   help: () => string | Tex.Block
-  // todo account for terminal prompting
+  // TODO use Either type here
+  deserialize: (serializedValue: string) => Either.Either<Error, T>
+  prompt: (params: {
+    channels: PromptEngine.Channels
+    optionality: Optionality
+    prompt: string
+    marginLeft?: number
+  }) => Effect.Effect<never, never, T | undefined>
 }
-
-// export const createType = <T, AdditionalInput extends object>(
-//   constructor: (
-//     params: AdditionalInput & Pick<Type<T>, 'description'>,
-//   ) => AdditionalInput & Omit<Type<T>, TypeSymbol | 'help' | 'description'> & { help?: () => string },
-// ): (<$T extends T>(params: AdditionalInput & Pick<Type<$T>, 'description'>) => Type<T>) => {
-//   return (params) => {
-//     const properties = constructor(params)
-//     const propertyDefaults = {
-//       [TypeSymbol]: runtimeIgnore, // eslint-disable-line
-//       description: params.description ?? null,
-//       help: () => Term.colors.positive(properties[`_tag`]),
-//     }
-//     return {
-//       propertyDefaults,
-//       properties,
-//     }
-//   }
-// }
 
 export type Infer<T extends Type<any>> = T[TypeSymbol]

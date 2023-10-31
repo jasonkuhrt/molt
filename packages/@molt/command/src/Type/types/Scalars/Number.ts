@@ -1,6 +1,7 @@
+import { PromptEngine } from '../../../lib/PromptEngine/PromptEngine.js'
 import { Term } from '../../../term.js'
 import { runtimeIgnore, type Type, TypeSymbol } from '../../helpers.js'
-import { Either } from 'effect'
+import { Effect, Either } from 'effect'
 
 export interface Number extends Type<number>, Refinements {
   _tag: 'TypeNumber'
@@ -21,6 +22,13 @@ export const number = (refinements?: Refinements, description?: string): Number 
     ...refinements,
     description: description ?? null,
     [TypeSymbol]: runtimeIgnore, // eslint-disable-line
+    deserialize: (serializedValue) => {
+      const result = Number(serializedValue)
+      if (isNaN(result)) {
+        return Either.left(new Error(`Failed to parse number from ${serializedValue}.`))
+      }
+      return Either.right(result)
+    },
     help: () => {
       return Term.colors.positive(`number`)
     },
@@ -58,5 +66,37 @@ export const number = (refinements?: Refinements, description?: string): Number 
 
       return Either.right(value)
     },
+    prompt: (params) =>
+      Effect.gen(function* (_) {
+        interface State {
+          value: string
+        }
+        const initialState: State = { value: `` }
+        const marginLeftSpace = ` `.repeat(params.marginLeft ?? 0)
+        const prompt = PromptEngine.create({
+          channels: params.channels,
+          cursor: true,
+          skippable: params.optionality._tag !== `required`,
+          initialState,
+          on: [
+            {
+              run: (state, event) => {
+                return {
+                  value: event.name === `backspace` ? state.value.slice(0, -1) : state.value + event.sequence,
+                }
+              },
+            },
+          ],
+          draw: (state) => {
+            return marginLeftSpace + params.prompt + state.value
+          },
+        })
+        const state = yield* _(prompt)
+        if (state === null) return undefined
+        if (state.value === ``) return undefined
+        const valueParsed = parseFloat(state.value)
+        if (isNaN(valueParsed)) return null as any // todo remove cast
+        return valueParsed
+      }),
   }
 }
