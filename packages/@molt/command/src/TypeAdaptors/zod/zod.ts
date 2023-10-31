@@ -45,15 +45,15 @@ const _fromZod = (zodType: z.ZodFirstPartySchemaTypes,previousDescription?:strin
   const description = previousDescription??zt.description
   
   if (ZodHelpers.isString(zt)) {
-    const checks = mapZodStringChecksAndTransformations(zt._def.checks)
-    return Type.string(checks, undefined, description)
+    const {refinements,transformations} = mapZodStringChecksAndTransformations(zt._def.checks)
+    return Type.string(refinements, transformations, description)
   }
   if (ZodHelpers.isNumber(zt)) {
-    const checks = mapZodNumberChecksAndTransformations(zt._def.checks)
-    return Type.number(checks, description)
+    const {refinements} = mapZodNumberChecksAndTransformations(zt._def.checks)
+    return Type.number(refinements, description)
   }
   if (ZodHelpers.isEnum(zt))            return Type.enumeration(zt._def.values,description)
-  if (ZodHelpers.isNativeEnum(zt))      return Type.enumeration(Object.values(zt._def.values),description)
+  if (ZodHelpers.isNativeEnum(zt))      return Type.enumeration(Object.values<any>(zt._def.values),description)
   if (ZodHelpers.isBoolean(zt))         return Type.boolean(description)
   if (ZodHelpers.isLiteral(zt))         return Type.literal(zt._def.value,description)
   if (ZodHelpers.isDefault(zt))         return _fromZod(zt._def.innerType,description)
@@ -77,116 +77,124 @@ const _fromZod = (zodType: z.ZodFirstPartySchemaTypes,previousDescription?:strin
 const mapZodNumberChecksAndTransformations = (checks: z.ZodNumberCheck[]) => {
   return checks.reduce(
     (acc, check) => {
-      return Alge.match(check)
-        .int(() => ({ ...acc, int: true }))
+      return {
+        refinements: {
+          ...acc.refinements,
+          ...Alge.match(check)
+            .int(() => ({ ...acc, int: true }))
+            .min((check) => ({
+              min: check.value,
+            }))
+            .max((check) => ({
+              max: check.value,
+            }))
+            .finite(() => ({
+              finite: true,
+            }))
+            .multipleOf((check) => ({
+              multipleOf: check.value,
+            }))
+            .done(),
+        },
+      }
+    },
+    {} as Simplify<Pick<Type.Scalar.Number, 'refinements'>>,
+  )
+}
+
+const mapZodStringChecksAndTransformations = (checks: z.ZodStringCheck[]) => {
+  const transformations = [`trim`, `toLowerCase`, `toUpperCase`] as const
+  return checks.reduce(
+    (acc, check) => {
+      const refinementOrTransformation = Alge.match(check)
+        .regex((check) => ({
+          regex: check.regex,
+        }))
         .min((check) => ({
           min: check.value,
         }))
         .max((check) => ({
           max: check.value,
         }))
-        .finite(() => ({
-          finite: true,
+        .url((check) => ({
+          pattern: { type: check.kind },
         }))
-        .multipleOf((check) => ({
-          multipleOf: check.value,
+        .cuid((check) => ({
+          pattern: { type: check.kind },
+        }))
+        .cuid2(() => ({
+          pattern: { type: `cuid2` as const },
+        }))
+        .uuid((check) => ({
+          pattern: { type: check.kind },
+        }))
+        .emoji((_) => ({
+          pattern: { type: _.kind },
+        }))
+        .ip((_) => ({
+          pattern: {
+            type: _.kind,
+            version: _.version
+              ? Alge.match(_.version)
+                  .v4(() => 4 as const)
+                  .v6(() => 6 as const)
+                  .done()
+              : null,
+          },
+        }))
+        .ulid((_) => ({
+          pattern: { type: _.kind },
+        }))
+        .datetime((check) => ({
+          pattern: {
+            type: `dateTime` as const,
+            offset: check.offset,
+            precision: check.precision,
+          },
+        }))
+        .email((check) => ({
+          pattern: { type: check.kind },
+        }))
+        .endsWith((check) => ({
+          endsWith: check.value,
+        }))
+        .startsWith((check) => ({
+          startsWith: check.value,
+        }))
+        .length((check) => ({
+          length: check.value,
+        }))
+        .includes((_) => ({
+          includes: _.value,
+        }))
+        // transformations
+        .trim(() => ({
+          trim: true,
+        }))
+        .toLowerCase(() => ({
+          toCase: `lower` as const,
+        }))
+        .toUpperCase(() => ({
+          toCase: `upper` as const,
         }))
         .done()
-    },
-    {} as Simplify<Omit<Type.Scalar.Number, '_tag' | 'description'>>,
-  )
-}
 
-const mapZodStringChecksAndTransformations = (
-  checks: z.ZodStringCheck[],
-): Omit<Type.Scalar.String, '_tag' | 'description'> => {
-  return checks.reduce(
-    (acc, check) => {
-      return {
-        ...acc,
-        ...Alge.match(check)
-          .regex((check) => ({
-            regex: check.regex,
-          }))
-          .min((check) => ({
-            min: check.value,
-          }))
-          .max((check) => ({
-            max: check.value,
-          }))
-          .url((check) => ({
-            pattern: { type: check.kind },
-          }))
-          .cuid((check) => ({
-            pattern: { type: check.kind },
-          }))
-          .cuid2(() => ({
-            pattern: { type: `cuid2` as const },
-          }))
-          .uuid((check) => ({
-            pattern: { type: check.kind },
-          }))
-          .emoji((_) => ({
-            pattern: { type: _.kind },
-          }))
-          .ip((_) => ({
-            pattern: {
-              type: _.kind,
-              version: _.version
-                ? Alge.match(_.version)
-                    .v4(() => 4 as const)
-                    .v6(() => 6 as const)
-                    .done()
-                : null,
-            },
-          }))
-          .ulid((_) => ({
-            pattern: { type: _.kind },
-          }))
-          .datetime((check) => ({
-            pattern: {
-              type: `dateTime` as const,
-              offset: check.offset,
-              precision: check.precision,
-            },
-          }))
-          .email((check) => ({
-            pattern: { type: check.kind },
-          }))
-          .endsWith((check) => ({
-            endsWith: check.value,
-          }))
-          .startsWith((check) => ({
-            startsWith: check.value,
-          }))
-          .length((check) => ({
-            length: check.value,
-          }))
-          .includes((_) => ({
-            includes: _.value,
-          }))
-          // transformations
-          .trim(() => ({
+      return transformations.includes(Object.keys(refinementOrTransformation)[0]! as any)
+        ? {
+            ...acc,
             transformations: {
               ...acc.transformations,
-              trim: true,
+              ...refinementOrTransformation,
             },
-          }))
-          .toLowerCase(() => ({
-            transformations: {
-              ...acc.transformations,
-              toCase: `lower` as const,
+          }
+        : {
+            ...acc,
+            refinements: {
+              ...acc.refinements,
+              ...refinementOrTransformation,
             },
-          }))
-          .toUpperCase(() => ({
-            transformations: {
-              ...acc.transformations,
-              toCase: `upper` as const,
-            },
-          }))
-          .done(),
-      }
+          }
     },
-    {} as Simplify<Omit<Type.Scalar.String, '_tag'>>,
+    {} as Simplify<Pick<Type.Scalar.String, 'refinements' | 'transformations'>>,
   )
 }

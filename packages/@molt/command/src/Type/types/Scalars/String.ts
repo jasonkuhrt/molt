@@ -6,8 +6,10 @@ import { runtimeIgnore, type Type, TypeSymbol } from '../../helpers.js'
 import { Alge } from 'alge'
 import { Effect, Either } from 'effect'
 
-export interface String extends Type<string>, Refinements {
+export interface String extends Type<string> {
   _tag: 'TypeString'
+  refinements: Refinements
+  transformations: Transformations
 }
 
 interface Transformations {
@@ -68,8 +70,8 @@ export const string = (
 ): String => {
   return {
     _tag: `TypeString`,
-    ...refinements,
-    ...transformations,
+    refinements: refinements ?? {},
+    transformations: transformations ?? {},
     description: description ?? null,
     [TypeSymbol]: runtimeIgnore, // eslint-disable-line
     help: () => {

@@ -3,8 +3,9 @@ import { Term } from '../../../term.js'
 import { runtimeIgnore, type Type, TypeSymbol } from '../../helpers.js'
 import { Effect, Either } from 'effect'
 
-export interface Number extends Type<number>, Refinements {
+export interface Number extends Type<number> {
   _tag: 'TypeNumber'
+  refinements: Refinements
 }
 
 interface Refinements {
@@ -19,7 +20,7 @@ interface Refinements {
 export const number = (refinements?: Refinements, description?: string): Number => {
   return {
     _tag: `TypeNumber`,
-    ...refinements,
+    refinements: refinements ?? {},
     description: description ?? null,
     [TypeSymbol]: runtimeIgnore, // eslint-disable-line
     deserialize: (serializedValue) => {

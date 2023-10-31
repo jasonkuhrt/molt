@@ -28,6 +28,9 @@ export const literal = <const $Value extends LiteralValue>(
     help: () => {
       return Term.colors.positive(String(value))
     },
+    prompt: () => {
+      throw new Error(`Not implemented`)
+    },
     deserialize: (rawValue) => {
       if (typeof value === `string`) return Either.right(rawValue as $Value)
       if (typeof value === `undefined`) {
