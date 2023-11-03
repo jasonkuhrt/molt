@@ -6,7 +6,8 @@ import { runtimeIgnore, type Type, TypeSymbol } from '../helpers.js'
 import chalk from 'chalk'
 import { Effect, Either } from 'effect'
 
-export interface Union<Members extends readonly Member[] = Member[]> extends Type<Members[number]> {
+export interface Union<Members extends readonly Member[] = Member[]>
+  extends Type<Members[number][TypeSymbol]> {
   _tag: 'TypeUnion'
   members: Members
 }

@@ -11,9 +11,9 @@ export const runtimeIgnore: any = true
 export type TypeSymbol = typeof TypeSymbol
 
 export interface Type<T = any> {
-  [TypeSymbol]: T
   _tag: string
   description: null | string
+  [TypeSymbol]: T
   validate: (value: unknown) => ValidationResult<T>
   transform?: (value: T) => T
   help: () => string | Tex.Block

@@ -1,4 +1,4 @@
-import { CommandParameter } from '../CommandParameter/index.js'
+import type { CommandParameter } from '../CommandParameter/index.js'
 import { Errors } from '../Errors/index.js'
 import { errorFromUnknown, groupBy } from '../lib/prelude.js'
 import { Environment } from './Environment/index.js'
@@ -82,13 +82,15 @@ export const parse = ({
           }
         })
         .else((argReportValue) => {
-          const valueTransformed = CommandParameter.transform(spec, argReportValue.value)
-          const validationResult = CommandParameter.validate(spec, valueTransformed)
+          // eslint-disable-next-line
+          const valueTransformed = spec.type.transform?.(argReportValue.value) ?? argReportValue.value
+          const validationResult = spec.type.validate(valueTransformed)
           return Alge.match(validationResult)
             .Right((result) => {
               return {
                 _tag: `supplied` as const,
                 spec,
+                // eslint-disable-next-line
                 value: result.right,
               }
             })
