@@ -27,8 +27,9 @@ export const boolean = (description?: string): Boolean_ => {
         : Either.left({ value, errors: [`Value is not a boolean.`] })
     },
     display: () => Term.colors.positive(`boolean`),
+    displayExpanded: () => type.display(),
     help: () => {
-      return Tex.block(($) => $.block(type.display()).block(description ?? null)) as Tex.Block
+      return Tex.block(($) => $.block(type.displayExpanded()).block(description ?? null)) as Tex.Block
     },
     deserialize: (rawValue) => {
       return parseEnvironmentVariableBoolean(rawValue)

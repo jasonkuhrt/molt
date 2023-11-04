@@ -33,10 +33,11 @@ export const number = (refinements?: Refinements, description?: string): Number_
       }
       return Either.right(result)
     },
-    display: () => {
-      return Term.colors.positive(`number`)
+    display: () => Term.colors.positive(`number`),
+    displayExpanded: () => {
+      return type.display()
     },
-    help: () => type.display(),
+    help: () => type.displayExpanded(),
     validate: (value) => {
       const errors: string[] = []
 

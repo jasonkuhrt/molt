@@ -36,12 +36,13 @@ export const enumeration = <$Members extends Member[]>(
       }
       return Either.right(rawValue)
     },
-    display: () => {
+    display: () => `enum`,
+    displayExpanded: () => {
       const separator = Term.colors.accent(` ${Text.chars.pipe} `)
       const lines = members.map((member) => Term.colors.positive(String(member))).join(separator)
       return members.length > 1 ? lines : `${lines} ${Term.colors.dim(`(enum)`)}`
     },
-    help: () => type.display(),
+    help: () => type.displayExpanded(),
     prompt: (params) => {
       return Effect.gen(function* (_) {
         interface State {

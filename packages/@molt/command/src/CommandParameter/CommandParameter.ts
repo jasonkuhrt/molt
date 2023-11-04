@@ -4,7 +4,14 @@ export * from './processor/process.js'
 export * from './types.js'
 import { stripeNegatePrefix } from '../helpers.js'
 import type { Type } from '../Type/index.js'
+import type { ValidationResult } from '../Type/Type.js'
 import type { Output } from './output.js'
+import { Either } from 'effect'
+
+export const validate = <T>(parameter: Output.Basic, value: unknown): ValidationResult<T> => {
+  if (parameter.optionality._tag === `optional` && value === undefined) return Either.right(value as T)
+  return parameter.type.validate(value)
+}
 
 export const findByName = (name: string, specs: Output[]): null | Output => {
   for (const spec of specs) {

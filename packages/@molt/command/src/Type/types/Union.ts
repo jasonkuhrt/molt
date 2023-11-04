@@ -24,7 +24,7 @@ export const union = <$Members extends Member[]>(
    * For example a number is a subset of string type. If there is a string and number variant
    * we should first check if the value could be a number, than a string.
    */
-  const members = members_.sort((a, b) => a.priority + b.priority)
+  const members = members_.sort((a, b) => (a.priority > b.priority ? -1 : 1))
   return {
     _tag: `TypeUnion`,
     members,
@@ -37,7 +37,8 @@ export const union = <$Members extends Member[]>(
         Either.left(new Error(`No variant matched.`))
       )
     },
-    display: () => ``,
+    display: () => `union`,
+    displayExpanded: () => `todo`,
     help: (settings) => {
       const hasAtLeastOneMemberDescription = members.filter((_) => _.description !== null).length > 0
       //prettier-ignore
@@ -57,7 +58,7 @@ export const union = <$Members extends Member[]>(
                   `${index === 0 ? unionMemberIcon : Term.colors.dim(Text.chars.borders.vertical)} `,
               },
             },
-            (__) => __.block(m.display()).block(m.description),
+            (__) => __.block(m.displayExpanded()).block(m.description),
           )
         })
         return Tex.block((__) =>
@@ -73,16 +74,15 @@ export const union = <$Members extends Member[]>(
             .block(Term.colors.dim(Text.chars.borders.leftBottom + Text.chars.borders.horizontal)),
         ) as Tex.Block
       } else {
-        const membersRendered = members.map((m) => m.display()).join(` | `)
+        const membersRendered = members.map((m) => m.displayExpanded()).join(` | `)
         return Tex.block(($) => $.block(membersRendered).block(description ?? null)) as Tex.Block
       }
     },
     validate: (value) => {
       const result = members.find((member) => member.validate(value)._tag === `Right`)
-      if (!result) {
-        return Either.left({ value, errors: [`Value does not fit any member of the union.`] })
-      }
-      return Either.right(value)
+      return result
+        ? Either.right(value)
+        : Either.left({ value, errors: [`Value does not fit any member of the union.`] })
     },
     prompt: (params) =>
       Effect.gen(function* (_) {
@@ -121,8 +121,8 @@ export const union = <$Members extends Member[]>(
               members
                 .map((item, i) =>
                   i === state.active
-                    ? `${chalk.green(chalk.bold(item._tag))}`
-                    : item._tag,
+                    ? `${chalk.green(chalk.bold(item.display()))}`
+                    : item.display(),
                 )
                 .join(chalk.dim(` | `))
             return Text.chars.newline + intro + Text.chars.newline + Text.chars.newline + choices

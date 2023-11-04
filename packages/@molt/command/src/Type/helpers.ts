@@ -19,6 +19,7 @@ export interface Type<T = any> {
   priority: number
   help: (settings?: any) => string | Tex.Block
   display: () => string
+  displayExpanded: () => string
   // TODO use Either type here
   deserialize: (serializedValue: string) => Either.Either<Error, T>
   prompt: (params: {

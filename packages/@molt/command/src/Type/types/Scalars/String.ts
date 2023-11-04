@@ -77,8 +77,9 @@ export const string = (
     description: description ?? null,
     [TypeSymbol]: runtimeIgnore, // eslint-disable-line
     display: () => Term.colors.positive(`string`),
+    displayExpanded: () => type.display(),
     help: () => {
-      return Tex.block(($) => $.block(type.display()).block(description ?? null)) as Tex.Block
+      return Tex.block(($) => $.block(type.displayExpanded()).block(description ?? null)) as Tex.Block
     },
     deserialize: (rawValue) => Either.right(rawValue),
     validate: (value) => {

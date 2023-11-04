@@ -26,10 +26,11 @@ export const literal = <const $Value extends LiteralValue>(
         ? Either.right(_value as typeof value)
         : Either.left({ value: _value, errors: [`Value is not equal to literal.`] })
     },
-    display: () => {
+    display: () => `literal`,
+    displayExpanded: () => {
       return Term.colors.positive(String(value))
     },
-    help: () => type.display(),
+    help: () => type.displayExpanded(),
     prompt: () => {
       throw new Error(`Not implemented`)
     },
