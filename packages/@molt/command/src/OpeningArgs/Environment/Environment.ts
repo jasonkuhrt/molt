@@ -1,7 +1,7 @@
 import { CommandParameter } from '../../CommandParameter/index.js'
 import { Errors } from '../../Errors/index.js'
 import type { Index, RequireField } from '../../lib/prelude.js'
-import { parseRawInput } from '../helpers.js'
+import { parseSerializedValue } from '../helpers.js'
 import type { EnvironmentArgumentReport } from '../types.js'
 import camelCase from 'lodash.camelcase'
 import snakecase from 'lodash.snakecase'
@@ -32,15 +32,15 @@ export const parse = (environment: RawInputs, specs: CommandParameter.Output[]):
   )
 
   for (const envar of envars) {
-    for (const spec of specsWithEnvironmentSupport) {
-      const match = checkInputMatch(envar, spec)
+    for (const parameter of specsWithEnvironmentSupport) {
+      const match = checkInputMatch(envar, parameter)
 
       // Case 1
       if (!match) continue
 
       // Case 2
       // Check for multiple envars pointing to the same parameter.
-      const report = result.reports[spec.name.canonical]
+      const report = result.reports[parameter.name.canonical]
       if (report) {
         const instance = {
           name: match.name,
@@ -53,7 +53,7 @@ export const parse = (environment: RawInputs, specs: CommandParameter.Output[]):
         } else {
           report.errors.push(
             new Errors.ErrorDuplicateEnvArg({
-              spec,
+              parameter,
               instances: [instance],
             }),
           )
@@ -62,9 +62,9 @@ export const parse = (environment: RawInputs, specs: CommandParameter.Output[]):
       }
 
       // Case 3
-      const value = parseRawInput(match.nameWithNegation, match.value, spec)
-      result.reports[spec.name.canonical] = {
-        spec,
+      const value = parseSerializedValue(match.nameWithNegation, match.value, parameter)
+      result.reports[parameter.name.canonical] = {
+        parameter,
         value,
         errors: [],
         source: {

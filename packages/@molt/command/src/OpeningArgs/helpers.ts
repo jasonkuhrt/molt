@@ -12,7 +12,7 @@ export const stripeDashPrefix = (flagNameInput: string): string => {
 export const zodPassthrough = <T>() => z.any().transform((_) => _ as T)
 
 // prettier-ignore
-export const parseRawInput = (name: string, serializedValue: string, spec: CommandParameter.Output): Value => {
+export const parseSerializedValue = (name: string, serializedValue: string, spec: CommandParameter.Output): Value => {
   const either = spec.type.deserialize(serializedValue)
   if (Either.isLeft(either)) {
     const expectedTypes = spec.type._tag

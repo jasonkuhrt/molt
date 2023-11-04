@@ -11,22 +11,24 @@ export interface Boolean extends Type<boolean> {
   _tag: 'TypeBoolean'
 }
 
+type Boolean_ = Boolean // eslint-disable-line
+
 // eslint-disable-next-line
-export const boolean = (description?: string): Boolean => {
-  return {
+export const boolean = (description?: string): Boolean_ => {
+  const type: Boolean_ = {
     _tag: `TypeBoolean`,
     description: description ?? null,
     [TypeSymbol]: runtimeIgnore, // eslint-disable-line
+    priority: 0,
     // eslint-disable-next-line
     validate: (value: unknown) => {
       return typeof value === `boolean`
         ? Either.right(value)
         : Either.left({ value, errors: [`Value is not a boolean.`] })
     },
+    display: () => Term.colors.positive(`boolean`),
     help: () => {
-      return Tex.block(($) =>
-        $.block(Term.colors.positive(`boolean`)).block(description ?? null),
-      ) as Tex.Block
+      return Tex.block(($) => $.block(type.display()).block(description ?? null)) as Tex.Block
     },
     deserialize: (rawValue) => {
       return parseEnvironmentVariableBoolean(rawValue)
@@ -70,4 +72,5 @@ export const boolean = (description?: string): Boolean => {
       })
     },
   }
+  return type
 }

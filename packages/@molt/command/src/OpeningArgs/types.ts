@@ -3,15 +3,16 @@ import type { Errors } from '../Errors/index.js'
 import type { Environment } from './Environment/index.js'
 import type { LocalParseErrors } from './Line/Line.js'
 
-export interface EnvironmentArgumentReport<Spec extends CommandParameter.Output = CommandParameter.Output>
-  extends Argument {
-  spec: Spec
+export interface EnvironmentArgumentReport<
+  Parameter extends CommandParameter.Output = CommandParameter.Output,
+> extends Argument {
+  parameter: Parameter
   errors: Environment.LocalParseErrors[]
 }
 
-export interface ArgumentReport<Spec extends CommandParameter.Output = CommandParameter.Output>
+export interface ArgumentReport<Parameter extends CommandParameter.Output = CommandParameter.Output>
   extends Argument {
-  spec: Spec
+  parameter: Parameter
   errors: LocalParseErrors[]
 }
 
@@ -63,18 +64,18 @@ export type ParseError =
 
 export type ParseResultBasicSupplied = {
   _tag: 'supplied'
-  spec: CommandParameter.Output.Basic
+  parameter: CommandParameter.Output.Basic
   value: CommandParameter.ArgumentValue
 }
 
 export type ParseResultBasicError = {
   _tag: 'error'
-  spec: CommandParameter.Output.Basic
+  parameter: CommandParameter.Output.Basic
   errors: ParseErrorBasic[]
 }
 export type ParseResultBasicOmitted = {
   _tag: 'omitted'
-  spec: CommandParameter.Output.Basic
+  parameter: CommandParameter.Output.Basic
 }
 
 export type ParseResultBasic = ParseResultBasicSupplied | ParseResultBasicError | ParseResultBasicOmitted
@@ -88,7 +89,7 @@ export type ParseResultExclusiveGroupSupplied = {
 
 export type ParseResultExclusiveGroupError = {
   _tag: 'error'
-  spec: CommandParameter.Output.ExclusiveGroup
+  parameter: CommandParameter.Output.ExclusiveGroup
   errors: ParseErrorExclusiveGroup[]
 }
 
@@ -96,7 +97,7 @@ export type ParseResultExclusiveGroup =
   | ParseResultExclusiveGroupSupplied
   | {
       _tag: 'omitted'
-      spec: CommandParameter.Output.ExclusiveGroup
+      parameter: CommandParameter.Output.ExclusiveGroup
     }
   | ParseResultExclusiveGroupError
 

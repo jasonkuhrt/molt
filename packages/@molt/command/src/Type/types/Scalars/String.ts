@@ -71,6 +71,7 @@ export const string = (
 ): String_ => {
   const type: String_ = {
     _tag: `TypeString`,
+    priority: -10,
     refinements: refinements ?? {},
     transformations: transformations ?? {},
     description: description ?? null,
@@ -83,11 +84,8 @@ export const string = (
     validate: (value) => {
       const errors: string[] = []
 
-      if (typeof value !== `string`) {
-        return Either.left({ value, errors: [`Value is not a string.`] })
-      }
-
-      if (!refinements) return Either.right(value)
+      if (typeof value !== `string`)  return Either.left({ value, errors: [`Value is not a string.`] }) // prettier-ignore
+      if (!refinements)               return Either.right(value) // prettier-ignore
 
       if (refinements.regex && !refinements.regex.test(value)) {
         errors.push(`Value does not conform to Regular Expression.`)
@@ -188,6 +186,7 @@ export const string = (
       if (errors.length > 0) {
         return Either.left({ value, errors })
       }
+
       return Either.right(value)
     },
     transform: (value) => {

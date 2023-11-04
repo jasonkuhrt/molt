@@ -22,6 +22,7 @@ interface Refinements {
 export const number = (refinements?: Refinements, description?: string): Number_ => {
   const type: Number_ = {
     _tag: `TypeNumber`,
+    priority: 5,
     refinements: refinements ?? {},
     description: description ?? null,
     [TypeSymbol]: runtimeIgnore, // eslint-disable-line

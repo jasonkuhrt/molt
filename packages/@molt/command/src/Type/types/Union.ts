@@ -15,27 +15,26 @@ export interface Union<Members extends readonly Member[] = Member[]>
 export type Member = Type<any>
 
 export const union = <$Members extends Member[]>(
-  members: $Members,
+  members_: $Members,
   description?: string,
 ): Union<$Members> => {
+  /**
+   * For a union we infer the value to be the type of the first variant type that matches.
+   * This means that variant order matters since there are sub/super type relationships.
+   * For example a number is a subset of string type. If there is a string and number variant
+   * we should first check if the value could be a number, than a string.
+   */
+  const members = members_.sort((a, b) => a.priority + b.priority)
   return {
     _tag: `TypeUnion`,
     members,
+    priority: 0,
     description: description ?? null,
     [TypeSymbol]: runtimeIgnore, // eslint-disable-line
     deserialize: (serializedValue) => {
-      /**
-       * For a union we infer the value to be the type of the first variant type that matches.
-       * This means that variant order matters since there are sub/super type relationships.
-       * For example a number is a subset of string type. If there is a string and number variant
-       * we should first check if the value could be a number, than a string.
-       */
-      // const variantOrder: Type.Type['_tag'][] = [`TypeNumber`, `TypeBoolean`, `TypeString`, `TypeEnum`, `TypeUnion`]
       return (
-        members
-          // .sort((a, b) => variantOrder.indexOf(a._tag) - variantOrder.indexOf(b._tag))
-          .map((m) => m.deserialize(serializedValue))
-          .find((m) => Either.isRight(m)) ?? Either.left(new Error(`No variant matched.`))
+        members.map((m) => m.deserialize(serializedValue)).find((m) => Either.isRight(m)) ??
+        Either.left(new Error(`No variant matched.`))
       )
     },
     display: () => ``,
@@ -83,7 +82,7 @@ export const union = <$Members extends Member[]>(
       if (!result) {
         return Either.left({ value, errors: [`Value does not fit any member of the union.`] })
       }
-      return Either.right(result)
+      return Either.right(value)
     },
     prompt: (params) =>
       Effect.gen(function* (_) {

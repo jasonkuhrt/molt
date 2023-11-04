@@ -22,7 +22,7 @@ export interface ParseProgressPostPromptAnnotation {
     string,
     {
       openingParseResult: OpeningArgs.ParseResult['basicParameters'][string]
-      spec: OpeningArgs.ParseResult['basicParameters'][string]['spec']
+      spec: OpeningArgs.ParseResult['basicParameters'][string]['parameter']
       prompt: {
         enabled: boolean
       }
@@ -36,7 +36,7 @@ export interface ParseProgressPostPrompt {
   basicParameters: Record<
     string,
     {
-      spec: OpeningArgs.ParseResult['basicParameters'][string]['spec']
+      spec: OpeningArgs.ParseResult['basicParameters'][string]['parameter']
       openingParseResult: OpeningArgs.ParseResult['basicParameters'][string]
       prompt: {
         enabled: boolean
@@ -52,7 +52,7 @@ export interface ParseProgressDone {
   basicParameters: Record<
     string,
     {
-      spec: OpeningArgs.ParseResult['basicParameters'][string]['spec']
+      spec: OpeningArgs.ParseResult['basicParameters'][string]['parameter']
       openingParseResult: OpeningArgs.ParseResult['basicParameters'][string]
       prompt: {
         enabled: boolean
@@ -82,7 +82,7 @@ export const parse = (
   // dump(specsResult)
 
   const openingArgsResult = OpeningArgs.parse({
-    specs: specsResult.specs,
+    parameters: specsResult.specs,
     line: argInputsLine,
     environment: argInputsEnvironment,
   })
@@ -97,7 +97,7 @@ export const parse = (
       Object.entries(openingArgsResult.basicParameters).map(([parameterName, openingParseResult]) => {
         const data = {
           openingParseResult,
-          spec: openingParseResult.spec,
+          spec: openingParseResult.parameter,
           prompt: {
             enabled: false,
           },

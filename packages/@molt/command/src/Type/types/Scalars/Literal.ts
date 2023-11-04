@@ -17,6 +17,7 @@ export const literal = <const $Value extends LiteralValue>(
 ): Literal<$Value> => {
   const type: Literal<$Value> = {
     [TypeSymbol]: runtimeIgnore, // eslint-disable-line
+    priority: 0,
     _tag: `TypeLiteral`,
     value,
     description: description ?? null,

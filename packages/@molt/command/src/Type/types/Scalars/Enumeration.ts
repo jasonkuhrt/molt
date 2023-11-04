@@ -18,6 +18,7 @@ export const enumeration = <$Members extends Member[]>(
 ): Enumeration<$Members> => {
   const type: Enumeration<$Members> = {
     _tag: `TypeEnum`,
+    priority: 10,
     members,
     description: description ?? null,
     [TypeSymbol]: runtimeIgnore, // eslint-disable-line

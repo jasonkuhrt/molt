@@ -16,6 +16,7 @@ export interface Type<T = any> {
   [TypeSymbol]: T
   validate: (value: unknown) => ValidationResult<T>
   transform?: (value: T) => T
+  priority: number
   help: (settings?: any) => string | Tex.Block
   display: () => string
   // TODO use Either type here
