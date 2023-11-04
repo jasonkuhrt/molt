@@ -42,7 +42,7 @@ export const fromZod = (zodType: z.ZodFirstPartySchemaTypes): Type.Type => _from
 // prettier-ignore
 const _fromZod = (zodType: z.ZodFirstPartySchemaTypes,previousDescription?:string): Type.Type => {
   const zt = zodType
-  const description = previousDescription??zt.description
+  const description = previousDescription ?? zt.description
   
   if (ZodHelpers.isString(zt)) {
     const {refinements,transformations} = mapZodStringChecksAndTransformations(zt._def.checks)
@@ -59,16 +59,12 @@ const _fromZod = (zodType: z.ZodFirstPartySchemaTypes,previousDescription?:strin
   if (ZodHelpers.isDefault(zt))         return _fromZod(zt._def.innerType,description)
   if (ZodHelpers.isOptional(zt))        return _fromZod(zt._def.innerType,description)
   if (ZodHelpers.isUnion(zt))           {
-    if (!Array.isArray(zt._def.options)) {
-      throw new Error(`Unsupported zodType: ${JSON.stringify(zt[`_def`])}`)
-    }
-    return Type.union(
-      zt._def.options.map((_: {_def:{description:undefined|string}}) => {
-        const description = _._def.description 
-        return _fromZod(_ as any,description)
-      }),
-      description
-    )
+    if (!Array.isArray(zt._def.options)) throw new Error(`Unsupported zodType: ${JSON.stringify(zt[`_def`])}`)
+    const members = zt._def.options.map((_: {_def:{description:undefined|string}}) => {
+      const description = _._def.description
+      return _fromZod(_ as any, description)
+    })
+    return Type.union(members, description)
   }
   // console.log(zt)
   throw new Error(`Unsupported zodType: ${JSON.stringify(zt[`_def`])}`)
