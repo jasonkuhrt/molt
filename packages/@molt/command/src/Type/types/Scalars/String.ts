@@ -1,6 +1,7 @@
 import { casesExhausted, entries } from '../../../helpers.js'
 import { Patterns } from '../../../lib/Patterns/index.js'
 import { PromptEngine } from '../../../lib/PromptEngine/PromptEngine.js'
+import { Tex } from '../../../lib/Tex/index.js'
 import { Term } from '../../../term.js'
 import { runtimeIgnore, type Type, TypeSymbol } from '../../helpers.js'
 import { Alge } from 'alge'
@@ -11,6 +12,8 @@ export interface String extends Type<string> {
   refinements: Refinements
   transformations: Transformations
 }
+
+type String_ = String // eslint-disable-line
 
 interface Transformations {
   trim?: boolean
@@ -61,21 +64,20 @@ interface Refinements {
   includes?: string
 }
 
-// eslint-disable-next-line
 export const string = (
   refinements?: Refinements,
   transformations?: Transformations,
   description?: string,
-  // eslint-disable-next-line
-): String => {
-  return {
+): String_ => {
+  const type: String_ = {
     _tag: `TypeString`,
     refinements: refinements ?? {},
     transformations: transformations ?? {},
     description: description ?? null,
     [TypeSymbol]: runtimeIgnore, // eslint-disable-line
+    display: () => Term.colors.positive(`string`),
     help: () => {
-      return Term.colors.positive(`string`)
+      return Tex.block(($) => $.block(type.display()).block(description ?? null)) as Tex.Block
     },
     deserialize: (rawValue) => Either.right(rawValue),
     validate: (value) => {
@@ -232,4 +234,5 @@ export const string = (
         return state.value
       }),
   }
+  return type
 }

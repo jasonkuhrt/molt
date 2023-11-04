@@ -38,8 +38,13 @@ export const union = <$Members extends Member[]>(
           .find((m) => Either.isRight(m)) ?? Either.left(new Error(`No variant matched.`))
       )
     },
-    help: () => {
-      const isExpandedMode = false
+    display: () => ``,
+    help: (settings) => {
+      const hasAtLeastOneMemberDescription = members.filter((_) => _.description !== null).length > 0
+      //prettier-ignore
+      const isExpandedMode =
+        (hasAtLeastOneMemberDescription && settings?.helpRendering?.union?.mode === `expandOnParameterDescription`) || // eslint-disable-line
+        settings?.helpRendering?.union?.mode === 'expandAlways' // eslint-disable-line
       const unionMemberIcon = Term.colors.accent(`◒`)
       const isOneOrMoreMembersWithDescription = members.some((_) => _.description !== null)
       const isExpandedModeViaForceSetting = isExpandedMode && !isOneOrMoreMembersWithDescription
@@ -53,7 +58,7 @@ export const union = <$Members extends Member[]>(
                   `${index === 0 ? unionMemberIcon : Term.colors.dim(Text.chars.borders.vertical)} `,
               },
             },
-            (__) => __.block(m.help()).block(m.description),
+            (__) => __.block(m.display()).block(m.description),
           )
         })
         return Tex.block((__) =>
@@ -69,7 +74,7 @@ export const union = <$Members extends Member[]>(
             .block(Term.colors.dim(Text.chars.borders.leftBottom + Text.chars.borders.horizontal)),
         ) as Tex.Block
       } else {
-        const membersRendered = members.map((m) => m.help()).join(` | `)
+        const membersRendered = members.map((m) => m.display()).join(` | `)
         return Tex.block(($) => $.block(membersRendered).block(description ?? null)) as Tex.Block
       }
     },

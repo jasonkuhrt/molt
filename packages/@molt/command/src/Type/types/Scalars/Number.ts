@@ -8,6 +8,8 @@ export interface Number extends Type<number> {
   refinements: Refinements
 }
 
+type Number_ = Number // eslint-disable-line
+
 interface Refinements {
   int?: boolean
   min?: number
@@ -17,8 +19,8 @@ interface Refinements {
 }
 
 // eslint-disable-next-line
-export const number = (refinements?: Refinements, description?: string): Number => {
-  return {
+export const number = (refinements?: Refinements, description?: string): Number_ => {
+  const type: Number_ = {
     _tag: `TypeNumber`,
     refinements: refinements ?? {},
     description: description ?? null,
@@ -30,9 +32,10 @@ export const number = (refinements?: Refinements, description?: string): Number 
       }
       return Either.right(result)
     },
-    help: () => {
+    display: () => {
       return Term.colors.positive(`number`)
     },
+    help: () => type.display(),
     validate: (value) => {
       const errors: string[] = []
 
@@ -100,4 +103,5 @@ export const number = (refinements?: Refinements, description?: string): Number 
         return valueParsed
       }),
   }
+  return type
 }

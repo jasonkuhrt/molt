@@ -15,7 +15,7 @@ export const literal = <const $Value extends LiteralValue>(
   value: $Value,
   description?: string,
 ): Literal<$Value> => {
-  return {
+  const type: Literal<$Value> = {
     [TypeSymbol]: runtimeIgnore, // eslint-disable-line
     _tag: `TypeLiteral`,
     value,
@@ -25,9 +25,10 @@ export const literal = <const $Value extends LiteralValue>(
         ? Either.right(_value as typeof value)
         : Either.left({ value: _value, errors: [`Value is not equal to literal.`] })
     },
-    help: () => {
+    display: () => {
       return Term.colors.positive(String(value))
     },
+    help: () => type.display(),
     prompt: () => {
       throw new Error(`Not implemented`)
     },
@@ -60,4 +61,5 @@ export const literal = <const $Value extends LiteralValue>(
     // return Effect.
     // }
   }
+  return type
 }

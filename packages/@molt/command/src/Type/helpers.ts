@@ -16,7 +16,8 @@ export interface Type<T = any> {
   [TypeSymbol]: T
   validate: (value: unknown) => ValidationResult<T>
   transform?: (value: T) => T
-  help: () => string | Tex.Block
+  help: (settings?: any) => string | Tex.Block
+  display: () => string
   // TODO use Either type here
   deserialize: (serializedValue: string) => Either.Either<Error, T>
   prompt: (params: {

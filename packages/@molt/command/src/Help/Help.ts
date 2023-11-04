@@ -101,9 +101,7 @@ export const render = (
           .rows([
             ...basicAndUnionSpecsWithoutHelp.map((spec) => [
               parameterName(spec),
-              Tex.block({ maxWidth: 40, padding: { right: 9, bottom: 1 } }, ($) =>
-                $.block(spec.type.help()).block(spec.type.description),
-              ),
+              Tex.block({ maxWidth: 40, padding: { right: 9, bottom: 1 } }, spec.type.help(settings)),
               Tex.block({ maxWidth: 24 }, parameterDefault(spec)),
               ...(isEnvironmentEnabled ? [parameterEnvironment(spec, settings)] : []),
             ]),
@@ -125,7 +123,7 @@ export const render = (
                 ],
                 ...Object.values(mexGroup.parameters).map((spec) => [
                   parameterName(spec),
-                  spec.type.help(),
+                  spec.type.help(settings),
                   parameterDefault(spec),
                   ...(isEnvironmentEnabled ? [parameterEnvironment(spec, settings)] : []),
                 ]),

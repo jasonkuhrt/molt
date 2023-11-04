@@ -1,5 +1,6 @@
 import { parseEnvironmentVariableBoolean } from '../../../helpers.js'
 import { PromptEngine } from '../../../lib/PromptEngine/PromptEngine.js'
+import { Tex } from '../../../lib/Tex/index.js'
 import { Term } from '../../../term.js'
 import type { Type } from '../../helpers.js'
 import { runtimeIgnore, TypeSymbol } from '../../helpers.js'
@@ -23,7 +24,9 @@ export const boolean = (description?: string): Boolean => {
         : Either.left({ value, errors: [`Value is not a boolean.`] })
     },
     help: () => {
-      return Term.colors.positive(`boolean`)
+      return Tex.block(($) =>
+        $.block(Term.colors.positive(`boolean`)).block(description ?? null),
+      ) as Tex.Block
     },
     deserialize: (rawValue) => {
       return parseEnvironmentVariableBoolean(rawValue)

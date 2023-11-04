@@ -16,7 +16,7 @@ export const enumeration = <$Members extends Member[]>(
   members: $Members,
   description?: string,
 ): Enumeration<$Members> => {
-  return {
+  const type: Enumeration<$Members> = {
     _tag: `TypeEnum`,
     members,
     description: description ?? null,
@@ -35,11 +35,12 @@ export const enumeration = <$Members extends Member[]>(
       }
       return Either.right(rawValue)
     },
-    help: () => {
+    display: () => {
       const separator = Term.colors.accent(` ${Text.chars.pipe} `)
       const lines = members.map((member) => Term.colors.positive(String(member))).join(separator)
       return members.length > 1 ? lines : `${lines} ${Term.colors.dim(`(enum)`)}`
     },
+    help: () => type.display(),
     prompt: (params) => {
       return Effect.gen(function* (_) {
         interface State {
@@ -87,4 +88,5 @@ export const enumeration = <$Members extends Member[]>(
       })
     },
   }
+  return type
 }

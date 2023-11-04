@@ -992,7 +992,7 @@ PARAMETERS
                                                                       
   [4m[90mName[39m[24m     [4m[90mType[39m[24m                       [4m[90mDefault[39m[24m       [4m[90mEnvironment (1)[39m[24m
                                                                    
-  [1m[32mbar[39m[22m      string | number            [1m[30m[101m REQUIRED [49m[39m[22m    [34m✓[39m              
+  [1m[32mbar[39m[22m      [32mstring[39m | [32mnumber[39m            [1m[30m[101m REQUIRED [49m[39m[22m    [34m✓[39m              
   [2m[90mb[39m[22m                                                                
                                                                    
   [2m[90m[39m[22m
@@ -1032,7 +1032,7 @@ PARAMETERS
                                                                       
   [4m[90mName[39m[24m     [4m[90mType/Description[39m[24m           [4m[90mDefault[39m[24m       [4m[90mEnvironment (1)[39m[24m
                                                                    
-  [1m[32mbar[39m[22m      string | number            [1m[30m[101m REQUIRED [49m[39m[22m    [34m✓[39m              
+  [1m[32mbar[39m[22m      [32mstring[39m | [32mnumber[39m            [1m[30m[101m REQUIRED [49m[39m[22m    [34m✓[39m              
   [2m[90mb[39m[22m        Blah blah blah.                                         
                                                                    
   [2m[90m[39m[22m
