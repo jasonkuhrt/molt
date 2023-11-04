@@ -1,10 +1,4 @@
-import { ZodHelpers } from '../lib/zodHelpers/index.js'
-import { stripOptionalAndDefault } from '../lib/zodHelpers/index_.js'
-import { z } from 'zod'
-
-export type SomeType = SomeBasicType | SomeUnionType
-
-export type SomeBasicParameterType = SomeBasicType | SomeUnionType
+import type { z } from 'zod'
 
 type ZodEnumBase = z.ZodEnum<[string, ...string[]]>
 
@@ -33,19 +27,3 @@ export type SomeBasicTypeScalar =
   | z.ZodLiteral<number>
   | z.ZodLiteral<string>
   | z.ZodLiteral<boolean>
-
-export const isUnionType = (type: SomeBasicType | SomeUnionType): type is SomeUnionType => {
-  const type_ = stripOptionalAndDefault(type)
-  const isUnion = type_._def.typeName === z.ZodFirstPartyTypeKind.ZodUnion
-  return isUnion
-}
-
-export const getUnionScalar = (zodType: SomeUnionType): SomeUnionTypeScalar => {
-  const type = ZodHelpers.stripOptionalAndDefault(zodType)
-  return type
-}
-
-export const getBasicScalar = (zodType: SomeBasicType): SomeBasicTypeScalar => {
-  const type = ZodHelpers.stripOptionalAndDefault(zodType)
-  return type
-}

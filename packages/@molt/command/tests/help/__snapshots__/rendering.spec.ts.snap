@@ -972,7 +972,7 @@ PARAMETERS
                                                                       
   Name     Type                       Default       Environment (1)
                                                                    
-  bar      string | number             REQUIRED     ✓              
+  bar      number | string             REQUIRED     ✓              
   b                                                                
                                                                    
   
@@ -992,7 +992,7 @@ PARAMETERS
                                                                       
   [4m[90mName[39m[24m     [4m[90mType[39m[24m                       [4m[90mDefault[39m[24m       [4m[90mEnvironment (1)[39m[24m
                                                                    
-  [1m[32mbar[39m[22m      string | number            [1m[30m[101m REQUIRED [49m[39m[22m    [34m✓[39m              
+  [1m[32mbar[39m[22m      [32mnumber[39m | [32mstring[39m            [1m[30m[101m REQUIRED [49m[39m[22m    [34m✓[39m              
   [2m[90mb[39m[22m                                                                
                                                                    
   [2m[90m[39m[22m
@@ -1012,7 +1012,7 @@ PARAMETERS
                                                                       
   Name     Type/Description           Default       Environment (1)
                                                                    
-  bar      string | number             REQUIRED     ✓              
+  bar      number | string             REQUIRED     ✓              
   b        Blah blah blah.                                         
                                                                    
   
@@ -1032,7 +1032,7 @@ PARAMETERS
                                                                       
   [4m[90mName[39m[24m     [4m[90mType/Description[39m[24m           [4m[90mDefault[39m[24m       [4m[90mEnvironment (1)[39m[24m
                                                                    
-  [1m[32mbar[39m[22m      string | number            [1m[30m[101m REQUIRED [49m[39m[22m    [34m✓[39m              
+  [1m[32mbar[39m[22m      [32mnumber[39m | [32mstring[39m            [1m[30m[101m REQUIRED [49m[39m[22m    [34m✓[39m              
   [2m[90mb[39m[22m        Blah blah blah.                                         
                                                                    
   [2m[90m[39m[22m
@@ -1053,8 +1053,8 @@ PARAMETERS
   Name     Type                Default       Environment (1)
                                                             
   bar      ┌─union              REQUIRED     ✓              
-  b        ◒ string                                         
-           ◒ number                                         
+  b        ◒ number                                         
+           ◒ string                                         
            └─                                               
                                                             
   
@@ -1075,8 +1075,8 @@ PARAMETERS
   [4m[90mName[39m[24m     [4m[90mType[39m[24m                [4m[90mDefault[39m[24m       [4m[90mEnvironment (1)[39m[24m
                                                             
   [1m[32mbar[39m[22m      [2m[90m┌─union[39m[22m             [1m[30m[101m REQUIRED [49m[39m[22m    [34m✓[39m              
-  [2m[90mb[39m[22m        [33m◒[39m [32mstring[39m                                         
-           [33m◒[39m [32mnumber[39m                                         
+  [2m[90mb[39m[22m        [33m◒[39m [32mnumber[39m                                         
+           [33m◒[39m [32mstring[39m                                         
            [2m[90m└─[39m[22m                                               
                                                             
   [2m[90m[39m[22m
@@ -1097,10 +1097,10 @@ PARAMETERS
   Name     Type                                Default       Environment (1)
                                                                             
   bar      ┌─union                              REQUIRED     ✓              
-  b        ◒ string                                                         
-           │                                                                
-           ◒ number                                                         
+  b        ◒ number                                                         
            │ Blah blah blah number.                                         
+           │                                                                
+           ◒ string                                                         
            └─                                                               
                                                                             
   
@@ -1121,10 +1121,10 @@ PARAMETERS
   [4m[90mName[39m[24m     [4m[90mType[39m[24m                                [4m[90mDefault[39m[24m       [4m[90mEnvironment (1)[39m[24m
                                                                             
   [1m[32mbar[39m[22m      [2m[90m┌─union[39m[22m                             [1m[30m[101m REQUIRED [49m[39m[22m    [34m✓[39m              
-  [2m[90mb[39m[22m        [33m◒[39m [32mstring[39m                                                         
-           [2m[90m│[39m[22m                                                                
-           [33m◒[39m [32mnumber[39m                                                         
+  [2m[90mb[39m[22m        [33m◒[39m [32mnumber[39m                                                         
            [2m[90m│[39m[22m Blah blah blah number.                                         
+           [2m[90m│[39m[22m                                                                
+           [33m◒[39m [32mstring[39m                                                         
            [2m[90m└─[39m[22m                                                               
                                                                             
   [2m[90m[39m[22m
@@ -1145,11 +1145,11 @@ PARAMETERS
   Name     Type                                Default       Environment (1)
                                                                             
   bar      ┌─union                              REQUIRED     ✓              
-  b        ◒ string                                                         
-           │ Blah blah blah string.                                         
-           │                                                                
-           ◒ number                                                         
+  b        ◒ number                                                         
            │ Blah blah blah number.                                         
+           │                                                                
+           ◒ string                                                         
+           │ Blah blah blah string.                                         
            └─                                                               
                                                                             
   
@@ -1170,11 +1170,11 @@ PARAMETERS
   [4m[90mName[39m[24m     [4m[90mType[39m[24m                                [4m[90mDefault[39m[24m       [4m[90mEnvironment (1)[39m[24m
                                                                             
   [1m[32mbar[39m[22m      [2m[90m┌─union[39m[22m                             [1m[30m[101m REQUIRED [49m[39m[22m    [34m✓[39m              
-  [2m[90mb[39m[22m        [33m◒[39m [32mstring[39m                                                         
-           [2m[90m│[39m[22m Blah blah blah string.                                         
-           [2m[90m│[39m[22m                                                                
-           [33m◒[39m [32mnumber[39m                                                         
+  [2m[90mb[39m[22m        [33m◒[39m [32mnumber[39m                                                         
            [2m[90m│[39m[22m Blah blah blah number.                                         
+           [2m[90m│[39m[22m                                                                
+           [33m◒[39m [32mstring[39m                                                         
+           [2m[90m│[39m[22m Blah blah blah string.                                         
            [2m[90m└─[39m[22m                                                               
                                                                             
   [2m[90m[39m[22m
@@ -1197,11 +1197,11 @@ PARAMETERS
   bar      ┌─union                               REQUIRED     ✓              
   b        │ Blah blah blah overall.                                         
            │                                                                 
-           ◒ string                                                          
-           │ Blah blah blah string.                                          
-           │                                                                 
            ◒ number                                                          
            │ Blah blah blah number.                                          
+           │                                                                 
+           ◒ string                                                          
+           │ Blah blah blah string.                                          
            └─                                                                
                                                                              
   
@@ -1224,11 +1224,11 @@ PARAMETERS
   [1m[32mbar[39m[22m      [2m[90m┌─union[39m[22m                              [1m[30m[101m REQUIRED [49m[39m[22m    [34m✓[39m              
   [2m[90mb[39m[22m        [2m[90m│[39m[22m Blah blah blah overall.                                         
            [2m[90m│[39m[22m                                                                 
-           [33m◒[39m [32mstring[39m                                                          
-           [2m[90m│[39m[22m Blah blah blah string.                                          
-           [2m[90m│[39m[22m                                                                 
            [33m◒[39m [32mnumber[39m                                                          
            [2m[90m│[39m[22m Blah blah blah number.                                          
+           [2m[90m│[39m[22m                                                                 
+           [33m◒[39m [32mstring[39m                                                          
+           [2m[90m│[39m[22m Blah blah blah string.                                          
            [2m[90m└─[39m[22m                                                                
                                                                              
   [2m[90m[39m[22m
@@ -1251,11 +1251,11 @@ PARAMETERS
   bar      ┌─union                              undefined     ✓              
   b        │ Blah blah blah overall.                                         
            │                                                                 
-           ◒ string                                                          
-           │ Blah blah blah string.                                          
-           │                                                                 
            ◒ number                                                          
            │ Blah blah blah number.                                          
+           │                                                                 
+           ◒ string                                                          
+           │ Blah blah blah string.                                          
            └─                                                                
                                                                              
   
@@ -1278,11 +1278,11 @@ PARAMETERS
   [32mbar[39m      [2m[90m┌─union[39m[22m                              [34mundefined[39m     [34m✓[39m              
   [2m[90mb[39m[22m        [2m[90m│[39m[22m Blah blah blah overall.                                         
            [2m[90m│[39m[22m                                                                 
-           [33m◒[39m [32mstring[39m                                                          
-           [2m[90m│[39m[22m Blah blah blah string.                                          
-           [2m[90m│[39m[22m                                                                 
            [33m◒[39m [32mnumber[39m                                                          
            [2m[90m│[39m[22m Blah blah blah number.                                          
+           [2m[90m│[39m[22m                                                                 
+           [33m◒[39m [32mstring[39m                                                          
+           [2m[90m│[39m[22m Blah blah blah string.                                          
            [2m[90m└─[39m[22m                                                                
                                                                              
   [2m[90m[39m[22m
@@ -1305,11 +1305,11 @@ PARAMETERS
   bar      ┌─union                              1             ✓              
   b        │ Blah blah blah overall.                                         
            │                                                                 
-           ◒ string                                                          
-           │ Blah blah blah string.                                          
-           │                                                                 
            ◒ number                                                          
            │ Blah blah blah number.                                          
+           │                                                                 
+           ◒ string                                                          
+           │ Blah blah blah string.                                          
            └─                                                                
                                                                              
   
@@ -1332,11 +1332,11 @@ PARAMETERS
   [32mbar[39m      [2m[90m┌─union[39m[22m                              [34m1[39m             [34m✓[39m              
   [2m[90mb[39m[22m        [2m[90m│[39m[22m Blah blah blah overall.                                         
            [2m[90m│[39m[22m                                                                 
-           [33m◒[39m [32mstring[39m                                                          
-           [2m[90m│[39m[22m Blah blah blah string.                                          
-           [2m[90m│[39m[22m                                                                 
            [33m◒[39m [32mnumber[39m                                                          
            [2m[90m│[39m[22m Blah blah blah number.                                          
+           [2m[90m│[39m[22m                                                                 
+           [33m◒[39m [32mstring[39m                                                          
+           [2m[90m│[39m[22m Blah blah blah string.                                          
            [2m[90m└─[39m[22m                                                                
                                                                              
   [2m[90m[39m[22m

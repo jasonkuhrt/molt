@@ -901,19 +901,17 @@ exports[`union > required > asks user to select member to use" > tty 1`] = `
      Different kinds of answers are accepted.
      Which kind do you want to give?
 
-     ❯ [32m[1mstring[22m[39m[2m | [22mboolean[2m | [22mnumber",
+     ❯ [32m[1m[32mnumber[39m[32m[22m[39m[2m | [22m[32mboolean[39m[2m | [22m[32mstring[39m",
   "[2K[1A[2K[1A[2K[1A[2K[1A[2K[G",
   "[1G",
   "
      Different kinds of answers are accepted.
      Which kind do you want to give?
 
-     ❯ string[2m | [22m[32m[1mboolean[22m[39m[2m | [22mnumber",
+     ❯ [32mnumber[39m[2m | [22m[32m[1m[32mboolean[39m[32m[22m[39m[2m | [22m[32mstring[39m",
   "
 ",
   "[?25h",
-  "
-",
   "[?25l",
   "",
   "[1G",
@@ -940,19 +938,17 @@ exports[`union > required > asks user to select member to use" > tty strip ansi 
      Different kinds of answers are accepted.
      Which kind do you want to give?
 
-     ❯ string | boolean | number",
+     ❯ number | boolean | string",
   "",
   "",
   "
      Different kinds of answers are accepted.
      Which kind do you want to give?
 
-     ❯ string | boolean | number",
+     ❯ number | boolean | string",
   "
 ",
   "",
-  "
-",
   "",
   "",
   "",

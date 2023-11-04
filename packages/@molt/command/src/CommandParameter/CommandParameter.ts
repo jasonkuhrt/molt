@@ -1,12 +1,17 @@
 export * from './input.js'
 export * from './output.js'
 export * from './processor/process.js'
-export * from './transform.js'
 export * from './types.js'
-export * from './validate.js'
 import { stripeNegatePrefix } from '../helpers.js'
 import type { Type } from '../Type/index.js'
+import type { ValidationResult } from '../Type/Type.js'
 import type { Output } from './output.js'
+import { Either } from 'effect'
+
+export const validate = <T>(parameter: Output.Basic, value: unknown): ValidationResult<T> => {
+  if (parameter.optionality._tag === `optional` && value === undefined) return Either.right(value as T)
+  return parameter.type.validate(value)
+}
 
 export const findByName = (name: string, specs: Output[]): null | Output => {
   for (const spec of specs) {
@@ -57,7 +62,7 @@ export const hasName = (spec: Output, name: string): null | NameHit => {
 
 export const isOrHasType = (spec: Output, typeTag: Type.Type['_tag']): boolean => {
   return spec.type._tag === `TypeUnion`
-    ? spec.type.members.find((_) => _._tag === typeTag) !== undefined
+    ? (spec.type as Type.Union).members.find((_) => _._tag === typeTag) !== undefined
     : spec.type._tag === typeTag
 }
 

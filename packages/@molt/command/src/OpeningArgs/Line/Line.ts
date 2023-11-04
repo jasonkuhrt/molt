@@ -2,7 +2,7 @@ import { CommandParameter } from '../../CommandParameter/index.js'
 import { Errors } from '../../Errors/index.js'
 import { stripeNegatePrefixLoose } from '../../helpers.js'
 import type { Index } from '../../lib/prelude.js'
-import { isNegated, parseRawInput, stripeDashPrefix } from '../helpers.js'
+import { isNegated, parseSerializedValue, stripeDashPrefix } from '../helpers.js'
 import type { ArgumentReport } from '../types.js'
 import camelCase from 'lodash.camelcase'
 
@@ -21,7 +21,7 @@ interface ParsedInputs {
  * Parse line input into an intermediary representation that is suited to comparison against
  * the parameter specs.
  */
-export const parse = (rawLineInputs: RawInputs, specs: CommandParameter.Output[]): ParsedInputs => {
+export const parse = (rawLineInputs: RawInputs, parameters: CommandParameter.Output[]): ParsedInputs => {
   const globalErrors: GlobalParseErrors[] = []
 
   const rawLineInputsPrepared = rawLineInputs
@@ -51,14 +51,14 @@ export const parse = (rawLineInputs: RawInputs, specs: CommandParameter.Output[]
        * If union with boolean or boolean then we interpret foo argument as being a boolean.
        * Otherwise it is an error.
        */
-      if (CommandParameter.isOrHasType(pendingReport.spec, `TypeBoolean`)) {
+      if (CommandParameter.isOrHasType(pendingReport.parameter, `TypeBoolean`)) {
         pendingReport.value = {
           value: true,
           _tag: `boolean`,
           negated: isNegated(camelCase(pendingReport.source.name)),
         }
       } else {
-        pendingReport.errors.push(new Errors.ErrorMissingArgument({ spec: pendingReport.spec }))
+        pendingReport.errors.push(new Errors.ErrorMissingArgument({ parameter: pendingReport.parameter }))
       }
     }
   }
@@ -75,20 +75,20 @@ export const parse = (rawLineInputs: RawInputs, specs: CommandParameter.Output[]
       const flagNameNoDashPrefix = stripeDashPrefix(rawLineInput)
       const flagNameNoDashPrefixCamel = camelCase(flagNameNoDashPrefix)
       const flagNameNoDashPrefixNoNegate = stripeNegatePrefixLoose(flagNameNoDashPrefixCamel)
-      const spec = CommandParameter.findByName(flagNameNoDashPrefixCamel, specs)
-      if (!spec) {
+      const parameter = CommandParameter.findByName(flagNameNoDashPrefixCamel, parameters)
+      if (!parameter) {
         globalErrors.push(new Errors.Global.ErrorUnknownFlag({ flagName: flagNameNoDashPrefixNoNegate }))
         continue
       }
 
-      const existing = reports[spec.name.canonical]
+      const existing = reports[parameter.name.canonical]
       if (existing) {
         // TODO Handle once we support multiple values (arrays).
         // TODO richer structured info about the duplication. For example if
         // duplicated across aliases, make it easy to report a nice message explaining that.
         existing.errors.push(
           new Errors.ErrorDuplicateLineArg({
-            spec,
+            parameter,
             flagName: flagNameNoDashPrefixNoNegate,
           }),
         )
@@ -96,7 +96,7 @@ export const parse = (rawLineInputs: RawInputs, specs: CommandParameter.Output[]
       }
 
       currentReport = {
-        spec,
+        parameter,
         errors: [],
         value: PENDING_VALUE, // eslint-disable-line
         source: {
@@ -105,12 +105,16 @@ export const parse = (rawLineInputs: RawInputs, specs: CommandParameter.Output[]
         },
       }
 
-      reports[spec.name.canonical] = currentReport
+      reports[parameter.name.canonical] = currentReport
 
       continue
     } else if (currentReport) {
       // TODO catch error and put into errors array
-      currentReport.value = parseRawInput(currentReport.spec.name.canonical, rawLineInput, currentReport.spec)
+      currentReport.value = parseSerializedValue(
+        currentReport.parameter.name.canonical,
+        rawLineInput,
+        currentReport.parameter,
+      )
       currentReport = null
       continue
     } else {
@@ -125,7 +129,7 @@ export const parse = (rawLineInputs: RawInputs, specs: CommandParameter.Output[]
 
   return {
     globalErrors,
-    reports: reports,
+    reports,
   }
 }
 

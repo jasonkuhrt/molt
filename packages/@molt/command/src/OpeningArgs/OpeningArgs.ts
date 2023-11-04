@@ -1,4 +1,4 @@
-import { CommandParameter } from '../CommandParameter/index.js'
+import type { CommandParameter } from '../CommandParameter/index.js'
 import { Errors } from '../Errors/index.js'
 import { errorFromUnknown, groupBy } from '../lib/prelude.js'
 import { Environment } from './Environment/index.js'
@@ -10,11 +10,11 @@ export { Line } from './Line/index.js'
 export * from './types.js'
 
 export const parse = ({
-  specs,
+  parameters,
   line,
   environment,
 }: {
-  specs: CommandParameter.Output[]
+  parameters: CommandParameter.Output[]
   line: Line.RawInputs
   environment: Environment.RawInputs
 }): ParseResult => {
@@ -23,12 +23,12 @@ export const parse = ({
     basicParameters: {},
     mutuallyExclusiveParameters: {},
   }
-  const envParseResult = Environment.parse(environment, specs)
-  const lineParseResult = Line.parse(line, specs)
+  const envParseResult = Environment.parse(environment, parameters)
+  const lineParseResult = Line.parse(line, parameters)
 
   result.globalErrors.push(...lineParseResult.globalErrors, ...envParseResult.globalErrors)
 
-  const specsByVariant = groupBy(specs, `_tag`)
+  const specsByVariant = groupBy(parameters, `_tag`)
 
   const specVariantsBasic = specsByVariant.Basic ?? []
 
@@ -36,7 +36,7 @@ export const parse = ({
    * Handle "basic" parameters. This excludes "Exclusive Parameter Groups" which are handled later.
    */
 
-  for (const spec of specVariantsBasic) {
+  for (const parameter of specVariantsBasic) {
     /**
      * A note about types.
      *
@@ -51,7 +51,7 @@ export const parse = ({
 
     // todo, a strict mode where errors are NOT ignored from env parsing when line is present
     const argReport =
-      lineParseResult.reports[spec.name.canonical] ?? envParseResult.reports[spec.name.canonical]
+      lineParseResult.reports[parameter.name.canonical] ?? envParseResult.reports[parameter.name.canonical]
 
     /**
      * An opening argument was given. Process it.
@@ -62,10 +62,10 @@ export const parse = ({
        * If there were any errors during the input parsing phase then do not continue with the parameter.
        */
       if (argReport.errors.length > 0) {
-        result.basicParameters[argReport.spec.name.canonical] = {
+        result.basicParameters[argReport.parameter.name.canonical] = {
           _tag: `error`,
           errors: argReport.errors,
-          spec,
+          parameter,
         }
         continue
       }
@@ -73,32 +73,34 @@ export const parse = ({
       /**
        * Given a raw value was correctly passed, validate it according to the parameter spec.
        */
-      result.basicParameters[argReport.spec.name.canonical] = Alge.match(argReport.value)
+      result.basicParameters[argReport.parameter.name.canonical] = Alge.match(argReport.value)
         .boolean((argReportValue) => {
           return {
             _tag: `supplied` as const,
-            spec,
+            parameter,
             value: argReportValue.negated ? !argReportValue.value : argReportValue.value,
           }
         })
         .else((argReportValue) => {
-          const valueTransformed = CommandParameter.transform(spec, argReportValue.value)
-          const validationResult = CommandParameter.validate(spec, valueTransformed)
+          // eslint-disable-next-line
+          const valueTransformed = parameter.type.transform?.(argReportValue.value) ?? argReportValue.value
+          const validationResult = parameter.type.validate(valueTransformed)
           return Alge.match(validationResult)
             .Right((result) => {
               return {
                 _tag: `supplied` as const,
-                spec,
+                parameter: parameter,
+                // eslint-disable-next-line
                 value: result.right,
               }
             })
             .Left((result) => {
               return {
                 _tag: `error` as const,
-                spec,
+                parameter,
                 errors: [
                   new Errors.ErrorInvalidArgument({
-                    spec,
+                    spec: parameter,
                     validationErrors: result.left.errors,
                     value: result.left.value,
                   }),
@@ -114,7 +116,7 @@ export const parse = ({
      * No opening argument was given. Process this fact according to spec (e.g. ok b/c optional, apply default, ... etc.)
      */
 
-    result.basicParameters[spec.name.canonical] = Alge.match(spec.optionality)
+    result.basicParameters[parameter.name.canonical] = Alge.match(parameter.optionality)
       .default((optionality) => {
         let defaultValue
         try {
@@ -122,10 +124,10 @@ export const parse = ({
         } catch (someError) {
           return {
             _tag: `error` as const,
-            spec,
+            parameter,
             errors: [
               new Errors.ErrorFailedToGetDefaultArgument({
-                spec,
+                spec: parameter,
                 cause: errorFromUnknown(someError),
               }),
             ],
@@ -133,21 +135,21 @@ export const parse = ({
         }
         return {
           _tag: `supplied` as const,
-          spec,
+          parameter,
           value: defaultValue,
         }
       })
       .required(() => {
         return {
           _tag: `error` as const,
-          spec,
-          errors: [new Errors.ErrorMissingArgument({ spec })],
+          parameter: parameter,
+          errors: [new Errors.ErrorMissingArgument({ parameter })],
         }
       })
       .optional(() => {
         return {
           _tag: `omitted` as const,
-          spec,
+          parameter,
         }
       })
       .done()
@@ -175,7 +177,7 @@ export const parse = ({
       if (group.optionality._tag === `optional`) {
         result.mutuallyExclusiveParameters[group.label] = {
           _tag: `omitted`,
-          spec: group,
+          parameter: group,
         }
         continue
       }
@@ -205,7 +207,7 @@ export const parse = ({
 
       result.mutuallyExclusiveParameters[group.label] = {
         _tag: `error`,
-        spec: group,
+        parameter: group,
         errors: [
           new Errors.ErrorMissingArgumentForMutuallyExclusiveParameters({
             group,
@@ -218,10 +220,10 @@ export const parse = ({
     if (argsToGroup.length > 1) {
       result.mutuallyExclusiveParameters[group.label] = {
         _tag: `error`,
-        spec: group,
+        parameter: group,
         errors: [
           new Errors.ErrorArgumentsToMutuallyExclusiveParameters({
-            offenses: argsToGroup.map((_) => ({ spec: _.spec, arg: _ })),
+            offenses: argsToGroup.map((_) => ({ spec: _.parameter, arg: _ })),
           }),
         ],
       }
@@ -233,9 +235,9 @@ export const parse = ({
       result.mutuallyExclusiveParameters[group.label] = {
         _tag: `supplied`,
         spec: group,
-        parameter: arg.spec,
+        parameter: arg.parameter,
         value: {
-          _tag: arg.spec.name.canonical,
+          _tag: arg.parameter.name.canonical,
           value: arg.value.value,
         },
       }

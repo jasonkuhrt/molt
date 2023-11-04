@@ -97,7 +97,7 @@ describe(`boolean`, () => {
 describe(`union`, () => {
   describe(`required`, () => {
     it(`asks user to select member to use"`, async () => {
-      parameters = { a: { schema: z.union([s, b, n]), prompt: true } }
+      parameters = { a: { schema: z.union([n, b, s]), prompt: true } }
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `tab` })
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `tab` })

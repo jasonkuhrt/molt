@@ -40,9 +40,9 @@ export interface BasicParameterParseEventRejected {
 
 export const createEvent = (parseResult: OpeningArgs.ParseResultBasic) => {
   const specData: CommandParameter.Output.BasicData = {
-    ...parseResult.spec,
+    ...parseResult.parameter,
     _tag: `BasicData` as const,
-    optionality: parseResult.spec.optionality[`_tag`],
+    optionality: parseResult.parameter.optionality[`_tag`],
   }
   // : {
   //     ...parseResult.spec,

@@ -18,20 +18,20 @@ export const prompt = (
     if (prompter === null) return parseProgress as ParseProgressPostPrompt
 
     const args: Record<string, any> = {}
-    const parameterSpecs = Object.entries(parseProgress.basicParameters)
+    const parameters = Object.entries(parseProgress.basicParameters)
       .filter((_) => _[1].prompt.enabled)
       .map((_) => _[1].spec)
-    const indexTotal = parameterSpecs.length
+    const indexTotal = parameters.length
     let indexCurrent = 1
     const gutterWidth = String(indexTotal).length * 2 + 3
 
-    for (const param of parameterSpecs) {
+    for (const parameter of parameters) {
       // prettier-ignore
       const question = Tex({ flow: `horizontal`})
         .block({ padding: { right: 2 }}, `${Term.colors.dim(`${indexCurrent}/${indexTotal}`)}`)
         .block((__) =>
-          __.block(Term.colors.positive(param.name.canonical) +  `${param.optionality._tag === `required` ? `` : chalk.dim(` optional (press esc to skip)`)}`)
-            .block((param.description && Term.colors.dim(param.description)) ?? null)
+          __.block(Term.colors.positive(parameter.name.canonical) +  `${parameter.optionality._tag === `required` ? `` : chalk.dim(` optional (press esc to skip)`)}`)
+            .block((parameter.description && Term.colors.dim(parameter.description)) ?? null)
         )
       .render()
       // eslint-disable-next-line no-constant-condition
@@ -40,12 +40,14 @@ export const prompt = (
           question,
           prompt: `❯ `,
           marginLeft: gutterWidth,
-          parameter: param,
+          parameter: parameter,
         })
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const arg = yield* _(asking)
-        const validationResult = CommandParameter.validate(param, arg)
+        const validationResult = CommandParameter.validate(parameter, arg)
         if (validationResult._tag === `Right`) {
-          args[param.name.canonical] = validationResult.right
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          args[parameter.name.canonical] = validationResult.right
           prompter.say(``) // newline
           indexCurrent++
           break

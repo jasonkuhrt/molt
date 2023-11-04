@@ -23,25 +23,25 @@ export namespace Global {
 
 export class ErrorDuplicateLineArg extends Error {
   public override name: 'ErrorDuplicateFlag' = `ErrorDuplicateFlag`
-  public spec: CommandParameter.Output
-  constructor(params: { spec: CommandParameter.Output; flagName: string }) {
+  public parameter: CommandParameter.Output
+  constructor(params: { parameter: CommandParameter.Output; flagName: string }) {
     const message = `The parameter "${params.flagName}" was passed an argument multiple times via flags.`
     super(message)
-    this.spec = params.spec
+    this.parameter = params.parameter
   }
 }
 
 export class ErrorDuplicateEnvArg extends Error {
   public override name: 'ErrorDuplicateEnvArg' = `ErrorDuplicateEnvArg`
-  public spec: CommandParameter.Output
+  public parameter: CommandParameter.Output
   public instances: { value: string; name: string; prefix: string | null }[]
   constructor(params: {
-    spec: CommandParameter.Output
+    parameter: CommandParameter.Output
     instances: { value: string; name: string; prefix: string | null }[]
   }) {
-    const message = `The parameter "${params.spec.name.canonical}" was passed an argument multiple times via different parameter aliases in the environment.`
+    const message = `The parameter "${params.parameter.name.canonical}" was passed an argument multiple times via different parameter aliases in the environment.`
     super(message)
-    this.spec = params.spec
+    this.parameter = params.parameter
     this.instances = params.instances
   }
 }
@@ -59,10 +59,10 @@ export class ErrorFailedToGetDefaultArgument extends Error {
 export class ErrorMissingArgument extends Error {
   public override name: 'ErrorMissingArgument' = `ErrorMissingArgument`
   public spec: CommandParameter.Output
-  constructor(params: { spec: CommandParameter.Output }) {
-    const message = `Missing argument for flag "${params.spec.name.canonical}".`
+  constructor(params: { parameter: CommandParameter.Output }) {
+    const message = `Missing argument for flag "${params.parameter.name.canonical}".`
     super(message)
-    this.spec = params.spec
+    this.spec = params.parameter
   }
 }
 

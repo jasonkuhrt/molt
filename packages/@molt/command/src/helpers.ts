@@ -1,3 +1,4 @@
+import { Either } from 'effect'
 import camelCase from 'lodash.camelcase'
 import { z } from 'zod'
 
@@ -25,17 +26,20 @@ export const getLowerCaseEnvironment = (): NodeJS.ProcessEnv => lowerCaseObjectK
 export const lowerCaseObjectKeys = (obj: object) =>
   Object.fromEntries(Object.entries(obj).map(([k, v]) => [k.toLowerCase(), v]))
 
-export const parseEnvironmentVariableBoolean = (value: string): boolean | null =>
+export const parseEnvironmentVariableBoolean = (serializedValue: string): Either.Either<Error, boolean> => {
   // @ts-expect-error ignore
   // eslint-disable-next-line
-  environmentVariableBooleanLookup[value] ?? null
+  const value = environmentVariableBooleanLookup[serializedValue]
+  if (value === undefined) return Either.left(new Error(`Invalid boolean value: ${value}`))
+  return Either.right(value)
+}
 
 export const parseEnvironmentVariableBooleanOrThrow = (value: string) => {
   const result = parseEnvironmentVariableBoolean(value)
-  if (result === null) {
-    throw new Error(`Invalid boolean value: ${value}`)
+  if (Either.isLeft(result)) {
+    throw result.left
   }
-  return result
+  return result.right
 }
 
 export const negateNamePattern = /^no([A-Z].+)/
@@ -67,7 +71,7 @@ export const invertTable = <T>(rows: T[][]): T[][] => {
   return columns
 }
 
-export const entries = <O extends Record<string, unknown>>(
+export const entries = <O extends object>(
   obj: O,
 ): Exclude<{ [k in keyof O]: [k, O[k]] }[keyof O], undefined>[] => Object.entries(obj) as any
 
