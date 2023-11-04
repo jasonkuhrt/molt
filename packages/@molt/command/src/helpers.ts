@@ -30,7 +30,7 @@ export const parseEnvironmentVariableBoolean = (serializedValue: string): Either
   // @ts-expect-error ignore
   // eslint-disable-next-line
   const value = environmentVariableBooleanLookup[serializedValue]
-  if (!value) return Either.left(new Error(`Invalid boolean value: ${value}`))
+  if (value === undefined) return Either.left(new Error(`Invalid boolean value: ${value}`))
   return Either.right(value)
 }
 
