@@ -99,7 +99,7 @@ const mapZodNumberChecksAndTransformations = (checks: z.ZodNumberCheck[]) => {
 }
 
 const mapZodStringChecksAndTransformations = (checks: z.ZodStringCheck[]) => {
-  const transformations = [`trim`, `toLowerCase`, `toUpperCase`] as const
+  const transformations = [`trim`, `toCase`] as const
   return checks.reduce(
     (acc, check) => {
       const refinementOrTransformation = Alge.match(check)
@@ -175,7 +175,8 @@ const mapZodStringChecksAndTransformations = (checks: z.ZodStringCheck[]) => {
         }))
         .done()
 
-      return transformations.includes(Object.keys(refinementOrTransformation)[0]! as any)
+      const isTransformation = transformations.includes(Object.keys(refinementOrTransformation)[0]! as any)
+      return isTransformation
         ? {
             ...acc,
             transformations: {
