@@ -170,8 +170,8 @@ importers:
   packages/@molt/types:
     dependencies:
       '@types/lodash.camelcase':
-        specifier: 4.3.8
-        version: 4.3.8
+        specifier: 4.3.9
+        version: 4.3.9
       hotscript:
         specifier: ^1.0.13
         version: 1.0.13
@@ -780,6 +780,13 @@ packages:
     resolution: {integrity: sha512-jwsvMuU3ntB7w3a4L/oLW24qpBE9fobU5O/uCYWQctlvEOoWkXEgw/fkpY+onmT37IOQMVcVW9UiJ33CZE70ug==}
     dependencies:
       '@types/lodash': 4.14.200
+    dev: true
+
+  /@types/lodash.camelcase@4.3.9:
+    resolution: {integrity: sha512-ys9/hGBfsKxzmFI8hckII40V0ASQ83UM2pxfQRghHAwekhH4/jWtjz/3/9YDy7ZpUd/H0k2STSqmPR28dnj7Zg==}
+    dependencies:
+      '@types/lodash': 4.14.200
+    dev: false
 
   /@types/lodash.snakecase@4.1.8:
     resolution: {integrity: sha512-x1b+z3ZeperNh6sWRvIjJZsM+06ZeBWx155ej6LGe2KjsbqP5GVa8/n33QrrEVXBVLEGubINSHt//8MdC9h+GQ==}
