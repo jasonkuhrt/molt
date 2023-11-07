@@ -1,20 +1,21 @@
 import type { State } from '../Command/State.js'
-import type { CommandParameter } from '../CommandParameter/index.js'
 import type { EventPatternsInput, EventPatternsInputAtLeastOne } from '../eventPatterns.js'
 import { eventPatterns } from '../eventPatterns.js'
 import type { Values } from '../helpers.js'
 import { parseEnvironmentVariableBooleanOrThrow } from '../helpers.js'
 import { defaultParameterNamePrefixes } from '../OpeningArgs/Environment/Environment.js'
+import type { Type } from '../Type/index.js'
+import type { TypeAdaptors } from '../TypeAdaptors/index.js'
 import type { Name } from '@molt/types'
 import snakeCase from 'lodash.snakecase'
 
 export type OnErrorReaction = 'exit' | 'throw'
 
-export type InputPrompt<S extends CommandParameter.Input.Schema> =
+export type InputPrompt<T extends Type.Type> =
   | boolean
   | {
       enabled?: boolean
-      when?: EventPatternsInputAtLeastOne<S>
+      when?: EventPatternsInputAtLeastOne<T>
     }
 
 // eslint-disable-next-line
@@ -30,7 +31,7 @@ export interface Input<ParametersObject extends State.ParametersSchemaObjectBase
   }
   onError?: OnErrorReaction
   onOutput?: (output: string, defaultHandler: (output: string) => void) => void
-  prompt?: InputPrompt<Values<ParametersObject>>
+  prompt?: InputPrompt<TypeAdaptors.Zod.FromZod<Values<ParametersObject>>>
   // prompt?:
   parameters?: {
     // prettier-ignore
@@ -47,7 +48,7 @@ export interface Input<ParametersObject extends State.ParametersSchemaObjectBase
 export interface Output {
   prompt: {
     enabled: boolean
-    when: EventPatternsInput<CommandParameter.Input.Schema>
+    when: EventPatternsInput<Type.Type>
   }
   description?: string | undefined
   help: boolean

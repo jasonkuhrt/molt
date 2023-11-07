@@ -1,4 +1,3 @@
-import type { Optionality } from '../lib/Pam/parameter.js'
 import type { PromptEngine } from '../lib/PromptEngine/PromptEngine.js'
 import type { Tex } from '../lib/Tex/index.js'
 import type { ValidationResult } from './Type.js'
@@ -10,10 +9,16 @@ export const runtimeIgnore: any = true
 
 export type TypeSymbol = typeof TypeSymbol
 
+export type Optionality<T> =
+  | { _tag: 'required' }
+  | { _tag: 'optional' }
+  | { _tag: 'default'; getValue: () => T }
+
 export interface Type<T = any> {
   _tag: string
   description: null | string
   [TypeSymbol]: T
+  optionality: Optionality<T>
   validate: (value: unknown) => ValidationResult<T>
   transform?: (value: T) => T
   priority: number
@@ -24,7 +29,6 @@ export interface Type<T = any> {
   deserialize: (serializedValue: string) => Either.Either<Error, T>
   prompt: (params: {
     channels: PromptEngine.Channels
-    optionality: Optionality
     prompt: string
     marginLeft?: number
   }) => Effect.Effect<never, never, T | undefined>

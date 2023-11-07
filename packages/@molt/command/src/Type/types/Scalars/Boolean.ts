@@ -2,7 +2,7 @@ import { parseEnvironmentVariableBoolean } from '../../../helpers.js'
 import { PromptEngine } from '../../../lib/PromptEngine/PromptEngine.js'
 import { Tex } from '../../../lib/Tex/index.js'
 import { Term } from '../../../term.js'
-import type { Type } from '../../helpers.js'
+import type { Optionality, Type } from '../../helpers.js'
 import { runtimeIgnore, TypeSymbol } from '../../helpers.js'
 import chalk from 'chalk'
 import { Effect, Either } from 'effect'
@@ -14,11 +14,18 @@ export interface Boolean extends Type<boolean> {
 type Boolean_ = Boolean // eslint-disable-line
 
 // eslint-disable-next-line
-export const boolean = (description?: string): Boolean_ => {
+export const boolean = ({
+  description,
+  optionality,
+}: {
+  description?: string
+  optionality: Optionality<boolean>
+}): Boolean_ => {
   const type: Boolean_ = {
     _tag: `TypeBoolean`,
     description: description ?? null,
     [TypeSymbol]: runtimeIgnore, // eslint-disable-line
+    optionality,
     priority: 0,
     // eslint-disable-next-line
     validate: (value: unknown) => {

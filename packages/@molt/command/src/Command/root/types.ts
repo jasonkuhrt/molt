@@ -15,7 +15,7 @@ export type Schema = CommandParameter.SomeBasicType | CommandParameter.SomeUnion
 
 export interface ParameterConfiguration {
   schema: Schema
-  prompt?: CommandParameter.Input.Prompt<this['schema']>
+  prompt?: CommandParameter.Input.Prompt<TypeAdaptors.Zod.FromZod<this['schema']>>
 }
 
 export type IsHasKey<Obj extends object, Key> = Key extends keyof Obj ? true : false
@@ -38,15 +38,10 @@ export type IsPromptEnabled<P extends CommandParameter.Input.Prompt<any>|undefin
   Exclude<P, undefined|boolean|null>['enabled']   extends false     ? false :
                                                                       true
 
-export interface SomeParameterConfig<S extends Schema> {
-  schema: S
-  prompt?: CommandParameter.Input.Prompt<S>
-}
-
 // prettier-ignore
 export interface RootBuilder<State extends State.Base = State.BaseEmpty> {
   s: State
-  description                                                                               (this:void, description:string):
+  description                                                                                     (this:void, description:string):
     RootBuilder<State>
   parameter<NameExpression extends string, const Configuration extends ParameterConfiguration>    (this:void, name:State.ValidateNameExpression<State,NameExpression>, configuration:Configuration):
     RootBuilder<{

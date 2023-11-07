@@ -30,8 +30,8 @@ export const prompt = (
       const question = Tex({ flow: `horizontal`})
         .block({ padding: { right: 2 }}, `${Term.colors.dim(`${indexCurrent}/${indexTotal}`)}`)
         .block((__) =>
-          __.block(Term.colors.positive(parameter.name.canonical) +  `${parameter.optionality._tag === `required` ? `` : chalk.dim(` optional (press esc to skip)`)}`)
-            .block((parameter.description && Term.colors.dim(parameter.description)) ?? null)
+          __.block(Term.colors.positive(parameter.name.canonical) +  `${parameter.type.optionality._tag === `required` ? `` : chalk.dim(` optional (press esc to skip)`)}`)
+            .block((parameter.type.description && Term.colors.dim(parameter.type.description)) ?? null)
         )
       .render()
       // eslint-disable-next-line no-constant-condition

@@ -23,29 +23,29 @@ interface RenderSettings {
 }
 
 export const render = (
-  specs_: CommandParameter.Output[],
+  parameters_: CommandParameter.Output[],
   settings: Settings.Output,
   _settings?: RenderSettings,
 ) => {
-  const allSpecs = specs_
-  const specsWithDescription = allSpecs.filter((_) => _.description !== null)
-  const specsByKind = groupBy(specs_, `_tag`)
+  const allParameters = parameters_
+  const specsWithDescription = allParameters.filter((_) => _.type.description !== null)
+  const specsByKind = groupBy(parameters_, `_tag`)
   const basicSpecs = specsByKind.Basic ?? []
-  const allSpecsWithoutHelp = allSpecs
+  const allSpecsWithoutHelp = allParameters
     .filter((_) => _.name.canonical !== `help`)
     .sort((_) =>
       _._tag === `Exclusive`
         ? _.group.optionality._tag === `optional`
           ? 1
           : -1
-        : _.optionality._tag === `optional`
+        : _.type.optionality._tag === `optional`
         ? 1
         : -1,
     )
 
   const basicAndUnionSpecsWithoutHelp = basicSpecs
     .filter((_) => _.name.canonical !== `help`)
-    .sort((_) => (_.optionality._tag === `optional` ? 1 : -1))
+    .sort((_) => (_.type.optionality._tag === `optional` ? 1 : -1))
   const isAcceptsAnyEnvironmentArgs = basicSpecs.filter((_) => _.environment?.enabled).length > 0
   const isAcceptsAnyMutuallyExclusiveParameters =
     (specsByKind.Exclusive && specsByKind.Exclusive.length > 0) || false
@@ -221,13 +221,13 @@ const parameterDefault = (spec: CommandParameter.Output) => {
     return Term.colors.dim(`–`)
   }
 
-  if (spec.optionality._tag === `optional`) {
+  if (spec.type.optionality._tag === `optional`) {
     return Term.colors.secondary(`undefined`)
   }
 
-  if (spec.optionality._tag === `default`) {
+  if (spec.type.optionality._tag === `default`) {
     try {
-      return Term.colors.secondary(String(spec.optionality.getValue()))
+      return Term.colors.secondary(String(spec.type.optionality.getValue()))
     } catch (e) {
       const error = e instanceof Error ? e : new Error(String(e))
       return chalk.bold(Term.colors.alert(`Error trying to render this default: ${error.message}`))
@@ -243,7 +243,7 @@ const labels = {
 
 const parameterName = (spec: CommandParameter.Output) => {
   const isRequired =
-    (spec._tag === `Basic` && spec.optionality._tag === `required`) ||
+    (spec._tag === `Basic` && spec.type.optionality._tag === `required`) ||
     (spec._tag === `Exclusive` && spec.group.optionality._tag === `required`)
 
   const parameters: Tex.BlockParameters =

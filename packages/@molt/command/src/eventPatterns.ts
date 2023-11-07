@@ -2,19 +2,19 @@ import type { CommandParameter } from './CommandParameter/index.js'
 import type { Errors } from './Errors/index.js'
 import type { OpeningArgs } from './OpeningArgs/index.js'
 import type { Pattern } from './Pattern/Pattern.js'
-import type { z } from 'zod'
+import type { Type } from './Type/index.js'
 
 // prettier-ignore
-export type EventPatternsInputAtLeastOne<Schema extends CommandParameter.Input.Schema> =
-  z.ZodFirstPartyTypeKind.ZodOptional extends Schema['_def']['typeName']  	? Pattern<BasicParameterParseEvent,'result'> :
-  z.ZodFirstPartyTypeKind.ZodDefault  extends Schema['_def']['typeName']    ? Pattern<BasicParameterParseEvent,'result'> :
-                                                                              Pattern<BasicParameterParseEventAccepted | BasicParameterParseEventRejected,'result'>
+export type EventPatternsInputAtLeastOne<T extends Type.Type> =
+  'optional' extends T['optionality']['_tag']  	? Pattern<BasicParameterParseEvent,'result'> :
+  'default'  extends T['optionality']['_tag']   ? Pattern<BasicParameterParseEvent,'result'> :
+                                                  Pattern<BasicParameterParseEventAccepted | BasicParameterParseEventRejected,'result'>
 
 // prettier-ignore
-export type EventPatternsInput<Schema extends CommandParameter.Input.Schema> =
-  Schema['_def']['typeName'] extends z.ZodFirstPartyTypeKind.ZodOptional  ? Pattern<BasicParameterParseEvent,'result'> :
-  Schema['_def']['typeName'] extends z.ZodFirstPartyTypeKind.ZodDefault   ? Pattern<BasicParameterParseEvent,'result'> :
-                                                                            Pattern<BasicParameterParseEventAccepted | BasicParameterParseEventRejected,'result'>
+export type EventPatternsInput<T extends Type.Type> =
+  T['optionality']['_tag'] extends 'optional'   ? Pattern<BasicParameterParseEvent,'result'> :
+  T['optionality']['_tag'] extends 'default'    ? Pattern<BasicParameterParseEvent,'result'> :
+                                                  Pattern<BasicParameterParseEventAccepted | BasicParameterParseEventRejected,'result'>
 
 export type BasicParameterParseEvent =
   | BasicParameterParseEventAccepted
@@ -42,7 +42,7 @@ export const createEvent = (parseResult: OpeningArgs.ParseResultBasic) => {
   const specData: CommandParameter.Output.BasicData = {
     ...parseResult.parameter,
     _tag: `BasicData` as const,
-    optionality: parseResult.parameter.optionality[`_tag`],
+    optionality: parseResult.parameter.type.optionality[`_tag`],
   }
   // : {
   //     ...parseResult.spec,

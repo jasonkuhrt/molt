@@ -2,7 +2,6 @@ import type { Type } from '../../../Type/index.js'
 import type { Pam } from '../../Pam/index.js'
 import type { PromptEngine } from '../../PromptEngine/PromptEngine.js'
 import { Text } from '../../Text/index.js'
-import { inputForParameter } from '../input.js'
 import type { Effect } from 'effect'
 
 export interface Prompter {
@@ -30,7 +29,10 @@ export const create = (channels: PromptEngine.Channels): Prompter => {
     ask: (params) => {
       const args = { ...params, channels }
       channels.output(params.question + Text.chars.newline)
-      return inputForParameter(args)
+      if (args.parameter.type._tag === `TypeLiteral`) {
+        throw new Error(`Literals are not supported yet.`)
+      }
+      return params.parameter.type.prompt(args)
     },
   }
 }

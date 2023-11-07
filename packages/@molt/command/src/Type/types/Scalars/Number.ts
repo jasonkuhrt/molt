@@ -1,5 +1,6 @@
 import { PromptEngine } from '../../../lib/PromptEngine/PromptEngine.js'
 import { Term } from '../../../term.js'
+import type { Optionality } from '../../helpers.js'
 import { runtimeIgnore, type Type, TypeSymbol } from '../../helpers.js'
 import { Effect, Either } from 'effect'
 
@@ -19,13 +20,22 @@ interface Refinements {
 }
 
 // eslint-disable-next-line
-export const number = (refinements?: Refinements, description?: string): Number_ => {
+export const number = ({
+  refinements,
+  description,
+  optionality,
+}: {
+  optionality: Optionality<number>
+  refinements?: Refinements
+  description?: string
+}): Number_ => {
   const type: Number_ = {
     _tag: `TypeNumber`,
     priority: 5,
     refinements: refinements ?? {},
     description: description ?? null,
     [TypeSymbol]: runtimeIgnore, // eslint-disable-line
+    optionality,
     deserialize: (serializedValue) => {
       const result = Number(serializedValue)
       if (isNaN(result)) {
@@ -82,7 +92,7 @@ export const number = (refinements?: Refinements, description?: string): Number_
         const prompt = PromptEngine.create({
           channels: params.channels,
           cursor: true,
-          skippable: params.optionality._tag !== `required`,
+          skippable: optionality._tag !== `required`,
           initialState,
           on: [
             {

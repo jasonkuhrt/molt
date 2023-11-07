@@ -1,12 +1,9 @@
 import type { Settings } from '../../../index.js'
-import type { Pam } from '../../../lib/Pam/index.js'
 import { TypeAdaptors } from '../../../TypeAdaptors/index.js'
 import type { Input } from '../../input.js'
 import type { Output } from '../../output.js'
-import type { SomeBasicType, SomeUnionType } from '../../types.js'
 import { processEnvironment } from '../helpers/environment.js'
 import { Name } from '@molt/types'
-import { z } from 'zod'
 
 export const processBasic = (
   expression: string,
@@ -15,7 +12,7 @@ export const processBasic = (
 ): Output.Basic => {
   const name = Name.parse(expression)
   const environment = processEnvironment(settings, name)
-  const inferredProperties = inferPropsFromZodType(input.type)
+  const type = TypeAdaptors.Zod.fromZod(input.type)
   const parameter = {
     _tag: `Basic`,
     environment,
@@ -32,35 +29,8 @@ export const processBasic = (
       when:
         input.prompt === null ? null : typeof input.prompt === `object` ? input.prompt.when ?? null : null,
     },
-    ...inferredProperties,
+    type,
   } satisfies Output.Basic
 
   return parameter
 }
-
-export const inferPropsFromZodType = (zodType: SomeBasicType | SomeUnionType) => {
-  const isOptional = zodType._def.typeName === z.ZodFirstPartyTypeKind.ZodOptional
-  const hasDefault = zodType._def.typeName === z.ZodFirstPartyTypeKind.ZodDefault
-  const defaultGetter = hasDefault ? (zodType._def.defaultValue as DefaultGetter) : null
-  const optionality: Pam.Optionality = defaultGetter
-    ? { _tag: `default`, getValue: () => defaultGetter() }
-    : isOptional
-    ? { _tag: `optional` }
-    : { _tag: `required` }
-
-  const type = TypeAdaptors.Zod.fromZod(zodType)
-
-  return {
-    optionality,
-    description: type.description,
-    // Cannot use @ts-expect-error because someone the build then
-    // does _not_ detect an error here, in which case the expect error
-    // itself triggers the error... chicken and egg problem.
-    //
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore todo
-    type: type,
-  }
-}
-
-type DefaultGetter = () => Pam.Value

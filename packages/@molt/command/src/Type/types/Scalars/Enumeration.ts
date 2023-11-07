@@ -1,7 +1,7 @@
 import { PromptEngine } from '../../../lib/PromptEngine/PromptEngine.js'
 import { Text } from '../../../lib/Text/index.js'
 import { Term } from '../../../term.js'
-import type { Type } from '../../helpers.js'
+import type { Optionality, Type } from '../../helpers.js'
 import { runtimeIgnore, TypeSymbol } from '../../helpers.js'
 import chalk from 'chalk'
 import { Effect, Either } from 'effect'
@@ -12,14 +12,20 @@ export interface Enumeration<$Members extends Member[] = Member[]> extends Type<
 }
 type Member = number | string
 
-export const enumeration = <$Members extends Member[]>(
-  members: $Members,
-  description?: string,
-): Enumeration<$Members> => {
+export const enumeration = <$Members extends Member[]>({
+  members,
+  description,
+  optionality,
+}: {
+  members: $Members
+  description?: string
+  optionality: Optionality<$Members[number]>
+}): Enumeration<$Members> => {
   const type: Enumeration<$Members> = {
     _tag: `TypeEnum`,
     priority: 10,
     members,
+    optionality,
     description: description ?? null,
     [TypeSymbol]: runtimeIgnore, // eslint-disable-line
     validate: (value) => {

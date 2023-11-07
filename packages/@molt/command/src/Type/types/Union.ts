@@ -2,6 +2,7 @@ import { PromptEngine } from '../../lib/PromptEngine/PromptEngine.js'
 import { Tex } from '../../lib/Tex/index.js'
 import { Text } from '../../lib/Text/index.js'
 import { Term } from '../../term.js'
+import type { Optionality } from '../helpers.js'
 import { runtimeIgnore, type Type, TypeSymbol } from '../helpers.js'
 import chalk from 'chalk'
 import { Effect, Either } from 'effect'
@@ -14,10 +15,15 @@ export interface Union<Members extends readonly Member[] = Member[]>
 
 export type Member = Type<any>
 
-export const union = <$Members extends Member[]>(
-  members_: $Members,
-  description?: string,
-): Union<$Members> => {
+export const union = <$Members extends Member[]>({
+  members_,
+  description,
+  optionality,
+}: {
+  optionality: Optionality<$Members[number]>
+  members_: $Members
+  description?: string
+}): Union<$Members> => {
   /**
    * For a union we infer the value to be the type of the first variant type that matches.
    * This means that variant order matters since there are sub/super type relationships.
@@ -28,6 +34,7 @@ export const union = <$Members extends Member[]>(
   return {
     _tag: `TypeUnion`,
     members,
+    optionality,
     priority: 0,
     description: description ?? null,
     [TypeSymbol]: runtimeIgnore, // eslint-disable-line
