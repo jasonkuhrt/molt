@@ -1,6 +1,6 @@
 import { BooleanLookup, casesExhausted } from '../../../helpers.js'
 import { Term } from '../../../term.js'
-import type { Type } from '../../helpers.js'
+import type { Optionality, Type } from '../../helpers.js'
 import { runtimeIgnore, TypeSymbol } from '../../helpers.js'
 import { Either } from 'effect'
 
@@ -11,15 +11,21 @@ export interface Literal<$Value extends LiteralValue = LiteralValue> extends Typ
 
 export type LiteralValue = number | string | boolean | undefined
 
-export const literal = <const $Value extends LiteralValue>(
-  value: $Value,
-  description?: string,
-): Literal<$Value> => {
+export const literal = <const $Value extends LiteralValue>({
+  value,
+  description,
+  optionality,
+}: {
+  value: $Value
+  description?: string
+  optionality: Optionality<$Value>
+}): Literal<$Value> => {
   const type: Literal<$Value> = {
     [TypeSymbol]: runtimeIgnore, // eslint-disable-line
     priority: 0,
     _tag: `TypeLiteral`,
     value,
+    optionality,
     description: description ?? null,
     validate: (_value) => {
       return _value === value

@@ -116,11 +116,11 @@ export const parse = ({
      * No opening argument was given. Process this fact according to spec (e.g. ok b/c optional, apply default, ... etc.)
      */
 
-    result.basicParameters[parameter.name.canonical] = Alge.match(parameter.optionality)
+    result.basicParameters[parameter.name.canonical] = Alge.match(parameter.type.optionality)
       .default((optionality) => {
         let defaultValue
         try {
-          defaultValue = optionality.getValue()
+          defaultValue = optionality.getValue() // eslint-disable-line
         } catch (someError) {
           return {
             _tag: `error` as const,
@@ -136,7 +136,7 @@ export const parse = ({
         return {
           _tag: `supplied` as const,
           parameter,
-          value: defaultValue,
+          value: defaultValue, // eslint-disable-line
         }
       })
       .required(() => {

@@ -1,15 +1,14 @@
 import type { EventPatternsInput } from '../eventPatterns.js'
 import type { Pam } from '../lib/Pam/index.js'
 import type { Type } from '../Type/index.js'
-import type { CommandParameter } from './index.js'
 import type { Name as MoltName } from '@molt/types'
 
 export type Output = Output.Exclusive | Output.Basic //| Output.Union
 
 export namespace Output {
-  export type Prompt<S extends CommandParameter.Input.Schema = CommandParameter.Input.Schema> = {
+  export type Prompt<T extends Type.Type = Type.Type> = {
     enabled: boolean | null
-    when: EventPatternsInput<S> | null
+    when: EventPatternsInput<T> | null
   }
 
   export interface Basic extends Omit<Pam.Parameter, '_tag'> {

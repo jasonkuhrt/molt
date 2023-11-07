@@ -2,7 +2,7 @@ import { ZodHelpers } from '../../lib/zodHelpers/index.js'
 import { Type } from '../../Type/index.js'
 import { Alge } from 'alge'
 import type { Simplify } from 'type-fest'
-import type { z } from 'zod'
+import { z } from 'zod'
 
 // prettier-ignore
 export type FromZod<ZodType extends z.ZodType> =
@@ -37,34 +37,43 @@ type ZodTypeScalar =
   | z.ZodNativeEnum<any>
 // prettier-ignore
 
-export const fromZod = (zodType: z.ZodFirstPartySchemaTypes): Type.Type => _fromZod(zodType,undefined)
+export const fromZod = (zodType: z.ZodFirstPartySchemaTypes): Type.Type => _fromZod(zodType, {})
 
 // prettier-ignore
-const _fromZod = (zodType: z.ZodFirstPartySchemaTypes,previousDescription?:string): Type.Type => {
+const _fromZod = (zodType: z.ZodFirstPartySchemaTypes,previous:{description?:string;optionality?:Type.Optionality<any>}): Type.Type => {
   const zt = zodType
-  const description = previousDescription ?? zt.description
+  const description = previous.description ?? zt.description
+
+  const isOptional = zt._def.typeName === z.ZodFirstPartyTypeKind.ZodOptional
+  const hasDefault = zt._def.typeName === z.ZodFirstPartyTypeKind.ZodDefault
+  const defaultGetter = hasDefault ? (zt._def.defaultValue as () => unknown) : null
+  const optionality: Type.Optionality<any> = previous.optionality ?? (defaultGetter
+    ? { _tag: `default`, getValue: () => defaultGetter() }
+    : isOptional
+    ? { _tag: `optional` }
+    : { _tag: `required` })
   
   if (ZodHelpers.isString(zt)) {
     const {refinements,transformations} = mapZodStringChecksAndTransformations(zt._def.checks)
-    return Type.string(refinements, transformations, description)
+    return Type.string({ optionality, refinements, transformations, description })
   }
   if (ZodHelpers.isNumber(zt)) {
     const {refinements} = mapZodNumberChecksAndTransformations(zt._def.checks)
-    return Type.number(refinements, description)
+    return Type.number({ optionality, refinements, description })
   }
-  if (ZodHelpers.isEnum(zt))            return Type.enumeration(zt._def.values,description)
-  if (ZodHelpers.isNativeEnum(zt))      return Type.enumeration(Object.values<any>(zt._def.values),description)
-  if (ZodHelpers.isBoolean(zt))         return Type.boolean(description)
-  if (ZodHelpers.isLiteral(zt))         return Type.literal(zt._def.value,description)
-  if (ZodHelpers.isDefault(zt))         return _fromZod(zt._def.innerType,description)
-  if (ZodHelpers.isOptional(zt))        return _fromZod(zt._def.innerType,description)
+  if (ZodHelpers.isEnum(zt))            return Type.enumeration({ optionality, members: zt._def.values, description }) // eslint-disable-line
+  if (ZodHelpers.isNativeEnum(zt))      return Type.enumeration({ optionality, members: Object.values<any>(zt._def.values), description })
+  if (ZodHelpers.isBoolean(zt))         return Type.boolean({ optionality, description })
+  if (ZodHelpers.isLiteral(zt))         return Type.literal({ optionality, value: zt._def.value, description }) // eslint-disable-line
+  if (ZodHelpers.isDefault(zt))         return _fromZod(zt._def.innerType,{...previous,description,optionality})
+  if (ZodHelpers.isOptional(zt))        return _fromZod(zt._def.innerType,{...previous,description,optionality})
   if (ZodHelpers.isUnion(zt))           {
     if (!Array.isArray(zt._def.options)) throw new Error(`Unsupported zodType: ${JSON.stringify(zt[`_def`])}`)
     const members = zt._def.options.map((_: {_def:{description:undefined|string}}) => {
       const description = _._def.description
-      return _fromZod(_ as any, description)
+      return _fromZod(_ as any, {...previous,description,optionality})
     })
-    return Type.union(members, description)
+    return Type.union({ optionality, members_: members, description })
   }
   // console.log(zt)
   throw new Error(`Unsupported zodType: ${JSON.stringify(zt[`_def`])}`)

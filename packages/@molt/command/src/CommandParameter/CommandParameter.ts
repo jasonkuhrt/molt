@@ -9,7 +9,7 @@ import type { Output } from './output.js'
 import { Either } from 'effect'
 
 export const validate = <T>(parameter: Output.Basic, value: unknown): ValidationResult<T> => {
-  if (parameter.optionality._tag === `optional` && value === undefined) return Either.right(value as T)
+  if (parameter.type.optionality._tag === `optional` && value === undefined) return Either.right(value as T)
   return parameter.type.validate(value)
 }
 

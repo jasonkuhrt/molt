@@ -3,6 +3,7 @@ import { Patterns } from '../../../lib/Patterns/index.js'
 import { PromptEngine } from '../../../lib/PromptEngine/PromptEngine.js'
 import { Tex } from '../../../lib/Tex/index.js'
 import { Term } from '../../../term.js'
+import type { Optionality } from '../../helpers.js'
 import { runtimeIgnore, type Type, TypeSymbol } from '../../helpers.js'
 import { Alge } from 'alge'
 import { Effect, Either } from 'effect'
@@ -64,11 +65,17 @@ interface Refinements {
   includes?: string
 }
 
-export const string = (
-  refinements?: Refinements,
-  transformations?: Transformations,
-  description?: string,
-): String_ => {
+export const string = ({
+  refinements,
+  transformations,
+  description,
+  optionality,
+}: {
+  optionality: Optionality<string>
+  refinements?: Refinements
+  transformations?: Transformations
+  description?: string
+}): String_ => {
   const type: String_ = {
     _tag: `TypeString`,
     priority: -10,
@@ -76,6 +83,7 @@ export const string = (
     transformations: transformations ?? {},
     description: description ?? null,
     [TypeSymbol]: runtimeIgnore, // eslint-disable-line
+    optionality,
     display: () => Term.colors.positive(`string`),
     displayExpanded: () => type.display(),
     help: () => {
@@ -213,7 +221,7 @@ export const string = (
         const prompt = PromptEngine.create({
           channels: params.channels,
           cursor: true,
-          skippable: params.optionality._tag !== `required`,
+          skippable: optionality._tag !== `required`,
           initialState,
           on: [
             {

@@ -18,7 +18,7 @@ export const processExclusive = (
     const parameter = {
       _tag: `Exclusive`,
       description: type.description,
-      type: type,
+      type,
       environment,
       name,
       // See comment/code below: (1)
