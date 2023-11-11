@@ -1,11 +1,10 @@
 import type { State } from '../Command/State.js'
 import type { EventPatternsInput, EventPatternsInputAtLeastOne } from '../eventPatterns.js'
 import { eventPatterns } from '../eventPatterns.js'
-import type { Values } from '../helpers.js'
+import type { HKT, Values } from '../helpers.js'
 import { parseEnvironmentVariableBooleanOrThrow } from '../helpers.js'
 import { defaultParameterNamePrefixes } from '../OpeningArgs/Environment/Environment.js'
 import type { Type } from '../Type/index.js'
-import type { TypeAdaptors } from '../TypeAdaptors/index.js'
 import type { Name } from '@molt/types'
 import snakeCase from 'lodash.snakecase'
 
@@ -19,7 +18,7 @@ export type InputPrompt<T extends Type.Type> =
     }
 
 // eslint-disable-next-line
-export interface Input<ParametersObject extends State.ParametersSchemaObjectBase = {}> {
+export interface Input<$State extends State.Base = State.BaseEmpty> {
   description?: string
   help?: boolean
   helpOnNoArguments?: boolean
@@ -31,14 +30,14 @@ export interface Input<ParametersObject extends State.ParametersSchemaObjectBase
   }
   onError?: OnErrorReaction
   onOutput?: (output: string, defaultHandler: (output: string) => void) => void
-  prompt?: InputPrompt<TypeAdaptors.Zod.FromZod<Values<ParametersObject>>>
+  prompt?: InputPrompt<HKT.Call<$State['SchemaMapper'], Values<State.ToSchema<$State>>>>
   // prompt?:
   parameters?: {
     // prettier-ignore
     environment?:
       | boolean
       | ({
-          [FlagSpecExpression in keyof ParametersObject as Name.Data.GetCanonicalNameOrErrorFromParseResult<Name.Parse<FlagSpecExpression & string>>]?: boolean | SettingInputEnvironmentParameter
+          [FlagSpecExpression in keyof Values<State.ToSchema<$State>> as Name.Data.GetCanonicalNameOrErrorFromParseResult<Name.Parse<FlagSpecExpression & string>>]?: boolean | SettingInputEnvironmentParameter
         } & {
           $default?: boolean | SettingInputEnvironmentParameter
         })
@@ -46,6 +45,7 @@ export interface Input<ParametersObject extends State.ParametersSchemaObjectBase
 }
 
 export interface Output {
+  typeMapper: (value: unknown) => Type.Type
   prompt: {
     enabled: boolean
     when: EventPatternsInput<Type.Type>
@@ -89,13 +89,14 @@ interface Environment {
 }
 
 // eslint-disable-next-line
-export const change = (current: Output, input: Input<{}>, environment: Environment): void => {
+export const change = (current: Output, input: Input<State.BaseEmpty>, environment: Environment): void => {
   if (input.prompt !== undefined) {
     if (typeof input.prompt === `boolean`) {
       current.prompt.enabled = input.prompt
     } else {
       if (input.prompt.enabled !== undefined) current.prompt.enabled = input.prompt.enabled
       if (input.prompt.when !== undefined) {
+        // @ts-expect-error fixme
         current.prompt.when = input.prompt.when
         // Passing object makes enabled default to true
         if (input.prompt.enabled === undefined) current.prompt.enabled = true
@@ -207,6 +208,7 @@ const isEnvironmentEnabled = (lowercaseEnv: NodeJS.ProcessEnv) => {
 
 export const getDefaults = (lowercaseEnv: NodeJS.ProcessEnv): Output => {
   return {
+    typeMapper: (t) => t as any,
     prompt: {
       enabled: false,
       when: eventPatterns.rejectedMissingOrInvalid,

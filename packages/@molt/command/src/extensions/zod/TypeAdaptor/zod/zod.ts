@@ -1,5 +1,5 @@
-import { ZodHelpers } from '../../lib/zodHelpers/index.js'
-import { Type } from '../../Type/index.js'
+import { Type } from '../../../../Type/index.js'
+import { ZodHelpers } from '../../zodHelpers/index.js'
 import { Alge } from 'alge'
 import type { Simplify } from 'type-fest'
 import { z } from 'zod'

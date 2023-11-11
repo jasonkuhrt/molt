@@ -1,14 +1,12 @@
+import type { State } from '../Command/State.js'
 import type { EventPatternsInput } from '../eventPatterns.js'
+import type { HKT } from '../helpers.js'
 import type { Pam } from '../lib/Pam/index.js'
 import type { Type } from '../Type/index.js'
-import type { TypeAdaptors } from '../TypeAdaptors/index.js'
-import type { SomeBasicType, SomeExclusiveZodType, SomeUnionType } from './types.js'
 
-export type Input = Input.Basic | Input.Exclusive
+export type Input<$State extends State.Base> = Input.Basic<$State> | Input.Exclusive<$State>
 
 export namespace Input {
-  export type Schema = SomeBasicType | SomeUnionType
-
   export type Prompt<T extends Type.Type> =
     | null
     | boolean
@@ -17,14 +15,14 @@ export namespace Input {
         when?: EventPatternsInput<T>
       }
 
-  export interface Basic {
+  export interface Basic<$State extends State.Base> {
     _tag: 'Basic'
     nameExpression: string
-    type: SomeBasicType | SomeUnionType
-    prompt: Prompt<TypeAdaptors.Zod.FromZod<SomeBasicType>>
+    type: $State['Schema']
+    prompt: Prompt<HKT.Call<$State['SchemaMapper'], $State['Schema']>>
   }
 
-  export interface Exclusive {
+  export interface Exclusive<$State extends State.Base> {
     _tag: 'Exclusive'
     optionality:
       | { _tag: 'required' }
@@ -33,7 +31,7 @@ export namespace Input {
     description?: string
     parameters: {
       nameExpression: string
-      type: SomeExclusiveZodType
+      type: $State['Schema']
     }[]
   }
 }

@@ -1,10 +1,10 @@
 import type { Settings } from '../../Settings/index.js'
+import { Type } from '../../Type/index.js'
 import type { Input } from '../input.js'
 import type { Output } from '../output.js'
 import { processBasic } from './parameterTypes/basic.js'
 import { processExclusive } from './parameterTypes/exclusive.js'
 import { Alge } from 'alge'
-import { z } from 'zod'
 
 /**
  * Process the spec input into a normalized spec.
@@ -29,7 +29,7 @@ export const process = (inputs: Record<string, Input>, settings: Settings.Output
 
 const helpParameter: Input.Basic = {
   _tag: `Basic`,
-  type: z.boolean().default(false),
+  type: Type.boolean({ optionality: { _tag: `default`, getValue: () => false } }),
   nameExpression: `-h --help`,
   prompt: false,
 }

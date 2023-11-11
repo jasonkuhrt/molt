@@ -1,5 +1,4 @@
 import type { Settings } from '../../../index.js'
-import { TypeAdaptors } from '../../../TypeAdaptors/index.js'
 import type { Input } from '../../input.js'
 import type { Output } from '../../output.js'
 import { processEnvironment } from '../helpers/environment.js'
@@ -8,13 +7,13 @@ import { Alge } from 'alge'
 
 export const processExclusive = (
   label: string,
-  input: Input.Exclusive,
+  input: Input.Exclusive<any>,
   settings: Settings.Output,
 ): Output.Exclusive[] => {
   const parameters = input.parameters.map((_) => {
     const name = Name.parse(_.nameExpression)
     const environment = processEnvironment(settings, name)
-    const type = TypeAdaptors.Zod.fromZod(_.type)
+    const type = settings.typeMapper(_.type)
     const parameter = {
       _tag: `Exclusive`,
       description: type.description,

@@ -3,13 +3,10 @@ import { negateNamePattern } from '../helpers.js'
 import type { Value } from './types.js'
 import { Either } from 'effect'
 import camelCase from 'lodash.camelcase'
-import { z } from 'zod'
 
 export const stripeDashPrefix = (flagNameInput: string): string => {
   return flagNameInput.replace(/^-+/, ``)
 }
-
-export const zodPassthrough = <T>() => z.any().transform((_) => _ as T)
 
 // prettier-ignore
 export const parseSerializedValue = (name: string, serializedValue: string, spec: CommandParameter.Output): Value => {

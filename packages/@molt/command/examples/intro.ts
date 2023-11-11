@@ -1,7 +1,9 @@
+import { Zod } from '../src/extensions/zod/zod.js'
 import { Command } from '../src/index.js'
 import { z } from 'zod'
 
 const args = await Command.create()
+  .use(Zod)
   .parameter(`filePath`, z.string().describe(`Path to the file to convert.`))
   .parameter(`to`, z.enum([`json`, `yaml`, `toml`]).describe(`Format to convert to.`))
   .parameter(`from`, {

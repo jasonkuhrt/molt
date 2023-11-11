@@ -1,7 +1,7 @@
+import type { TypeAdaptor } from '../../src/extensions/zod/TypeAdaptor/index.js'
 import type { Settings } from '../../src/index.js'
 import { Command } from '../../src/index.js'
 import type { Type } from '../../src/Type/index.js'
-import type { TypeAdaptors } from '../../src/TypeAdaptors/index.js'
 import { s, tryCatch } from '../_/helpers.js'
 import { memoryPrompter } from '../_/mocks/tty.js'
 import stripAnsi from 'strip-ansi'
@@ -83,7 +83,7 @@ it(`parameter settings overrides default settings`, () => {
 
 describe(`prompt can be toggled by check on error`, () => {
   describe(`toggle to enabled`, () => {
-    const settings = S<TypeAdaptors.Zod.FromZod<typeof s>>({
+    const settings = S<TypeAdaptor.Zod.FromZod<typeof s>>({
       enabled: true,
       when: { result: `rejected`, error: `ErrorMissingArgument`, spec: { name: { canonical: `a` } } },
     })

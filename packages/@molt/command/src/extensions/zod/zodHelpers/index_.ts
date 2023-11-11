@@ -1,4 +1,4 @@
-import type { RenameKey } from '../prelude.js'
+import type { RenameKey } from '../../../lib/prelude.js'
 import type { Simplify } from 'type-fest'
 import { z } from 'zod'
 

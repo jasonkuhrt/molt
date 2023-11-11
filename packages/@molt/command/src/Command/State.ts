@@ -1,21 +1,29 @@
 import type { CommandParameter } from '../CommandParameter/index.js'
 import type { Values } from '../helpers.js'
+import type { HKT } from '../helpers.js'
 import type { Type } from '../Type/index.js'
-import type { TypeAdaptors } from '../TypeAdaptors/index.js'
 import type { ExclusiveParameterConfiguration } from './exclusive/types.js'
 import type { ParameterConfiguration } from './root/types.js'
 import type { Name } from '@molt/types'
 import type { Simplify } from 'type-fest'
 
 export namespace State {
+  export interface TypeMapper<T extends Type.Type = Type.Type> extends HKT.Fn<T, T> {
+    return: T
+  }
+
   export interface BaseEmpty extends Base {
     IsPromptEnabled: false
     ParametersExclusive: {} // eslint-disable-line
     Parameters: {} // eslint-disable-line
+    Schema: Type.Type
+    SchemaMapper: HKT.IDFn<Type.Type<unknown>>
   }
 
   export type Base = {
     IsPromptEnabled: boolean
+    Schema: Type.Type
+    SchemaMapper: HKT.Fn<unknown, Type.Type<unknown>>
     ParametersExclusive: {
       [label: string]: {
         Optional: boolean
@@ -77,6 +85,8 @@ export namespace State {
   > = {
     IsPromptEnabled: State['IsPromptEnabled']
     Parameters: State['Parameters']
+    Schema: State['Schema']
+    SchemaMapper: State['SchemaMapper']
     ParametersExclusive: Omit<State['ParametersExclusive'], Label> & 
       {
         [_ in Label]: {
@@ -84,24 +94,25 @@ export namespace State {
           Parameters: State['ParametersExclusive'][_]['Parameters']
         }
       }
+
   }
   // prettier-ignore
   export type AddExclusiveParameter<
-    State extends Base,
+    $State extends Base,
     Label extends string,
     NameExpression extends string,
-    Configuration extends ExclusiveParameterConfiguration
+    Configuration extends ExclusiveParameterConfiguration<$State>
   > =
-    MergeIntoProperty<State, 'ParametersExclusive', {
+    MergeIntoProperty<$State, 'ParametersExclusive', {
       [_ in Label]: {
-        Optional: State['ParametersExclusive'][_]['Optional']
+        Optional: $State['ParametersExclusive'][_]['Optional']
         Parameters: {
           [_ in NameExpression as Name.Data.GetCanonicalNameOrErrorFromParseResult<Name.Parse<NameExpression>>]: {
             Schema: Configuration['schema']
-            Type: TypeAdaptors.Zod.FromZod<Configuration['schema']>
-            NameParsed: Name.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>
+            Type: HKT.Call<$State['SchemaMapper'], Configuration['schema']>
+            NameParsed: Name.Parse<NameExpression, { usedNames: GetUsedNames<$State>; reservedNames: ReservedParameterNames }>
             NameUnion: Name.Data.GetNamesFromParseResult<
-              Name.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>
+              Name.Parse<NameExpression, { usedNames: GetUsedNames<$State>; reservedNames: ReservedParameterNames }>
             >
           }
 
@@ -111,46 +122,46 @@ export namespace State {
 
   // prettier-ignore
   export type CreateParameter<
-    State           extends Base,
+    $State          extends Base,
     NameExpression  extends string,
-    Configuration   extends ParameterConfiguration,
+    Configuration   extends ParameterConfiguration<$State>,
   > = {
     Schema: Configuration['schema']
-    Type: TypeAdaptors.Zod.FromZod<Configuration['schema']>
-    NameParsed: Name.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>
-    NameUnion: Name.Data.GetNamesFromParseResult<Name.Parse<NameExpression,{ usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>>
+    Type: HKT.Call<$State['SchemaMapper'], Configuration['schema']>
+    NameParsed: Name.Parse<NameExpression, { usedNames: GetUsedNames<$State>; reservedNames: ReservedParameterNames }>
+    NameUnion: Name.Data.GetNamesFromParseResult<Name.Parse<NameExpression,{ usedNames: GetUsedNames<$State>; reservedNames: ReservedParameterNames }>>
   }
 
   // prettier-ignore
-  export type ToArgs<State extends Base> =
-    State['IsPromptEnabled'] extends true
-      ? Promise<ToArgs_<State>>
-      : ToArgs_<State>
+  export type ToArgs<$State extends Base> =
+    $State['IsPromptEnabled'] extends true
+      ? Promise<ToArgs_<$State>>
+      : ToArgs_<$State>
 
   // prettier-ignore
-  type ToArgs_<State extends Base> =
+  type ToArgs_<$State extends Base> =
     Simplify<
       {
-        [Name in keyof State['Parameters'] & string as State['Parameters'][Name]['NameParsed']['canonical']]:
-          Type.Infer<State['Parameters'][Name]['Type']>
+        [Name in keyof $State['Parameters'] & string as $State['Parameters'][Name]['NameParsed']['canonical']]:
+          Type.Infer<$State['Parameters'][Name]['Type']>
       } &
       {
-        [Label in keyof State['ParametersExclusive'] & string]:
+        [Label in keyof $State['ParametersExclusive'] & string]:
           | Simplify<Values<{
-              [Name in keyof State['ParametersExclusive'][Label]['Parameters']]:
+              [Name in keyof $State['ParametersExclusive'][Label]['Parameters']]:
                 {
-                  _tag: State['ParametersExclusive'][Label]['Parameters'][Name]['NameParsed']['canonical']
-                  value: Type.Infer<State['ParametersExclusive'][Label]['Parameters'][Name]['Type']>
+                  _tag: $State['ParametersExclusive'][Label]['Parameters'][Name]['NameParsed']['canonical']
+                  value: Type.Infer<$State['ParametersExclusive'][Label]['Parameters'][Name]['Type']>
                 }
             }>>
-          | (State['ParametersExclusive'][Label]['Optional'] extends true ? undefined : never)
+          | ($State['ParametersExclusive'][Label]['Optional'] extends true ? undefined : never)
       }
     >
 
   // prettier-ignore
-  export type ToSchema<Spec extends State.Base> = {
-    [K in keyof Spec['Parameters'] & string as Spec['Parameters'][K]['NameParsed']['canonical']]:
-      Spec['Parameters'][K]['Schema']
+  export type ToSchema<$State extends State.Base> = {
+    [K in keyof $State['Parameters'] & string as $State['Parameters'][K]['NameParsed']['canonical']]:
+      $State['Parameters'][K]['Schema']
   }
 }
 
