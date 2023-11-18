@@ -1,8 +1,7 @@
-import type { TypeAdaptor } from '../../src/extensions/zod/old/index.js'
+import type { FromZod } from '../../src/extensions/zod/typeAdaptor/types.js'
 import type { Settings } from '../../src/index.js'
-import { Command } from '../../src/index.js'
 import type { Type } from '../../src/Type/index.js'
-import { s, tryCatch } from '../_/helpers.js'
+import { $, s, tryCatch } from '../_/helpers.js'
 import { memoryPrompter } from '../_/mocks/tty.js'
 import stripAnsi from 'strip-ansi'
 import { describe, expect, it } from 'vitest'
@@ -19,8 +18,7 @@ describe(`parameter level`, () => {
   it(`can be passed object`, async () => {
     memoryPrompter.script.keyPress.push(...foo)
     const args = await tryCatch(() =>
-      Command.create()
-        .parameter(`a`, { type: s, prompt: { enabled: true } })
+      $.parameter(`a`, { type: s, prompt: { enabled: true } })
         .settings({ onError: `throw`, helpOnError: false })
         .parse({ line: [], tty: memoryPrompter }),
     )
@@ -34,8 +32,7 @@ describe(`command level`, () => {
   it(`passing object makes enabled default to true`, async () => {
     memoryPrompter.script.keyPress.push(...foo)
     // eslint-disable-next-line
-    const args = await Command.create()
-      .parameter(`a`, { type: s })
+    const args = await $.parameter(`a`, { type: s })
       .settings({ onError: `throw`, helpOnError: false, prompt: { when: { result: `rejected` } } })
       .parse({ line: [], tty: memoryPrompter })
     expect(args).toMatchSnapshot(`args`)
@@ -46,8 +43,7 @@ describe(`command level`, () => {
 
 it(`prompt is disabled by default`, () => {
   const args = tryCatch(() =>
-    Command.create()
-      .parameter(`a`, { type: s })
+    $.parameter(`a`, { type: s })
       .settings({ onError: `throw`, helpOnError: false })
       .parse({ line: [], tty: memoryPrompter }),
   )
@@ -59,8 +55,7 @@ it(`prompt is disabled by default`, () => {
 it(`prompt can be enabled by default`, async () => {
   memoryPrompter.script.keyPress.push(...foo)
   const args = await tryCatch(() =>
-    Command.create()
-      .parameter(`a`, { type: s })
+    $.parameter(`a`, { type: s })
       .settings({ onError: `throw`, helpOnError: false, prompt: { enabled: true } })
       .parse({ line: [], tty: memoryPrompter }),
   )
@@ -71,8 +66,7 @@ it(`prompt can be enabled by default`, async () => {
 
 it(`parameter settings overrides default settings`, () => {
   const args = tryCatch(() =>
-    Command.create()
-      .parameter(`a`, { type: s, prompt: false })
+    $.parameter(`a`, { type: s, prompt: false })
       .settings({ onError: `throw`, helpOnError: false, prompt: { enabled: true } })
       .parse({ line: [], tty: memoryPrompter }),
   )
@@ -83,7 +77,7 @@ it(`parameter settings overrides default settings`, () => {
 
 describe(`prompt can be toggled by check on error`, () => {
   describe(`toggle to enabled`, () => {
-    const settings = S<TypeAdaptor.Zod.FromZod<typeof s>>({
+    const settings = S<FromZod<typeof s>>({
       enabled: true,
       when: { result: `rejected`, error: `ErrorMissingArgument`, spec: { name: { canonical: `a` } } },
     })
@@ -91,8 +85,7 @@ describe(`prompt can be toggled by check on error`, () => {
       memoryPrompter.script.keyPress.push(...foo)
       // eslint-disable-next-line
       const args = await tryCatch(() =>
-        Command.create()
-          .parameter(`a`, { type: s })
+        $.parameter(`a`, { type: s })
           .settings({ onError: `throw`, helpOnError: false, prompt: settings })
           .parse({ line: [], tty: memoryPrompter }),
       )
@@ -102,8 +95,7 @@ describe(`prompt can be toggled by check on error`, () => {
     })
     it(`check does not match`, () => {
       const args = tryCatch(() =>
-        Command.create()
-          .parameter(`b`, { type: s })
+        $.parameter(`b`, { type: s })
           .settings({ onError: `throw`, helpOnError: false, prompt: settings })
           .parse({ line: [], tty: memoryPrompter }),
       )
@@ -117,8 +109,7 @@ describe(`prompt can be toggled by check on error`, () => {
 it(`parameter defaults to custom settings`, async () => {
   memoryPrompter.script.keyPress.push(...foo)
   const args = await tryCatch(() =>
-    Command.create()
-      .parameter(`a`, { type: s })
+    $.parameter(`a`, { type: s })
       .settings({
         onError: `throw`,
         helpOnError: false,
@@ -155,8 +146,7 @@ it(`can be stack of conditional prompts`, async () => {
   memoryPrompter.script.keyPress.push(...foo)
   // eslint-disable-next-line
   const args = await tryCatch(() =>
-    Command.create()
-      .parameter(`a`, { type: s.optional() })
+    $.parameter(`a`, { type: s.optional() })
       .settings({ onError: `throw`, helpOnError: false, prompt: settings })
       .parse({ line: [`-a`, `1`], tty: memoryPrompter }),
   )

@@ -1,5 +1,5 @@
 import { Command } from '../../../src/index.js'
-import { n, s } from '../../_/helpers.js'
+import { $, n, s } from '../../_/helpers.js'
 import type { IsExact } from 'conditional-type-checks'
 import { assert } from 'conditional-type-checks'
 import { describe, expect, it } from 'vitest'
@@ -16,7 +16,7 @@ describe(`errors`, () => {
   )(`%s`, (_, parameters, input) => {
     expect(() => {
       Object.entries(parameters)
-        .reduce((chain, data) => chain.parameter(data[0] as any, data[1]), Command.create())
+        .reduce((chain, data) => chain.parameter(data[0] as any, data[1]), $)
         .settings({ onError: `throw`, helpOnError: false })
         .parse(input)
     }).toThrowErrorMatchingSnapshot()
@@ -25,23 +25,17 @@ describe(`errors`, () => {
 
 describe(`optional`, () => {
   it(`specified input can be omitted, missing key is possible`, () => {
-    const args = Command.create().parameter(`--foo`, s.optional()).parse({ line: [] })
+    const args = $.parameter(`--foo`, s.optional()).parse({ line: [] })
     assert<IsExact<{ foo: string | undefined }, typeof args>>(true)
     expect(Object.keys(args)).not.toContain(`foo`)
   })
   it(`input can be given`, () => {
-    const args = Command.create()
-      .parameter(`--foo`, s.optional())
-      .parse({ line: [`--foo`, `bar`] })
+    const args = $.parameter(`--foo`, s.optional()).parse({ line: [`--foo`, `bar`] })
     assert<IsExact<{ foo: string | undefined }, typeof args>>(true)
     expect(args).toMatchObject({ foo: `bar` })
   })
 })
 
 it(`is not trimmed by default`, () => {
-  expect(
-    Command.create()
-      .parameter(`name`, s)
-      .parse({ line: [`--name`, `foobar  `] }),
-  ).toMatchSnapshot()
+  expect($.parameter(`name`, s).parse({ line: [`--name`, `foobar  `] })).toMatchSnapshot()
 })

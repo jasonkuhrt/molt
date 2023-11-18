@@ -1,8 +1,7 @@
 import type { Settings } from '../../src/_entrypoints/types.js'
 import type { ParameterConfiguration } from '../../src/builders/command/types.js'
-import { Command } from '../../src/index.js'
 import type { KeyPress } from '../../src/lib/KeyPress/index.js'
-import { b, e, l1, n, s, tryCatch } from '../_/helpers.js'
+import { $, b, e, l1, n, s, tryCatch } from '../_/helpers.js'
 import { memoryPrompter } from '../_/mocks/tty.js'
 import stripAnsi from 'strip-ansi'
 import { expectType } from 'tsd'
@@ -250,79 +249,66 @@ it(`prompt when omitted`, async () => {
 
 it(`static error to match on omitted event on required parameter by .parameter(...)`, () => {
   // @ts-expect-error not available
-  Command.create().parameter(`a`, { type: s, prompt: { when: { result: `omitted` } } })
+  $.parameter(`a`, { type: s, prompt: { when: { result: `omitted` } } })
   // TODO fix me
   // // Is fine, because parameter is optional.
-  // Command.create().parameter(`a`, {
+  // $.parameter(`a`, {
   //   type: s.optional(),
   //   prompt: { when: { result: `omitted` } },
   // })
 })
 
 it(`can pass just one pattern in multiple pattern syntax`, () => {
-  Command.create()
-    .parameter(`a`, s)
-    .settings({ prompt: { when: [{ result: `accepted` }] } })
+  $.parameter(`a`, s).settings({ prompt: { when: [{ result: `accepted` }] } })
 })
 
 it(`static error to match on omitted event on command level when no parameters have optional`, () => {
   // TODO fix me
-  // Command.create()
+  // $
   //   .parameter(`a`, s)
   //   // @ts-expect-error not available
   //   .settings({ prompt: { when: { result: `omitted` } } })
   // Is fine, because parameter is optional.
-  Command.create()
-    .parameter(`a`, s.optional())
-    .settings({ prompt: { when: { result: `omitted` } } })
+  $.parameter(`a`, s.optional()).settings({ prompt: { when: { result: `omitted` } } })
   // Is fine, because at least one parameter is optional.
-  Command.create()
-    .parameter(`a`, s.optional())
+  $.parameter(`a`, s.optional())
     .parameter(`b`, s)
     .settings({ prompt: { when: { result: `omitted` } } })
 })
 
 // TODO should be able match on common event properties _without_ specifying the event type...
-// Command.create().parameter(`a`, s).settings({
+// $.parameter(`a`, s).settings({
 //   prompt: { when: { spec: { name: { aliases: { long: [`a`, `b`] } } } } },
 // })
 
 // TODO already taken care of by match test suite?
 it(`array value`, () => {
   // Can pass ONE literal match
-  Command.create()
-    .parameter(`a`, s)
-    .settings({
-      prompt: { when: { result: `accepted`, spec: { name: { aliases: { long: [`a`, `b`] } } } } },
-    })
+  $.parameter(`a`, s).settings({
+    prompt: { when: { result: `accepted`, spec: { name: { aliases: { long: [`a`, `b`] } } } } },
+  })
   // can pass an OR literal match
-  Command.create()
-    .parameter(`a`, s)
-    .settings({
-      prompt: { when: { result: `accepted`, spec: { name: { aliases: { long: [[`a`, `b`], [`c`]] } } } } },
-    })
-  Command.create()
-    .parameter(`a`, s)
-    .settings({
-      // @ts-expect-error Cannot pass the array member literal
-      prompt: { when: { result: `accepted`, spec: { name: { aliases: { long: `a` } } } } },
-    })
-  Command.create()
-    .parameter(`a`, s)
-    .settings({
-      // @ts-expect-error Cannot mix OR and ONE matches
-      prompt: { when: { result: `accepted`, spec: { name: { aliases: { long: [`a`, [`b`]] } } } } },
-    })
+  $.parameter(`a`, s).settings({
+    prompt: { when: { result: `accepted`, spec: { name: { aliases: { long: [[`a`, `b`], [`c`]] } } } } },
+  })
+  $.parameter(`a`, s).settings({
+    // @ts-expect-error Cannot pass the array member literal
+    prompt: { when: { result: `accepted`, spec: { name: { aliases: { long: `a` } } } } },
+  })
+  $.parameter(`a`, s).settings({
+    // @ts-expect-error Cannot mix OR and ONE matches
+    prompt: { when: { result: `accepted`, spec: { name: { aliases: { long: [`a`, [`b`]] } } } } },
+  })
 })
 
 // TODO
 // it(`static error when fields from different event types matched in single pattern`, () => {
-//   Command.create()
+//   $
 //     .parameter(`a`, s)
 //     // @ts-expect-error "value" is not available on "rejected" event
 //     .settings({ prompt: { when: { result: `rejected`, value: 1 } } })
 //   // TODO excess properties should be an error in the pattern match but for some reason are not being here.
-//   Command.create().parameter(`a`, {
+//   $.parameter(`a`, {
 //     type: s,
 //     prompt: {
 //       when: {
@@ -339,23 +325,23 @@ it(`array value`, () => {
 
 // prettier-ignore
 it(`Static type tests`, () => {
-  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { type: l1, prompt: null }).parse)
-  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { type: l1, prompt: undefined }).parse)
-  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { type: l1, prompt: {enabled:false} }).parse)
-  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { type: l1, prompt: {enabled:false,when:{result:`accepted`}} }).parse)
-  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { type: l1 }).parse)
-  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { type: l1 }).settings({}).parse)
-  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { type: l1 }).settings({prompt:false}).parse)
-  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { type: l1 }).settings({prompt:{enabled:false}}).parse)
-  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { type: l1 }).settings({prompt:{enabled:false,when:{result:`accepted`}}}).parse)
-  expectType<() => Promise<{ a: 1 }>>(Command.create().parameter(`a`, { type: l1, prompt: true }).parameter(`b`, {type:l1,prompt:false}).parse)
-  expectType<() => Promise<{ a: 1 }>>(Command.create().parameter(`a`, { type: l1, prompt: true }).parse)
-  expectType<() => Promise<{ a: 1 }>>(Command.create().parameter(`a`, { type: l1, prompt: {enabled:true} }).parse)
-  expectType<() => Promise<{ a: 1 }>>(Command.create().parameter(`a`, { type: l1, prompt: {when:{result:`accepted`}} }).parse)
-  expectType<() => Promise<{ a: 1 }>>(Command.create().parameter(`a`, { type: l1, prompt: true }).settings({prompt:false}).parse)
-  expectType<() => Promise<{ a: 1 }>>(Command.create().parameter(`a`, { type: l1 }).settings({prompt:true}).parse)
-  expectType<() => Promise<{ a: 1 }>>(Command.create().parameter(`a`, { type: l1 }).settings({prompt:{enabled:true}}).parse)
-  expectType<() => Promise<{ a: 1 }>>(Command.create().parameter(`a`, { type: l1 }).settings({prompt:{when:{result:`accepted`}}}).parse)
+  expectType<() => { a: 1 }>($.parameter(`a`, { type: l1, prompt: null }).parse)
+  expectType<() => { a: 1 }>($.parameter(`a`, { type: l1, prompt: undefined }).parse)
+  expectType<() => { a: 1 }>($.parameter(`a`, { type: l1, prompt: {enabled:false} }).parse)
+  expectType<() => { a: 1 }>($.parameter(`a`, { type: l1, prompt: {enabled:false,when:{result:`accepted`}} }).parse)
+  expectType<() => { a: 1 }>($.parameter(`a`, { type: l1 }).parse)
+  expectType<() => { a: 1 }>($.parameter(`a`, { type: l1 }).settings({}).parse)
+  expectType<() => { a: 1 }>($.parameter(`a`, { type: l1 }).settings({prompt:false}).parse)
+  expectType<() => { a: 1 }>($.parameter(`a`, { type: l1 }).settings({prompt:{enabled:false}}).parse)
+  expectType<() => { a: 1 }>($.parameter(`a`, { type: l1 }).settings({prompt:{enabled:false,when:{result:`accepted`}}}).parse)
+  expectType<() => Promise<{ a: 1 }>>($.parameter(`a`, { type: l1, prompt: true }).parameter(`b`, {type:l1,prompt:false}).parse)
+  expectType<() => Promise<{ a: 1 }>>($.parameter(`a`, { type: l1, prompt: true }).parse)
+  expectType<() => Promise<{ a: 1 }>>($.parameter(`a`, { type: l1, prompt: {enabled:true} }).parse)
+  expectType<() => Promise<{ a: 1 }>>($.parameter(`a`, { type: l1, prompt: {when:{result:`accepted`}} }).parse)
+  expectType<() => Promise<{ a: 1 }>>($.parameter(`a`, { type: l1, prompt: true }).settings({prompt:false}).parse)
+  expectType<() => Promise<{ a: 1 }>>($.parameter(`a`, { type: l1 }).settings({prompt:true}).parse)
+  expectType<() => Promise<{ a: 1 }>>($.parameter(`a`, { type: l1 }).settings({prompt:{enabled:true}}).parse)
+  expectType<() => Promise<{ a: 1 }>>($.parameter(`a`, { type: l1 }).settings({prompt:{when:{result:`accepted`}}}).parse)
 })
 
 /**
@@ -372,7 +358,7 @@ const run = async () => {
     // eslint-disable-next-line
     return await Object.entries(parameters)
       // @ts-expect-error todo
-      .reduce((chain, data) => chain.parameter(data[0] as any, data[1]), Command.create())
+      .reduce((chain, data) => chain.parameter(data[0] as any, data[1]), $)
       // @ts-expect-error todo
       .settings({ onError: `throw`, helpOnError: false, ...settings })
       .parse({ line, tty: memoryPrompter })
