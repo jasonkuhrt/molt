@@ -5,7 +5,7 @@ import type { FromZod } from './typeAdaptor/types.js'
 import type { ZodType } from './types.js'
 import type { z } from 'zod'
 
-interface ZodTypeMapper extends HKT.Fn<z.ZodTypeAny> {
+export interface ZodTypeMapper extends HKT.Fn<z.ZodTypeAny> {
   return: FromZod<this['params']>
 }
 

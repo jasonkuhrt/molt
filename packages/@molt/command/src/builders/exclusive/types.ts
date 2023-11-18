@@ -1,7 +1,7 @@
 import type { HKT } from '../../helpers.js'
 import type { ParameterInput } from '../../ParameterInput/index.js'
 import type { Type } from '../../Type/index.js'
-import type { RawArgInputs } from '../root/types.js'
+import type { RawArgInputs } from '../command/types.js'
 import type { State } from '../State.js'
 
 export interface ExclusiveParameterConfiguration<$State extends State.Base> {

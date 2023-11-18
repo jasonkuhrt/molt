@@ -1,5 +1,9 @@
+import { Zod } from '../../src/_entrypoints/extensions.js'
+import { Command } from '../../src/index.js'
 import { isPromiseLikeValue } from '../../src/lib/prelude.js'
 import { z } from 'zod'
+
+export const C = Command.create().use(Zod)
 
 export const assertAssignable = <T>(_: T): [T] => 0 as any // eslint-disable-line
 export const as = <T>(): T => undefined as any // eslint-disable-line

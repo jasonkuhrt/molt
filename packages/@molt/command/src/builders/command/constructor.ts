@@ -6,67 +6,87 @@ import type { ParameterInput } from '../../ParameterInput/index.js'
 import { Settings } from '../../Settings/index.js'
 import type { Type } from '../../Type/index.js'
 import * as ExclusiveBuilder from '../exclusive/constructor.js'
-import type { ParameterConfiguration, RawArgInputs, RootBuilder } from './types.js'
+import type { CommandBuilder, ParameterConfiguration, RawArgInputs } from './types.js'
 
-export const create = (): RootBuilder => {
-  const $: State = {
+export const create = (): CommandBuilder => {
+  const state: State = {
     typeMapper: (type) => type as any,
     newSettingsBuffer: [],
     settings: null,
     parameterInputs: {},
   }
+  return create_(state)
+}
 
-  const $$ = {
-    addParameterBasic: (nameExpression: string, configuration: ParameterConfiguration) => {
+const create_ = (state: State): CommandBuilder => {
+  const chain: InternalRootBuilder = {
+    use: (extension) => {
+      const newState = {
+        ...state,
+        typeMapper: extension.typeMapper,
+      }
+      return create_(newState) as any
+    },
+    description: (description) => {
+      const newState = {
+        ...state,
+        newSettingsBuffer: [
+          ...state.newSettingsBuffer,
+          {
+            description,
+          },
+        ],
+      }
+      return create_(newState) as any
+    },
+    settings: (newSettings) => {
+      const newState = {
+        ...state,
+        newSettingsBuffer: [...state.newSettingsBuffer, newSettings],
+      }
+      return create_(newState) as any
+    },
+    parameter: (nameExpression, typeOrConfiguration) => {
+      const configuration = `type` in typeOrConfiguration ? typeOrConfiguration : { type: typeOrConfiguration } // prettier-ignore
       const prompt = configuration.prompt ?? null
-      const type = $.typeMapper(configuration.type)
+      const type = state.typeMapper(configuration.type)
       const parameter = {
         _tag: `Basic`,
         type,
         nameExpression: nameExpression,
         prompt,
       } satisfies ParameterInput.Basic<any>
-      $.parameterInputs[nameExpression] = parameter
-    },
-  }
-
-  const chain: InternalRootBuilder = {
-    use: (extension) => {
-      $.typeMapper = extension.typeMapper as any // eslint-disable-line
-      return chain
-    },
-    description: (description) => {
-      $.newSettingsBuffer.push({
-        description,
-      })
-      return chain
-    },
-    settings: (newSettings) => {
-      $.newSettingsBuffer.push(newSettings)
-      return chain
-    },
-    parameter: (nameExpression, typeOrConfiguration) => {
-      const configuration = `type` in typeOrConfiguration ? typeOrConfiguration : { type: typeOrConfiguration } // prettier-ignore
-      $$.addParameterBasic(nameExpression, configuration)
-
-      return chain
+      const newState = {
+        ...state,
+        parameterInputs: {
+          ...state.parameterInputs,
+          [nameExpression]: parameter,
+        },
+      }
+      return create_(newState) as any
     },
     parametersExclusive: (label, builderContainer) => {
-      $.parameterInputs[label] = builderContainer(ExclusiveBuilder.create() as any)._.input // eslint-disable-line
-      return chain
+      const newState = {
+        ...state,
+        parameterInputs: {
+          ...state.parameterInputs,
+          [label]: builderContainer(ExclusiveBuilder.create() as any)._.input, // eslint-disable-line
+        },
+      }
+      return create_(newState) as any
     },
     parse: (argInputs) => {
       const argInputsEnvironment = argInputs?.environment
         ? lowerCaseObjectKeys(argInputs.environment)
         : getLowerCaseEnvironment()
-      $.settings = {
+      state.settings = {
         ...Settings.getDefaults(argInputsEnvironment),
       }
-      $.newSettingsBuffer.forEach((newSettings) =>
-        Settings.change($.settings!, newSettings, argInputsEnvironment),
+      state.newSettingsBuffer.forEach((newSettings) =>
+        Settings.change(state.settings!, newSettings, argInputsEnvironment),
       )
-      $.settings.typeMapper = $.typeMapper
-      return parse($.settings, $.parameterInputs, argInputs)
+      state.settings.typeMapper = state.typeMapper
+      return parse(state.settings, state.parameterInputs, argInputs)
     },
   }
 

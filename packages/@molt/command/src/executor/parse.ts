@@ -1,4 +1,4 @@
-import type { RawArgInputs } from '../builders/root/types.js'
+import type { RawArgInputs } from '../builders/command/types.js'
 import { CommandParameter } from '../CommandParameter/index.js'
 import { createEvent } from '../eventPatterns.js'
 import { Help } from '../Help/index.js'
