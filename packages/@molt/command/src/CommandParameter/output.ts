@@ -32,7 +32,7 @@ export namespace Output {
   }
 
   // prettier-ignore
-  export type BasicOptionality = 
+  type BasicOptionality = 
     | { _tag: 'required' }
     | { _tag: 'optional' }
     | { _tag: 'default', getValue: () => Pam.Value }

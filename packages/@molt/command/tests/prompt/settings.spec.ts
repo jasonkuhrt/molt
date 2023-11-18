@@ -1,4 +1,4 @@
-import type { TypeAdaptor } from '../../src/extensions/zod/TypeAdaptor/index.js'
+import type { TypeAdaptor } from '../../src/extensions/zod/old/index.js'
 import type { Settings } from '../../src/index.js'
 import { Command } from '../../src/index.js'
 import type { Type } from '../../src/Type/index.js'
