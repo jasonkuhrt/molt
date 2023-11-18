@@ -89,7 +89,7 @@ interface State {
 }
 
 interface Parameter {
-  (nameExpression: string, type: CommandParameter.SomeBasicType): InternalRootBuilder
+  (nameExpression: string, type: Type.Type): InternalRootBuilder
   (nameExpression: string, configuration: ParameterConfiguration): InternalRootBuilder
 }
 

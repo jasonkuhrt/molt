@@ -32,7 +32,7 @@ export namespace State {
             NameParsed: Name.Data.NameParsed
             NameUnion: string
             Type: Type.Type
-            Schema: CommandParameter.SomeBasicType
+            Schema: Type.Type
           }
         }
       }
@@ -42,7 +42,7 @@ export namespace State {
         NameParsed: Name.Data.NameParsed
         NameUnion: string
         Type: Type.Type
-        Schema: CommandParameter.SomeBasicType
+        Schema: Type.Type
       }
     }
   }
