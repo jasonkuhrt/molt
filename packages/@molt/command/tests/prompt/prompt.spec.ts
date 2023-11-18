@@ -1,5 +1,5 @@
 import type { ParameterConfiguration } from '../../src/Command/root/types.js'
-import type { Settings } from '../../src/entrypoints/types.js'
+import type { Settings } from '../../src/_entrypoints/types.js'
 import { Command } from '../../src/index.js'
 import type { KeyPress } from '../../src/lib/KeyPress/index.js'
 import { b, e, l1, n, s, tryCatch } from '../_/helpers.js'

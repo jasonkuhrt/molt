@@ -1,4 +1,4 @@
-import { Zod } from '../packages/@molt/command/src/entrypoints/extensions.js'
+import { Zod } from '../packages/@molt/command/src/_entrypoints/extensions.js'
 import { Command } from '../packages/@molt/command/src/index.js'
 import { Octokit } from '@octokit/core'
 import { Alge } from 'alge'
