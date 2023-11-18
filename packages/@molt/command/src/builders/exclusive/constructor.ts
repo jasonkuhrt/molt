@@ -1,5 +1,5 @@
-import type { CommandParameter } from '../../CommandParameter/index.js'
 import type { Pam } from '../../lib/Pam/index.js'
+import type { ParameterInput } from '../../ParameterInput/index.js'
 import type { InternalState, SomeBuilderExclusiveInitial } from './types.js'
 
 export const create = (): SomeBuilderExclusiveInitial => {
@@ -8,15 +8,15 @@ export const create = (): SomeBuilderExclusiveInitial => {
       _tag: `Exclusive`,
       optionality: { _tag: `required` },
       parameters: [],
-    } satisfies CommandParameter.Input.Exclusive,
+    } satisfies ParameterInput.Exclusive,
     typeState: undefined as any, // eslint-disable-line
   }
 
   const chain: SomeBuilderExclusiveInitial = {
-    parameter: (nameExpression: string, schemaOrConfiguration) => {
+    parameter: (nameExpression: string, typeOrConfiguration) => {
       const configuration =
-        `schema` in schemaOrConfiguration ? schemaOrConfiguration : { schema: schemaOrConfiguration }
-      _.input.parameters.push({ nameExpression, type: configuration.schema })
+        `type` in typeOrConfiguration ? typeOrConfiguration : { type: typeOrConfiguration }
+      _.input.parameters.push({ nameExpression, type: configuration.type })
       return chain as any // eslint-disable-line
     },
     optional: () => {

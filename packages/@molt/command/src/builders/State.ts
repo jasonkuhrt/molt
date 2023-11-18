@@ -1,6 +1,6 @@
-import type { CommandParameter } from '../CommandParameter/index.js'
 import type { Values } from '../helpers.js'
 import type { HKT } from '../helpers.js'
+import type { ParameterInput } from '../ParameterInput/index.js'
 import type { Type } from '../Type/index.js'
 import type { ExclusiveParameterConfiguration } from './exclusive/types.js'
 import type { ParameterConfiguration } from './root/types.js'
@@ -16,14 +16,14 @@ export namespace State {
     IsPromptEnabled: false
     ParametersExclusive: {} // eslint-disable-line
     Parameters: {} // eslint-disable-line
-    Schema: Type.Type
-    SchemaMapper: HKT.IDFn<Type.Type<unknown>>
+    Type: Type.Type
+    TypeMapper: HKT.IDFn<Type.Type<unknown>>
   }
 
   export type Base = {
     IsPromptEnabled: boolean
-    Schema: Type.Type
-    SchemaMapper: HKT.Fn<unknown, Type.Type<unknown>>
+    Type: Type.Type
+    TypeMapper: HKT.Fn<unknown, Type.Type<unknown>>
     ParametersExclusive: {
       [label: string]: {
         Optional: boolean
@@ -32,7 +32,6 @@ export namespace State {
             NameParsed: Name.Data.NameParsed
             NameUnion: string
             Type: Type.Type
-            Schema: Type.Type
           }
         }
       }
@@ -42,7 +41,6 @@ export namespace State {
         NameParsed: Name.Data.NameParsed
         NameUnion: string
         Type: Type.Type
-        Schema: Type.Type
       }
     }
   }
@@ -57,23 +55,11 @@ export namespace State {
 
   export type GetUsedNames<State extends Base> = Values<State['Parameters']>['NameUnion']
 
-  // // prettier-ignore
-  // export type AddParameter<
-  //   State extends Base,
-  //   NameExpression extends string,
-  //   Configuration extends ParameterConfiguration
-  // > =
-  //   Omit<State, 'Parameters'> & {
-  //     Parameters:  State['Parameters'] & { [_ in NameExpression]: CreateParameter<State,NameExpression,Configuration> }
-  //   }
-
-  export type ParametersSchemaObjectBase = Record<string, ParameterConfiguration['schema']>
-
   export type ParametersConfigBase = Record<
     string,
     {
-      schema: ParameterConfiguration['schema']
-      prompt?: CommandParameter.Input.Prompt<any>
+      type: ParameterConfiguration['type']
+      prompt?: ParameterInput.Prompt<any>
     }
   >
 
@@ -85,8 +71,8 @@ export namespace State {
   > = {
     IsPromptEnabled: State['IsPromptEnabled']
     Parameters: State['Parameters']
-    Schema: State['Schema']
-    SchemaMapper: State['SchemaMapper']
+    Type: State['Type']
+    TypeMapper: State['TypeMapper']
     ParametersExclusive: Omit<State['ParametersExclusive'], Label> & 
       {
         [_ in Label]: {
@@ -108,8 +94,7 @@ export namespace State {
         Optional: $State['ParametersExclusive'][_]['Optional']
         Parameters: {
           [_ in NameExpression as Name.Data.GetCanonicalNameOrErrorFromParseResult<Name.Parse<NameExpression>>]: {
-            Schema: Configuration['schema']
-            Type: HKT.Call<$State['SchemaMapper'], Configuration['schema']>
+            Type: HKT.Call<$State['TypeMapper'], Configuration['type']>
             NameParsed: Name.Parse<NameExpression, { usedNames: GetUsedNames<$State>; reservedNames: ReservedParameterNames }>
             NameUnion: Name.Data.GetNamesFromParseResult<
               Name.Parse<NameExpression, { usedNames: GetUsedNames<$State>; reservedNames: ReservedParameterNames }>
@@ -126,8 +111,7 @@ export namespace State {
     NameExpression  extends string,
     Configuration   extends ParameterConfiguration<$State>,
   > = {
-    Schema: Configuration['schema']
-    Type: HKT.Call<$State['SchemaMapper'], Configuration['schema']>
+    Type: HKT.Call<$State['TypeMapper'], Configuration['type']>
     NameParsed: Name.Parse<NameExpression, { usedNames: GetUsedNames<$State>; reservedNames: ReservedParameterNames }>
     NameUnion: Name.Data.GetNamesFromParseResult<Name.Parse<NameExpression,{ usedNames: GetUsedNames<$State>; reservedNames: ReservedParameterNames }>>
   }
@@ -159,9 +143,9 @@ export namespace State {
     >
 
   // prettier-ignore
-  export type ToSchema<$State extends State.Base> = {
+  export type ToParametersToTypes<$State extends State.Base> = {
     [K in keyof $State['Parameters'] & string as $State['Parameters'][K]['NameParsed']['canonical']]:
-      $State['Parameters'][K]['Schema']
+      $State['Parameters'][K]['Type']
   }
 }
 

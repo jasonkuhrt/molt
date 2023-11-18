@@ -20,7 +20,7 @@ describe(`parameter level`, () => {
     memoryPrompter.script.keyPress.push(...foo)
     const args = await tryCatch(() =>
       Command.create()
-        .parameter(`a`, { schema: s, prompt: { enabled: true } })
+        .parameter(`a`, { type: s, prompt: { enabled: true } })
         .settings({ onError: `throw`, helpOnError: false })
         .parse({ line: [], tty: memoryPrompter }),
     )
@@ -35,7 +35,7 @@ describe(`command level`, () => {
     memoryPrompter.script.keyPress.push(...foo)
     // eslint-disable-next-line
     const args = await Command.create()
-      .parameter(`a`, { schema: s })
+      .parameter(`a`, { type: s })
       .settings({ onError: `throw`, helpOnError: false, prompt: { when: { result: `rejected` } } })
       .parse({ line: [], tty: memoryPrompter })
     expect(args).toMatchSnapshot(`args`)
@@ -47,7 +47,7 @@ describe(`command level`, () => {
 it(`prompt is disabled by default`, () => {
   const args = tryCatch(() =>
     Command.create()
-      .parameter(`a`, { schema: s })
+      .parameter(`a`, { type: s })
       .settings({ onError: `throw`, helpOnError: false })
       .parse({ line: [], tty: memoryPrompter }),
   )
@@ -60,7 +60,7 @@ it(`prompt can be enabled by default`, async () => {
   memoryPrompter.script.keyPress.push(...foo)
   const args = await tryCatch(() =>
     Command.create()
-      .parameter(`a`, { schema: s })
+      .parameter(`a`, { type: s })
       .settings({ onError: `throw`, helpOnError: false, prompt: { enabled: true } })
       .parse({ line: [], tty: memoryPrompter }),
   )
@@ -72,7 +72,7 @@ it(`prompt can be enabled by default`, async () => {
 it(`parameter settings overrides default settings`, () => {
   const args = tryCatch(() =>
     Command.create()
-      .parameter(`a`, { schema: s, prompt: false })
+      .parameter(`a`, { type: s, prompt: false })
       .settings({ onError: `throw`, helpOnError: false, prompt: { enabled: true } })
       .parse({ line: [], tty: memoryPrompter }),
   )
@@ -92,7 +92,7 @@ describe(`prompt can be toggled by check on error`, () => {
       // eslint-disable-next-line
       const args = await tryCatch(() =>
         Command.create()
-          .parameter(`a`, { schema: s })
+          .parameter(`a`, { type: s })
           .settings({ onError: `throw`, helpOnError: false, prompt: settings })
           .parse({ line: [], tty: memoryPrompter }),
       )
@@ -103,7 +103,7 @@ describe(`prompt can be toggled by check on error`, () => {
     it(`check does not match`, () => {
       const args = tryCatch(() =>
         Command.create()
-          .parameter(`b`, { schema: s })
+          .parameter(`b`, { type: s })
           .settings({ onError: `throw`, helpOnError: false, prompt: settings })
           .parse({ line: [], tty: memoryPrompter }),
       )
@@ -118,7 +118,7 @@ it(`parameter defaults to custom settings`, async () => {
   memoryPrompter.script.keyPress.push(...foo)
   const args = await tryCatch(() =>
     Command.create()
-      .parameter(`a`, { schema: s })
+      .parameter(`a`, { type: s })
       .settings({
         onError: `throw`,
         helpOnError: false,
@@ -156,7 +156,7 @@ it(`can be stack of conditional prompts`, async () => {
   // eslint-disable-next-line
   const args = await tryCatch(() =>
     Command.create()
-      .parameter(`a`, { schema: s.optional() })
+      .parameter(`a`, { type: s.optional() })
       .settings({ onError: `throw`, helpOnError: false, prompt: settings })
       .parse({ line: [`-a`, `1`], tty: memoryPrompter }),
   )

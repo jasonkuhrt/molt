@@ -1,5 +1,5 @@
-import type { ParameterConfiguration } from '../../src/builders/root/types.js'
 import type { Settings } from '../../src/_entrypoints/types.js'
+import type { ParameterConfiguration } from '../../src/builders/root/types.js'
 import { Command } from '../../src/index.js'
 import type { KeyPress } from '../../src/lib/KeyPress/index.js'
 import { b, e, l1, n, s, tryCatch } from '../_/helpers.js'
@@ -28,13 +28,13 @@ describe(`string`, () => {
   describe(`optional`, () => {
     it(`when nothing entered then value is undefined`, async () => {
       // @ts-expect-error todo
-      parameters = { a: { schema: s.optional(), prompt: { when: { result: `omitted` } } } }
+      parameters = { a: { type: s.optional(), prompt: { when: { result: `omitted` } } } }
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
       await run()
     })
     it(`when esc is pressed the question is skipped`, async () => {
       // @ts-expect-error todo
-      parameters = { a: { schema: s.optional(), prompt: { when: { result: `omitted` } } } }
+      parameters = { a: { type: s.optional(), prompt: { when: { result: `omitted` } } } }
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `escape` })
       await run()
     })
@@ -45,13 +45,13 @@ describe(`number`, () => {
   describe(`optional`, () => {
     it(`when nothing entered then value is undefined`, async () => {
       // @ts-expect-error todo
-      parameters = { a: { schema: n.optional(), prompt: { when: { result: `omitted` } } } }
+      parameters = { a: { type: n.optional(), prompt: { when: { result: `omitted` } } } }
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
       await run()
     })
     it(`when esc is pressed the question is skipped`, async () => {
       // @ts-expect-error todo
-      parameters = { a: { schema: n.optional(), prompt: { when: { result: `omitted` } } } }
+      parameters = { a: { type: n.optional(), prompt: { when: { result: `omitted` } } } }
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `escape` })
       await run()
     })
@@ -61,12 +61,12 @@ describe(`number`, () => {
 describe(`boolean`, () => {
   describe(`required`, () => {
     it(`defaults to "no"`, async () => {
-      parameters = { a: { schema: b, prompt: true } }
+      parameters = { a: { type: b, prompt: true } }
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
       await run()
     })
     it(`can be toggled to "yes"`, async () => {
-      parameters = { a: { schema: b, prompt: true } }
+      parameters = { a: { type: b, prompt: true } }
       keyPresses.push(
         { ctrl: false, meta: false, sequence: ``, shift: false, name: `right` },
         { ctrl: false, meta: false, sequence: ``, shift: false, name: `return` },
@@ -74,7 +74,7 @@ describe(`boolean`, () => {
       await run()
     })
     it(`can be toggled to "yes" and then back to "no"`, async () => {
-      parameters = { a: { schema: b, prompt: true } }
+      parameters = { a: { type: b, prompt: true } }
       keyPresses.push(
         { ctrl: false, meta: false, sequence: ``, shift: false, name: `right` },
         { ctrl: false, meta: false, sequence: ``, shift: false, name: `left` },
@@ -83,7 +83,7 @@ describe(`boolean`, () => {
       await run()
     })
     it(`can use tab to toggle between "yes" and "no"`, async () => {
-      parameters = { a: { schema: b, prompt: true } }
+      parameters = { a: { type: b, prompt: true } }
       keyPresses.push(
         { ctrl: false, meta: false, sequence: ``, shift: false, name: `tab` },
         { ctrl: false, meta: false, sequence: ``, shift: false, name: `tab` },
@@ -97,7 +97,7 @@ describe(`boolean`, () => {
 describe(`union`, () => {
   describe(`required`, () => {
     it(`asks user to select member to use"`, async () => {
-      parameters = { a: { schema: z.union([n, b, s]), prompt: true } }
+      parameters = { a: { type: z.union([n, b, s]), prompt: true } }
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `tab` })
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `tab` })
@@ -110,18 +110,18 @@ describe(`union`, () => {
 describe(`enumeration`, () => {
   describe(`required`, () => {
     it(`defaults to first member`, async () => {
-      parameters = { a: { schema: e, prompt: true } }
+      parameters = { a: { type: e, prompt: true } }
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
       await run()
     })
     it(`can select member rightward with right key`, async () => {
-      parameters = { a: { schema: e, prompt: true } }
+      parameters = { a: { type: e, prompt: true } }
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `right` })
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
       await run()
     })
     it(`can select member leftward with left key`, async () => {
-      parameters = { a: { schema: e, prompt: true } }
+      parameters = { a: { type: e, prompt: true } }
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `right` })
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `left` })
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
@@ -129,13 +129,13 @@ describe(`enumeration`, () => {
     })
     describe(`tab`, () => {
       it(`can select member rightward with tab key`, async () => {
-        parameters = { a: { schema: e, prompt: true } }
+        parameters = { a: { type: e, prompt: true } }
         keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `tab` })
         keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
         await run()
       })
       it(`can select member leftward with shift+tab key`, async () => {
-        parameters = { a: { schema: e, prompt: true } }
+        parameters = { a: { type: e, prompt: true } }
         keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `right` })
         keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: true, name: `tab` })
         keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
@@ -144,7 +144,7 @@ describe(`enumeration`, () => {
     })
     describe(`loop`, () => {
       it(`right key on last member loops to first member`, async () => {
-        parameters = { a: { schema: e, prompt: true } }
+        parameters = { a: { type: e, prompt: true } }
         keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `right` })
         keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `right` })
         keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `right` })
@@ -152,7 +152,7 @@ describe(`enumeration`, () => {
         await run()
       })
       it(`left key on first member loops to last member`, async () => {
-        parameters = { a: { schema: e, prompt: true } }
+        parameters = { a: { type: e, prompt: true } }
         keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `left` })
         keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
         await run()
@@ -164,7 +164,7 @@ describe(`enumeration`, () => {
 it(`can be explicitly disabled`, async () => {
   parameters = {
     a: {
-      schema: s,
+      type: s,
       prompt: { enabled: false },
     },
   }
@@ -176,7 +176,7 @@ it(`can be explicitly disabled`, async () => {
 it(`can be explicitly disabled with a "when" condition present`, async () => {
   parameters = {
     a: {
-      schema: s.min(2),
+      type: s.min(2),
       prompt: { enabled: false, when: { result: `rejected`, error: `ErrorMissingArgument` } },
     },
   }
@@ -187,7 +187,7 @@ it(`can be explicitly disabled with a "when" condition present`, async () => {
 
 it(`prompt when missing input`, async () => {
   parameters = {
-    a: { schema: s.min(2), prompt: { when: { result: `rejected`, error: `ErrorMissingArgument` } } },
+    a: { type: s.min(2), prompt: { when: { result: `rejected`, error: `ErrorMissingArgument` } } },
   }
   keyPresses.push(
     { ctrl: false, meta: false, sequence: `f`, shift: false, name: `f` },
@@ -201,7 +201,7 @@ it(`prompt when missing input`, async () => {
 
 it(`prompt when invalid input`, async () => {
   parameters = {
-    a: { schema: s.min(2), prompt: { when: { result: `rejected`, error: `ErrorInvalidArgument` } } },
+    a: { type: s.min(2), prompt: { when: { result: `rejected`, error: `ErrorInvalidArgument` } } },
   }
   keyPresses.push(
     { ctrl: false, meta: false, sequence: `f`, shift: false, name: `f` },
@@ -216,7 +216,7 @@ it(`prompt when invalid input`, async () => {
 it(`prompt when invalid input OR missing input`, async () => {
   parameters = {
     a: {
-      schema: s.min(2),
+      type: s.min(2),
       prompt: { when: { result: `rejected`, error: [`ErrorInvalidArgument`, `ErrorMissingArgument`] } },
     },
   }
@@ -233,7 +233,7 @@ it(`prompt when invalid input OR missing input`, async () => {
 it(`prompt when omitted`, async () => {
   parameters = {
     a: {
-      schema: s.min(2).optional(),
+      type: s.min(2).optional(),
       // @ts-expect-error todo
       prompt: { when: { result: `omitted`, spec: { optionality: [`default`, `optional`] } } },
     },
@@ -250,11 +250,11 @@ it(`prompt when omitted`, async () => {
 
 it(`static error to match on omitted event on required parameter by .parameter(...)`, () => {
   // @ts-expect-error not available
-  Command.create().parameter(`a`, { schema: s, prompt: { when: { result: `omitted` } } })
+  Command.create().parameter(`a`, { type: s, prompt: { when: { result: `omitted` } } })
   // TODO fix me
   // // Is fine, because parameter is optional.
   // Command.create().parameter(`a`, {
-  //   schema: s.optional(),
+  //   type: s.optional(),
   //   prompt: { when: { result: `omitted` } },
   // })
 })
@@ -323,7 +323,7 @@ it(`array value`, () => {
 //     .settings({ prompt: { when: { result: `rejected`, value: 1 } } })
 //   // TODO excess properties should be an error in the pattern match but for some reason are not being here.
 //   Command.create().parameter(`a`, {
-//     schema: s,
+//     type: s,
 //     prompt: {
 //       when: {
 //         result: `rejected`,
@@ -339,23 +339,23 @@ it(`array value`, () => {
 
 // prettier-ignore
 it(`Static type tests`, () => {
-  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { schema: l1, prompt: null }).parse)
-  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { schema: l1, prompt: undefined }).parse)
-  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { schema: l1, prompt: {enabled:false} }).parse)
-  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { schema: l1, prompt: {enabled:false,when:{result:`accepted`}} }).parse)
-  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { schema: l1 }).parse)
-  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { schema: l1 }).settings({}).parse)
-  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { schema: l1 }).settings({prompt:false}).parse)
-  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { schema: l1 }).settings({prompt:{enabled:false}}).parse)
-  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { schema: l1 }).settings({prompt:{enabled:false,when:{result:`accepted`}}}).parse)
-  expectType<() => Promise<{ a: 1 }>>(Command.create().parameter(`a`, { schema: l1, prompt: true }).parameter(`b`, {schema:l1,prompt:false}).parse)
-  expectType<() => Promise<{ a: 1 }>>(Command.create().parameter(`a`, { schema: l1, prompt: true }).parse)
-  expectType<() => Promise<{ a: 1 }>>(Command.create().parameter(`a`, { schema: l1, prompt: {enabled:true} }).parse)
-  expectType<() => Promise<{ a: 1 }>>(Command.create().parameter(`a`, { schema: l1, prompt: {when:{result:`accepted`}} }).parse)
-  expectType<() => Promise<{ a: 1 }>>(Command.create().parameter(`a`, { schema: l1, prompt: true }).settings({prompt:false}).parse)
-  expectType<() => Promise<{ a: 1 }>>(Command.create().parameter(`a`, { schema: l1 }).settings({prompt:true}).parse)
-  expectType<() => Promise<{ a: 1 }>>(Command.create().parameter(`a`, { schema: l1 }).settings({prompt:{enabled:true}}).parse)
-  expectType<() => Promise<{ a: 1 }>>(Command.create().parameter(`a`, { schema: l1 }).settings({prompt:{when:{result:`accepted`}}}).parse)
+  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { type: l1, prompt: null }).parse)
+  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { type: l1, prompt: undefined }).parse)
+  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { type: l1, prompt: {enabled:false} }).parse)
+  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { type: l1, prompt: {enabled:false,when:{result:`accepted`}} }).parse)
+  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { type: l1 }).parse)
+  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { type: l1 }).settings({}).parse)
+  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { type: l1 }).settings({prompt:false}).parse)
+  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { type: l1 }).settings({prompt:{enabled:false}}).parse)
+  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { type: l1 }).settings({prompt:{enabled:false,when:{result:`accepted`}}}).parse)
+  expectType<() => Promise<{ a: 1 }>>(Command.create().parameter(`a`, { type: l1, prompt: true }).parameter(`b`, {type:l1,prompt:false}).parse)
+  expectType<() => Promise<{ a: 1 }>>(Command.create().parameter(`a`, { type: l1, prompt: true }).parse)
+  expectType<() => Promise<{ a: 1 }>>(Command.create().parameter(`a`, { type: l1, prompt: {enabled:true} }).parse)
+  expectType<() => Promise<{ a: 1 }>>(Command.create().parameter(`a`, { type: l1, prompt: {when:{result:`accepted`}} }).parse)
+  expectType<() => Promise<{ a: 1 }>>(Command.create().parameter(`a`, { type: l1, prompt: true }).settings({prompt:false}).parse)
+  expectType<() => Promise<{ a: 1 }>>(Command.create().parameter(`a`, { type: l1 }).settings({prompt:true}).parse)
+  expectType<() => Promise<{ a: 1 }>>(Command.create().parameter(`a`, { type: l1 }).settings({prompt:{enabled:true}}).parse)
+  expectType<() => Promise<{ a: 1 }>>(Command.create().parameter(`a`, { type: l1 }).settings({prompt:{when:{result:`accepted`}}}).parse)
 })
 
 /**

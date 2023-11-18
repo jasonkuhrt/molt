@@ -10,6 +10,6 @@ export interface Exclusive<$State extends State.Base> {
   description?: string
   parameters: {
     nameExpression: string
-    type: $State['Schema']
+    type: $State['Type']
   }[]
 }

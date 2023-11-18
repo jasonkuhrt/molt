@@ -7,7 +7,7 @@ const args = await Command.create()
   .parameter(`filePath`, z.string().describe(`Path to the file to convert.`))
   .parameter(`to`, z.enum([`json`, `yaml`, `toml`]).describe(`Format to convert to.`))
   .parameter(`from`, {
-    schema: z.enum([`json`, `yaml`, `toml`]).optional(),
+    type: z.enum([`json`, `yaml`, `toml`]).optional(),
   })
   .parameter(
     `verbose v`,

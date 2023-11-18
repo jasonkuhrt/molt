@@ -1,8 +1,8 @@
-import type { CommandParameter } from '../../CommandParameter/index.js'
 import type { SomeExtension } from '../../extension.js'
 import type { HKT } from '../../helpers.js'
 import type { Prompter } from '../../lib/Prompter/Prompter.js'
 import type { OpeningArgs } from '../../OpeningArgs/index.js'
+import type { ParameterInput } from '../../ParameterInput/index.js'
 import type { Settings } from '../../Settings/index.js'
 import type {
   BuilderAfterSettings,
@@ -13,8 +13,8 @@ import type {
 import { State } from '../State.js'
 
 export interface ParameterConfiguration<$State extends State.Base> {
-  schema: $State['Schema']
-  prompt?: CommandParameter.Input.Prompt<HKT.Call<$State['SchemaMapper'], this['schema']>>
+  type: $State['Type']
+  prompt?: ParameterInput.Prompt<HKT.Call<$State['TypeMapper'], this['type']>>
 }
 
 export type IsHasKey<Obj extends object, Key> = Key extends keyof Obj ? true : false
@@ -29,7 +29,7 @@ export type IsPromptEnabledInCommandSettings<P extends Settings.Input<any>> =
                                                                                 IsPromptEnabled<P['prompt']>
 
 // prettier-ignore
-export type IsPromptEnabled<P extends CommandParameter.Input.Prompt<any>|undefined> =
+export type IsPromptEnabled<P extends ParameterInput.Prompt<any>|undefined> =
   P                                               extends undefined ? false :
   P                                               extends false     ? false :
   P                                               extends true      ? true  :
@@ -44,9 +44,8 @@ export interface RootBuilder<$State extends State.Base = State.BaseEmpty> {
       IsPromptEnabled: $State['IsPromptEnabled'],
       Parameters: $State['Parameters'],
       ParametersExclusive: $State['ParametersExclusive'],
-      Schema: $Extension['types']['type']
-      SchemaMapper: $Extension['types']['typeMapper']
-      // Schema: State['Schema'] | $Extension['type']
+      Type: $Extension['types']['type']
+      TypeMapper: $Extension['types']['typeMapper']
     }>
   description                                                                                     (this:void, description:string):
     RootBuilder<$State>
@@ -55,16 +54,16 @@ export interface RootBuilder<$State extends State.Base = State.BaseEmpty> {
       IsPromptEnabled    : $State['IsPromptEnabled'] extends true ? true : IsPromptEnabledInParameterSettings<Configuration>
       ParametersExclusive: $State['ParametersExclusive']
       Parameters         : $State['Parameters'] & { [_ in NameExpression]: State.CreateParameter<$State,NameExpression,Configuration> }
-      Schema             : $State['Schema']
-      SchemaMapper       : $State['SchemaMapper']
+      Type             : $State['Type']
+      TypeMapper       : $State['TypeMapper']
     }>
-  parameter<NameExpression extends string, $Schema extends $State['Schema']>                                (this:void, name:State.ValidateNameExpression<$State,NameExpression>, schema:$Schema):
+  parameter<NameExpression extends string, $Type extends $State['Type']>                                (this:void, name:State.ValidateNameExpression<$State,NameExpression>, type:$Type):
     RootBuilder<{
       IsPromptEnabled    : $State['IsPromptEnabled']
       ParametersExclusive: $State['ParametersExclusive']
-      Parameters         : $State['Parameters'] & { [_ in NameExpression]: State.CreateParameter<$State,NameExpression,{schema:$Schema}> }
-      Schema             : $State['Schema']
-      SchemaMapper       : $State['SchemaMapper']
+      Parameters         : $State['Parameters'] & { [_ in NameExpression]: State.CreateParameter<$State,NameExpression,{type:$Type}> }
+      Type             : $State['Type']
+      TypeMapper       : $State['TypeMapper']
     }>
   parametersExclusive<Label extends string, BuilderExclusive extends SomeBuilderExclusive<$State>>  (this:void, label:Label, ExclusiveBuilderContainer: (builder:BuilderExclusiveInitial<$State,Label>) => BuilderExclusive):
     RootBuilder<BuilderExclusive['_']['typeState']>
@@ -73,8 +72,8 @@ export interface RootBuilder<$State extends State.Base = State.BaseEmpty> {
       IsPromptEnabled    : $State['IsPromptEnabled'] extends true ? true : IsPromptEnabledInCommandSettings<S>
       ParametersExclusive: $State['ParametersExclusive']
       Parameters         : $State['Parameters']
-      Schema             : $State['Schema']
-      SchemaMapper       : $State['SchemaMapper']
+      Type             : $State['Type']
+      TypeMapper       : $State['TypeMapper']
     }>
   parse                                                                                     (this:void, inputs?:RawArgInputs):
     State.ToArgs<$State>

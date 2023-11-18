@@ -2,6 +2,7 @@ import type { CommandParameter } from '../../CommandParameter/index.js'
 import { parse } from '../../executor/parse.js'
 import type { SomeExtension } from '../../extension.js'
 import { getLowerCaseEnvironment, lowerCaseObjectKeys } from '../../helpers.js'
+import type { ParameterInput } from '../../ParameterInput/index.js'
 import { Settings } from '../../Settings/index.js'
 import type { Type } from '../../Type/index.js'
 import * as ExclusiveBuilder from '../exclusive/constructor.js'
@@ -18,13 +19,13 @@ export const create = (): RootBuilder => {
   const $$ = {
     addParameterBasic: (nameExpression: string, configuration: ParameterConfiguration) => {
       const prompt = configuration.prompt ?? null
-      const type = $.typeMapper(configuration.schema)
+      const type = $.typeMapper(configuration.type)
       const parameter = {
         _tag: `Basic`,
         type,
         nameExpression: nameExpression,
         prompt,
-      } satisfies CommandParameter.Input.Basic<any>
+      } satisfies ParameterInput.Basic<any>
       $.parameterInputs[nameExpression] = parameter
     },
   }
@@ -45,12 +46,7 @@ export const create = (): RootBuilder => {
       return chain
     },
     parameter: (nameExpression, typeOrConfiguration) => {
-      const configuration =
-        `schema` in typeOrConfiguration
-          ? typeOrConfiguration
-          : // todo fixme
-            // { schema: typeOrConfiguration, type: TypeAdaptor.Zod.fromZod(typeOrConfiguration) }
-            { schema: typeOrConfiguration, type: typeOrConfiguration }
+      const configuration = `type` in typeOrConfiguration ? typeOrConfiguration : { type: typeOrConfiguration } // prettier-ignore
       $$.addParameterBasic(nameExpression, configuration)
 
       return chain

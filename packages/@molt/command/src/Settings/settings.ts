@@ -30,14 +30,14 @@ export interface Input<$State extends State.Base = State.BaseEmpty> {
   }
   onError?: OnErrorReaction
   onOutput?: (output: string, defaultHandler: (output: string) => void) => void
-  prompt?: InputPrompt<HKT.Call<$State['SchemaMapper'], Values<State.ToSchema<$State>>>>
+  prompt?: InputPrompt<HKT.Call<$State['TypeMapper'], Values<State.ToParametersToTypes<$State>>>>
   // prompt?:
   parameters?: {
     // prettier-ignore
     environment?:
       | boolean
       | ({
-          [FlagSpecExpression in keyof Values<State.ToSchema<$State>> as Name.Data.GetCanonicalNameOrErrorFromParseResult<Name.Parse<FlagSpecExpression & string>>]?: boolean | SettingInputEnvironmentParameter
+          [FlagSpecExpression in keyof Values<State.ToParametersToTypes<$State>> as Name.Data.GetCanonicalNameOrErrorFromParseResult<Name.Parse<FlagSpecExpression & string>>]?: boolean | SettingInputEnvironmentParameter
         } & {
           $default?: boolean | SettingInputEnvironmentParameter
         })
