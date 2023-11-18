@@ -17,7 +17,7 @@ interface Parameter<$State extends State.Base, Label extends string> {
 /**
  * This property is present to support internal functions. It is not intended to be used by you.
  */
-export type InternalState<$State extends State.Base = State.Base> = {
+export type State<$State extends State.Base = State.Base> = {
   /**
    * Used for build time. Type inference functionality.
    */
@@ -30,18 +30,18 @@ export type InternalState<$State extends State.Base = State.Base> = {
 
 // prettier-ignore
 export interface BuilderExclusiveInitial<State extends State.Base, Label extends string> {
-  _:         InternalState<State>
+  _:         State<State>
   parameter: Parameter<State,Label>
   optional:  () => BuilderExclusiveAfterOptional<State.SetExclusiveOptional<State, Label, true>>
   default:  <Tag extends keyof State['ParametersExclusive'][Label]['Parameters']>(tag: Tag, value: Type.Infer<HKT.Call<State['TypeMapper'], State['ParametersExclusive'][Label]['Parameters'][Tag]['Type']>>) => BuilderExclusiveAfterDefault<State.SetExclusiveOptional<State,Label,false>>
 }
 
 export type BuilderExclusiveAfterOptional<State extends State.Base> = {
-  _: InternalState<State>
+  _: State<State>
 }
 
 export type BuilderExclusiveAfterDefault<State extends State.Base> = {
-  _: InternalState<State>
+  _: State<State>
 }
 
 export interface BuilderAfterSettings<Spec extends State.Base> {

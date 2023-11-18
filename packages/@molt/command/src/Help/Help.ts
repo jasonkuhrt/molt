@@ -59,7 +59,9 @@ export const render = (
     environment: isEnvironmentEnabled ? `Environment (1)` : null,
   }
 
-  const mexGroups = Object.values(groupBy(parametersByTag.Exclusive ?? [], (_) => _.group.label)).map(
+  const parametersExclusiveGroups = Object.values(
+    groupBy(parametersByTag.Exclusive ?? [], (_) => _.group.label),
+  ).map(
     (_) => _[0]!.group, // eslint-disable-line
   )
 
@@ -105,23 +107,25 @@ export const render = (
               Tex.block({ maxWidth: 24 }, parameterDefault(parameter)),
               ...(isEnvironmentEnabled ? [parameterEnvironment(parameter, settings)] : []),
             ]),
-            ...mexGroups.flatMap((mexGroup) => {
+            ...parametersExclusiveGroups.flatMap((parametersExclusive) => {
               const default_ =
-                mexGroup.optionality._tag === `default`
-                  ? `${mexGroup.optionality.tag}@${String(mexGroup.optionality.getValue())}`
-                  : mexGroup.optionality._tag === `optional`
+                parametersExclusive.optionality._tag === `default`
+                  ? `${parametersExclusive.optionality.tag}@${String(
+                      parametersExclusive.optionality.getValue(),
+                    )}`
+                  : parametersExclusive.optionality._tag === `optional`
                   ? `undefined`
                   : labels.required
               return [
                 [
                   Tex.block(
                     { border: { left: Term.colors.dim(`┌`) } },
-                    Term.colors.dim(`─${mexGroup.label} ${`(2)`}`),
+                    Term.colors.dim(`─${parametersExclusive.label} ${`(2)`}`),
                   ),
                   ``,
                   default_,
                 ],
-                ...Object.values(mexGroup.parameters).map((parameter) => [
+                ...Object.values(parametersExclusive.parameters).map((parameter) => [
                   parameterName(parameter),
                   parameter.type.help(settings),
                   parameterDefault(parameter),

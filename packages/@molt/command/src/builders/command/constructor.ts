@@ -70,7 +70,7 @@ const create_ = (state: State): CommandBuilder => {
         ...state,
         parameterInputs: {
           ...state.parameterInputs,
-          [label]: builderContainer(ExclusiveBuilder.create() as any)._.input, // eslint-disable-line
+          [label]: builderContainer(ExclusiveBuilder.create(state) as any)._.input, // eslint-disable-line
         },
       }
       return create_(newState) as any
@@ -97,7 +97,7 @@ const create_ = (state: State): CommandBuilder => {
 // Internal Types
 //
 
-interface State {
+export interface State {
   typeMapper: (value: unknown) => Type.Type
   settings: null | Settings.Output
   newSettingsBuffer: Settings.Input[]
