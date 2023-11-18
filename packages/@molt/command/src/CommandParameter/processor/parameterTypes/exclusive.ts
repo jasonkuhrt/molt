@@ -13,11 +13,10 @@ export const processExclusive = (
   const parameters = input.parameters.map((_) => {
     const name = Name.parse(_.nameExpression)
     const environment = processEnvironment(settings, name)
-    const type = settings.typeMapper(_.type)
     const parameter = {
       _tag: `Exclusive`,
-      description: type.description,
-      type,
+      description: _.type.description,
+      type: _.type,
       environment,
       name,
       // See comment/code below: (1)

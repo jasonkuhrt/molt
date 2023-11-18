@@ -12,7 +12,6 @@ export const processBasic = (
 ): Output.Basic => {
   const name = Name.parse(expression)
   const environment = processEnvironment(settings, name)
-  const type = settings.typeMapper(input.type)
   const parameter = {
     _tag: `Basic`,
     environment,
@@ -29,7 +28,7 @@ export const processBasic = (
       when:
         input.prompt === null ? null : typeof input.prompt === `object` ? input.prompt.when ?? null : null,
     },
-    type,
+    type: input.type,
   } satisfies Output.Basic
 
   return parameter

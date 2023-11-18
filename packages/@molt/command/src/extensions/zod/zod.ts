@@ -12,5 +12,7 @@ interface ZodTypeMapper extends HKT.Fn<z.ZodTypeAny> {
 
 export const Zod = createExtension<ZodType, ZodTypeMapper>({
   name: `Zod`,
-  type: (zodType: z.ZodFirstPartySchemaTypes) => TypeAdaptor.Zod.fromZod(zodType) as any,
+  type: (zodType) => {
+    return TypeAdaptor.Zod.fromZod(zodType) as any
+  },
 })

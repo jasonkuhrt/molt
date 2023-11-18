@@ -75,7 +75,6 @@ const _fromZod = (zodType: z.ZodFirstPartySchemaTypes,previous:{description?:str
     })
     return Type.union({ optionality, members_: members, description })
   }
-  // console.log(zt)
   throw new Error(`Unsupported zodType: ${JSON.stringify(zt[`_def`])}`)
 }
 

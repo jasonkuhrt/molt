@@ -18,9 +18,10 @@ export const create = (): RootBuilder => {
   const $$ = {
     addParameterBasic: (nameExpression: string, configuration: ParameterConfiguration) => {
       const prompt = configuration.prompt ?? null
+      const type = $.typeMapper(configuration.schema)
       const parameter = {
         _tag: `Basic`,
-        type: configuration.schema,
+        type,
         nameExpression: nameExpression,
         prompt,
       } satisfies CommandParameter.Input.Basic<any>

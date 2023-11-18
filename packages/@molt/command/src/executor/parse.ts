@@ -65,7 +65,7 @@ export interface ParseProgressDone {
 
 export const parse = (
   settings: Settings.Output,
-  parameterSpecInputs: Record<string, CommandParameter.Input>,
+  parameterInputs: Record<string, CommandParameter.Input>,
   argInputs: RawArgInputs,
 ) => {
   const testDebuggingNoExit = process.env[`testing_molt`] === `true`
@@ -76,13 +76,13 @@ export const parse = (
     : getLowerCaseEnvironment()
 
   // todo handle concept of specs themselves having errors
-  const specsResult = {
-    specs: CommandParameter.process(parameterSpecInputs, settings),
+  const parametersResult = {
+    parameters: CommandParameter.process(parameterInputs, settings),
   }
   // dump(specsResult)
 
   const openingArgsResult = OpeningArgs.parse({
-    parameters: specsResult.specs,
+    parameters: parametersResult.parameters,
     line: argInputsLine,
     environment: argInputsEnvironment,
   })
@@ -108,7 +108,9 @@ export const parse = (
   }
 
   if (argInputsPrompter) {
-    const basicSpecs = specsResult.specs.filter((_): _ is CommandParameter.Output.Basic => _._tag === `Basic`)
+    const basicSpecs = parametersResult.parameters.filter(
+      (_): _ is CommandParameter.Output.Basic => _._tag === `Basic`,
+    )
     for (const spec of basicSpecs) {
       const promptEnabled =
         (spec.prompt.when !== null && spec.prompt.enabled !== false) ||
@@ -140,7 +142,7 @@ export const parse = (
     openingArgsResult.basicParameters[`help`].value === true
 
   if (askedForHelp) {
-    settings.onOutput(Help.render(specsResult.specs, settings) + `\n`)
+    settings.onOutput(Help.render(parametersResult.parameters, settings) + `\n`)
     if (!testDebuggingNoExit) process.exit(0)
     return undefined as never // When testing, with process.exit mock, we WILL reach this case
   }
@@ -174,7 +176,7 @@ export const parse = (
         argumentErrors.map((_) => _.errors.map((_) => _.message).join(`\nX `)).join(`\nX `) +
         `\n\nHere are the docs for this command:\n`
       settings.onOutput(message + `\n`)
-      settings.onOutput(Help.render(specsResult.specs, settings) + `\n`)
+      settings.onOutput(Help.render(parametersResult.parameters, settings) + `\n`)
     }
     if (settings.onError === `exit` && !testDebuggingNoExit) {
       process.exit(1)
@@ -226,7 +228,7 @@ export const parse = (
      * Handle the distinct case of no arguments. Sometimes the CLI author wants this to mean "show help".
      */
     if (settings.helpOnNoArguments && Object.values(args).length === 0) {
-      settings.onOutput(Help.render(specsResult.specs, settings) + `\n`)
+      settings.onOutput(Help.render(parametersResult.parameters, settings) + `\n`)
       if (!testDebuggingNoExit) process.exit(0)
       throw new Error(`missing args`) // When testing, with process.exit mock, we will reach this case
     }
