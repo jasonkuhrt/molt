@@ -1,6 +1,6 @@
 import type { State } from '../../../builders/State.js'
 import type { Settings } from '../../../index.js'
-import type { Input } from '../../input.js'
+import type { Input } from '../../../ParameterInput/input.js'
 import type { Output } from '../../output.js'
 import { processEnvironment } from '../helpers/environment.js'
 import { Name } from '@molt/types'

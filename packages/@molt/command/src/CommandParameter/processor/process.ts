@@ -1,6 +1,6 @@
+import type { Input } from '../../ParameterInput/input.js'
 import type { Settings } from '../../Settings/index.js'
 import { Type } from '../../Type/index.js'
-import type { Input } from '../input.js'
 import type { Output } from '../output.js'
 import { processBasic } from './parameterTypes/basic.js'
 import { processExclusive } from './parameterTypes/exclusive.js'

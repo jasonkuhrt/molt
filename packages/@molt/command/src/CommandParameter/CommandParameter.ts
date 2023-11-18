@@ -1,4 +1,4 @@
-export * from './input.js'
+export * from '../ParameterInput/input.js'
 export * from './output.js'
 export * from './processor/process.js'
 export * from './types.js'
