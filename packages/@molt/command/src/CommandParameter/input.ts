@@ -1,4 +1,4 @@
-import type { State } from '../Command/State.js'
+import type { State } from '../builders/State.js'
 import type { EventPatternsInput } from '../eventPatterns.js'
 import type { HKT } from '../helpers.js'
 import type { Pam } from '../lib/Pam/index.js'

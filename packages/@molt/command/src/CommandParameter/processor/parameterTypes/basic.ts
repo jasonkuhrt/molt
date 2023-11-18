@@ -1,4 +1,4 @@
-import type { State } from '../../../Command/State.js'
+import type { State } from '../../../builders/State.js'
 import type { Settings } from '../../../index.js'
 import type { Input } from '../../input.js'
 import type { Output } from '../../output.js'
