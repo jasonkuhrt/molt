@@ -2,9 +2,10 @@ import type { Values } from '../helpers.js'
 import type { HKT } from '../helpers.js'
 import type { ParameterInput } from '../ParameterInput/index.js'
 import type { Type } from '../Type/index.js'
-import type { ParameterConfiguration } from './command/types.js'
+import type { IsPromptEnabledInParameterSettings, ParameterConfiguration } from './command/types.js'
 import type { ExclusiveParameterConfiguration } from './exclusive/types.js'
 import type { Name } from '@molt/types'
+import type { Objects, Pipe } from 'hotscript'
 import type { Simplify } from 'type-fest'
 
 export namespace State {
@@ -82,6 +83,27 @@ export namespace State {
       }
 
   }
+
+  export type AddParameter<
+    $State extends Base,
+    NameExpression extends string,
+    Configuration extends ParameterConfiguration<$State>,
+  > = Pipe<
+    $State,
+    [
+      Objects.Update<
+        'Parameters',
+        Objects.Assign<{
+          [_ in NameExpression]: State.CreateParameter<$State, NameExpression, Configuration>
+        }>
+      >,
+      Objects.Update<
+        'IsPromptEnabled',
+        $State['IsPromptEnabled'] extends true ? true : IsPromptEnabledInParameterSettings<Configuration>
+      >,
+    ]
+  >
+
   // prettier-ignore
   export type AddExclusiveParameter<
     $State extends Base,
@@ -104,6 +126,12 @@ export namespace State {
         }
       }
     }>
+
+  // interface ParameterBase {
+  //   Type: Type.Type
+  //   NameParsed: Name.Data.NameParsed
+  //   NameUnion: string
+  // }
 
   // prettier-ignore
   export type CreateParameter<

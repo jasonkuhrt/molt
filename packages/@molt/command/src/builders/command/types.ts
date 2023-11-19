@@ -50,21 +50,9 @@ export interface CommandBuilder<$State extends State.Base = State.BaseEmpty> {
   description                                                                                     (this:void, description:string):
     CommandBuilder<$State>
   parameter<NameExpression extends string, const Configuration extends ParameterConfiguration<$State>>    (this:void, name:State.ValidateNameExpression<$State,NameExpression>, configuration:Configuration):
-    CommandBuilder<{
-      IsPromptEnabled    : $State['IsPromptEnabled'] extends true ? true : IsPromptEnabledInParameterSettings<Configuration>
-      ParametersExclusive: $State['ParametersExclusive']
-      Parameters         : $State['Parameters'] & { [_ in NameExpression]: State.CreateParameter<$State,NameExpression,Configuration> }
-      Type             : $State['Type']
-      TypeMapper       : $State['TypeMapper']
-    }>
+    CommandBuilder<State.AddParameter<$State,NameExpression,Configuration>>
   parameter<NameExpression extends string, $Type extends $State['Type']>                                (this:void, name:State.ValidateNameExpression<$State,NameExpression>, type:$Type):
-    CommandBuilder<{
-      IsPromptEnabled    : $State['IsPromptEnabled']
-      ParametersExclusive: $State['ParametersExclusive']
-      Parameters         : $State['Parameters'] & { [_ in NameExpression]: State.CreateParameter<$State,NameExpression,{type:$Type}> }
-      Type             : $State['Type']
-      TypeMapper       : $State['TypeMapper']
-    }>
+    CommandBuilder<State.AddParameter<$State,NameExpression, { type: $Type }>>
   parametersExclusive<Label extends string, BuilderExclusive extends SomeBuilderExclusive<$State>>  (this:void, label:Label, ExclusiveBuilderContainer: (builder:BuilderExclusiveInitial<$State,Label>) => BuilderExclusive):
     CommandBuilder<BuilderExclusive['_']['typeState']>
   settings                                                                                  <S extends Settings.Input<$State>>(this:void, newSettings:S):

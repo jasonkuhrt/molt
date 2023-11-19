@@ -37,7 +37,7 @@ export interface Input<$State extends State.Base = State.BaseEmpty> {
     environment?:
       | boolean
       | ({
-          [FlagSpecExpression in keyof Values<State.ToParametersToTypes<$State>> as Name.Data.GetCanonicalNameOrErrorFromParseResult<Name.Parse<FlagSpecExpression & string>>]?: boolean | SettingInputEnvironmentParameter
+            [NameExpression in keyof $State['Parameters'] as $State['Parameters'][NameExpression]['NameParsed']['canonical']]?: boolean | SettingInputEnvironmentParameter
         } & {
           $default?: boolean | SettingInputEnvironmentParameter
         })
