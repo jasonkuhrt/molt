@@ -26,9 +26,9 @@
     // Other
     "baseUrl": ".",
     "paths": {
-      // "@molt/parameters": ["packages/parameters/src/index.ts"],
-      // "@molt/types": ["packages/types/src/index.ts"],
-      // "molt": ["packages/molt/src/index.ts"]
+      // "@molt/parameters": ["packages/parameters/src/_entrypoints/default.ts"],
+      // "@molt/types": ["packages/types/src/_entrypoints/default.ts"],
+      // "molt": ["packages/molt/src/_entrypoints/default.ts"]
     }
   }
 }

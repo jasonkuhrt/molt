@@ -1,7 +1,7 @@
 import type { BuilderCommandState } from '../builders/command/state.js'
 import type { HKT } from '../helpers.js'
-import type { Settings } from '../index.js'
 import type { Pam } from '../lib/Pam/index.js'
+import type { Settings } from '../Settings/index.js'
 import type { Optionality } from '../Type/Type.js'
 import { processEnvironment } from './helpers/environment.js'
 import type { Environment, Prompt } from './helpers/types.js'

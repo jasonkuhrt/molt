@@ -1,5 +1,5 @@
+import { Command } from '../packages/@molt/command/src/_entrypoints/default.js'
 import { Zod } from '../packages/@molt/command/src/_entrypoints/extensions.js'
-import { Command } from '../packages/@molt/command/src/index.js'
 import { Octokit } from '@octokit/core'
 import { Alge } from 'alge'
 import { execa } from 'execa'

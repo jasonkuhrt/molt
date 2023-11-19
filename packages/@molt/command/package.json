@@ -22,21 +22,27 @@
     "src",
     "build"
   ],
-  "types": "./build/esm/index.d.ts",
+  "types": "./build/esm/_entrypoints/default.d.ts",
   "exports": {
     ".": {
       "require": {
-        "types": "./build/cjs/index.d.cts",
-        "default": "./build/cjs/index.js"
+        "types": "./build/cjs/_entrypoints/default.d.cts",
+        "default": "./build/cjs/_entrypoints/default.js"
       },
       "import": {
-        "types": "./build/esm/index.d.ts",
-        "default": "./build/esm/index.js"
+        "types": "./build/esm/_entrypoints/default.d.ts",
+        "default": "./build/esm/_entrypoints/default.js"
       }
     },
     "./types": {
       "import": {
         "types": "./build/esm/_entrypoints/types.d.ts"
+      }
+    },
+    "./extensions": {
+      "import": {
+        "types": "./build/esm/_entrypoints/extensions.d.ts",
+        "default": "./build/cjs/_entrypoints/extensions.js"
       }
     }
   },

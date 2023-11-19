@@ -1,4 +1,4 @@
-import type { Settings } from '../../index.js'
+import type { Settings } from '../../Settings/index.js'
 import type { Environment } from './types.js'
 import type { Name } from '@molt/types'
 import camelCase from 'lodash.camelcase'

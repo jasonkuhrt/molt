@@ -1,5 +1,5 @@
+import { Command } from '../src/_entrypoints/default.js'
 import { Zod } from '../src/_entrypoints/extensions.js'
-import { Command } from '../src/index.js'
 import semverRegex from 'semver-regex'
 import { z } from 'zod'
 

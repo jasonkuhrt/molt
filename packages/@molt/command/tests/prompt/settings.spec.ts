@@ -1,5 +1,5 @@
+import type { Settings } from '../../src/_entrypoints/default.js'
 import type { FromZod } from '../../src/extensions/zod/typeAdaptor/types.js'
-import type { Settings } from '../../src/index.js'
 import type { Type } from '../../src/Type/index.js'
 import { $, s, tryCatch } from '../_/helpers.js'
 import { memoryPrompter } from '../_/mocks/tty.js'

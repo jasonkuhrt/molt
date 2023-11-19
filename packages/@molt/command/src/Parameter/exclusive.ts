@@ -1,6 +1,6 @@
 import type { BuilderCommandState } from '../builders/command/state.js'
-import type { Settings } from '../index.js'
 import type { Pam } from '../lib/Pam/index.js'
+import type { Settings } from '../Settings/index.js'
 import type { Type } from '../Type/index.js'
 import { processEnvironment } from './helpers/environment.js'
 import type { Environment } from './helpers/types.js'
