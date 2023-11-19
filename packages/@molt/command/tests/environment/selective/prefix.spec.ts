@@ -1,5 +1,4 @@
-import { Command } from '../../../src/index.js'
-import { s } from '../../_/helpers.js'
+import { $, s } from '../../_/helpers.js'
 import { environmentManager } from '../__helpers__.js'
 import { expect } from 'vitest'
 import { it } from 'vitest'
