@@ -7,7 +7,7 @@ let args
 
 describe(`optional`, () => {
   it(`leads to optional type`, () => {
-    args = $.parametersExclusive(`method`, ($) =>
+    const args = $.parametersExclusive(`method`, ($) =>
       $.parameter(`v version`, s).parameter(`b bump`, e).optional(),
     ).parse({ line: [`-v`, `1.0.0`] })
     expectType<typeof args>(
@@ -71,15 +71,14 @@ describe(`required`, () => {
 
 describe(`default`, () => {
   it(`method params are based on group params defined above`, () => {
-    // prettier-ignore
     $.parametersExclusive(`method`, ($) => {
       const $$ = $.parameter(`v version`, s).parameter(`b bump`, e)
-      const m1 = $$.default 
+      const m1 = $$.default
       expectType<Parameters<typeof m1>>(as<[tag: 'version' | 'bump', value: 'any string']>())
       const m2 = $$.default<'version'>
       expectType<Parameters<typeof m2>>(as<[tag: 'version', value: 'any string']>())
       const m3 = $$.default<'bump'>
-      expectType<Parameters<typeof m3>>(as<[tag: 'bump', value: 'patch'|'minor'|'major']>())
+      expectType<Parameters<typeof m3>>(as<[tag: 'bump', value: 'patch' | 'minor' | 'major']>())
       return $$
     })
   })

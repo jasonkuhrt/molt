@@ -4,13 +4,11 @@ import type { Prompter } from '../../lib/Prompter/Prompter.js'
 import type { OpeningArgs } from '../../OpeningArgs/index.js'
 import type { Prompt } from '../../Parameter/types.js'
 import type { Settings } from '../../Settings/index.js'
-import type {
-  BuilderAfterSettings,
-  BuilderExclusiveInitial,
-  SomeBuilderExclusive,
-} from '../exclusive/types.js'
+import type { BuilderExclusiveInitial, SomeBuilderExclusive } from '../exclusive/types.js'
+// todo
 // eslint-disable-next-line
 import { BuilderCommandState } from './state.js'
+import type { Objects, Pipe } from 'hotscript'
 
 export interface ParameterConfiguration<
   $State extends BuilderCommandState.Base = BuilderCommandState.BaseEmpty,
@@ -53,18 +51,12 @@ export interface CommandBuilder<$State extends BuilderCommandState.Base = Builde
     CommandBuilder<$State>
   parameter<NameExpression extends string, const Configuration extends ParameterConfiguration<$State>>    (this:void, name:BuilderCommandState.ValidateNameExpression<$State,NameExpression>, configuration:Configuration):
     CommandBuilder<BuilderCommandState.AddParameter<$State,NameExpression,Configuration>>
-  parameter<NameExpression extends string, $Type extends $State['Type']>                                (this:void, name:BuilderCommandState.ValidateNameExpression<$State,NameExpression>, type:$Type):
+  parameter<NameExpression extends string, $Type extends $State['Type']>                                  (this:void, name:BuilderCommandState.ValidateNameExpression<$State,NameExpression>, type:$Type):
     CommandBuilder<BuilderCommandState.AddParameter<$State,NameExpression, { type: $Type }>>
-  parametersExclusive<Label extends string, BuilderExclusive extends SomeBuilderExclusive<$State>>  (this:void, label:Label, ExclusiveBuilderContainer: (builder:BuilderExclusiveInitial<$State,Label>) => BuilderExclusive):
+  parametersExclusive<Label extends string, BuilderExclusive extends SomeBuilderExclusive<$State>>        (this:void, label:Label, ExclusiveBuilderContainer: (builder:BuilderExclusiveInitial<$State,Label>) => BuilderExclusive):
     CommandBuilder<BuilderExclusive['_']['typeState']>
   settings                                                                                  <S extends Settings.Input<$State>>(this:void, newSettings:S):
-    CommandBuilder<{
-      IsPromptEnabled    : $State['IsPromptEnabled'] extends true ? true : IsPromptEnabledInCommandSettings<S>
-      ParametersExclusive: $State['ParametersExclusive']
-      Parameters         : $State['Parameters']
-      Type             : $State['Type']
-      TypeMapper       : $State['TypeMapper']
-    }>
+    CommandBuilder<Pipe<$State, [Objects.Update<'IsPromptEnabled', Objects.Assign<$State['IsPromptEnabled'] extends true ? true : IsPromptEnabledInCommandSettings<S>>>]>>
   parse                                                                                     (this:void, inputs?:RawArgInputs):
     BuilderCommandState.ToArgs<$State>
 }

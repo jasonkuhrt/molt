@@ -130,21 +130,21 @@ export namespace BuilderCommandState {
     NameExpression extends string,
     Configuration extends ExclusiveParameterConfiguration<$State>
   > =
-    MergeIntoProperty<$State, 'ParametersExclusive', {
-      [_ in Label]: {
-        Optional: $State['ParametersExclusive'][_]['Optional']
-        Parameters: {
-          [_ in NameExpression as Name.Data.GetCanonicalNameOrErrorFromParseResult<Name.Parse<NameExpression>>]: {
-            Type: HKT.Call<$State['TypeMapper'], Configuration['type']>
-            NameParsed: Name.Parse<NameExpression, { usedNames: GetUsedNames<$State>; reservedNames: ReservedParameterNames }>
-            NameUnion: Name.Data.GetNamesFromParseResult<
-              Name.Parse<NameExpression, { usedNames: GetUsedNames<$State>; reservedNames: ReservedParameterNames }>
-            >
-          }
+    Pipe<$State, [Objects.Update<'ParametersExclusive', Objects.Assign<
+      $State['ParametersExclusive'] & {
+        [_ in Label]: {
+          Optional: $State['ParametersExclusive'][_]['Optional']
+          Parameters: {
+            [_ in NameExpression as Name.Data.GetCanonicalNameOrErrorFromParseResult<Name.Parse<NameExpression>>]: {
+              Type: HKT.Call<$State['TypeMapper'], Configuration['type']>
+              NameParsed: Name.Parse<NameExpression, { usedNames: GetUsedNames<$State>; reservedNames: ReservedParameterNames }>
+              NameUnion: Name.Data.GetNamesFromParseResult<Name.Parse<NameExpression, { usedNames: GetUsedNames<$State>; reservedNames: ReservedParameterNames }>>
+            }
 
+          }
         }
       }
-    }>
+    >>]>
 
   // prettier-ignore
   export type CreateParameter<
@@ -189,21 +189,3 @@ export namespace BuilderCommandState {
       $State['Parameters'][K]['Type']
   }
 }
-
-/**
- * @see https://stackoverflow.com/questions/50374908/transform-union-type-to-intersection-type
- */
-// eslint-disable-next-line
-type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (k: infer I) => void
-  ? I
-  : never
-
-type SetProperty<Obj extends object, PropertyName extends keyof Obj, Value> = Omit<Obj, PropertyName> & {
-  [P in PropertyName]: Value
-}
-
-type MergeIntoProperty<Obj extends object, PropertyName extends keyof Obj, Value> = SetProperty<
-  Obj,
-  PropertyName,
-  Obj[PropertyName] & Value
->

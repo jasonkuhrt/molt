@@ -1,7 +1,5 @@
-import type { HKT } from '../../helpers.js'
 import type { Type } from '../../Type/index.js'
 import type { BuilderCommandState } from '../command/state.js'
-import type { RawArgInputs } from '../command/types.js'
 import type { BuilderParameterExclusiveState } from './state.js'
 
 export interface ExclusiveParameterConfiguration<$State extends BuilderCommandState.Base> {
@@ -10,16 +8,24 @@ export interface ExclusiveParameterConfiguration<$State extends BuilderCommandSt
 
 // prettier-ignore
 interface Parameter<$State extends BuilderCommandState.Base, Label extends string> {
-  <NameExpression extends string, Configuration extends ExclusiveParameterConfiguration<$State>   >(name: BuilderCommandState.ValidateNameExpression<$State, NameExpression>, configuration: Configuration): BuilderExclusiveInitial<BuilderCommandState.AddExclusiveParameter<$State, Label, NameExpression, Configuration>, Label>
-  <NameExpression extends string, $Type       extends $State['Type']>(name: BuilderCommandState.ValidateNameExpression<$State, NameExpression>, type: $Type              ): BuilderExclusiveInitial<BuilderCommandState.AddExclusiveParameter<$State, Label, NameExpression, {type:HKT.Call<$State['TypeMapper'],$Type>}>, Label>
+  <NameExpression extends string, Configuration extends ExclusiveParameterConfiguration<$State>   >(name: BuilderCommandState.ValidateNameExpression<$State, NameExpression>, configuration: Configuration):
+    BuilderExclusiveInitial<BuilderCommandState.AddExclusiveParameter<$State, Label, NameExpression, Configuration>, Label>
+
+  <NameExpression extends string, $Type         extends $State['Type']>(name: BuilderCommandState.ValidateNameExpression<$State, NameExpression>, type: $Type              ):
+    // BuilderCommandState.AddExclusiveParameter<$State, Label, NameExpression, { type: $Type }>
+    BuilderExclusiveInitial<BuilderCommandState.AddExclusiveParameter<$State, Label, NameExpression, { type: $Type }>, Label>
 }
 
 // prettier-ignore
 export interface BuilderExclusiveInitial<$State extends BuilderCommandState.Base, Label extends string> {
-  _:         BuilderParameterExclusiveState<$State>
-  parameter: Parameter<$State,Label>
-  optional:  () => BuilderExclusiveAfterOptional<BuilderCommandState.SetExclusiveOptional<$State, Label, true>>
-  default:  <Tag extends keyof $State['ParametersExclusive'][Label]['Parameters']>(tag: Tag, value: Type.Infer<HKT.Call<$State['TypeMapper'], $State['ParametersExclusive'][Label]['Parameters'][Tag]['Type']>>) => BuilderExclusiveAfterDefault<BuilderCommandState.SetExclusiveOptional<$State,Label,false>>
+  _:
+    BuilderParameterExclusiveState<$State>
+  parameter:
+    Parameter<$State,Label>
+  optional:  () =>
+    BuilderExclusiveAfterOptional<BuilderCommandState.SetExclusiveOptional<$State, Label, true>>
+  default:  <Tag extends keyof $State['ParametersExclusive'][Label]['Parameters']>(tag: Tag, value: Type.Infer<$State['ParametersExclusive'][Label]['Parameters'][Tag]['Type']>) =>
+    BuilderExclusiveAfterDefault<BuilderCommandState.SetExclusiveOptional<$State,Label,false>>
 }
 
 export type BuilderExclusiveAfterOptional<$State extends BuilderCommandState.Base> = {
@@ -28,10 +34,6 @@ export type BuilderExclusiveAfterOptional<$State extends BuilderCommandState.Bas
 
 export type BuilderExclusiveAfterDefault<$State extends BuilderCommandState.Base> = {
   _: BuilderParameterExclusiveState<$State>
-}
-
-export interface BuilderAfterSettings<$State extends BuilderCommandState.Base> {
-  parse: (inputs?: RawArgInputs) => BuilderCommandState.ToArgs<$State>
 }
 
 export interface SomeParameter<$State extends BuilderCommandState.Base> {
