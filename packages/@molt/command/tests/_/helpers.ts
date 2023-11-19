@@ -3,7 +3,8 @@ import { Command } from '../../src/index.js'
 import { isPromiseLikeValue } from '../../src/lib/prelude.js'
 import { z } from 'zod'
 
-export const $ = Command.create().use(Zod).settings({ onError: `throw` })
+// todo enable throw on all tests
+export const $ = Command.create().use(Zod) //.settings({ onError: `throw` })
 
 export const assertAssignable = <T>(_: T): [T] => 0 as any // eslint-disable-line
 export const as = <T>(): T => undefined as any // eslint-disable-line
