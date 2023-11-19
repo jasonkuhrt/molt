@@ -1,5 +1,6 @@
-import type { CommandParameter } from '../CommandParameter/index.js'
 import type { OpeningArgs } from '../OpeningArgs/index.js'
+import type { ParameterExclusive, ParameterExclusiveGroup } from '../Parameter/exclusive.js'
+import type { Parameter } from '../Parameter/types.js'
 
 export namespace Global {
   export class ErrorUnknownParameterViaEnvironment extends Error {
@@ -23,8 +24,8 @@ export namespace Global {
 
 export class ErrorDuplicateLineArg extends Error {
   public override name: 'ErrorDuplicateFlag' = `ErrorDuplicateFlag`
-  public parameter: CommandParameter.Output
-  constructor(params: { parameter: CommandParameter.Output; flagName: string }) {
+  public parameter: Parameter
+  constructor(params: { parameter: Parameter; flagName: string }) {
     const message = `The parameter "${params.flagName}" was passed an argument multiple times via flags.`
     super(message)
     this.parameter = params.parameter
@@ -33,10 +34,10 @@ export class ErrorDuplicateLineArg extends Error {
 
 export class ErrorDuplicateEnvArg extends Error {
   public override name: 'ErrorDuplicateEnvArg' = `ErrorDuplicateEnvArg`
-  public parameter: CommandParameter.Output
+  public parameter: Parameter
   public instances: { value: string; name: string; prefix: string | null }[]
   constructor(params: {
-    parameter: CommandParameter.Output
+    parameter: Parameter
     instances: { value: string; name: string; prefix: string | null }[]
   }) {
     const message = `The parameter "${params.parameter.name.canonical}" was passed an argument multiple times via different parameter aliases in the environment.`
@@ -48,8 +49,8 @@ export class ErrorDuplicateEnvArg extends Error {
 
 export class ErrorFailedToGetDefaultArgument extends Error {
   public override name: 'ErrorFailedToGetDefaultArgument' = `ErrorFailedToGetDefaultArgument`
-  public spec: CommandParameter.Output
-  constructor(params: { spec: CommandParameter.Output; cause: Error }) {
+  public spec: Parameter
+  constructor(params: { spec: Parameter; cause: Error }) {
     const message = `Failed to get default value for ${params.spec.name.canonical}`
     super(message, { cause: params.cause })
     this.spec = params.spec
@@ -58,8 +59,8 @@ export class ErrorFailedToGetDefaultArgument extends Error {
 
 export class ErrorMissingArgument extends Error {
   public override name: 'ErrorMissingArgument' = `ErrorMissingArgument`
-  public spec: CommandParameter.Output
-  constructor(params: { parameter: CommandParameter.Output }) {
+  public spec: Parameter
+  constructor(params: { parameter: Parameter }) {
     const message = `Missing argument for flag "${params.parameter.name.canonical}".`
     super(message)
     this.spec = params.parameter
@@ -68,8 +69,8 @@ export class ErrorMissingArgument extends Error {
 
 export class ErrorMissingArgumentForMutuallyExclusiveParameters extends Error {
   public override name: 'ErrorMissingArgumentForMutuallyExclusiveParameters' = `ErrorMissingArgumentForMutuallyExclusiveParameters`
-  public group: CommandParameter.Output.ExclusiveGroup
-  constructor(params: { group: CommandParameter.Output.ExclusiveGroup }) {
+  public group: ParameterExclusiveGroup
+  constructor(params: { group: ParameterExclusiveGroup }) {
     const message = `Missing argument for one of the following parameters: ${Object.values(
       params.group.parameters,
     )
@@ -82,10 +83,8 @@ export class ErrorMissingArgumentForMutuallyExclusiveParameters extends Error {
 
 export class ErrorArgumentsToMutuallyExclusiveParameters extends Error {
   public override name: 'ErrorArgumentsToMutuallyExclusiveParameters' = `ErrorArgumentsToMutuallyExclusiveParameters`
-  public group: CommandParameter.Output.ExclusiveGroup
-  constructor(params: {
-    offenses: { spec: CommandParameter.Output.Exclusive; arg: OpeningArgs.Argument }[]
-  }) {
+  public group: ParameterExclusiveGroup
+  constructor(params: { offenses: { spec: ParameterExclusive; arg: OpeningArgs.Argument }[] }) {
     const message = `Arguments given to multiple mutually exclusive parameters: ${params.offenses
       .map((_) => _.spec.name.canonical)
       .join(`, `)}`
@@ -96,10 +95,10 @@ export class ErrorArgumentsToMutuallyExclusiveParameters extends Error {
 
 export class ErrorInvalidArgument extends Error {
   public override name: 'ErrorInvalidArgument' = `ErrorInvalidArgument`
-  public spec: CommandParameter.Output
+  public spec: Parameter
   public value: unknown
   constructor(params: {
-    spec: CommandParameter.Output
+    spec: Parameter
     environmentVariableName?: string
     validationErrors: string[]
     value: unknown

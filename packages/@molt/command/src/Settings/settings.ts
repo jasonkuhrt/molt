@@ -1,11 +1,10 @@
-import type { State } from '../builders/State.js'
+import type { BuilderCommandState } from '../builders/command/state.js'
 import type { EventPatternsInput, EventPatternsInputAtLeastOne } from '../eventPatterns.js'
 import { eventPatterns } from '../eventPatterns.js'
 import type { HKT, Values } from '../helpers.js'
 import { parseEnvironmentVariableBooleanOrThrow } from '../helpers.js'
 import { defaultParameterNamePrefixes } from '../OpeningArgs/Environment/Environment.js'
 import type { Type } from '../Type/index.js'
-import type { Name } from '@molt/types'
 import snakeCase from 'lodash.snakecase'
 
 export type OnErrorReaction = 'exit' | 'throw'
@@ -18,7 +17,7 @@ export type InputPrompt<T extends Type.Type> =
     }
 
 // eslint-disable-next-line
-export interface Input<$State extends State.Base = State.BaseEmpty> {
+export interface Input<$State extends BuilderCommandState.Base = BuilderCommandState.BaseEmpty> {
   description?: string
   help?: boolean
   helpOnNoArguments?: boolean
@@ -30,7 +29,9 @@ export interface Input<$State extends State.Base = State.BaseEmpty> {
   }
   onError?: OnErrorReaction
   onOutput?: (output: string, defaultHandler: (output: string) => void) => void
-  prompt?: InputPrompt<HKT.Call<$State['TypeMapper'], Values<State.ToParametersToTypes<$State>>>>
+  prompt?: InputPrompt<
+    HKT.Call<$State['TypeMapper'], Values<BuilderCommandState.ToParametersToTypes<$State>>>
+  >
   // prompt?:
   parameters?: {
     // prettier-ignore
@@ -89,7 +90,11 @@ interface Environment {
 }
 
 // eslint-disable-next-line
-export const change = (current: Output, input: Input<State.BaseEmpty>, environment: Environment): void => {
+export const change = (
+  current: Output,
+  input: Input<BuilderCommandState.BaseEmpty>,
+  environment: Environment,
+): void => {
   if (input.prompt !== undefined) {
     if (typeof input.prompt === `boolean`) {
       current.prompt.enabled = input.prompt

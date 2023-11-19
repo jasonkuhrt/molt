@@ -1,25 +1,20 @@
-import type { CommandParameter } from '../../CommandParameter/index.js'
 import { parse } from '../../executor/parse.js'
 import type { SomeExtension } from '../../extension.js'
 import { getLowerCaseEnvironment, lowerCaseObjectKeys } from '../../helpers.js'
-import type { ParameterInput } from '../../ParameterInput/index.js'
+import type { ParameterBasicInput } from '../../Parameter/basic.js'
 import { Settings } from '../../Settings/index.js'
 import type { Type } from '../../Type/index.js'
 import * as ExclusiveBuilder from '../exclusive/constructor.js'
+import type { BuilderCommandState } from './state.js'
+import { createState } from './state.js'
 import type { CommandBuilder, ParameterConfiguration, RawArgInputs } from './types.js'
 
 export const create = (): CommandBuilder => {
-  const state: State = {
-    typeMapper: (type) => type as any,
-    newSettingsBuffer: [],
-    settings: null,
-    parameterInputs: {},
-  }
-  return create_(state)
+  return create_(createState())
 }
 
-const create_ = (state: State): CommandBuilder => {
-  const chain: InternalRootBuilder = {
+const create_ = (state: BuilderCommandState): CommandBuilder => {
+  const builder: InternalRootBuilder = {
     use: (extension) => {
       const newState = {
         ...state,
@@ -53,9 +48,9 @@ const create_ = (state: State): CommandBuilder => {
       const parameter = {
         _tag: `Basic`,
         type,
-        nameExpression: nameExpression,
-        prompt,
-      } satisfies ParameterInput.Basic<any>
+        nameExpression,
+        prompt: prompt as any, // eslint-disable-line
+      } satisfies ParameterBasicInput
       const newState = {
         ...state,
         parameterInputs: {
@@ -66,11 +61,12 @@ const create_ = (state: State): CommandBuilder => {
       return create_(newState) as any
     },
     parametersExclusive: (label, builderContainer) => {
+      const input = builderContainer(ExclusiveBuilder.create(label, state))._.input // eslint-disable-line
       const newState = {
         ...state,
         parameterInputs: {
           ...state.parameterInputs,
-          [label]: builderContainer(ExclusiveBuilder.create(state) as any)._.input, // eslint-disable-line
+          [label]: input, // eslint-disable-line
         },
       }
       return create_(newState) as any
@@ -90,19 +86,12 @@ const create_ = (state: State): CommandBuilder => {
     },
   }
 
-  return chain as any
+  return builder as any
 }
 
 //
 // Internal Types
 //
-
-export interface State {
-  typeMapper: (value: unknown) => Type.Type
-  settings: null | Settings.Output
-  newSettingsBuffer: Settings.Input[]
-  parameterInputs: Record<string, CommandParameter.Input<any>>
-}
 
 interface Parameter {
   (nameExpression: string, type: Type.Type): InternalRootBuilder

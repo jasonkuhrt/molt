@@ -1,5 +1,4 @@
 import type { RawArgInputs } from '../builders/command/types.js'
-import { CommandParameter } from '../CommandParameter/index.js'
 import { createEvent } from '../eventPatterns.js'
 import { Help } from '../Help/index.js'
 import { getLowerCaseEnvironment, lowerCaseObjectKeys } from '../helpers.js'
@@ -11,8 +10,12 @@ import type {
   ParseResultExclusiveGroupError,
   ParseResultExclusiveGroupSupplied,
 } from '../OpeningArgs/OpeningArgs.js'
+import type { ParameterBasic, ParameterBasicInput } from '../Parameter/basic.js'
+import type { ParameterExclusiveInput } from '../Parameter/exclusive.js'
 import { match } from '../Pattern/Pattern.js'
+import { createParameters } from './helpers/createParameters.js'
 import { prompt } from './prompt.js'
+import type { ArgumentValue } from './types.js'
 import { Effect } from 'effect'
 
 export interface ParseProgressPostPromptAnnotation {
@@ -40,7 +43,7 @@ export interface ParseProgressPostPrompt {
       openingParseResult: OpeningArgs.ParseResult['basicParameters'][string]
       prompt: {
         enabled: boolean
-        arg: CommandParameter.ArgumentValue
+        arg: ArgumentValue
       }
     }
   >
@@ -65,7 +68,7 @@ export interface ParseProgressDone {
 
 export const parse = (
   settings: Settings.Output,
-  parameterInputs: Record<string, CommandParameter.Input>,
+  parameterInputs: Record<string, ParameterBasicInput | ParameterExclusiveInput>,
   argInputs: RawArgInputs,
 ) => {
   const testDebuggingNoExit = process.env[`testing_molt`] === `true`
@@ -77,7 +80,7 @@ export const parse = (
 
   // todo handle concept of specs themselves having errors
   const parametersResult = {
-    parameters: CommandParameter.process(parameterInputs, settings),
+    parameters: createParameters(parameterInputs, settings),
   }
   // dump(specsResult)
 
@@ -108,9 +111,7 @@ export const parse = (
   }
 
   if (argInputsPrompter) {
-    const basicSpecs = parametersResult.parameters.filter(
-      (_): _ is CommandParameter.Output.Basic => _._tag === `Basic`,
-    )
+    const basicSpecs = parametersResult.parameters.filter((_): _ is ParameterBasic => _._tag === `Basic`)
     for (const spec of basicSpecs) {
       const promptEnabled =
         (spec.prompt.when !== null && spec.prompt.enabled !== false) ||
@@ -215,7 +216,7 @@ export const parse = (
                 : null,
             ]
           })
-          .filter((kv): kv is [string, CommandParameter.ArgumentValue] => kv[1] !== null),
+          .filter((kv): kv is [string, ArgumentValue] => kv[1] !== null),
       ),
       ...Object.fromEntries(
         Object.values(parseProgressPostPrompts.mutuallyExclusiveParameters)

@@ -1,7 +1,7 @@
-import type { CommandParameter } from '../CommandParameter/index.js'
 import { groupBy } from '../lib/prelude.js'
 import { Tex } from '../lib/Tex/index.js'
 import { Text } from '../lib/Text/index.js'
+import type { Parameter } from '../Parameter/types.js'
 import type { Settings } from '../Settings/index.js'
 import { Term } from '../term.js'
 import chalk from 'chalk'
@@ -22,11 +22,7 @@ interface RenderSettings {
   color?: boolean
 }
 
-export const render = (
-  parameters_: CommandParameter.Output[],
-  settings: Settings.Output,
-  _settings?: RenderSettings,
-) => {
+export const render = (parameters_: Parameter[], settings: Settings.Output, _settings?: RenderSettings) => {
   const allParameters = parameters_
   const parametersWithDescription = allParameters.filter((_) => _.type.description !== null)
   const parametersByTag = groupBy(parameters_, `_tag`)
@@ -154,7 +150,7 @@ export const render = (
   return output
 }
 
-const environmentNote = (parameters: CommandParameter.Output[], settings: Settings.Output) => {
+const environmentNote = (parameters: Parameter[], settings: Settings.Output) => {
   const isHasParametersWithCustomEnvironmentNamespace =
     parameters
       .filter((_) => _.environment?.enabled)
@@ -220,7 +216,7 @@ const environmentNote = (parameters: CommandParameter.Output[], settings: Settin
   )
 }
 
-const parameterDefault = (parameter: CommandParameter.Output) => {
+const parameterDefault = (parameter: Parameter) => {
   if (parameter._tag === `Exclusive`) {
     return Term.colors.dim(`–`)
   }
@@ -245,7 +241,7 @@ const labels = {
   required: chalk.bold(chalk.black(Term.colors.alertBoldBg(` REQUIRED `))),
 }
 
-const parameterName = (parameter: CommandParameter.Output) => {
+const parameterName = (parameter: Parameter) => {
   const isRequired =
     (parameter._tag === `Basic` && parameter.type.optionality._tag === `required`) ||
     (parameter._tag === `Exclusive` && parameter.group.optionality._tag === `required`)
@@ -278,7 +274,7 @@ const parameterName = (parameter: CommandParameter.Output) => {
   )
 }
 
-const parameterEnvironment = (parameter: CommandParameter.Output, settings: Settings.Output) => {
+const parameterEnvironment = (parameter: Parameter, settings: Settings.Output) => {
   return parameter.environment?.enabled
     ? Term.colors.secondary(Text.chars.check) +
         (parameter.environment.enabled && parameter.environment.namespaces.length === 0

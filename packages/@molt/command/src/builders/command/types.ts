@@ -2,7 +2,7 @@ import type { SomeExtension } from '../../extension.js'
 import type { HKT } from '../../helpers.js'
 import type { Prompter } from '../../lib/Prompter/Prompter.js'
 import type { OpeningArgs } from '../../OpeningArgs/index.js'
-import type { ParameterInput } from '../../ParameterInput/index.js'
+import type { Prompt } from '../../Parameter/types.js'
 import type { Settings } from '../../Settings/index.js'
 import type {
   BuilderAfterSettings,
@@ -10,11 +10,13 @@ import type {
   SomeBuilderExclusive,
 } from '../exclusive/types.js'
 // eslint-disable-next-line
-import { State } from '../State.js'
+import { BuilderCommandState } from './state.js'
 
-export interface ParameterConfiguration<$State extends State.Base> {
+export interface ParameterConfiguration<
+  $State extends BuilderCommandState.Base = BuilderCommandState.BaseEmpty,
+> {
   type: $State['Type']
-  prompt?: ParameterInput.Prompt<HKT.Call<$State['TypeMapper'], this['type']>>
+  prompt?: Prompt<HKT.Call<$State['TypeMapper'], this['type']>>
 }
 
 export type IsHasKey<Obj extends object, Key> = Key extends keyof Obj ? true : false
@@ -29,7 +31,7 @@ export type IsPromptEnabledInCommandSettings<P extends Settings.Input<any>> =
                                                                                 IsPromptEnabled<P['prompt']>
 
 // prettier-ignore
-export type IsPromptEnabled<P extends ParameterInput.Prompt<any>|undefined> =
+export type IsPromptEnabled<P extends Prompt<any>|undefined> =
   P                                               extends undefined ? false :
   P                                               extends false     ? false :
   P                                               extends true      ? true  :
@@ -38,7 +40,7 @@ export type IsPromptEnabled<P extends ParameterInput.Prompt<any>|undefined> =
                                                                       true
 
 // prettier-ignore
-export interface CommandBuilder<$State extends State.Base = State.BaseEmpty> {
+export interface CommandBuilder<$State extends BuilderCommandState.Base = BuilderCommandState.BaseEmpty> {
   use<$Extension extends SomeExtension>(extension: $Extension): 
     CommandBuilder<{
       IsPromptEnabled: $State['IsPromptEnabled'],
@@ -49,14 +51,14 @@ export interface CommandBuilder<$State extends State.Base = State.BaseEmpty> {
     }>
   description                                                                                     (this:void, description:string):
     CommandBuilder<$State>
-  parameter<NameExpression extends string, const Configuration extends ParameterConfiguration<$State>>    (this:void, name:State.ValidateNameExpression<$State,NameExpression>, configuration:Configuration):
-    CommandBuilder<State.AddParameter<$State,NameExpression,Configuration>>
-  parameter<NameExpression extends string, $Type extends $State['Type']>                                (this:void, name:State.ValidateNameExpression<$State,NameExpression>, type:$Type):
-    CommandBuilder<State.AddParameter<$State,NameExpression, { type: $Type }>>
+  parameter<NameExpression extends string, const Configuration extends ParameterConfiguration<$State>>    (this:void, name:BuilderCommandState.ValidateNameExpression<$State,NameExpression>, configuration:Configuration):
+    CommandBuilder<BuilderCommandState.AddParameter<$State,NameExpression,Configuration>>
+  parameter<NameExpression extends string, $Type extends $State['Type']>                                (this:void, name:BuilderCommandState.ValidateNameExpression<$State,NameExpression>, type:$Type):
+    CommandBuilder<BuilderCommandState.AddParameter<$State,NameExpression, { type: $Type }>>
   parametersExclusive<Label extends string, BuilderExclusive extends SomeBuilderExclusive<$State>>  (this:void, label:Label, ExclusiveBuilderContainer: (builder:BuilderExclusiveInitial<$State,Label>) => BuilderExclusive):
     CommandBuilder<BuilderExclusive['_']['typeState']>
   settings                                                                                  <S extends Settings.Input<$State>>(this:void, newSettings:S):
-    BuilderAfterSettings<{
+    CommandBuilder<{
       IsPromptEnabled    : $State['IsPromptEnabled'] extends true ? true : IsPromptEnabledInCommandSettings<S>
       ParametersExclusive: $State['ParametersExclusive']
       Parameters         : $State['Parameters']
@@ -64,7 +66,7 @@ export interface CommandBuilder<$State extends State.Base = State.BaseEmpty> {
       TypeMapper       : $State['TypeMapper']
     }>
   parse                                                                                     (this:void, inputs?:RawArgInputs):
-    State.ToArgs<$State>
+    BuilderCommandState.ToArgs<$State>
 }
 
 export type RawArgInputs = {

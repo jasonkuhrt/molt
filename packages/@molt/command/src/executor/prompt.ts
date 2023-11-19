@@ -1,4 +1,3 @@
-import { CommandParameter } from '../CommandParameter/index.js'
 import type { Prompter } from '../lib/Prompter/index.js'
 import { Tex } from '../lib/Tex/index_.js'
 import { Text } from '../lib/Text/index.js'
@@ -44,7 +43,7 @@ export const prompt = (
         })
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const arg = yield* _(asking)
-        const validationResult = CommandParameter.validate(parameter, arg)
+        const validationResult = parameter.type.validate(arg)
         if (validationResult._tag === `Right`) {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           args[parameter.name.canonical] = validationResult.right

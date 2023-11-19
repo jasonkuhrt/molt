@@ -1,11 +1,12 @@
-import type { Settings } from '../../../index.js'
-import type { Output } from '../../output.js'
+import type { Settings } from '../../index.js'
+import type { Environment } from './types.js'
+import type { Name } from '@molt/types'
 import camelCase from 'lodash.camelcase'
 
 /**
  * Parse the specification for a parameter's environment support.
  */
-export const processEnvironment = (settings: Settings.Output, name: Output.Name): Output.Environment => {
+export const processEnvironment = (settings: Settings.Output, name: Name.Data.NameParsed): Environment => {
   const hasEnvironment =
     settings.parameters.environment[name.canonical]?.enabled ??
     settings.parameters.environment.$default.enabled

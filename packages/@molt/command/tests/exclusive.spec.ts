@@ -1,17 +1,16 @@
-import type { Settings } from '../src/index.js'
 import { $, as, e, s } from './_/helpers.js'
 import { expectType } from 'tsd'
 import { describe, expect, it } from 'vitest'
 
+const $$ = $.settings({ onError: `throw`, helpOnError: false })
 let args
-const settings: Settings.Input = { onError: `throw`, helpOnError: false }
 
 describe(`optional`, () => {
   it(`leads to optional type`, () => {
-    $.parametersExclusive(`method`, ($) =>
+    args = $.parametersExclusive(`method`, ($) =>
       $.parameter(`v version`, s).parameter(`b bump`, e).optional(),
     ).parse({ line: [`-v`, `1.0.0`] })
-    expectType<typeof $>(
+    expectType<typeof args>(
       as<{
         method:
           | {
@@ -48,9 +47,9 @@ describe(`optional`, () => {
   })
   it(`if two args then error`, () => {
     expect(() =>
-      $.parametersExclusive(`method`, ($) => $.parameter(`v version`, s).parameter(`b bump`, e).optional())
-        .settings(settings)
-        .parse({ line: [`-v`, `1.0.0`, `-b`, `major`] }),
+      $$.parametersExclusive(`method`, ($) =>
+        $.parameter(`v version`, s).parameter(`b bump`, e).optional(),
+      ).parse({ line: [`-v`, `1.0.0`, `-b`, `major`] }),
     ).toThrowErrorMatchingSnapshot()
   })
 })
@@ -58,16 +57,14 @@ describe(`optional`, () => {
 describe(`required`, () => {
   it(`if no arg given then error`, () => {
     expect(
-      $.parametersExclusive(`method`, ($) => $.parameter(`v version`, s).parameter(`b bump`, e)).settings(
-        settings,
-      ).parse,
+      $$.parametersExclusive(`method`, ($) => $.parameter(`v version`, s).parameter(`b bump`, e)).parse,
     ).toThrowErrorMatchingSnapshot()
   })
   it(`if two args then error`, () => {
     expect(() =>
-      $.parametersExclusive(`method`, ($$) => $$.parameter(`v version`, s).parameter(`b bump`, e))
-        .settings(settings)
-        .parse({ line: [`-v`, `1.0.0`, `-b`, `major`] }),
+      $$.parametersExclusive(`method`, ($$) => $$.parameter(`v version`, s).parameter(`b bump`, e)).parse({
+        line: [`-v`, `1.0.0`, `-b`, `major`],
+      }),
     ).toThrowErrorMatchingSnapshot()
   })
 })
@@ -87,11 +84,9 @@ describe(`default`, () => {
     })
   })
   it(`leads to non-optional type`, () => {
-    args = $.parametersExclusive(`method`, ($) =>
+    args = $$.parametersExclusive(`method`, ($) =>
       $.parameter(`v version`, s).parameter(`b bump`, e).default(`bump`, `major`),
-    )
-      .settings(settings)
-      .parse()
+    ).parse()
     expectType<typeof args>(
       as<{
         method:
@@ -107,11 +102,9 @@ describe(`default`, () => {
     )
   })
   it(`used if nothing passed for group`, () => {
-    args = $.parametersExclusive(`method`, ($) =>
+    args = $$.parametersExclusive(`method`, ($) =>
       $.parameter(`v version`, s).parameter(`b bump`, e).default(`bump`, `patch`),
-    )
-      .settings(settings)
-      .parse()
+    ).parse()
     expect(args.method).toMatchObject({ _tag: `bump`, value: `patch` })
   })
 })

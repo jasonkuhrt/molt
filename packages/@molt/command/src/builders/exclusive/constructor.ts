@@ -1,22 +1,18 @@
 import type { Pam } from '../../lib/Pam/index.js'
-import type { ParameterInput } from '../../ParameterInput/index.js'
-import type { State as CommandState } from '../command/constructor.js'
-import type { SomeBuilderExclusiveInitial, State } from './types.js'
+import type { BuilderCommandState } from '../command/state.js'
+import type { BuilderParameterExclusiveState } from './state.js'
+import { createState } from './state.js'
+import type { SomeBuilderExclusiveInitial } from './types.js'
 
-export const create = (commandState: CommandState): SomeBuilderExclusiveInitial => {
-  const state: State = {
-    input: {
-      _tag: `Exclusive`,
-      optionality: { _tag: `required` },
-      parameters: [],
-    } satisfies ParameterInput.Exclusive,
-    typeState: undefined as any, // eslint-disable-line
-  }
-  return create_(commandState, state)
+export const create = (label: string, commandState: BuilderCommandState): SomeBuilderExclusiveInitial => {
+  return create_(commandState, createState(label))
 }
 
-const create_ = (commandState: CommandState, state: State): SomeBuilderExclusiveInitial => {
-  const chain: SomeBuilderExclusiveInitial = {
+const create_ = (
+  commandState: BuilderCommandState,
+  state: BuilderParameterExclusiveState,
+): SomeBuilderExclusiveInitial => {
+  const builder: SomeBuilderExclusiveInitial = {
     parameter: (nameExpression: string, typeOrConfiguration) => {
       const configuration = `type` in typeOrConfiguration ? typeOrConfiguration : { type: typeOrConfiguration } //  prettier-ignore
       const newState = {
@@ -58,5 +54,5 @@ const create_ = (commandState: CommandState, state: State): SomeBuilderExclusive
     _: state,
   }
 
-  return chain
+  return builder
 }

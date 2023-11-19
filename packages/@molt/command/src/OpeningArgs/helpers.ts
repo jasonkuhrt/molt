@@ -1,5 +1,5 @@
-import type { CommandParameter } from '../CommandParameter/index.js'
 import { negateNamePattern } from '../helpers.js'
+import type { Parameter } from '../Parameter/types.js'
 import type { Value } from './types.js'
 import { Either } from 'effect'
 import camelCase from 'lodash.camelcase'
@@ -9,7 +9,7 @@ export const stripeDashPrefix = (flagNameInput: string): string => {
 }
 
 // prettier-ignore
-export const parseSerializedValue = (name: string, serializedValue: string, spec: CommandParameter.Output): Value => {
+export const parseSerializedValue = (name: string, serializedValue: string, spec: Parameter): Value => {
   const either = spec.type.deserialize(serializedValue)
   if (Either.isLeft(either)) {
     const expectedTypes = spec.type._tag
@@ -32,7 +32,7 @@ export const parseSerializedValue = (name: string, serializedValue: string, spec
  * Is the environment variable input negated? Unlike line input the environment can be
  * namespaced so a bit more work is needed to parse out the name pattern.
  */
-export const isEnvarNegated = (name: string, spec: CommandParameter.Output): boolean => {
+export const isEnvarNegated = (name: string, spec: Parameter): boolean => {
   const nameWithNamespaceStripped = stripeNamespace(name, spec)
   // dump({ nameWithNamespaceStripped })
   return negateNamePattern.test(nameWithNamespaceStripped)
@@ -42,7 +42,7 @@ export const isNegated = (name: string): boolean => {
   return negateNamePattern.test(name)
 }
 
-const stripeNamespace = (name: string, spec: CommandParameter.Output): string => {
+const stripeNamespace = (name: string, spec: Parameter): string => {
   for (const namespace of spec.environment?.namespaces ?? []) {
     if (name.startsWith(namespace)) return camelCase(name.slice(namespace.length))
   }

@@ -1,6 +1,7 @@
-import type { CommandParameter } from '../CommandParameter/index.js'
 import { Errors } from '../Errors/index.js'
 import { errorFromUnknown, groupBy } from '../lib/prelude.js'
+import type { ParameterExclusive } from '../Parameter/exclusive.js'
+import type { Parameter } from '../Parameter/types.js'
 import { Environment } from './Environment/index.js'
 import { Line } from './Line/index.js'
 import type { ArgumentReport, ParseResult } from './types.js'
@@ -14,7 +15,7 @@ export const parse = ({
   line,
   environment,
 }: {
-  parameters: CommandParameter.Output[]
+  parameters: Parameter[]
   line: Line.RawInputs
   environment: Environment.RawInputs
 }): ParseResult => {
@@ -171,7 +172,7 @@ export const parse = ({
     const group = specs[0]!.group // eslint-disable-line
     const argsToGroup = specs
       .map((_) => lineParseResult.reports[_.name.canonical] ?? envParseResult.reports[_.name.canonical])
-      .filter((_): _ is ArgumentReport<CommandParameter.Output.Exclusive> => _ !== undefined)
+      .filter((_): _ is ArgumentReport<ParameterExclusive> => _ !== undefined)
 
     if (argsToGroup.length === 0) {
       if (group.optionality._tag === `optional`) {

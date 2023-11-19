@@ -1,7 +1,8 @@
-import { CommandParameter } from '../../CommandParameter/index.js'
 import { Errors } from '../../Errors/index.js'
 import { stripeNegatePrefixLoose } from '../../helpers.js'
 import type { Index } from '../../lib/prelude.js'
+import { findByName, isOrHasType } from '../../Parameter/helpers/CommandParameter.js'
+import type { Parameter } from '../../Parameter/types.js'
 import { isNegated, parseSerializedValue, stripeDashPrefix } from '../helpers.js'
 import type { ArgumentReport } from '../types.js'
 import camelCase from 'lodash.camelcase'
@@ -21,7 +22,7 @@ interface ParsedInputs {
  * Parse line input into an intermediary representation that is suited to comparison against
  * the parameter specs.
  */
-export const parse = (rawLineInputs: RawInputs, parameters: CommandParameter.Output[]): ParsedInputs => {
+export const parse = (rawLineInputs: RawInputs, parameters: Parameter[]): ParsedInputs => {
   const globalErrors: GlobalParseErrors[] = []
 
   const rawLineInputsPrepared = rawLineInputs
@@ -51,7 +52,7 @@ export const parse = (rawLineInputs: RawInputs, parameters: CommandParameter.Out
        * If union with boolean or boolean then we interpret foo argument as being a boolean.
        * Otherwise it is an error.
        */
-      if (CommandParameter.isOrHasType(pendingReport.parameter, `TypeBoolean`)) {
+      if (isOrHasType(pendingReport.parameter, `TypeBoolean`)) {
         pendingReport.value = {
           value: true,
           _tag: `boolean`,
@@ -75,7 +76,7 @@ export const parse = (rawLineInputs: RawInputs, parameters: CommandParameter.Out
       const flagNameNoDashPrefix = stripeDashPrefix(rawLineInput)
       const flagNameNoDashPrefixCamel = camelCase(flagNameNoDashPrefix)
       const flagNameNoDashPrefixNoNegate = stripeNegatePrefixLoose(flagNameNoDashPrefixCamel)
-      const parameter = CommandParameter.findByName(flagNameNoDashPrefixCamel, parameters)
+      const parameter = findByName(flagNameNoDashPrefixCamel, parameters)
       if (!parameter) {
         globalErrors.push(new Errors.Global.ErrorUnknownFlag({ flagName: flagNameNoDashPrefixNoNegate }))
         continue

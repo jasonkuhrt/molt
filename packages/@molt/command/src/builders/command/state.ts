@@ -1,14 +1,33 @@
-import type { Values } from '../helpers.js'
-import type { HKT } from '../helpers.js'
-import type { ParameterInput } from '../ParameterInput/index.js'
-import type { Type } from '../Type/index.js'
-import type { IsPromptEnabledInParameterSettings, ParameterConfiguration } from './command/types.js'
-import type { ExclusiveParameterConfiguration } from './exclusive/types.js'
+import type { Values } from '../../helpers.js'
+import type { HKT } from '../../helpers.js'
+import type { Settings } from '../../index.js'
+import type { ParameterBasicInput } from '../../Parameter/basic.js'
+import type { ParameterExclusiveInput } from '../../Parameter/exclusive.js'
+import type { Prompt } from '../../Parameter/types.js'
+import type { Type } from '../../Type/index.js'
+import type { ExclusiveParameterConfiguration } from '../exclusive/types.js'
+import type { IsPromptEnabledInParameterSettings, ParameterConfiguration } from './types.js'
 import type { Name } from '@molt/types'
 import type { Objects, Pipe } from 'hotscript'
 import type { Simplify } from 'type-fest'
 
-export namespace State {
+export const createState = (): BuilderCommandState => {
+  return {
+    typeMapper: (type) => type as any,
+    newSettingsBuffer: [],
+    settings: null,
+    parameterInputs: {},
+  }
+}
+
+export interface BuilderCommandState {
+  typeMapper: (value: unknown) => Type.Type
+  settings: null | Settings.Output
+  newSettingsBuffer: Settings.Input[]
+  parameterInputs: Record<string, ParameterBasicInput | ParameterExclusiveInput>
+}
+
+export namespace BuilderCommandState {
   export interface TypeMapper<T extends Type.Type = Type.Type> extends HKT.Fn<T, T> {
     return: T
   }
@@ -60,7 +79,7 @@ export namespace State {
     string,
     {
       type: ParameterConfiguration['type']
-      prompt?: ParameterInput.Prompt<any>
+      prompt?: Prompt<any>
     }
   >
 
@@ -94,7 +113,7 @@ export namespace State {
       Objects.Update<
         'Parameters',
         Objects.Assign<{
-          [_ in NameExpression]: State.CreateParameter<$State, NameExpression, Configuration>
+          [_ in NameExpression]: BuilderCommandState.CreateParameter<$State, NameExpression, Configuration>
         }>
       >,
       Objects.Update<
@@ -126,12 +145,6 @@ export namespace State {
         }
       }
     }>
-
-  // interface ParameterBase {
-  //   Type: Type.Type
-  //   NameParsed: Name.Data.NameParsed
-  //   NameUnion: string
-  // }
 
   // prettier-ignore
   export type CreateParameter<
@@ -171,7 +184,7 @@ export namespace State {
     >
 
   // prettier-ignore
-  export type ToParametersToTypes<$State extends State.Base> = {
+  export type ToParametersToTypes<$State extends BuilderCommandState.Base> = {
     [K in keyof $State['Parameters'] & string as $State['Parameters'][K]['NameParsed']['canonical']]:
       $State['Parameters'][K]['Type']
   }

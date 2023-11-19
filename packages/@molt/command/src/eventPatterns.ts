@@ -1,6 +1,7 @@
-import type { CommandParameter } from './CommandParameter/index.js'
 import type { Errors } from './Errors/index.js'
+import type { ArgumentValue } from './executor/types.js'
 import type { OpeningArgs } from './OpeningArgs/index.js'
+import type { ParameterBasicData } from './Parameter/basic.js'
 import type { Pattern } from './Pattern/Pattern.js'
 import type { Type } from './Type/index.js'
 
@@ -23,23 +24,23 @@ export type BasicParameterParseEvent =
 
 export interface BasicParameterParseEventOmitted {
   result: 'omitted'
-  spec: CommandParameter.Output.BasicData
+  spec: ParameterBasicData
 }
 
 export interface BasicParameterParseEventAccepted {
   result: 'accepted'
-  spec: CommandParameter.Output.BasicData
-  value: CommandParameter.ArgumentValue
+  spec: ParameterBasicData
+  value: ArgumentValue
 }
 
 export interface BasicParameterParseEventRejected {
   result: 'rejected'
-  spec: CommandParameter.Output.BasicData
+  spec: ParameterBasicData
   error: Errors.ErrorMissingArgument['name'] | Errors.ErrorInvalidArgument['name']
 }
 
 export const createEvent = (parseResult: OpeningArgs.ParseResultBasic) => {
-  const specData: CommandParameter.Output.BasicData = {
+  const specData: ParameterBasicData = {
     ...parseResult.parameter,
     _tag: `BasicData` as const,
     optionality: parseResult.parameter.type.optionality[`_tag`],

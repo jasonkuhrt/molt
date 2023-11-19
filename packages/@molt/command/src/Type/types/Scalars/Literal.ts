@@ -28,6 +28,7 @@ export const literal = <const $Value extends LiteralValue>({
     optionality,
     description: description ?? null,
     validate: (_value) => {
+      if (optionality._tag === `optional` && value === undefined) return Either.right(value)
       return _value === value
         ? Either.right(_value as typeof value)
         : Either.left({ value: _value, errors: [`Value is not equal to literal.`] })

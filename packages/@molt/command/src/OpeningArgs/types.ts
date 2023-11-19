@@ -1,18 +1,18 @@
-import type { CommandParameter } from '../CommandParameter/index.js'
 import type { Errors } from '../Errors/index.js'
+import type { ArgumentValue, ArgumentValueMutuallyExclusive } from '../executor/types.js'
+import type { ParameterBasic } from '../Parameter/basic.js'
+import type { ParameterExclusive, ParameterExclusiveGroup } from '../Parameter/exclusive.js'
+import type { Parameter } from '../Parameter/types.js'
 import type { Environment } from './Environment/index.js'
 import type { LocalParseErrors } from './Line/Line.js'
 
-export interface EnvironmentArgumentReport<
-  Parameter extends CommandParameter.Output = CommandParameter.Output,
-> extends Argument {
-  parameter: Parameter
+export interface EnvironmentArgumentReport<$Parameter extends Parameter = Parameter> extends Argument {
+  parameter: $Parameter
   errors: Environment.LocalParseErrors[]
 }
 
-export interface ArgumentReport<Parameter extends CommandParameter.Output = CommandParameter.Output>
-  extends Argument {
-  parameter: Parameter
+export interface ArgumentReport<$Parameter extends Parameter = Parameter> extends Argument {
+  parameter: $Parameter
   errors: LocalParseErrors[]
 }
 
@@ -64,32 +64,32 @@ export type ParseError =
 
 export type ParseResultBasicSupplied = {
   _tag: 'supplied'
-  parameter: CommandParameter.Output.Basic
-  value: CommandParameter.ArgumentValue
+  parameter: ParameterBasic
+  value: ArgumentValue
 }
 
 export type ParseResultBasicError = {
   _tag: 'error'
-  parameter: CommandParameter.Output.Basic
+  parameter: ParameterBasic
   errors: ParseErrorBasic[]
 }
 export type ParseResultBasicOmitted = {
   _tag: 'omitted'
-  parameter: CommandParameter.Output.Basic
+  parameter: ParameterBasic
 }
 
 export type ParseResultBasic = ParseResultBasicSupplied | ParseResultBasicError | ParseResultBasicOmitted
 
 export type ParseResultExclusiveGroupSupplied = {
   _tag: 'supplied'
-  spec: CommandParameter.Output.ExclusiveGroup
-  parameter: CommandParameter.Output.Exclusive
-  value: CommandParameter.ArgumentValueMutuallyExclusive
+  spec: ParameterExclusiveGroup
+  parameter: ParameterExclusive
+  value: ArgumentValueMutuallyExclusive
 }
 
 export type ParseResultExclusiveGroupError = {
   _tag: 'error'
-  parameter: CommandParameter.Output.ExclusiveGroup
+  parameter: ParameterExclusiveGroup
   errors: ParseErrorExclusiveGroup[]
 }
 
@@ -97,7 +97,7 @@ export type ParseResultExclusiveGroup =
   | ParseResultExclusiveGroupSupplied
   | {
       _tag: 'omitted'
-      parameter: CommandParameter.Output.ExclusiveGroup
+      parameter: ParameterExclusiveGroup
     }
   | ParseResultExclusiveGroupError
 
