@@ -1,4 +1,3 @@
-import { Command } from '../../../src/index.js'
 import { $, n, s } from '../../_/helpers.js'
 import type { IsExact } from 'conditional-type-checks'
 import { assert } from 'conditional-type-checks'

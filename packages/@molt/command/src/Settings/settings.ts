@@ -1,7 +1,7 @@
 import type { BuilderCommandState } from '../builders/command/state.js'
 import type { EventPatternsInput, EventPatternsInputAtLeastOne } from '../eventPatterns.js'
 import { eventPatterns } from '../eventPatterns.js'
-import type { HKT, Values } from '../helpers.js'
+import type { Values } from '../helpers.js'
 import { parseEnvironmentVariableBooleanOrThrow } from '../helpers.js'
 import { defaultParameterNamePrefixes } from '../OpeningArgs/Environment/Environment.js'
 import type { Type } from '../Type/index.js'
@@ -29,7 +29,7 @@ export interface Input<$State extends BuilderCommandState.Base = BuilderCommandS
   }
   onError?: OnErrorReaction
   onOutput?: (output: string, defaultHandler: (output: string) => void) => void
-  prompt?: PromptInput<Values<BuilderCommandState.ToParametersToTypes<$State>>>
+  prompt?: PromptInput<Values<BuilderCommandState.ToTypes<$State>>>
   parameters?: {
     // prettier-ignore
     environment?:

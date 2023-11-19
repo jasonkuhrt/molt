@@ -85,23 +85,25 @@ export namespace BuilderCommandState {
 
   // prettier-ignore
   export type SetExclusiveOptional<
-    State extends Base,
+    $State extends Base,
     Label extends string,
     Value extends boolean,
-  > = {
-    IsPromptEnabled: State['IsPromptEnabled']
-    Parameters: State['Parameters']
-    Type: State['Type']
-    TypeMapper: State['TypeMapper']
-    ParametersExclusive: Omit<State['ParametersExclusive'], Label> & 
-      {
-        [_ in Label]: {
-          Optional: Value 
-          Parameters: State['ParametersExclusive'][_]['Parameters']
-        }
-      }
+  > =
+    Pipe<$State, [
+      Objects.Update<'ParametersExclusive',
+        Objects.Assign<{
+          [_ in Label]: {
+            Optional: Value 
+            Parameters: $State['ParametersExclusive'][_]['Parameters']
+          }
+        }>
+      >
+    ]>
 
-  }
+  export type SetIsPromptEnabled<$State extends Base, value extends boolean> = Pipe<
+    $State,
+    [Objects.Update<'IsPromptEnabled', $State['IsPromptEnabled'] extends true ? true : value>]
+  >
 
   export type AddParameter<
     $State extends Base,
@@ -130,20 +132,21 @@ export namespace BuilderCommandState {
     NameExpression extends string,
     Configuration extends ExclusiveParameterConfiguration<$State>
   > =
-    Pipe<$State, [Objects.Update<'ParametersExclusive', Objects.Assign<
-      $State['ParametersExclusive'] & {
-        [_ in Label]: {
-          Optional: $State['ParametersExclusive'][_]['Optional']
-          Parameters: {
-            [_ in NameExpression as Name.Data.GetCanonicalNameOrErrorFromParseResult<Name.Parse<NameExpression>>]: {
-              Type: HKT.Call<$State['TypeMapper'], Configuration['type']>
-              NameParsed: Name.Parse<NameExpression, { usedNames: GetUsedNames<$State>; reservedNames: ReservedParameterNames }>
-              NameUnion: Name.Data.GetNamesFromParseResult<Name.Parse<NameExpression, { usedNames: GetUsedNames<$State>; reservedNames: ReservedParameterNames }>>
-            }
+    Pipe<$State, [
+      Objects.Update<'ParametersExclusive',
+        Objects.Assign<$State['ParametersExclusive'] & {
+          [_ in Label]: {
+            Optional: $State['ParametersExclusive'][_]['Optional']
+            Parameters: {
+              [_ in NameExpression as Name.Data.GetCanonicalNameOrErrorFromParseResult<Name.Parse<NameExpression>>]: {
+                Type: HKT.Call<$State['TypeMapper'], Configuration['type']>
+                NameParsed: Name.Parse<NameExpression, { usedNames: GetUsedNames<$State>; reservedNames: ReservedParameterNames }>
+                NameUnion: Name.Data.GetNamesFromParseResult<Name.Parse<NameExpression, { usedNames: GetUsedNames<$State>; reservedNames: ReservedParameterNames }>>
+              }
 
+            }
           }
         }
-      }
     >>]>
 
   // prettier-ignore
@@ -152,7 +155,6 @@ export namespace BuilderCommandState {
     NameExpression  extends string,
     Configuration   extends ParameterConfiguration<$State>,
   > = {
-    Type2: Configuration['type']
     Type: HKT.Call<$State['TypeMapper'], Configuration['type']>
     NameParsed: Name.Parse<NameExpression, { usedNames: GetUsedNames<$State>; reservedNames: ReservedParameterNames }>
     NameUnion: Name.Data.GetNamesFromParseResult<Name.Parse<NameExpression,{ usedNames: GetUsedNames<$State>; reservedNames: ReservedParameterNames }>>
@@ -185,7 +187,7 @@ export namespace BuilderCommandState {
     >
 
   // prettier-ignore
-  export type ToParametersToTypes<$State extends BuilderCommandState.Base> = {
+  export type ToTypes<$State extends BuilderCommandState.Base> = {
     [K in keyof $State['Parameters'] & string as $State['Parameters'][K]['NameParsed']['canonical']]:
       $State['Parameters'][K]['Type']
   }

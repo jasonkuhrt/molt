@@ -47,7 +47,7 @@ export interface CommandBuilder<$State extends BuilderCommandState.Base = Builde
       Type: $Extension['types']['type']
       TypeMapper: $Extension['types']['typeMapper']
     }>
-  description                                                                                     (this:void, description:string):
+  description                                                                                             (this:void, description:string):
     CommandBuilder<$State>
   parameter<NameExpression extends string, const Configuration extends ParameterConfiguration<$State>>    (this:void, name:BuilderCommandState.ValidateNameExpression<$State,NameExpression>, configuration:Configuration):
     CommandBuilder<BuilderCommandState.AddParameter<$State,NameExpression,Configuration>>
@@ -57,7 +57,7 @@ export interface CommandBuilder<$State extends BuilderCommandState.Base = Builde
     CommandBuilder<BuilderExclusive['_']['typeState']>
   settings                                                                                  <S extends Settings.Input<$State>>(this:void, newSettings:S):
     CommandBuilder<Pipe<$State, [Objects.Update<'IsPromptEnabled', Objects.Assign<$State['IsPromptEnabled'] extends true ? true : IsPromptEnabledInCommandSettings<S>>>]>>
-  parse                                                                                     (this:void, inputs?:RawArgInputs):
+  parse                                                                                                   (this:void, inputs?:RawArgInputs):
     BuilderCommandState.ToArgs<$State>
 }
 

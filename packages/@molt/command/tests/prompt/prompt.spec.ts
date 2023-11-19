@@ -1,3 +1,4 @@
+import type { BuilderCommandState } from '../../src/builders/command/state.js'
 import type { CommandBuilder } from '../../src/builders/command/types.js'
 import type { KeyPress } from '../../src/lib/KeyPress/index.js'
 import { $, b, e, l1, n, s, tryCatch } from '../_/helpers.js'
@@ -339,12 +340,12 @@ it(`Static type tests`, () => {
  *
  */
 
-const run = async ($: CommandBuilder) => {
+const run = async (
+  $: CommandBuilder<BuilderCommandState.SetIsPromptEnabled<BuilderCommandState.BaseEmpty, true>>,
+) => {
   memoryPrompter.answers.add(answers)
   memoryPrompter.script.keyPress.push(...keyPresses)
-  const args = await tryCatch(async () => {
-    $.parse({ line, tty: memoryPrompter })
-  })
+  const args = await tryCatch(() => $.parse({ line, tty: memoryPrompter }))
   expect(args).toMatchSnapshot(`args`)
   expect(memoryPrompter.history.all).toMatchSnapshot(`tty`)
   expect(memoryPrompter.history.all.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)
