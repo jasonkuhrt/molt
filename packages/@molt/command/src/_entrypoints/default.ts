@@ -1,2 +1,2 @@
-export * as Command from '../index_.js'
 export { Settings } from '../Settings/index.js'
+export * as Command from './default_.js'
