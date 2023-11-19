@@ -9,7 +9,7 @@ import snakeCase from 'lodash.snakecase'
 
 export type OnErrorReaction = 'exit' | 'throw'
 
-export type InputPrompt<T extends Type.Type> =
+export type PromptInput<T extends Type.Type> =
   | boolean
   | {
       enabled?: boolean
@@ -29,10 +29,7 @@ export interface Input<$State extends BuilderCommandState.Base = BuilderCommandS
   }
   onError?: OnErrorReaction
   onOutput?: (output: string, defaultHandler: (output: string) => void) => void
-  prompt?: InputPrompt<
-    HKT.Call<$State['TypeMapper'], Values<BuilderCommandState.ToParametersToTypes<$State>>>
-  >
-  // prompt?:
+  prompt?: PromptInput<Values<BuilderCommandState.ToParametersToTypes<$State>>>
   parameters?: {
     // prettier-ignore
     environment?:

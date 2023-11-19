@@ -6,9 +6,7 @@ const args = await Command.create()
   .use(Zod)
   .parameter(`filePath`, z.string().describe(`Path to the file to convert.`))
   .parameter(`to`, z.enum([`json`, `yaml`, `toml`]).describe(`Format to convert to.`))
-  .parameter(`from`, {
-    type: z.enum([`json`, `yaml`, `toml`]).optional(),
-  })
+  .parameter(`from`, z.enum([`json`, `yaml`, `toml`]).optional())
   .parameter(
     `verbose v`,
     z.boolean().default(false).describe(`Log detailed progress as conversion executes.`),

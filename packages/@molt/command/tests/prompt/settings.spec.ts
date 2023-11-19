@@ -6,7 +6,7 @@ import { memoryPrompter } from '../_/mocks/tty.js'
 import stripAnsi from 'strip-ansi'
 import { describe, expect, it } from 'vitest'
 
-const S = <T extends Type.Type>(settings: Settings.InputPrompt<T>) => settings
+const S = <T extends Type.Type>(settings: Settings.PromptInput<T>) => settings
 const foo = [
   { ctrl: false, meta: false, sequence: `f`, shift: false, name: `f` },
   { ctrl: false, meta: false, sequence: `o`, shift: false, name: `o` },
