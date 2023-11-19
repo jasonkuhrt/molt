@@ -52,7 +52,7 @@ export interface CommandBuilder<$State extends BuilderCommandState.Base = Builde
   parameter<NameExpression extends string, const Configuration extends ParameterConfiguration<$State>>    (this:void, name:BuilderCommandState.ValidateNameExpression<$State,NameExpression>, configuration:Configuration):
     CommandBuilder<BuilderCommandState.AddParameter<$State,NameExpression,Configuration>>
   parameter<NameExpression extends string, $Type extends $State['Type']>                                  (this:void, name:BuilderCommandState.ValidateNameExpression<$State,NameExpression>, type:$Type):
-    CommandBuilder<BuilderCommandState.AddParameter<$State,NameExpression, { type: $Type }>>
+    CommandBuilder<BuilderCommandState.AddParameter<$State, NameExpression, { type: $Type }>>
   parametersExclusive<Label extends string, BuilderExclusive extends SomeBuilderExclusive<$State>>        (this:void, label:Label, ExclusiveBuilderContainer: (builder:BuilderExclusiveInitial<$State,Label>) => BuilderExclusive):
     CommandBuilder<BuilderExclusive['_']['typeState']>
   settings                                                                                  <S extends Settings.Input<$State>>(this:void, newSettings:S):

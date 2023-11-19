@@ -1,11 +1,11 @@
-import { $ } from '../_/helpers.js'
+import { $, as } from '../_/helpers.js'
 import { expectType } from 'tsd'
 import { expect, it } from 'vitest'
 import { z } from 'zod'
 
 it(`arg static type is the union`, () => {
   const args = $.parameter(`x`, z.union([z.string(), z.number()])).parse({ line: [`-x`, `1`] })
-  expectType<typeof args>(0 as any as { x: string | number })
+  expectType<typeof args>(as<{ x: string | number }>())
 })
 
 it(`spec of number|string parses arg as number if number given`, () => {

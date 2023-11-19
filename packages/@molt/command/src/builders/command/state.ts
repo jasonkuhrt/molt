@@ -113,7 +113,7 @@ export namespace BuilderCommandState {
       Objects.Update<
         'Parameters',
         Objects.Assign<{
-          [_ in NameExpression]: BuilderCommandState.CreateParameter<$State, NameExpression, Configuration>
+          [_ in NameExpression]: CreateParameter<$State, NameExpression, Configuration>
         }>
       >,
       Objects.Update<
@@ -152,6 +152,7 @@ export namespace BuilderCommandState {
     NameExpression  extends string,
     Configuration   extends ParameterConfiguration<$State>,
   > = {
+    Type2: Configuration['type']
     Type: HKT.Call<$State['TypeMapper'], Configuration['type']>
     NameParsed: Name.Parse<NameExpression, { usedNames: GetUsedNames<$State>; reservedNames: ReservedParameterNames }>
     NameUnion: Name.Data.GetNamesFromParseResult<Name.Parse<NameExpression,{ usedNames: GetUsedNames<$State>; reservedNames: ReservedParameterNames }>>
