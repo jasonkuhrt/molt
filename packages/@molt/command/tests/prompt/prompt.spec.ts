@@ -199,8 +199,13 @@ it(`prompt when invalid input`, async () => {
     { ctrl: false, meta: false, sequence: ``, shift: false, name: `return` },
   )
   line = [`-a`, `1`]
-  // @ts-expect-error - todo with Pierre
-  await run(`a`, { type: s.min(2), prompt: { when: { result: `rejected`, error: `ErrorInvalidArgument` } } })
+  await run(
+    // @ts-expect-error - todo with Pierre
+    $.parameter(`a`, {
+      type: s.min(2),
+      prompt: { when: { result: `rejected`, error: `ErrorInvalidArgument` } },
+    }),
+  )
 })
 
 it(`prompt when invalid input OR missing input`, async () => {
