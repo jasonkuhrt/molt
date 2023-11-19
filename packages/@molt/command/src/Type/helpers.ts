@@ -9,7 +9,7 @@ export const runtimeIgnore: any = true
 
 export type TypeSymbol = typeof TypeSymbol
 
-export type Optionality<T> =
+export type Optionality<T = unknown> =
   | { _tag: 'required' }
   | { _tag: 'optional' }
   | { _tag: 'default'; getValue: () => T }
@@ -19,7 +19,7 @@ export interface Type<T = any> {
   description: null | string
   [TypeSymbol]: T
   optionality: Optionality<T>
-  validate: (value: unknown) => ValidationResult<T>
+  validate: (value: unknown) => ValidationResult<T | undefined> // can be undefined when optional
   transform?: (value: T) => T
   priority: number
   help: (settings?: any) => string | Tex.Block

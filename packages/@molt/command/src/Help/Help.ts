@@ -1,7 +1,7 @@
-import type { CommandParameter } from '../CommandParameter/index.js'
 import { groupBy } from '../lib/prelude.js'
 import { Tex } from '../lib/Tex/index.js'
 import { Text } from '../lib/Text/index.js'
+import type { Parameter } from '../Parameter/types.js'
 import type { Settings } from '../Settings/index.js'
 import { Term } from '../term.js'
 import chalk from 'chalk'
@@ -22,16 +22,12 @@ interface RenderSettings {
   color?: boolean
 }
 
-export const render = (
-  parameters_: CommandParameter.Output[],
-  settings: Settings.Output,
-  _settings?: RenderSettings,
-) => {
+export const render = (parameters_: Parameter[], settings: Settings.Output, _settings?: RenderSettings) => {
   const allParameters = parameters_
-  const specsWithDescription = allParameters.filter((_) => _.type.description !== null)
-  const specsByKind = groupBy(parameters_, `_tag`)
-  const basicSpecs = specsByKind.Basic ?? []
-  const allSpecsWithoutHelp = allParameters
+  const parametersWithDescription = allParameters.filter((_) => _.type.description !== null)
+  const parametersByTag = groupBy(parameters_, `_tag`)
+  const basicParameters = parametersByTag.Basic ?? []
+  const allParametersWithoutHelp = allParameters
     .filter((_) => _.name.canonical !== `help`)
     .sort((_) =>
       _._tag === `Exclusive`
@@ -43,30 +39,32 @@ export const render = (
         : -1,
     )
 
-  const basicAndUnionSpecsWithoutHelp = basicSpecs
+  const parametersBasicWithoutHelp = basicParameters
     .filter((_) => _.name.canonical !== `help`)
     .sort((_) => (_.type.optionality._tag === `optional` ? 1 : -1))
-  const isAcceptsAnyEnvironmentArgs = basicSpecs.filter((_) => _.environment?.enabled).length > 0
+  const isAcceptsAnyEnvironmentArgs = basicParameters.filter((_) => _.environment?.enabled).length > 0
   const isAcceptsAnyMutuallyExclusiveParameters =
-    (specsByKind.Exclusive && specsByKind.Exclusive.length > 0) || false
+    (parametersByTag.Exclusive && parametersByTag.Exclusive.length > 0) || false
   const isEnvironmentEnabled =
     Object.values(settings.parameters.environment).filter((_) => _.enabled).length > 0
 
   const columnTitles = {
     name: `Name`,
-    typeDescription: specsWithDescription.length > 0 ? `Type/Description` : `Type`,
+    typeDescription: parametersWithDescription.length > 0 ? `Type/Description` : `Type`,
     default: `Default`,
     environment: isEnvironmentEnabled ? `Environment (1)` : null,
   }
 
-  const mexGroups = Object.values(groupBy(specsByKind.Exclusive ?? [], (_) => _.group.label)).map(
+  const parametersExclusiveGroups = Object.values(
+    groupBy(parametersByTag.Exclusive ?? [], (_) => _.group.label),
+  ).map(
     (_) => _[0]!.group, // eslint-disable-line
   )
 
   const noteItems: (Tex.Block | string | null)[] = []
 
   if (isAcceptsAnyEnvironmentArgs) {
-    noteItems.push(environmentNote(allSpecsWithoutHelp, settings))
+    noteItems.push(environmentNote(allParametersWithoutHelp, settings))
   }
 
   if (isAcceptsAnyMutuallyExclusiveParameters) {
@@ -99,33 +97,35 @@ export const render = (
             columnTitles.environment ? chalk.underline(Term.colors.mute(columnTitles.environment)) : null,
           )
           .rows([
-            ...basicAndUnionSpecsWithoutHelp.map((spec) => [
-              parameterName(spec),
-              Tex.block({ maxWidth: 40, padding: { right: 9, bottom: 1 } }, spec.type.help(settings)),
-              Tex.block({ maxWidth: 24 }, parameterDefault(spec)),
-              ...(isEnvironmentEnabled ? [parameterEnvironment(spec, settings)] : []),
+            ...parametersBasicWithoutHelp.map((parameter) => [
+              parameterName(parameter),
+              Tex.block({ maxWidth: 40, padding: { right: 9, bottom: 1 } }, parameter.type.help(settings)),
+              Tex.block({ maxWidth: 24 }, parameterDefault(parameter)),
+              ...(isEnvironmentEnabled ? [parameterEnvironment(parameter, settings)] : []),
             ]),
-            ...mexGroups.flatMap((mexGroup) => {
+            ...parametersExclusiveGroups.flatMap((parametersExclusive) => {
               const default_ =
-                mexGroup.optionality._tag === `default`
-                  ? `${mexGroup.optionality.tag}@${String(mexGroup.optionality.getValue())}`
-                  : mexGroup.optionality._tag === `optional`
+                parametersExclusive.optionality._tag === `default`
+                  ? `${parametersExclusive.optionality.tag}@${String(
+                      parametersExclusive.optionality.getValue(),
+                    )}`
+                  : parametersExclusive.optionality._tag === `optional`
                   ? `undefined`
                   : labels.required
               return [
                 [
                   Tex.block(
                     { border: { left: Term.colors.dim(`┌`) } },
-                    Term.colors.dim(`─${mexGroup.label} ${`(2)`}`),
+                    Term.colors.dim(`─${parametersExclusive.label} ${`(2)`}`),
                   ),
                   ``,
                   default_,
                 ],
-                ...Object.values(mexGroup.parameters).map((spec) => [
-                  parameterName(spec),
-                  spec.type.help(settings),
-                  parameterDefault(spec),
-                  ...(isEnvironmentEnabled ? [parameterEnvironment(spec, settings)] : []),
+                ...Object.values(parametersExclusive.parameters).map((parameter) => [
+                  parameterName(parameter),
+                  parameter.type.help(settings),
+                  parameterDefault(parameter),
+                  ...(isEnvironmentEnabled ? [parameterEnvironment(parameter, settings)] : []),
                 ]),
                 [Tex.block({ border: { left: Term.colors.dim(`└`) } }, Term.colors.dim(`─`))],
               ]
@@ -150,9 +150,9 @@ export const render = (
   return output
 }
 
-const environmentNote = (specs: CommandParameter.Output[], settings: Settings.Output) => {
-  const isHasSpecsWithCustomEnvironmentNamespace =
-    specs
+const environmentNote = (parameters: Parameter[], settings: Settings.Output) => {
+  const isHasParametersWithCustomEnvironmentNamespace =
+    parameters
       .filter((_) => _.environment?.enabled)
       .filter(
         (_) =>
@@ -168,7 +168,7 @@ const environmentNote = (specs: CommandParameter.Output[], settings: Settings.Ou
     ` can be passed arguments via environment variables. Command line arguments take precedence. Environment variable names are snake cased versions of the parameter name (or its aliases), case insensitive. `
 
   if (settings.parameters.environment.$default.prefix.length > 0) {
-    if (isHasSpecsWithCustomEnvironmentNamespace) {
+    if (isHasParametersWithCustomEnvironmentNamespace) {
       content += `By default they must be prefixed with`
       content += ` ${Text.joinListEnglish(
         settings.parameters.environment.$default.prefix.map((_) =>
@@ -184,14 +184,14 @@ const environmentNote = (specs: CommandParameter.Output[], settings: Settings.Ou
       )} (case insensitive). `
     }
   } else {
-    content += isHasSpecsWithCustomEnvironmentNamespace
+    content += isHasParametersWithCustomEnvironmentNamespace
       ? `By default there is no prefix, though some parameters deviate (shown in docs). `
       : `There is no prefix.`
   }
 
   content += `Examples:`
 
-  const examples = specs
+  const examples = parameters
     .filter((_) => _.environment?.enabled)
     .slice(0, 3)
     .map((_) =>
@@ -216,18 +216,18 @@ const environmentNote = (specs: CommandParameter.Output[], settings: Settings.Ou
   )
 }
 
-const parameterDefault = (spec: CommandParameter.Output) => {
-  if (spec._tag === `Exclusive`) {
+const parameterDefault = (parameter: Parameter) => {
+  if (parameter._tag === `Exclusive`) {
     return Term.colors.dim(`–`)
   }
 
-  if (spec.type.optionality._tag === `optional`) {
+  if (parameter.type.optionality._tag === `optional`) {
     return Term.colors.secondary(`undefined`)
   }
 
-  if (spec.type.optionality._tag === `default`) {
+  if (parameter.type.optionality._tag === `default`) {
     try {
-      return Term.colors.secondary(String(spec.type.optionality.getValue()))
+      return Term.colors.secondary(String(parameter.type.optionality.getValue()))
     } catch (e) {
       const error = e instanceof Error ? e : new Error(String(e))
       return chalk.bold(Term.colors.alert(`Error trying to render this default: ${error.message}`))
@@ -241,13 +241,13 @@ const labels = {
   required: chalk.bold(chalk.black(Term.colors.alertBoldBg(` REQUIRED `))),
 }
 
-const parameterName = (spec: CommandParameter.Output) => {
+const parameterName = (parameter: Parameter) => {
   const isRequired =
-    (spec._tag === `Basic` && spec.type.optionality._tag === `required`) ||
-    (spec._tag === `Exclusive` && spec.group.optionality._tag === `required`)
+    (parameter._tag === `Basic` && parameter.type.optionality._tag === `required`) ||
+    (parameter._tag === `Exclusive` && parameter.group.optionality._tag === `required`)
 
   const parameters: Tex.BlockParameters =
-    spec._tag === `Exclusive`
+    parameter._tag === `Exclusive`
       ? {
           border: {
             left: (lineNumber) =>
@@ -264,28 +264,30 @@ const parameterName = (spec: CommandParameter.Output) => {
 
   return Tex.block(parameters, (__) =>
     __.block(
-      isRequired ? Term.colors.positiveBold(spec.name.canonical) : Term.colors.positive(spec.name.canonical),
+      isRequired
+        ? Term.colors.positiveBold(parameter.name.canonical)
+        : Term.colors.positive(parameter.name.canonical),
     )
-      .block(Term.colors.dim(spec.name.aliases.long.join(`, `)) || null)
-      .block(Term.colors.dim(spec.name.short ?? ``) || null)
-      .block(Term.colors.dim(spec.name.aliases.long.join(`, `)) || null),
+      .block(Term.colors.dim(parameter.name.aliases.long.join(`, `)) || null)
+      .block(Term.colors.dim(parameter.name.short ?? ``) || null)
+      .block(Term.colors.dim(parameter.name.aliases.long.join(`, `)) || null),
   )
 }
 
-const parameterEnvironment = (spec: CommandParameter.Output, settings: Settings.Output) => {
-  return spec.environment?.enabled
+const parameterEnvironment = (parameter: Parameter, settings: Settings.Output) => {
+  return parameter.environment?.enabled
     ? Term.colors.secondary(Text.chars.check) +
-        (spec.environment.enabled && spec.environment.namespaces.length === 0
-          ? ` ` + Term.colors.dim(Text.toEnvarNameCase(spec.name.canonical))
-          : spec.environment.enabled &&
-            spec.environment.namespaces.filter(
+        (parameter.environment.enabled && parameter.environment.namespaces.length === 0
+          ? ` ` + Term.colors.dim(Text.toEnvarNameCase(parameter.name.canonical))
+          : parameter.environment.enabled &&
+            parameter.environment.namespaces.filter(
               // TODO settings normalized should store prefix in camel case
               (_) => !settings.parameters.environment.$default.prefix.includes(snakeCase(_)),
             ).length > 0
           ? ` ` +
             Term.colors.dim(
-              spec.environment.namespaces
-                .map((_) => `${Text.toEnvarNameCase(_)}_${Text.toEnvarNameCase(spec.name.canonical)}`)
+              parameter.environment.namespaces
+                .map((_) => `${Text.toEnvarNameCase(_)}_${Text.toEnvarNameCase(parameter.name.canonical)}`)
                 .join(` ${Text.chars.pipe} `),
             )
           : ``)

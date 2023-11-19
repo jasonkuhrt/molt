@@ -1,6 +1,7 @@
-import { CommandParameter } from '../../CommandParameter/index.js'
 import { Errors } from '../../Errors/index.js'
 import type { Index, RequireField } from '../../lib/prelude.js'
+import { getNames } from '../../Parameter/helpers/CommandParameter.js'
+import type { Parameter } from '../../Parameter/types.js'
 import { parseSerializedValue } from '../helpers.js'
 import type { EnvironmentArgumentReport } from '../types.js'
 import camelCase from 'lodash.camelcase'
@@ -19,7 +20,7 @@ export interface ParsedInputs {
   reports: Index<EnvironmentArgumentReport>
 }
 
-export const parse = (environment: RawInputs, specs: CommandParameter.Output[]): ParsedInputs => {
+export const parse = (environment: RawInputs, specs: Parameter[]): ParsedInputs => {
   const result: ParsedInputs = {
     globalErrors: [],
     reports: {},
@@ -109,7 +110,7 @@ export const lookupEnvironmentVariableArgument = (
   return environmentVariable
 }
 
-type ParameterSpecOutputWithEnvironment = RequireField<CommandParameter.Output, 'environment'>
+type ParameterSpecOutputWithEnvironment = RequireField<Parameter, 'environment'>
 
 interface Match {
   namespace: null | string
@@ -123,7 +124,7 @@ interface Match {
  * Find out if an environment variable is input to a spec.
  */
 const checkInputMatch = (envar: Envar, spec: ParameterSpecOutputWithEnvironment): null | Match => {
-  const specParameterNames = CommandParameter.getNames(spec)
+  const specParameterNames = getNames(spec)
   for (const name of specParameterNames) {
     if (spec.environment.namespaces.length > 0) {
       for (const namespace of spec.environment.namespaces) {

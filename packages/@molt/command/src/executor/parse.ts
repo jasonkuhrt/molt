@@ -1,5 +1,4 @@
-import type { RawArgInputs } from '../Command/root/types.js'
-import { CommandParameter } from '../CommandParameter/index.js'
+import type { RawArgInputs } from '../builders/command/types.js'
 import { createEvent } from '../eventPatterns.js'
 import { Help } from '../Help/index.js'
 import { getLowerCaseEnvironment, lowerCaseObjectKeys } from '../helpers.js'
@@ -11,8 +10,12 @@ import type {
   ParseResultExclusiveGroupError,
   ParseResultExclusiveGroupSupplied,
 } from '../OpeningArgs/OpeningArgs.js'
+import type { ParameterBasic, ParameterBasicInput } from '../Parameter/basic.js'
+import type { ParameterExclusiveInput } from '../Parameter/exclusive.js'
 import { match } from '../Pattern/Pattern.js'
+import { createParameters } from './helpers/createParameters.js'
 import { prompt } from './prompt.js'
+import type { ArgumentValue } from './types.js'
 import { Effect } from 'effect'
 
 export interface ParseProgressPostPromptAnnotation {
@@ -40,7 +43,7 @@ export interface ParseProgressPostPrompt {
       openingParseResult: OpeningArgs.ParseResult['basicParameters'][string]
       prompt: {
         enabled: boolean
-        arg: CommandParameter.ArgumentValue
+        arg: ArgumentValue
       }
     }
   >
@@ -65,7 +68,7 @@ export interface ParseProgressDone {
 
 export const parse = (
   settings: Settings.Output,
-  parameterSpecInputs: Record<string, CommandParameter.Input>,
+  parameterInputs: Record<string, ParameterBasicInput | ParameterExclusiveInput>,
   argInputs: RawArgInputs,
 ) => {
   const testDebuggingNoExit = process.env[`testing_molt`] === `true`
@@ -76,13 +79,13 @@ export const parse = (
     : getLowerCaseEnvironment()
 
   // todo handle concept of specs themselves having errors
-  const specsResult = {
-    specs: CommandParameter.process(parameterSpecInputs, settings),
+  const parametersResult = {
+    parameters: createParameters(parameterInputs, settings),
   }
   // dump(specsResult)
 
   const openingArgsResult = OpeningArgs.parse({
-    parameters: specsResult.specs,
+    parameters: parametersResult.parameters,
     line: argInputsLine,
     environment: argInputsEnvironment,
   })
@@ -108,7 +111,7 @@ export const parse = (
   }
 
   if (argInputsPrompter) {
-    const basicSpecs = specsResult.specs.filter((_): _ is CommandParameter.Output.Basic => _._tag === `Basic`)
+    const basicSpecs = parametersResult.parameters.filter((_): _ is ParameterBasic => _._tag === `Basic`)
     for (const spec of basicSpecs) {
       const promptEnabled =
         (spec.prompt.when !== null && spec.prompt.enabled !== false) ||
@@ -140,7 +143,7 @@ export const parse = (
     openingArgsResult.basicParameters[`help`].value === true
 
   if (askedForHelp) {
-    settings.onOutput(Help.render(specsResult.specs, settings) + `\n`)
+    settings.onOutput(Help.render(parametersResult.parameters, settings) + `\n`)
     if (!testDebuggingNoExit) process.exit(0)
     return undefined as never // When testing, with process.exit mock, we WILL reach this case
   }
@@ -174,7 +177,7 @@ export const parse = (
         argumentErrors.map((_) => _.errors.map((_) => _.message).join(`\nX `)).join(`\nX `) +
         `\n\nHere are the docs for this command:\n`
       settings.onOutput(message + `\n`)
-      settings.onOutput(Help.render(specsResult.specs, settings) + `\n`)
+      settings.onOutput(Help.render(parametersResult.parameters, settings) + `\n`)
     }
     if (settings.onError === `exit` && !testDebuggingNoExit) {
       process.exit(1)
@@ -213,7 +216,7 @@ export const parse = (
                 : null,
             ]
           })
-          .filter((kv): kv is [string, CommandParameter.ArgumentValue] => kv[1] !== null),
+          .filter((kv): kv is [string, ArgumentValue] => kv[1] !== null),
       ),
       ...Object.fromEntries(
         Object.values(parseProgressPostPrompts.mutuallyExclusiveParameters)
@@ -226,7 +229,7 @@ export const parse = (
      * Handle the distinct case of no arguments. Sometimes the CLI author wants this to mean "show help".
      */
     if (settings.helpOnNoArguments && Object.values(args).length === 0) {
-      settings.onOutput(Help.render(specsResult.specs, settings) + `\n`)
+      settings.onOutput(Help.render(parametersResult.parameters, settings) + `\n`)
       if (!testDebuggingNoExit) process.exit(0)
       throw new Error(`missing args`) // When testing, with process.exit mock, we will reach this case
     }

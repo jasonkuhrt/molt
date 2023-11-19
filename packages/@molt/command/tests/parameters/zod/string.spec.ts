@@ -1,6 +1,5 @@
 import { entries } from '../../../src/helpers.js'
-import { Command } from '../../../src/index.js'
-import { s } from '../../_/helpers.js'
+import { $, s } from '../../_/helpers.js'
 import { describe, expect, it } from 'vitest'
 import { z } from 'zod'
 
@@ -16,7 +15,7 @@ describe(`zod`, () => {
     )(`%s`, (_, parameters, input) => {
       expect(
         entries(parameters)
-          .reduce((chain, data) => chain.parameter(data[0] as any, data[1]), Command.create())
+          .reduce((chain, data) => chain.parameter(data[0] as any, data[1]), $)
           .parse(input),
       ).toMatchSnapshot()
     })
@@ -49,7 +48,7 @@ describe(`zod`, () => {
     )(`%s`, (_, parameters, input) => {
       expect(() => {
         Object.entries(parameters)
-          .reduce((chain, data) => chain.parameter(data[0] as any, data[1]), Command.create())
+          .reduce((chain, data) => chain.parameter(data[0] as any, data[1]), $)
           .settings({ onError: `throw`, helpOnError: false })
           .parse(input)
       }).toThrowErrorMatchingSnapshot()

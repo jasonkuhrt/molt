@@ -91,6 +91,7 @@ export const string = ({
     },
     deserialize: (rawValue) => Either.right(rawValue),
     validate: (value) => {
+      if (optionality._tag === `optional` && value === undefined) return Either.right(value)
       const errors: string[] = []
 
       if (typeof value !== `string`)  return Either.left({ value, errors: [`Value is not a string.`] }) // prettier-ignore

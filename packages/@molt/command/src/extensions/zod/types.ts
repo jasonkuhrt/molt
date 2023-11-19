@@ -1,24 +1,21 @@
 import type { z } from 'zod'
 
+export type ZodType = SomeBasicType | SomeUnionType
+
 type ZodEnumBase = z.ZodEnum<[string, ...string[]]>
 
 type ZodNativeEnumBase = z.ZodNativeEnum<any>
 
-export type SomeBasicType =
+type SomeBasicType =
   | SomeBasicTypeScalar
   | z.ZodOptional<SomeBasicTypeScalar>
   | z.ZodDefault<SomeBasicTypeScalar>
 
-export type SomeUnionType = SomeUnionTypeScalar | z.ZodOptional<SomeUnionType> | z.ZodDefault<SomeUnionType>
+type SomeUnionType = SomeUnionTypeScalar | z.ZodOptional<SomeUnionType> | z.ZodDefault<SomeUnionType>
 
-export type SomeExclusiveZodType = SomeBasicTypeScalar
+type SomeUnionTypeScalar = z.ZodUnion<[SomeBasicTypeScalar, SomeBasicTypeScalar, ...SomeBasicTypeScalar[]]>
 
-export type SomeUnionTypeScalar = z.ZodUnion<
-  [SomeBasicTypeScalar, SomeBasicTypeScalar, ...SomeBasicTypeScalar[]]
->
-
-// prettier-ignore
-export type SomeBasicTypeScalar =
+type SomeBasicTypeScalar =
   | z.ZodString
   | ZodEnumBase
   | ZodNativeEnumBase

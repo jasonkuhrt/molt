@@ -29,6 +29,7 @@ export const enumeration = <$Members extends Member[]>({
     description: description ?? null,
     [TypeSymbol]: runtimeIgnore, // eslint-disable-line
     validate: (value) => {
+      if (optionality._tag === `optional` && value === undefined) return Either.right(value)
       return members.includes(value as any)
         ? Either.right(value as (typeof members)[number])
         : Either.left({ value, errors: [`Value is not a member of the enum.`] })

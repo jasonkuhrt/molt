@@ -1,8 +1,7 @@
-import type { ParameterConfiguration } from '../../src/Command/root/types.js'
-import type { Settings } from '../../src/entrypoints/types.js'
-import { Command } from '../../src/index.js'
+import type { BuilderCommandState } from '../../src/builders/command/state.js'
+import type { CommandBuilder } from '../../src/builders/command/types.js'
 import type { KeyPress } from '../../src/lib/KeyPress/index.js'
-import { b, e, l1, n, s, tryCatch } from '../_/helpers.js'
+import { $, b, e, l1, n, s, tryCatch } from '../_/helpers.js'
 import { memoryPrompter } from '../_/mocks/tty.js'
 import stripAnsi from 'strip-ansi'
 import { expectType } from 'tsd'
@@ -11,14 +10,13 @@ import { z } from 'zod'
 
 // TODO test that prompt order is based on order of parameter definition
 
-let parameters: Record<string, ParameterConfiguration>
+const $$ = $.settings({ onError: `throw`, helpOnError: false })
+
 let answers: string[]
 let keyPresses: KeyPress.KeyPressEvent[]
 let line: string[]
-const settings: Settings.Input = {}
 
 beforeEach(() => {
-  parameters = {}
   answers = []
   keyPresses = []
   line = []
@@ -27,16 +25,14 @@ beforeEach(() => {
 describe(`string`, () => {
   describe(`optional`, () => {
     it(`when nothing entered then value is undefined`, async () => {
-      // @ts-expect-error todo
-      parameters = { a: { schema: s.optional(), prompt: { when: { result: `omitted` } } } }
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
-      await run()
+      // @ts-expect-error - todo with Pierre
+      await run($$.parameter(`a`, { type: s.optional(), prompt: { when: { result: `omitted` } } }))
     })
     it(`when esc is pressed the question is skipped`, async () => {
-      // @ts-expect-error todo
-      parameters = { a: { schema: s.optional(), prompt: { when: { result: `omitted` } } } }
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `escape` })
-      await run()
+      // @ts-expect-error - todo with Pierre
+      await run($$.parameter(`a`, { type: s.optional(), prompt: { when: { result: `omitted` } } }))
     })
   })
 })
@@ -44,16 +40,14 @@ describe(`string`, () => {
 describe(`number`, () => {
   describe(`optional`, () => {
     it(`when nothing entered then value is undefined`, async () => {
-      // @ts-expect-error todo
-      parameters = { a: { schema: n.optional(), prompt: { when: { result: `omitted` } } } }
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
-      await run()
+      // @ts-expect-error - todo with Pierre
+      await run($$.parameter(`a`, { type: n.optional(), prompt: { when: { result: `omitted` } } }))
     })
     it(`when esc is pressed the question is skipped`, async () => {
-      // @ts-expect-error todo
-      parameters = { a: { schema: n.optional(), prompt: { when: { result: `omitted` } } } }
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `escape` })
-      await run()
+      // @ts-expect-error todo
+      await run($$.parameter(`a`, { type: n.optional(), prompt: { when: { result: `omitted` } } }))
     })
   })
 })
@@ -61,35 +55,35 @@ describe(`number`, () => {
 describe(`boolean`, () => {
   describe(`required`, () => {
     it(`defaults to "no"`, async () => {
-      parameters = { a: { schema: b, prompt: true } }
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
-      await run()
+      // @ts-expect-error - todo with Pierre
+      await run($$.parameter(`a`, { type: b, prompt: true }))
     })
     it(`can be toggled to "yes"`, async () => {
-      parameters = { a: { schema: b, prompt: true } }
       keyPresses.push(
         { ctrl: false, meta: false, sequence: ``, shift: false, name: `right` },
         { ctrl: false, meta: false, sequence: ``, shift: false, name: `return` },
       )
-      await run()
+      // @ts-expect-error - todo with Pierre
+      await run($$.parameter(`a`, { type: b, prompt: true }))
     })
     it(`can be toggled to "yes" and then back to "no"`, async () => {
-      parameters = { a: { schema: b, prompt: true } }
       keyPresses.push(
         { ctrl: false, meta: false, sequence: ``, shift: false, name: `right` },
         { ctrl: false, meta: false, sequence: ``, shift: false, name: `left` },
         { ctrl: false, meta: false, sequence: ``, shift: false, name: `return` },
       )
-      await run()
+      // @ts-expect-error - todo with Pierre
+      await run($$.parameter(`a`, { type: b, prompt: true }))
     })
     it(`can use tab to toggle between "yes" and "no"`, async () => {
-      parameters = { a: { schema: b, prompt: true } }
       keyPresses.push(
         { ctrl: false, meta: false, sequence: ``, shift: false, name: `tab` },
         { ctrl: false, meta: false, sequence: ``, shift: false, name: `tab` },
         { ctrl: false, meta: false, sequence: ``, shift: false, name: `return` },
       )
-      await run()
+      // @ts-expect-error - todo with Pierre
+      await run($$.parameter(`a`, { type: b, prompt: true }))
     })
   })
 })
@@ -97,12 +91,12 @@ describe(`boolean`, () => {
 describe(`union`, () => {
   describe(`required`, () => {
     it(`asks user to select member to use"`, async () => {
-      parameters = { a: { schema: z.union([n, b, s]), prompt: true } }
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `tab` })
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `tab` })
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
-      await run()
+      // @ts-expect-error - todo with Pierre
+      await run($$.parameter(`a`, { type: z.union([n, b, s]), prompt: true }))
     })
   })
 })
@@ -110,85 +104,77 @@ describe(`union`, () => {
 describe(`enumeration`, () => {
   describe(`required`, () => {
     it(`defaults to first member`, async () => {
-      parameters = { a: { schema: e, prompt: true } }
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
-      await run()
+      // @ts-expect-error - todo with Pierre
+      await run($$.parameter(`a`, { type: e, prompt: true }))
     })
     it(`can select member rightward with right key`, async () => {
-      parameters = { a: { schema: e, prompt: true } }
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `right` })
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
-      await run()
+      // @ts-expect-error - todo with Pierre
+      await run($$.parameter(`a`, { type: e, prompt: true }))
     })
     it(`can select member leftward with left key`, async () => {
-      parameters = { a: { schema: e, prompt: true } }
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `right` })
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `left` })
       keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
-      await run()
+      // @ts-expect-error - todo with Pierre
+      await run($$.parameter(`a`, { type: e, prompt: true }))
     })
     describe(`tab`, () => {
       it(`can select member rightward with tab key`, async () => {
-        parameters = { a: { schema: e, prompt: true } }
         keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `tab` })
         keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
-        await run()
+        // @ts-expect-error - todo with Pierre
+        await run($$.parameter(`a`, { type: e, prompt: true }))
       })
       it(`can select member leftward with shift+tab key`, async () => {
-        parameters = { a: { schema: e, prompt: true } }
         keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `right` })
         keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: true, name: `tab` })
         keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
-        await run()
+        // @ts-expect-error - todo with Pierre
+        await run($$.parameter(`a`, { type: e, prompt: true }))
       })
     })
     describe(`loop`, () => {
       it(`right key on last member loops to first member`, async () => {
-        parameters = { a: { schema: e, prompt: true } }
         keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `right` })
         keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `right` })
         keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `right` })
         keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
-        await run()
+        // @ts-expect-error - todo with Pierre
+        await run($$.parameter(`a`, { type: e, prompt: true }))
       })
       it(`left key on first member loops to last member`, async () => {
-        parameters = { a: { schema: e, prompt: true } }
         keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `left` })
         keyPresses.push({ ctrl: false, meta: false, sequence: ``, shift: false, name: `return` })
-        await run()
+        // @ts-expect-error - todo with Pierre
+        await run($$.parameter(`a`, { type: e, prompt: true }))
       })
     })
   })
 })
 
 it(`can be explicitly disabled`, async () => {
-  parameters = {
-    a: {
-      schema: s,
-      prompt: { enabled: false },
-    },
-  }
   answers = []
   line = []
-  await run()
+  // @ts-expect-error - todo with Pierre
+  await run($$.parameter(`a`, { type: s, prompt: { enabled: false } }))
 })
 
 it(`can be explicitly disabled with a "when" condition present`, async () => {
-  parameters = {
-    a: {
-      schema: s.min(2),
-      prompt: { enabled: false, when: { result: `rejected`, error: `ErrorMissingArgument` } },
-    },
-  }
   answers = []
   line = []
-  await run()
+  await run(
+    // @ts-expect-error - todo with Pierre
+    $$.parameter(`a`, {
+      type: s.min(2),
+      prompt: { enabled: false, when: { result: `rejected`, error: `ErrorMissingArgument` } },
+    }),
+  )
 })
 
 it(`prompt when missing input`, async () => {
-  parameters = {
-    a: { schema: s.min(2), prompt: { when: { result: `rejected`, error: `ErrorMissingArgument` } } },
-  }
   keyPresses.push(
     { ctrl: false, meta: false, sequence: `f`, shift: false, name: `f` },
     { ctrl: false, meta: false, sequence: `o`, shift: false, name: `o` },
@@ -196,13 +182,16 @@ it(`prompt when missing input`, async () => {
     { ctrl: false, meta: false, sequence: ``, shift: false, name: `return` },
   )
   line = []
-  await run()
+  await run(
+    // @ts-expect-error - todo with Pierre
+    $$.parameter(`a`, {
+      type: s.min(2),
+      prompt: { when: { result: `rejected`, error: `ErrorMissingArgument` } },
+    }),
+  )
 })
 
 it(`prompt when invalid input`, async () => {
-  parameters = {
-    a: { schema: s.min(2), prompt: { when: { result: `rejected`, error: `ErrorInvalidArgument` } } },
-  }
   keyPresses.push(
     { ctrl: false, meta: false, sequence: `f`, shift: false, name: `f` },
     { ctrl: false, meta: false, sequence: `o`, shift: false, name: `o` },
@@ -210,16 +199,16 @@ it(`prompt when invalid input`, async () => {
     { ctrl: false, meta: false, sequence: ``, shift: false, name: `return` },
   )
   line = [`-a`, `1`]
-  await run()
+  await run(
+    // @ts-expect-error - todo with Pierre
+    $.parameter(`a`, {
+      type: s.min(2),
+      prompt: { when: { result: `rejected`, error: `ErrorInvalidArgument` } },
+    }),
+  )
 })
 
 it(`prompt when invalid input OR missing input`, async () => {
-  parameters = {
-    a: {
-      schema: s.min(2),
-      prompt: { when: { result: `rejected`, error: [`ErrorInvalidArgument`, `ErrorMissingArgument`] } },
-    },
-  }
   keyPresses.push(
     { ctrl: false, meta: false, sequence: `f`, shift: false, name: `f` },
     { ctrl: false, meta: false, sequence: `o`, shift: false, name: `o` },
@@ -227,17 +216,16 @@ it(`prompt when invalid input OR missing input`, async () => {
     { ctrl: false, meta: false, sequence: ``, shift: false, name: `return` },
   )
   line = [`-a`, `1`]
-  await run()
+  await run(
+    // @ts-expect-error - todo with Pierre
+    $$.parameter(`a`, {
+      type: s.min(2),
+      prompt: { when: { result: `rejected`, error: [`ErrorInvalidArgument`, `ErrorMissingArgument`] } },
+    }),
+  )
 })
 
 it(`prompt when omitted`, async () => {
-  parameters = {
-    a: {
-      schema: s.min(2).optional(),
-      // @ts-expect-error todo
-      prompt: { when: { result: `omitted`, spec: { optionality: [`default`, `optional`] } } },
-    },
-  }
   keyPresses.push(
     { ctrl: false, meta: false, sequence: `f`, shift: false, name: `f` },
     { ctrl: false, meta: false, sequence: `o`, shift: false, name: `o` },
@@ -245,85 +233,78 @@ it(`prompt when omitted`, async () => {
     { ctrl: false, meta: false, sequence: ``, shift: false, name: `return` },
   )
   line = []
-  await run()
+  await run(
+    // @ts-expect-error - todo with Pierre
+    $$.parameter(`a`, {
+      type: s.min(2).optional(),
+      prompt: { when: { result: `omitted`, spec: { optionality: [`default`, `optional`] } } },
+    }),
+  )
 })
 
 it(`static error to match on omitted event on required parameter by .parameter(...)`, () => {
   // @ts-expect-error not available
-  Command.create().parameter(`a`, { schema: s, prompt: { when: { result: `omitted` } } })
+  $.parameter(`a`, { type: s, prompt: { when: { result: `omitted` } } })
   // TODO fix me
   // // Is fine, because parameter is optional.
-  // Command.create().parameter(`a`, {
-  //   schema: s.optional(),
+  // $.parameter(`a`, {
+  //   type: s.optional(),
   //   prompt: { when: { result: `omitted` } },
   // })
 })
 
 it(`can pass just one pattern in multiple pattern syntax`, () => {
-  Command.create()
-    .parameter(`a`, s)
-    .settings({ prompt: { when: [{ result: `accepted` }] } })
+  $.parameter(`a`, s).settings({ prompt: { when: [{ result: `accepted` }] } })
 })
 
 it(`static error to match on omitted event on command level when no parameters have optional`, () => {
   // TODO fix me
-  // Command.create()
+  // $
   //   .parameter(`a`, s)
   //   // @ts-expect-error not available
   //   .settings({ prompt: { when: { result: `omitted` } } })
   // Is fine, because parameter is optional.
-  Command.create()
-    .parameter(`a`, s.optional())
-    .settings({ prompt: { when: { result: `omitted` } } })
+  $.parameter(`a`, s.optional()).settings({ prompt: { when: { result: `omitted` } } })
   // Is fine, because at least one parameter is optional.
-  Command.create()
-    .parameter(`a`, s.optional())
+  $.parameter(`a`, s.optional())
     .parameter(`b`, s)
     .settings({ prompt: { when: { result: `omitted` } } })
 })
 
 // TODO should be able match on common event properties _without_ specifying the event type...
-// Command.create().parameter(`a`, s).settings({
+// $.parameter(`a`, s).settings({
 //   prompt: { when: { spec: { name: { aliases: { long: [`a`, `b`] } } } } },
 // })
 
 // TODO already taken care of by match test suite?
 it(`array value`, () => {
   // Can pass ONE literal match
-  Command.create()
-    .parameter(`a`, s)
-    .settings({
-      prompt: { when: { result: `accepted`, spec: { name: { aliases: { long: [`a`, `b`] } } } } },
-    })
+  $.parameter(`a`, s).settings({
+    prompt: { when: { result: `accepted`, spec: { name: { aliases: { long: [`a`, `b`] } } } } },
+  })
   // can pass an OR literal match
-  Command.create()
-    .parameter(`a`, s)
-    .settings({
-      prompt: { when: { result: `accepted`, spec: { name: { aliases: { long: [[`a`, `b`], [`c`]] } } } } },
-    })
-  Command.create()
-    .parameter(`a`, s)
-    .settings({
-      // @ts-expect-error Cannot pass the array member literal
-      prompt: { when: { result: `accepted`, spec: { name: { aliases: { long: `a` } } } } },
-    })
-  Command.create()
-    .parameter(`a`, s)
-    .settings({
-      // @ts-expect-error Cannot mix OR and ONE matches
-      prompt: { when: { result: `accepted`, spec: { name: { aliases: { long: [`a`, [`b`]] } } } } },
-    })
+  $.parameter(`a`, s).settings({
+    prompt: { when: { result: `accepted`, spec: { name: { aliases: { long: [[`a`, `b`], [`c`]] } } } } },
+  })
+  $.parameter(`a`, s).settings({
+    // @ts-expect-error Cannot pass the array member literal
+    prompt: { when: { result: `accepted`, spec: { name: { aliases: { long: `a` } } } } },
+  })
+  $.parameter(`a`, s).settings({
+    // @ts-expect-error Cannot mix OR and ONE matches
+    prompt: { when: { result: `accepted`, spec: { name: { aliases: { long: [`a`, [`b`]] } } } } },
+  })
 })
 
 // TODO
 // it(`static error when fields from different event types matched in single pattern`, () => {
-//   Command.create()
+//   $
 //     .parameter(`a`, s)
 //     // @ts-expect-error "value" is not available on "rejected" event
 //     .settings({ prompt: { when: { result: `rejected`, value: 1 } } })
 //   // TODO excess properties should be an error in the pattern match but for some reason are not being here.
-//   Command.create().parameter(`a`, {
-//     schema: s,
+//   $.parameter(`a`, {
+//     type: s,
 //     prompt: {
 //       when: {
 //         result: `rejected`,
@@ -339,23 +320,23 @@ it(`array value`, () => {
 
 // prettier-ignore
 it(`Static type tests`, () => {
-  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { schema: l1, prompt: null }).parse)
-  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { schema: l1, prompt: undefined }).parse)
-  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { schema: l1, prompt: {enabled:false} }).parse)
-  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { schema: l1, prompt: {enabled:false,when:{result:`accepted`}} }).parse)
-  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { schema: l1 }).parse)
-  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { schema: l1 }).settings({}).parse)
-  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { schema: l1 }).settings({prompt:false}).parse)
-  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { schema: l1 }).settings({prompt:{enabled:false}}).parse)
-  expectType<() => { a: 1 }>(Command.create().parameter(`a`, { schema: l1 }).settings({prompt:{enabled:false,when:{result:`accepted`}}}).parse)
-  expectType<() => Promise<{ a: 1 }>>(Command.create().parameter(`a`, { schema: l1, prompt: true }).parameter(`b`, {schema:l1,prompt:false}).parse)
-  expectType<() => Promise<{ a: 1 }>>(Command.create().parameter(`a`, { schema: l1, prompt: true }).parse)
-  expectType<() => Promise<{ a: 1 }>>(Command.create().parameter(`a`, { schema: l1, prompt: {enabled:true} }).parse)
-  expectType<() => Promise<{ a: 1 }>>(Command.create().parameter(`a`, { schema: l1, prompt: {when:{result:`accepted`}} }).parse)
-  expectType<() => Promise<{ a: 1 }>>(Command.create().parameter(`a`, { schema: l1, prompt: true }).settings({prompt:false}).parse)
-  expectType<() => Promise<{ a: 1 }>>(Command.create().parameter(`a`, { schema: l1 }).settings({prompt:true}).parse)
-  expectType<() => Promise<{ a: 1 }>>(Command.create().parameter(`a`, { schema: l1 }).settings({prompt:{enabled:true}}).parse)
-  expectType<() => Promise<{ a: 1 }>>(Command.create().parameter(`a`, { schema: l1 }).settings({prompt:{when:{result:`accepted`}}}).parse)
+  expectType<() => { a: 1 }>($.parameter(`a`, { type: l1, prompt: null }).parse)
+  expectType<() => { a: 1 }>($.parameter(`a`, { type: l1, prompt: undefined }).parse)
+  expectType<() => { a: 1 }>($.parameter(`a`, { type: l1, prompt: {enabled:false} }).parse)
+  expectType<() => { a: 1 }>($.parameter(`a`, { type: l1, prompt: {enabled:false,when:{result:`accepted`}} }).parse)
+  expectType<() => { a: 1 }>($.parameter(`a`, { type: l1 }).parse)
+  expectType<() => { a: 1 }>($.parameter(`a`, { type: l1 }).settings({}).parse)
+  expectType<() => { a: 1 }>($.parameter(`a`, { type: l1 }).settings({prompt:false}).parse)
+  expectType<() => { a: 1 }>($.parameter(`a`, { type: l1 }).settings({prompt:{enabled:false}}).parse)
+  expectType<() => { a: 1 }>($.parameter(`a`, { type: l1 }).settings({prompt:{enabled:false,when:{result:`accepted`}}}).parse)
+  expectType<() => Promise<{ a: 1 }>>($.parameter(`a`, { type: l1, prompt: true }).parameter(`b`, {type:l1,prompt:false}).parse)
+  expectType<() => Promise<{ a: 1 }>>($.parameter(`a`, { type: l1, prompt: true }).parse)
+  expectType<() => Promise<{ a: 1 }>>($.parameter(`a`, { type: l1, prompt: {enabled:true} }).parse)
+  expectType<() => Promise<{ a: 1 }>>($.parameter(`a`, { type: l1, prompt: {when:{result:`accepted`}} }).parse)
+  expectType<() => Promise<{ a: 1 }>>($.parameter(`a`, { type: l1, prompt: true }).settings({prompt:false}).parse)
+  expectType<() => Promise<{ a: 1 }>>($.parameter(`a`, { type: l1 }).settings({prompt:true}).parse)
+  expectType<() => Promise<{ a: 1 }>>($.parameter(`a`, { type: l1 }).settings({prompt:{enabled:true}}).parse)
+  expectType<() => Promise<{ a: 1 }>>($.parameter(`a`, { type: l1 }).settings({prompt:{when:{result:`accepted`}}}).parse)
 })
 
 /**
@@ -364,19 +345,12 @@ it(`Static type tests`, () => {
  *
  */
 
-const run = async () => {
+const run = async (
+  $: CommandBuilder<BuilderCommandState.SetIsPromptEnabled<BuilderCommandState.BaseEmpty, true>>,
+) => {
   memoryPrompter.answers.add(answers)
   memoryPrompter.script.keyPress.push(...keyPresses)
-  // eslint-disable-next-line
-  const args = await tryCatch(async () => {
-    // eslint-disable-next-line
-    return await Object.entries(parameters)
-      // @ts-expect-error todo
-      .reduce((chain, data) => chain.parameter(data[0] as any, data[1]), Command.create())
-      // @ts-expect-error todo
-      .settings({ onError: `throw`, helpOnError: false, ...settings })
-      .parse({ line, tty: memoryPrompter })
-  })
+  const args = await tryCatch(() => $.parse({ line, tty: memoryPrompter }))
   expect(args).toMatchSnapshot(`args`)
   expect(memoryPrompter.history.all).toMatchSnapshot(`tty`)
   expect(memoryPrompter.history.all.map((_) => stripAnsi(_))).toMatchSnapshot(`tty strip ansi`)

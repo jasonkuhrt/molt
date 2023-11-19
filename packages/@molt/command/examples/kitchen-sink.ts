@@ -1,7 +1,9 @@
+import { Zod } from '../src/_entrypoints/extensions.js'
 import { Command } from '../src/index.js'
 import { z } from 'zod'
 
 const args = Command.create()
+  .use(Zod)
   .description(
     `This is a so-called "kitchen-sink" Molt Command example. Many features are demonstrated here though the overall CLI itself makes no sense. Take a look around, see how the help renders, try running with different inputs, etc.`,
   )

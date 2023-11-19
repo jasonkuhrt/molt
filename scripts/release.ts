@@ -1,3 +1,4 @@
+import { Zod } from '../packages/@molt/command/src/_entrypoints/extensions.js'
 import { Command } from '../packages/@molt/command/src/index.js'
 import { Octokit } from '@octokit/core'
 import { Alge } from 'alge'
@@ -11,6 +12,7 @@ import { z } from 'zod'
 
 // prettier-ignore
 const args = Command.create()
+  .use(Zod)
   .parameter(`githubToken`, z.string())
   .parameter(`publish`, z.boolean().default(true))
   .parameter(`githubRelease`, z.boolean().default(true))

@@ -49,6 +49,7 @@ export const number = ({
     },
     help: () => type.displayExpanded(),
     validate: (value) => {
+      if (optionality._tag === `optional` && value === undefined) return Either.right(value)
       const errors: string[] = []
 
       if (typeof value !== `number`) {

@@ -1,5 +1,4 @@
-import { Command } from '../../../src/index.js'
-import { l1, n } from '../../_/helpers.js'
+import { $, l1, n } from '../../_/helpers.js'
 import { describe, expect, it } from 'vitest'
 
 describe(`zod`, () => {
@@ -22,7 +21,7 @@ describe(`zod`, () => {
           // @ts-expect-error todo
           .reduce((chain, data) => {
             return chain.parameter(data[0] as any, data[1])
-          }, Command.create())
+          }, $)
           // @ts-expect-error todo
           .settings({ onError: `throw`, helpOnError: false })
           .parse(input)

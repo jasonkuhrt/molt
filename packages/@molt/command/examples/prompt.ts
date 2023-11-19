@@ -1,7 +1,9 @@
+import { Zod } from '../src/_entrypoints/extensions.js'
 import { Command } from '../src/index.js'
 import { z } from 'zod'
 
 const args = await Command.create()
+  .use(Zod)
   // required
   .parameter(`alpha`, z.string())
   .parameter(`bravo`, z.number())

@@ -29,6 +29,7 @@ export const boolean = ({
     priority: 0,
     // eslint-disable-next-line
     validate: (value: unknown) => {
+      if (optionality._tag === `optional` && value === undefined) return Either.right(value)
       return typeof value === `boolean`
         ? Either.right(value)
         : Either.left({ value, errors: [`Value is not a boolean.`] })

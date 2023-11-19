@@ -1,6 +1,5 @@
 import { Either } from 'effect'
 import camelCase from 'lodash.camelcase'
-import { z } from 'zod'
 
 export const BooleanLookup = {
   true: true,
@@ -16,8 +15,6 @@ export const environmentVariableBooleanLookup = {
 export const stripeDashPrefix = (flagNameInput: string): string => {
   return flagNameInput.replace(/^-+/, ``)
 }
-
-export const zodPassthrough = <T>() => z.any().transform((_) => _ as T)
 
 export type Values<T> = T[keyof T]
 
@@ -77,4 +74,25 @@ export const entries = <O extends object>(
 
 export const casesExhausted = (_: never): never => {
   throw new Error(`Cases exhausted: ${_}`) // eslint-disable-line
+}
+
+export namespace HKT {
+  /**
+   * Model a Higher Kinded Type (HKT).
+   */
+  export interface Fn<Params = unknown, Return = unknown> {
+    params: Params
+    return: Return
+  }
+
+  /**
+   * Apply a Higher Kinded Type (HKT).
+   */
+  export type Call<F extends Fn, P> = (F & { params: P })['return']
+
+  export type ID<T> = IDFn<T>
+
+  export interface IDFn<T> extends HKT.Fn<T> {
+    return: this['params']
+  }
 }

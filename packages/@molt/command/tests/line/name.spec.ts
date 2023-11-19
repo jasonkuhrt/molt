@@ -1,5 +1,4 @@
-import { Command } from '../../src/index.js'
-import { b, s } from '../_/helpers.js'
+import { $, b, s } from '../_/helpers.js'
 import type { IsExact } from 'conditional-type-checks'
 import { assert } from 'conditional-type-checks'
 import { describe, expect, test } from 'vitest'
@@ -20,7 +19,7 @@ describe(`string`, () => {
 		[`-v --ver`,        [`-v`, `foo`], 							{ ver: `foo` }],
 		[`-v`,              [`-v`, `foo`], 							{ v:   `foo` }],
 	])(`spec %s + input %s = internal %s`, (spec, input, expectedArgs) => {
-		const args = Command.create().parameter(spec as any, s).parse({line:input})
+		const args = $.parameter(spec as any, s).parse({line:input})
 		expect(args).toMatchObject(expectedArgs)
 	})
 })
@@ -40,7 +39,7 @@ describe(`boolean`, () => {
 		[`-v --ver`,        [`-v`], 							{ ver: true }],
 		[`-v`,              [`-v`], 							{ v:   true }],
 	])(`spec %s + input %s = internal %s`, (spec, input, expectedArgs) => {
-		const args = Command.create().parameter(spec as any, b).parse({line:input})
+		const args = $.parameter(spec as any, b).parse({line:input})
 		expect(args).toMatchObject(expectedArgs)
 	})
 })
@@ -51,8 +50,7 @@ describe(`stacked short flags`, () => {
     [[`-ac`], { a: true, b: false, c: true }],
     [[`-abcd`, `foo`], { a: true, b: true, c: true, d: `foo` }],
   ])(`stacked short flag input of %s becomes %s`, (input, expectedArgs) => {
-    const args = Command.create()
-      .parameter(`a`, b.default(false))
+    const args = $.parameter(`a`, b.default(false))
       .parameter(`b`, b.default(false))
       .parameter(`c`, b.default(false))
       .parameter(`d`, s.optional())
@@ -68,7 +66,7 @@ describe(`separator`, () => {
     [[`--foo= `, `bar`], { foo: `bar` }],
     [[`--foo`, `=bar`], { foo: `=bar` }],
   ])(`spec %s becomes %s`, (input, expectedArgs) => {
-    const args = Command.create().parameter(`foo`, s).parse({ line: input })
+    const args = $.parameter(`foo`, s).parse({ line: input })
     expect(args).toMatchObject(expectedArgs)
   })
 })
@@ -82,7 +80,7 @@ describe(`case`, () => {
       [`--fooBar`,  [`--fooBar`, `foo`], { fooBar: `foo` }],
       [`--fooBar`,  [`--foo-bar`, `foo`], { fooBar: `foo` }],
     ])(`spec %s + input %s = internal %s`, (spec, input, expectedArgs) => {
-      const args = Command.create().parameter(spec as any, s).parse({line:input})
+      const args = $.parameter(spec as any, s).parse({line:input})
       expect(args).toMatchObject(expectedArgs)
     })
   })
@@ -99,33 +97,25 @@ describe(`case`, () => {
       [`--fooBar`,  [`--noFooBar`],     { fooBar: false }],
       [`--fooBar`,  [`--no-foo-bar`],   { fooBar: false }],
     ])(`spec %s + input %s = internal %s`, (spec, input, expectedArgs) => {
-      const args = Command.create().parameter(spec as any, b).parse({line:input})
+      const args = $.parameter(spec as any, b).parse({line:input})
       expect(args).toMatchObject(expectedArgs)
     })
   })
 
   test(`kebab case param spec can be passed camel case parameter`, () => {
-    const args = Command.create()
-      .parameter(`--foo-bar`, s)
-      .parse({ line: [`--fooBar`, `foo`] })
+    const args = $.parameter(`--foo-bar`, s).parse({ line: [`--fooBar`, `foo`] })
     assert<IsExact<{ fooBar: string }, typeof args>>(true)
   })
   test(`kebab case param spec can be passed kebab case parameter`, () => {
-    const args = Command.create()
-      .parameter(`--foo-bar`, s)
-      .parse({ line: [`--foo-bar`, `foo`] })
+    const args = $.parameter(`--foo-bar`, s).parse({ line: [`--foo-bar`, `foo`] })
     assert<IsExact<{ fooBar: string }, typeof args>>(true)
   })
   test(`camel case param spec can be passed kebab case parameter`, () => {
-    const args = Command.create()
-      .parameter(`--fooBar`, s)
-      .parse({ line: [`--foo-bar`, `foo`] })
+    const args = $.parameter(`--fooBar`, s).parse({ line: [`--foo-bar`, `foo`] })
     assert<IsExact<{ fooBar: string }, typeof args>>(true)
   })
   test(`camel case param spec can be passed camel case parameter`, () => {
-    const args = Command.create()
-      .parameter(`--fooBar`, s)
-      .parse({ line: [`--fooBar`, `foo`] })
+    const args = $.parameter(`--fooBar`, s).parse({ line: [`--fooBar`, `foo`] })
     assert<IsExact<{ fooBar: string }, typeof args>>(true)
   })
 })
