@@ -1,8 +1,8 @@
-import type { Effect } from 'effect'
 import type { Type } from '../../../Type/index.js'
 import type { Pam } from '../../Pam/index.js'
 import type { PromptEngine } from '../../PromptEngine/PromptEngine.js'
 import { Text } from '../../Text/index.js'
+import type { Effect } from 'effect'
 
 export interface Prompter {
   /**

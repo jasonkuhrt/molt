@@ -1,7 +1,7 @@
+import { $ } from '../../_/helpers.js'
 import { expectType } from 'tsd'
 import { expect, it } from 'vitest'
 import { z } from 'zod'
-import { $ } from '../../_/helpers.js'
 
 // prettier-ignore
 it(`Statically accepts or rejects zod types for the schema`, () => {

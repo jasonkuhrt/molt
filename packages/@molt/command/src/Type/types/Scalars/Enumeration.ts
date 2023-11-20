@@ -1,10 +1,10 @@
-import chalk from 'chalk'
-import { Effect, Either } from 'effect'
 import { PromptEngine } from '../../../lib/PromptEngine/PromptEngine.js'
 import { Text } from '../../../lib/Text/index.js'
 import { Term } from '../../../term.js'
 import type { Optionality, Type } from '../../helpers.js'
 import { runtimeIgnore, TypeSymbol } from '../../helpers.js'
+import chalk from 'chalk'
+import { Effect, Either } from 'effect'
 
 export interface Enumeration<$Members extends Member[] = Member[]> extends Type<$Members[number]> {
   _tag: 'TypeEnum'

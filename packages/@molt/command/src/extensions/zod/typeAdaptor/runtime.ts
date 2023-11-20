@@ -1,6 +1,3 @@
-import { Alge } from 'alge'
-import type { Simplify } from 'type-fest'
-import type { z } from 'zod'
 import { Type } from '../../../Type/index.js'
 import {
   isBoolean,
@@ -13,6 +10,9 @@ import {
   isString,
   isUnion,
 } from '../guards.js'
+import { Alge } from 'alge'
+import type { Simplify } from 'type-fest'
+import type { z } from 'zod'
 
 export const fromZod = (zodType: z.ZodFirstPartySchemaTypes): Type.Type => _fromZod(zodType, {})
 

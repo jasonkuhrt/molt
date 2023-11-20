@@ -1,7 +1,7 @@
-import type { Effect, Either } from 'effect'
 import type { PromptEngine } from '../lib/PromptEngine/PromptEngine.js'
 import type { Tex } from '../lib/Tex/index.js'
 import type { ValidationResult } from './Type.js'
+import type { Effect, Either } from 'effect'
 
 export const TypeSymbol = Symbol(`type`)
 

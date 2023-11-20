@@ -1,7 +1,7 @@
-import { expect } from 'vitest'
-import { it } from 'vitest'
 import { $, s } from '../_/helpers.js'
 import { environmentManager } from './__helpers__.js'
+import { expect } from 'vitest'
+import { it } from 'vitest'
 
 it(`snake case environment variables are matched to parameters`, () => {
   environmentManager.set(`cli_param_foo_bar`, `toto`)

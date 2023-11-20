@@ -1,8 +1,8 @@
-import { Either } from 'effect'
 import { stripeNegatePrefix } from '../../helpers.js'
 import type { Type } from '../../Type/index.js'
 import type { ValidationResult } from '../../Type/Type.js'
 import type { Parameter } from '../types.js'
+import { Either } from 'effect'
 
 export const validate = <T>(parameter: Parameter, value: unknown): ValidationResult<T> => {
   if (parameter.type.optionality._tag === `optional` && value === undefined) return Either.right(value as T)

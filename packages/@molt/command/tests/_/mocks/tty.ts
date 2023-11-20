@@ -1,5 +1,5 @@
-import { afterEach, beforeEach, expect } from 'vitest'
 import { Prompter } from '../../../src/lib/Prompter/index.js'
+import { afterEach, beforeEach, expect } from 'vitest'
 
 export let memoryPrompter: Prompter.MemoryPrompter
 

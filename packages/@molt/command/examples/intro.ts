@@ -29,3 +29,9 @@ const args = await Command.create()
     },
   })
   .parse()
+
+args.filePath
+args.from
+args.move
+args.to
+args.verbose

@@ -1,12 +1,12 @@
-import chalk from 'chalk'
-import camelCase from 'lodash.camelcase'
-import snakeCase from 'lodash.snakecase'
 import { groupBy } from '../lib/prelude.js'
 import { Tex } from '../lib/Tex/index.js'
 import { Text } from '../lib/Text/index.js'
 import type { Parameter } from '../Parameter/types.js'
 import type { Settings } from '../Settings/index.js'
 import { Term } from '../term.js'
+import chalk from 'chalk'
+import camelCase from 'lodash.camelcase'
+import snakeCase from 'lodash.snakecase'
 
 // TODO use
 interface RenderSettings {

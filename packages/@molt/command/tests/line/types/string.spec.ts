@@ -1,7 +1,7 @@
+import { $, n, s } from '../../_/helpers.js'
 import type { IsExact } from 'conditional-type-checks'
 import { assert } from 'conditional-type-checks'
 import { describe, expect, it } from 'vitest'
-import { $, n, s } from '../../_/helpers.js'
 
 describe(`errors`, () => {
   it.each(

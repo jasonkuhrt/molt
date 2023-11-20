@@ -5,10 +5,10 @@ import type { OpeningArgs } from '../../OpeningArgs/index.js'
 import type { Prompt } from '../../Parameter/types.js'
 import type { Settings } from '../../Settings/index.js'
 import type { BuilderExclusiveInitial, SomeBuilderExclusive } from '../exclusive/types.js'
+import type { BuilderCommandState } from './state.js'
 // todo
 // eslint-disable-next-line
 import type { Objects, Pipe } from 'hotscript'
-import { BuilderCommandState } from './state.js'
 
 export interface ParameterConfiguration<
   $State extends BuilderCommandState.Base = BuilderCommandState.BaseEmpty,

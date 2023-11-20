@@ -1,7 +1,7 @@
+import { $, as } from '../_/helpers.js'
 import { expectType } from 'tsd'
 import { expect, it } from 'vitest'
 import { z } from 'zod'
-import { $, as } from '../_/helpers.js'
 
 it(`arg static type is the union`, () => {
   const args = $.parameter(`x`, z.union([z.string(), z.number()])).parse({ line: [`-x`, `1`] })

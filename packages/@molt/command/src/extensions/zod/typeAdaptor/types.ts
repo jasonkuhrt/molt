@@ -1,5 +1,5 @@
-import type { z } from 'zod'
 import type { Type } from '../../../Type/index.js'
+import type { z } from 'zod'
 
 // prettier-ignore
 export type FromZod<ZodType extends z.ZodType> = ZodType extends z.ZodOptional<infer T>

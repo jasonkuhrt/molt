@@ -1,6 +1,3 @@
-import type { Name } from '@molt/types'
-import type { Objects, Pipe } from 'hotscript'
-import type { Simplify } from 'type-fest'
 import type { Values } from '../../helpers.js'
 import type { HKT } from '../../helpers.js'
 import type { ParameterBasicInput } from '../../Parameter/basic.js'
@@ -10,6 +7,9 @@ import type { Settings } from '../../Settings/index.js'
 import type { Type } from '../../Type/index.js'
 import type { ExclusiveParameterConfiguration } from '../exclusive/types.js'
 import type { IsPromptEnabledInParameterSettings, ParameterConfiguration } from './types.js'
+import type { Name } from '@molt/types'
+import type { Objects, Pipe } from 'hotscript'
+import type { Simplify } from 'type-fest'
 
 export const createState = (): BuilderCommandState => {
   return {

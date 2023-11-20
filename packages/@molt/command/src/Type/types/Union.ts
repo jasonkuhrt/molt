@@ -1,11 +1,11 @@
-import chalk from 'chalk'
-import { Effect, Either } from 'effect'
 import { PromptEngine } from '../../lib/PromptEngine/PromptEngine.js'
 import { Tex } from '../../lib/Tex/index.js'
 import { Text } from '../../lib/Text/index.js'
 import { Term } from '../../term.js'
 import type { Optionality } from '../helpers.js'
 import { runtimeIgnore, type Type, TypeSymbol } from '../helpers.js'
+import chalk from 'chalk'
+import { Effect, Either } from 'effect'
 
 export interface Union<Members extends readonly Member[] = Member[]> extends Type<Members[number][TypeSymbol]> {
   _tag: 'TypeUnion'

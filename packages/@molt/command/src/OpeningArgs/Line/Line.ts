@@ -1,4 +1,3 @@
-import camelCase from 'lodash.camelcase'
 import { Errors } from '../../Errors/index.js'
 import { stripeNegatePrefixLoose } from '../../helpers.js'
 import type { Index } from '../../lib/prelude.js'
@@ -6,6 +5,7 @@ import { findByName, isOrHasType } from '../../Parameter/helpers/CommandParamete
 import type { Parameter } from '../../Parameter/types.js'
 import { isNegated, parseSerializedValue, stripeDashPrefix } from '../helpers.js'
 import type { ArgumentReport } from '../types.js'
+import camelCase from 'lodash.camelcase'
 
 export type RawInputs = string[]
 

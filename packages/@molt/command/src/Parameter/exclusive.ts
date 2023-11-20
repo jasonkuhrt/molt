@@ -1,12 +1,12 @@
-import type { Name as MoltName } from '@molt/types'
-import { Name } from '@molt/types'
-import { Alge } from 'alge'
 import type { BuilderCommandState } from '../builders/command/state.js'
 import type { Pam } from '../lib/Pam/index.js'
 import type { Settings } from '../Settings/index.js'
 import type { Type } from '../Type/index.js'
 import { processEnvironment } from './helpers/environment.js'
 import type { Environment } from './helpers/types.js'
+import type { Name as MoltName } from '@molt/types'
+import { Name } from '@molt/types'
+import { Alge } from 'alge'
 
 export interface ParameterExclusiveInput<
   $State extends BuilderCommandState.Base = BuilderCommandState.BaseEmpty,

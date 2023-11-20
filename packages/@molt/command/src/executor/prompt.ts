@@ -1,10 +1,10 @@
-import chalk from 'chalk'
-import { Effect } from 'effect'
 import type { Prompter } from '../lib/Prompter/index.js'
 import { Tex } from '../lib/Tex/index_.js'
 import { Text } from '../lib/Text/index.js'
 import { Term } from '../term.js'
 import type { ParseProgressPostPrompt, ParseProgressPostPromptAnnotation } from './parse.js'
+import chalk from 'chalk'
+import { Effect } from 'effect'
 
 /**
  * Get args from the user interactively via the console for the given parameters.

@@ -1,7 +1,7 @@
-import type { Name } from '@molt/types'
-import camelCase from 'lodash.camelcase'
 import type { Settings } from '../../Settings/index.js'
 import type { Environment } from './types.js'
+import type { Name } from '@molt/types'
+import camelCase from 'lodash.camelcase'
 
 /**
  * Parse the specification for a parameter's environment support.

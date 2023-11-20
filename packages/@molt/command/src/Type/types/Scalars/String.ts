@@ -1,5 +1,3 @@
-import { Alge } from 'alge'
-import { Effect, Either } from 'effect'
 import { casesExhausted, entries } from '../../../helpers.js'
 import { Patterns } from '../../../lib/Patterns/index.js'
 import { PromptEngine } from '../../../lib/PromptEngine/PromptEngine.js'
@@ -7,6 +5,8 @@ import { Tex } from '../../../lib/Tex/index.js'
 import { Term } from '../../../term.js'
 import type { Optionality } from '../../helpers.js'
 import { runtimeIgnore, type Type, TypeSymbol } from '../../helpers.js'
+import { Alge } from 'alge'
+import { Effect, Either } from 'effect'
 
 export interface String extends Type<string> {
   _tag: 'TypeString'

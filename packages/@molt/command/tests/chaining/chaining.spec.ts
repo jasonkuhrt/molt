@@ -1,6 +1,6 @@
+import { $ } from '../_/helpers.js'
 import { describe, expect, it } from 'vitest'
 import { z } from 'zod'
-import { $ } from '../_/helpers.js'
 
 let c
 const s = z.string()

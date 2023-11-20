@@ -1,8 +1,8 @@
+import type { KeyPress } from '../KeyPress/index.js'
+import { Text } from '../Text/index.js'
 import ansiEscapes from 'ansi-escapes'
 import { Effect } from 'effect'
 import { Exit, pipe, Stream } from 'effect'
-import type { KeyPress } from '../KeyPress/index.js'
-import { Text } from '../Text/index.js'
 
 interface KeyPressPattern {
   name?: KeyPress.Key

@@ -1,12 +1,12 @@
-import stripAnsi from 'strip-ansi'
-import { expectType } from 'tsd'
-import { beforeEach, describe, expect, it } from 'vitest'
-import { z } from 'zod'
 import type { BuilderCommandState } from '../../src/builders/command/state.js'
 import type { CommandBuilder } from '../../src/builders/command/types.js'
 import type { KeyPress } from '../../src/lib/KeyPress/index.js'
 import { $, b, e, l1, n, s, tryCatch } from '../_/helpers.js'
 import { memoryPrompter } from '../_/mocks/tty.js'
+import stripAnsi from 'strip-ansi'
+import { expectType } from 'tsd'
+import { beforeEach, describe, expect, it } from 'vitest'
+import { z } from 'zod'
 
 // TODO test that prompt order is based on order of parameter definition
 

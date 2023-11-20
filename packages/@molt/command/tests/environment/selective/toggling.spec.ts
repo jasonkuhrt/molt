@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest'
 import { $, s } from '../../_/helpers.js'
 import { environmentManager } from '../__helpers__.js'
+import { describe, expect, it } from 'vitest'
 
 it(`can toggle environment on for one parameter`, () => {
   environmentManager.set(`cli_param_foo`, `env1`)

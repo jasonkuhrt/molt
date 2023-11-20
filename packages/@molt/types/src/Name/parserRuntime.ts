@@ -1,6 +1,6 @@
-import camelCase from 'lodash.camelcase'
 import { partition, stripeDashPrefix } from '../prelude.js'
 import type { NameParsed } from './data.js'
+import camelCase from 'lodash.camelcase'
 
 export const parse = (expression: string): NameParsed => {
   const names = expression

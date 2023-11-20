@@ -1,6 +1,6 @@
-import type { $, Strings } from 'hotscript'
 import type { Name } from './data.js'
 import type { SomeLimits } from './parser.js'
+import type { $, Strings } from 'hotscript'
 
 // prettier-ignore
 export namespace Messages {

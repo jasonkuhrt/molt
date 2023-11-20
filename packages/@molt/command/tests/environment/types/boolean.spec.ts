@@ -1,6 +1,6 @@
-import { expect, test } from 'vitest'
 import { $, b } from '../../_/helpers.js'
 import { environmentManager } from '../__helpers__.js'
+import { expect, test } from 'vitest'
 
 test.each([
   [`true`, { foo: true }],

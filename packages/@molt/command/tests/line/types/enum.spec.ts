@@ -1,7 +1,7 @@
-import { describe, expect, it } from 'vitest'
-import { z } from 'zod'
 import { $, s } from '../../_/helpers.js'
 import { stdout } from '../../_/mocks.js'
+import { describe, expect, it } from 'vitest'
+import { z } from 'zod'
 
 describe(`errors`, () => {
   it(`when argument missing (last position)`, () => {

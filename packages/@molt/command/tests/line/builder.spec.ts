@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest'
 import { $, s } from '../_/helpers.js'
+import { describe, expect, it } from 'vitest'
 
 describe(`.create`, () => {
   it(`creates a parameters definition`, () => {
