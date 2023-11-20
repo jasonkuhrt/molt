@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
       - uses: ./.github/actions/setup
-      - run: curl -fsSL https://dprint.dev/install.sh | sh
+      - run: pnpm --global add dprint
       - run: pnpm format:check
   test:
     runs-on: ubuntu-latest
