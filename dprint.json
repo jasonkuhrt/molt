@@ -1,6 +1,5 @@
 {
   "typescript": {
-    "module.sortImportDeclarations": "maintain",
     "quoteStyle": "preferSingle",
     "semiColons": "asi"
   },

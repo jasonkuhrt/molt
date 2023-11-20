@@ -1,7 +1,7 @@
-import { Command } from '../src/_entrypoints/default.js'
-import { Zod } from '../src/_entrypoints/extensions.js'
 import semverRegex from 'semver-regex'
 import { z } from 'zod'
+import { Command } from '../src/_entrypoints/default.js'
+import { Zod } from '../src/_entrypoints/extensions.js'
 
 const args = Command.create()
   .use(Zod)

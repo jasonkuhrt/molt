@@ -1,3 +1,4 @@
+import { Effect } from 'effect'
 import type { RawArgInputs } from '../builders/command/types.js'
 import { createEvent } from '../eventPatterns.js'
 import { Help } from '../Help/index.js'
@@ -16,7 +17,6 @@ import type { Settings } from '../Settings/index.js'
 import { createParameters } from './helpers/createParameters.js'
 import { prompt } from './prompt.js'
 import type { ArgumentValue } from './types.js'
-import { Effect } from 'effect'
 
 export interface ParseProgressPostPromptAnnotation {
   globalErrors: OpeningArgs.ParseResult['globalErrors']

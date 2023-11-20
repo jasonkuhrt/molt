@@ -1,5 +1,3 @@
-import { Command } from '../packages/@molt/command/src/_entrypoints/default.js'
-import { Zod } from '../packages/@molt/command/src/_entrypoints/extensions.js'
 import { Octokit } from '@octokit/core'
 import { Alge } from 'alge'
 import { execa } from 'execa'
@@ -9,6 +7,8 @@ import url from 'node:url'
 import Semver from 'semver'
 import semverRegex from 'semver-regex'
 import { z } from 'zod'
+import { Command } from '../packages/@molt/command/src/_entrypoints/default.js'
+import { Zod } from '../packages/@molt/command/src/_entrypoints/extensions.js'
 
 const args = Command.create()
   .use(Zod)

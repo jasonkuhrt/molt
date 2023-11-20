@@ -1,6 +1,6 @@
+import type { $, Strings } from 'hotscript'
 import type { Name } from './data.js'
 import type { SomeLimits } from './parser.js'
-import type { $, Strings } from 'hotscript'
 
 export namespace Messages {
   export type WithHeader<Body extends string> = `Error(s):\n${Body}`

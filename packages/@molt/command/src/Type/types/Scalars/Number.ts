@@ -1,8 +1,8 @@
+import { Effect, Either } from 'effect'
 import { PromptEngine } from '../../../lib/PromptEngine/PromptEngine.js'
 import { Term } from '../../../term.js'
 import type { Optionality } from '../../helpers.js'
 import { runtimeIgnore, type Type, TypeSymbol } from '../../helpers.js'
-import { Effect, Either } from 'effect'
 
 export interface Number extends Type<number> {
   _tag: 'TypeNumber'

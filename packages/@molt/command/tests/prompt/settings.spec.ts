@@ -1,10 +1,10 @@
+import stripAnsi from 'strip-ansi'
+import { describe, expect, it } from 'vitest'
 import type { Settings } from '../../src/_entrypoints/default.js'
 import type { FromZod } from '../../src/extensions/zod/typeAdaptor/types.js'
 import type { Type } from '../../src/Type/index.js'
 import { $, s, tryCatch } from '../_/helpers.js'
 import { memoryPrompter } from '../_/mocks/tty.js'
-import stripAnsi from 'strip-ansi'
-import { describe, expect, it } from 'vitest'
 
 const S = <T extends Type.Type>(settings: Settings.PromptInput<T>) => settings
 const foo = [

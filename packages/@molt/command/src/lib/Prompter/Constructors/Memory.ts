@@ -1,7 +1,7 @@
+import { Effect, Stream } from 'effect'
 import type { KeyPress } from '../../KeyPress/index.js'
 import type { Prompter } from '../Prompter.js'
 import { create } from './_core.js'
-import { Effect, Stream } from 'effect'
 
 export type MemoryPrompter = ReturnType<typeof createMemoryPrompter>
 

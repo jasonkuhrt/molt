@@ -1,7 +1,7 @@
-import { $, s } from '../_/helpers.js'
 import stripAnsi from 'strip-ansi'
 import { describe, expect, it } from 'vitest'
 import { mockProcessExit, mockProcessStdout } from 'vitest-mock-process'
+import { $, s } from '../_/helpers.js'
 
 const processStdout = mockProcessStdout()
 mockProcessExit()

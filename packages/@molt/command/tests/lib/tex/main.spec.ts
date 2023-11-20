@@ -1,6 +1,6 @@
-import { Tex } from '../../../src/lib/Tex/index.js'
 import chalk from 'chalk'
 import { describe, expect, it } from 'vitest'
+import { Tex } from '../../../src/lib/Tex/index.js'
 
 describe(`text`, () => {
   $(`can render text`, Tex.Tex().text(`foo`))

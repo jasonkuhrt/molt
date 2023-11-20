@@ -1,7 +1,7 @@
 // import type { Strings } from '../prelude.js'
+import type { $, Objects, Strings, Tuples } from 'hotscript'
 import type { BaseChecks, LongChecks, ReportFailures, ShortChecks, SomeFailures } from './checks.js'
 import type { Name, NameEmpty } from './data.js'
-import type { $, Objects, Strings, Tuples } from 'hotscript'
 
 export namespace Errors {
   export type TrailingPipe =

@@ -1,3 +1,4 @@
+import snakeCase from 'lodash.snakecase'
 import type { BuilderCommandState } from '../builders/command/state.js'
 import type { EventPatternsInput, EventPatternsInputAtLeastOne } from '../eventPatterns.js'
 import { eventPatterns } from '../eventPatterns.js'
@@ -5,7 +6,6 @@ import type { Values } from '../helpers.js'
 import { parseEnvironmentVariableBooleanOrThrow } from '../helpers.js'
 import { defaultParameterNamePrefixes } from '../OpeningArgs/Environment/Environment.js'
 import type { Type } from '../Type/index.js'
-import snakeCase from 'lodash.snakecase'
 
 export type OnErrorReaction = 'exit' | 'throw'
 

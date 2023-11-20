@@ -1,7 +1,7 @@
-import { $, b } from '../../_/helpers.js'
 import type { IsExact } from 'conditional-type-checks'
 import { assert } from 'conditional-type-checks'
 import { describe, expect, it } from 'vitest'
+import { $, b } from '../../_/helpers.js'
 
 it(`implies true`, () => {
   const args = $.parameter(`--verbose`, b).parse({ line: [`--verbose`] })

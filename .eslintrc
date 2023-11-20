@@ -23,9 +23,6 @@
     // This enables the use of a lint rule to reject use of @deprecated functions.
     // https://github.com/gund/eslint-plugin-deprecation
     "deprecation",
-    // Import sorting integrated into ESLint.
-    // https://github.com/lydell/eslint-plugin-simple-import-sort
-    "simple-import-sort",
     // https://github.com/microsoft/tsdoc/tree/master/eslint-plugin
     "tsdoc"
   ],

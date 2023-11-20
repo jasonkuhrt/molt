@@ -1,3 +1,4 @@
+import { Alge } from 'alge'
 import type { ParameterBasic, ParameterBasicInput } from '../../Parameter/basic.js'
 import { parameterBasicCreate } from '../../Parameter/basic.js'
 import type { ParameterExclusive, ParameterExclusiveInput } from '../../Parameter/exclusive.js'
@@ -5,7 +6,6 @@ import { parameterExclusiveCreate } from '../../Parameter/exclusive.js'
 import type { Parameter } from '../../Parameter/types.js'
 import type { Settings } from '../../Settings/index.js'
 import { Type } from '../../Type/index.js'
-import { Alge } from 'alge'
 
 /**
  * Process the spec input into a normalized spec.

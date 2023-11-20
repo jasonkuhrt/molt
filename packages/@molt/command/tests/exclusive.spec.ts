@@ -1,6 +1,6 @@
-import { $, as, e, s } from './_/helpers.js'
 import { expectType } from 'tsd'
 import { describe, expect, it } from 'vitest'
+import { $, as, e, s } from './_/helpers.js'
 
 const $$ = $.settings({ onError: `throw`, helpOnError: false })
 let args
