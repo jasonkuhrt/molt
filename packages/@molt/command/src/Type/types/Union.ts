@@ -1,14 +1,13 @@
+import chalk from 'chalk'
+import { Effect, Either } from 'effect'
 import { PromptEngine } from '../../lib/PromptEngine/PromptEngine.js'
 import { Tex } from '../../lib/Tex/index.js'
 import { Text } from '../../lib/Text/index.js'
 import { Term } from '../../term.js'
 import type { Optionality } from '../helpers.js'
 import { runtimeIgnore, type Type, TypeSymbol } from '../helpers.js'
-import chalk from 'chalk'
-import { Effect, Either } from 'effect'
 
-export interface Union<Members extends readonly Member[] = Member[]>
-  extends Type<Members[number][TypeSymbol]> {
+export interface Union<Members extends readonly Member[] = Member[]> extends Type<Members[number][TypeSymbol]> {
   _tag: 'TypeUnion'
   members: Members
 }
@@ -40,18 +39,18 @@ export const union = <$Members extends Member[]>({
     [TypeSymbol]: runtimeIgnore, // eslint-disable-line
     deserialize: (serializedValue) => {
       return (
-        members.map((m) => m.deserialize(serializedValue)).find((m) => Either.isRight(m)) ??
-        Either.left(new Error(`No variant matched.`))
+        members.map((m) => m.deserialize(serializedValue)).find((m) => Either.isRight(m))
+          ?? Either.left(new Error(`No variant matched.`))
       )
     },
     display: () => `union`,
     displayExpanded: () => `todo`,
     help: (settings) => {
       const hasAtLeastOneMemberDescription = members.filter((_) => _.description !== null).length > 0
-      //prettier-ignore
+
       const isExpandedMode =
-        (hasAtLeastOneMemberDescription && settings?.helpRendering?.union?.mode === `expandOnParameterDescription`) || // eslint-disable-line
-        settings?.helpRendering?.union?.mode === 'expandAlways' // eslint-disable-line
+        (hasAtLeastOneMemberDescription && settings?.helpRendering?.union?.mode === `expandOnParameterDescription`) // eslint-disable-line
+        || settings?.helpRendering?.union?.mode === 'expandAlways' // eslint-disable-line
       const unionMemberIcon = Term.colors.accent(`◒`)
       const isOneOrMoreMembersWithDescription = members.some((_) => _.description !== null)
       const isExpandedModeViaForceSetting = isExpandedMode && !isOneOrMoreMembersWithDescription
@@ -61,8 +60,7 @@ export const union = <$Members extends Member[]>({
             {
               padding: { bottomBetween: isExpandedModeViaForceSetting ? 0 : 1 },
               border: {
-                left: (index) =>
-                  `${index === 0 ? unionMemberIcon : Term.colors.dim(Text.chars.borders.vertical)} `,
+                left: (index) => `${index === 0 ? unionMemberIcon : Term.colors.dim(Text.chars.borders.vertical)} `,
               },
             },
             (__) => __.block(m.displayExpanded()).block(m.description),
@@ -78,7 +76,7 @@ export const union = <$Members extends Member[]>({
               description ?? null,
             )
             .block(types)
-            .block(Term.colors.dim(Text.chars.borders.leftBottom + Text.chars.borders.horizontal)),
+            .block(Term.colors.dim(Text.chars.borders.leftBottom + Text.chars.borders.horizontal))
         ) as Tex.Block
       } else {
         const membersRendered = members.map((m) => m.displayExpanded()).join(` | `)
@@ -92,7 +90,7 @@ export const union = <$Members extends Member[]>({
         : Either.left({ value, errors: [`Value does not fit any member of the union.`] })
     },
     prompt: (params) =>
-      Effect.gen(function* (_) {
+      Effect.gen(function*(_) {
         interface State {
           active: number
         }
@@ -118,18 +116,17 @@ export const union = <$Members extends Member[]>({
           ],
           draw: (state) => {
             const marginLeftSpace = ` `.repeat(params.marginLeft ?? 0)
-            // prettier-ignore
-            const intro = marginLeftSpace + `Different kinds of answers are accepted.` + Text.chars.newline + marginLeftSpace + `Which kind do you want to give?`
-            // prettier-ignore
 
-            const choices =
-              marginLeftSpace +
-              params.prompt +
-              members
+            const intro = marginLeftSpace + `Different kinds of answers are accepted.` + Text.chars.newline
+              + marginLeftSpace + `Which kind do you want to give?`
+
+            const choices = marginLeftSpace
+              + params.prompt
+              + members
                 .map((item, i) =>
                   i === state.active
                     ? `${chalk.green(chalk.bold(item.display()))}`
-                    : item.display(),
+                    : item.display()
                 )
                 .join(chalk.dim(` | `))
             return Text.chars.newline + intro + Text.chars.newline + Text.chars.newline + choices
@@ -141,8 +138,12 @@ export const union = <$Members extends Member[]>({
         if (state === null) return undefined
 
         const choice = members[state.active]
-        // prettier-ignore
-        if (!choice) throw new Error(`No choice selected. Enumeration must be empty. But enumerations should not be empty. This is a bug.`)
+
+        if (!choice) {
+          throw new Error(
+            `No choice selected. Enumeration must be empty. But enumerations should not be empty. This is a bug.`,
+          )
+        }
 
         const res = (yield* _(choice.prompt(params))) as $Members[number]
         return res

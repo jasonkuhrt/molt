@@ -8,26 +8,25 @@ type SomeDataObject = object
 
 type SomeDataScalar = number | string | boolean | null
 
-// prettier-ignore
-export type Pattern<Data extends SomeData, DiscriminantProperty extends null|keyof Data = null> =
-	Or<
-		Data extends SomeDataScalar ? Data :
-			                            PatternForObject<Exclude<Data, SomeDataScalar>, DiscriminantProperty>
+export type Pattern<Data extends SomeData, DiscriminantProperty extends null | keyof Data = null> = Or<
+  Data extends SomeDataScalar ? Data
+    : PatternForObject<Exclude<Data, SomeDataScalar>, DiscriminantProperty>
 >
 
-export type PatternForValue<Data extends SomeData> = Data extends SomeDataScalar
-  ? Data
+export type PatternForValue<Data extends SomeData> = Data extends SomeDataScalar ? Data
   : PatternForObject<Exclude<Data, SomeDataScalar>>
 
-// prettier-ignore
-export type PatternForObject<Data extends SomeDataObject, DiscriminantProperty extends null|keyof Data = null> = {
-		[K in Exclude<keyof Data, DiscriminantProperty>]?:Simplify<
-			Data[K] extends Array<any>     ? Or<PatternForValue<Data[K][number]>[]> :
-			Data[K] extends SomeDataObject ? Or<PatternForObject<Data[K]>> :
-				                               Or<Data[K]>>
-	} & (
+export type PatternForObject<Data extends SomeDataObject, DiscriminantProperty extends null | keyof Data = null> =
+  & {
+    [K in Exclude<keyof Data, DiscriminantProperty>]?: Simplify<
+      Data[K] extends Array<any> ? Or<PatternForValue<Data[K][number]>[]>
+        : Data[K] extends SomeDataObject ? Or<PatternForObject<Data[K]>>
+        : Or<Data[K]>
+    >
+  }
+  & (
     null extends DiscriminantProperty ? {} // eslint-disable-line
-                                      : { [K in Exclude<DiscriminantProperty,null>]: Data[K] }
+      : { [K in Exclude<DiscriminantProperty, null>]: Data[K] }
   )
 
 type Or<T> = T | T[]

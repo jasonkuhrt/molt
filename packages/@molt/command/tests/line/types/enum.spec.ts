@@ -1,7 +1,7 @@
-import { $, s } from '../../_/helpers.js'
-import { stdout } from '../../_/mocks.js'
 import { describe, expect, it } from 'vitest'
 import { z } from 'zod'
+import { $, s } from '../../_/helpers.js'
+import { stdout } from '../../_/mocks.js'
 
 describe(`errors`, () => {
   it(`when argument missing (last position)`, () => {
@@ -9,8 +9,7 @@ describe(`errors`, () => {
     expect(stdout.mock.calls).toMatchSnapshot()
   })
   it(`when argument missing (non-last position)`, () => {
-    // prettier-ignore
-    $.parameter( `--name`, s).parameter( `--mode`, z.enum([`a`,`b`]) ).parse({line:[` --mode`, `--name`, `joe`]})
+    $.parameter(`--name`, s).parameter(`--mode`, z.enum([`a`, `b`])).parse({ line: [` --mode`, `--name`, `joe`] })
     expect(stdout.mock.calls).toMatchSnapshot()
   })
   it(`is validated`, () => {

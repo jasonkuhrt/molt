@@ -1,8 +1,8 @@
+import { beforeEach, expect } from 'vitest'
+import { describe, it } from 'vitest'
 import { $, s } from '../../_/helpers.js'
 import { stdout } from '../../_/mocks.js'
 import { environmentManager } from '../__helpers__.js'
-import { beforeEach, expect } from 'vitest'
-import { describe, it } from 'vitest'
 
 let args
 

@@ -1,8 +1,8 @@
-import type { KeyPress } from '../KeyPress/index.js'
-import { Text } from '../Text/index.js'
 import ansiEscapes from 'ansi-escapes'
 import { Effect } from 'effect'
 import { Exit, pipe, Stream } from 'effect'
+import type { KeyPress } from '../KeyPress/index.js'
+import { Text } from '../Text/index.js'
 
 interface KeyPressPattern {
   name?: KeyPress.Key
@@ -20,10 +20,10 @@ interface KeyPressPatternExpressionObject {
 }
 
 const isKeyPressMatchPattern = (event: KeyPress.KeyPressEvent, keyPressMatchSpec: KeyPressPattern) => {
-  // prettier-ignore
   return (
-    keyPressMatchSpec.name === undefined ||
-    (keyPressMatchSpec.name.includes(event.name) && (keyPressMatchSpec.shift === undefined || keyPressMatchSpec.shift === event.shift))
+    keyPressMatchSpec.name === undefined
+    || (keyPressMatchSpec.name.includes(event.name)
+      && (keyPressMatchSpec.shift === undefined || keyPressMatchSpec.shift === event.shift))
   )
 }
 
@@ -46,7 +46,7 @@ export namespace PromptEngine {
   export const create = <State extends object, Skippable extends boolean>(
     params: Params<State, Skippable>,
   ): Effect.Effect<never, never, Skippable extends true ? null | State : State> =>
-    Effect.gen(function* (_) {
+    Effect.gen(function*(_) {
       type Ret = Skippable extends true ? null | State : State
 
       const args = {
@@ -60,9 +60,9 @@ export namespace PromptEngine {
           match: (Array.isArray(match) ? match : [match]).map((_) =>
             typeof _ === `string`
               ? {
-                  name: _,
-                }
-              : _,
+                name: _,
+              }
+              : _
           ),
           run,
         }
@@ -106,7 +106,7 @@ export namespace PromptEngine {
             if (args.skippable && value.name === `escape`) return null as Ret
             if (value.name === `return`) return state
             const matcher = matchers.find((matcher) =>
-              matcher.match.some((match) => isKeyPressMatchPattern(value, match ?? {})),
+              matcher.match.some((match) => isKeyPressMatchPattern(value, match ?? {}))
             )
             const newState = matcher?.run(state, value) ?? state
             refresh(newState)

@@ -9,6 +9,6 @@ export type Prompt<T extends Type.Type> =
   | null
   | boolean
   | {
-      enabled?: boolean
-      when?: EventPatternsInput<T>
-    }
+    enabled?: boolean
+    when?: EventPatternsInput<T>
+  }

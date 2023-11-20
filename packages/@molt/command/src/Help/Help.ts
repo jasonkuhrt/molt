@@ -1,12 +1,12 @@
+import chalk from 'chalk'
+import camelCase from 'lodash.camelcase'
+import snakeCase from 'lodash.snakecase'
 import { groupBy } from '../lib/prelude.js'
 import { Tex } from '../lib/Tex/index.js'
 import { Text } from '../lib/Text/index.js'
 import type { Parameter } from '../Parameter/types.js'
 import type { Settings } from '../Settings/index.js'
 import { Term } from '../term.js'
-import chalk from 'chalk'
-import camelCase from 'lodash.camelcase'
-import snakeCase from 'lodash.snakecase'
 
 // TODO use
 interface RenderSettings {
@@ -36,17 +36,16 @@ export const render = (parameters_: Parameter[], settings: Settings.Output, _set
           : -1
         : _.type.optionality._tag === `optional`
         ? 1
-        : -1,
+        : -1
     )
 
   const parametersBasicWithoutHelp = basicParameters
     .filter((_) => _.name.canonical !== `help`)
     .sort((_) => (_.type.optionality._tag === `optional` ? 1 : -1))
   const isAcceptsAnyEnvironmentArgs = basicParameters.filter((_) => _.environment?.enabled).length > 0
-  const isAcceptsAnyMutuallyExclusiveParameters =
-    (parametersByTag.Exclusive && parametersByTag.Exclusive.length > 0) || false
-  const isEnvironmentEnabled =
-    Object.values(settings.parameters.environment).filter((_) => _.enabled).length > 0
+  const isAcceptsAnyMutuallyExclusiveParameters = (parametersByTag.Exclusive && parametersByTag.Exclusive.length > 0)
+    || false
+  const isEnvironmentEnabled = Object.values(settings.parameters.environment).filter((_) => _.enabled).length > 0
 
   const columnTitles = {
     name: `Name`,
@@ -82,68 +81,73 @@ export const render = (parameters_: Parameter[], settings: Settings.Output, _set
       )
     })
     .block({ padding: { top: 1, bottom: 1 } }, title(`PARAMETERS`))
-    .block({ padding: { left: 2 } }, (__) =>
-      __.table({ separators: { column: `   `, row: null } }, (__) =>
-        __.header({ padding: { right: 2, bottom: 1 } }, chalk.underline(Term.colors.mute(columnTitles.name)))
-          .header(
-            {
-              minWidth: 8,
-              padding: { right: 5 },
-            },
-            chalk.underline(Term.colors.mute(columnTitles.typeDescription)),
-          )
-          .header({ padding: { right: 4 } }, chalk.underline(Term.colors.mute(columnTitles.default)))
-          .header(
-            columnTitles.environment ? chalk.underline(Term.colors.mute(columnTitles.environment)) : null,
-          )
-          .rows([
-            ...parametersBasicWithoutHelp.map((parameter) => [
-              parameterName(parameter),
-              Tex.block({ maxWidth: 40, padding: { right: 9, bottom: 1 } }, parameter.type.help(settings)),
-              Tex.block({ maxWidth: 24 }, parameterDefault(parameter)),
-              ...(isEnvironmentEnabled ? [parameterEnvironment(parameter, settings)] : []),
-            ]),
-            ...parametersExclusiveGroups.flatMap((parametersExclusive) => {
-              const default_ =
-                parametersExclusive.optionality._tag === `default`
-                  ? `${parametersExclusive.optionality.tag}@${String(
-                      parametersExclusive.optionality.getValue(),
-                    )}`
-                  : parametersExclusive.optionality._tag === `optional`
-                  ? `undefined`
-                  : labels.required
-              return [
-                [
-                  Tex.block(
-                    { border: { left: Term.colors.dim(`┌`) } },
-                    Term.colors.dim(`─${parametersExclusive.label} ${`(2)`}`),
-                  ),
-                  ``,
-                  default_,
-                ],
-                ...Object.values(parametersExclusive.parameters).map((parameter) => [
+    .block(
+      { padding: { left: 2 } },
+      (__) =>
+        __.table(
+          { separators: { column: `   `, row: null } },
+          (__) =>
+            __.header({ padding: { right: 2, bottom: 1 } }, chalk.underline(Term.colors.mute(columnTitles.name)))
+              .header(
+                {
+                  minWidth: 8,
+                  padding: { right: 5 },
+                },
+                chalk.underline(Term.colors.mute(columnTitles.typeDescription)),
+              )
+              .header({ padding: { right: 4 } }, chalk.underline(Term.colors.mute(columnTitles.default)))
+              .header(
+                columnTitles.environment ? chalk.underline(Term.colors.mute(columnTitles.environment)) : null,
+              )
+              .rows([
+                ...parametersBasicWithoutHelp.map((parameter) => [
                   parameterName(parameter),
-                  parameter.type.help(settings),
-                  parameterDefault(parameter),
+                  Tex.block({ maxWidth: 40, padding: { right: 9, bottom: 1 } }, parameter.type.help(settings)),
+                  Tex.block({ maxWidth: 24 }, parameterDefault(parameter)),
                   ...(isEnvironmentEnabled ? [parameterEnvironment(parameter, settings)] : []),
                 ]),
-                [Tex.block({ border: { left: Term.colors.dim(`└`) } }, Term.colors.dim(`─`))],
-              ]
-            }),
-          ]),
-      ).block({ color: Term.colors.dim }, ($) => {
-        if (noteItems.length === 0) {
-          return null
-        }
-        return $.block({ padding: { top: 1 }, border: { bottom: `━` }, width: `100%` }, `NOTES`).list(
-          {
-            bullet: {
-              graphic: (index) => `(${index + 1})`,
+                ...parametersExclusiveGroups.flatMap((parametersExclusive) => {
+                  const default_ = parametersExclusive.optionality._tag === `default`
+                    ? `${parametersExclusive.optionality.tag}@${
+                      String(
+                        parametersExclusive.optionality.getValue(),
+                      )
+                    }`
+                    : parametersExclusive.optionality._tag === `optional`
+                    ? `undefined`
+                    : labels.required
+                  return [
+                    [
+                      Tex.block(
+                        { border: { left: Term.colors.dim(`┌`) } },
+                        Term.colors.dim(`─${parametersExclusive.label} ${`(2)`}`),
+                      ),
+                      ``,
+                      default_,
+                    ],
+                    ...Object.values(parametersExclusive.parameters).map((parameter) => [
+                      parameterName(parameter),
+                      parameter.type.help(settings),
+                      parameterDefault(parameter),
+                      ...(isEnvironmentEnabled ? [parameterEnvironment(parameter, settings)] : []),
+                    ]),
+                    [Tex.block({ border: { left: Term.colors.dim(`└`) } }, Term.colors.dim(`─`))],
+                  ]
+                }),
+              ]),
+        ).block({ color: Term.colors.dim }, ($) => {
+          if (noteItems.length === 0) {
+            return null
+          }
+          return $.block({ padding: { top: 1 }, border: { bottom: `━` }, width: `100%` }, `NOTES`).list(
+            {
+              bullet: {
+                graphic: (index) => `(${index + 1})`,
+              },
             },
-          },
-          noteItems,
-        )
-      }),
+            noteItems,
+          )
+        }),
     )
     .render()
 
@@ -151,37 +155,39 @@ export const render = (parameters_: Parameter[], settings: Settings.Output, _set
 }
 
 const environmentNote = (parameters: Parameter[], settings: Settings.Output) => {
-  const isHasParametersWithCustomEnvironmentNamespace =
-    parameters
-      .filter((_) => _.environment?.enabled)
-      .filter(
-        (_) =>
-          _.environment!.namespaces.filter((_) =>
-            settings.parameters.environment.$default.prefix.map(camelCase).includes(_),
-          ).length !== _.environment!.namespaces.length,
-      ).length > 0
+  const isHasParametersWithCustomEnvironmentNamespace = parameters
+    .filter((_) => _.environment?.enabled)
+    .filter(
+      (_) =>
+        _.environment!.namespaces.filter((_) =>
+          settings.parameters.environment.$default.prefix.map(camelCase).includes(_)
+        ).length !== _.environment!.namespaces.length,
+    ).length > 0
 
   let content = ``
 
-  content +=
-    (settings.parameters.environment.$default.enabled ? `Parameters` : `Some parameters (marked in docs)`) +
-    ` can be passed arguments via environment variables. Command line arguments take precedence. Environment variable names are snake cased versions of the parameter name (or its aliases), case insensitive. `
+  content += (settings.parameters.environment.$default.enabled ? `Parameters` : `Some parameters (marked in docs)`)
+    + ` can be passed arguments via environment variables. Command line arguments take precedence. Environment variable names are snake cased versions of the parameter name (or its aliases), case insensitive. `
 
   if (settings.parameters.environment.$default.prefix.length > 0) {
     if (isHasParametersWithCustomEnvironmentNamespace) {
       content += `By default they must be prefixed with`
-      content += ` ${Text.joinListEnglish(
-        settings.parameters.environment.$default.prefix.map((_) =>
-          Term.colors.secondary(Text.toEnvarNameCase(_) + `_`),
-        ),
-      )} (case insensitive), though some parameters deviate (shown in docs). `
+      content += ` ${
+        Text.joinListEnglish(
+          settings.parameters.environment.$default.prefix.map((_) =>
+            Term.colors.secondary(Text.toEnvarNameCase(_) + `_`)
+          ),
+        )
+      } (case insensitive), though some parameters deviate (shown in docs). `
     } else {
       content += `They must be prefixed with`
-      content += ` ${Text.joinListEnglish(
-        settings.parameters.environment.$default.prefix.map((_) =>
-          Term.colors.secondary(Text.toEnvarNameCase(_) + `_`),
-        ),
-      )} (case insensitive). `
+      content += ` ${
+        Text.joinListEnglish(
+          settings.parameters.environment.$default.prefix.map((_) =>
+            Term.colors.secondary(Text.toEnvarNameCase(_) + `_`)
+          ),
+        )
+      } (case insensitive). `
     }
   } else {
     content += isHasParametersWithCustomEnvironmentNamespace
@@ -196,10 +202,12 @@ const environmentNote = (parameters: Parameter[], settings: Settings.Output) => 
     .slice(0, 3)
     .map((_) =>
       _.environment!.namespaces.length > 0
-        ? `${Term.colors.secondary(
+        ? `${
+          Term.colors.secondary(
             Text.toEnvarNameCase(_.environment!.namespaces[0]!) + `_`,
-          )}${Term.colors.positive(Text.toEnvarNameCase(_.name.canonical))}`
-        : Term.colors.positive(Text.toEnvarNameCase(_.name.canonical)),
+          )
+        }${Term.colors.positive(Text.toEnvarNameCase(_.name.canonical))}`
+        : Term.colors.positive(Text.toEnvarNameCase(_.name.canonical))
     )
     .map((_) => `${_}="..."`)
 
@@ -212,7 +220,7 @@ const environmentNote = (parameters: Parameter[], settings: Settings.Output) => 
         },
       },
       examples,
-    ),
+    )
   )
 }
 
@@ -242,25 +250,23 @@ const labels = {
 }
 
 const parameterName = (parameter: Parameter) => {
-  const isRequired =
-    (parameter._tag === `Basic` && parameter.type.optionality._tag === `required`) ||
-    (parameter._tag === `Exclusive` && parameter.group.optionality._tag === `required`)
+  const isRequired = (parameter._tag === `Basic` && parameter.type.optionality._tag === `required`)
+    || (parameter._tag === `Exclusive` && parameter.group.optionality._tag === `required`)
 
-  const parameters: Tex.BlockParameters =
-    parameter._tag === `Exclusive`
-      ? {
-          border: {
-            left: (lineNumber) =>
-              lineNumber === 0
-                ? Term.colors.accent(`◒ `)
-                : Term.colors.dim(`${Text.chars.borders.vertical} `),
-          },
-        }
-      : {
-          padding: {
-            bottom: 1,
-          },
-        }
+  const parameters: Tex.BlockParameters = parameter._tag === `Exclusive`
+    ? {
+      border: {
+        left: (lineNumber) =>
+          lineNumber === 0
+            ? Term.colors.accent(`◒ `)
+            : Term.colors.dim(`${Text.chars.borders.vertical} `),
+      },
+    }
+    : {
+      padding: {
+        bottom: 1,
+      },
+    }
 
   return Tex.block(parameters, (__) =>
     __.block(
@@ -270,27 +276,26 @@ const parameterName = (parameter: Parameter) => {
     )
       .block(Term.colors.dim(parameter.name.aliases.long.join(`, `)) || null)
       .block(Term.colors.dim(parameter.name.short ?? ``) || null)
-      .block(Term.colors.dim(parameter.name.aliases.long.join(`, `)) || null),
-  )
+      .block(Term.colors.dim(parameter.name.aliases.long.join(`, `)) || null))
 }
 
 const parameterEnvironment = (parameter: Parameter, settings: Settings.Output) => {
   return parameter.environment?.enabled
-    ? Term.colors.secondary(Text.chars.check) +
-        (parameter.environment.enabled && parameter.environment.namespaces.length === 0
-          ? ` ` + Term.colors.dim(Text.toEnvarNameCase(parameter.name.canonical))
-          : parameter.environment.enabled &&
-            parameter.environment.namespaces.filter(
-              // TODO settings normalized should store prefix in camel case
-              (_) => !settings.parameters.environment.$default.prefix.includes(snakeCase(_)),
-            ).length > 0
-          ? ` ` +
-            Term.colors.dim(
-              parameter.environment.namespaces
-                .map((_) => `${Text.toEnvarNameCase(_)}_${Text.toEnvarNameCase(parameter.name.canonical)}`)
-                .join(` ${Text.chars.pipe} `),
-            )
-          : ``)
+    ? Term.colors.secondary(Text.chars.check)
+      + (parameter.environment.enabled && parameter.environment.namespaces.length === 0
+        ? ` ` + Term.colors.dim(Text.toEnvarNameCase(parameter.name.canonical))
+        : parameter.environment.enabled
+            && parameter.environment.namespaces.filter(
+                // TODO settings normalized should store prefix in camel case
+                (_) => !settings.parameters.environment.$default.prefix.includes(snakeCase(_)),
+              ).length > 0
+        ? ` `
+          + Term.colors.dim(
+            parameter.environment.namespaces
+              .map((_) => `${Text.toEnvarNameCase(_)}_${Text.toEnvarNameCase(parameter.name.canonical)}`)
+              .join(` ${Text.chars.pipe} `),
+          )
+        : ``)
     : Term.colors.dim(Text.chars.x)
 }
 

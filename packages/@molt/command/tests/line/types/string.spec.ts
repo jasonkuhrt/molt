@@ -1,16 +1,15 @@
-import { $, n, s } from '../../_/helpers.js'
 import type { IsExact } from 'conditional-type-checks'
 import { assert } from 'conditional-type-checks'
 import { describe, expect, it } from 'vitest'
+import { $, n, s } from '../../_/helpers.js'
 
 describe(`errors`, () => {
   it.each(
-    // prettier-ignore
     [
-      [`when argument missing (last position)`,     { name: s },                   { line: [`--name`] }],
-      [`when argument missing (non-last position)`, { name: s, age: n },  { line: [`--name`, `--age`, `1`] }],
-      [`when flag passed twice`,                    { '--name': s },               { line: [`--name`, `1`, `--name`, `1`] }],
-      [`when long and short flag passed `,          { '--name -n': s },            { line: [`--name`, `1`, `-n`, `1`] }],
+      [`when argument missing (last position)`, { name: s }, { line: [`--name`] }],
+      [`when argument missing (non-last position)`, { name: s, age: n }, { line: [`--name`, `--age`, `1`] }],
+      [`when flag passed twice`, { '--name': s }, { line: [`--name`, `1`, `--name`, `1`] }],
+      [`when long and short flag passed `, { '--name -n': s }, { line: [`--name`, `1`, `-n`, `1`] }],
     ],
   )(`%s`, (_, parameters, input) => {
     expect(() => {

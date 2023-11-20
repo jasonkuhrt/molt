@@ -96,9 +96,9 @@ export type ParseResultExclusiveGroupError = {
 export type ParseResultExclusiveGroup =
   | ParseResultExclusiveGroupSupplied
   | {
-      _tag: 'omitted'
-      parameter: ParameterExclusiveGroup
-    }
+    _tag: 'omitted'
+    parameter: ParameterExclusiveGroup
+  }
   | ParseResultExclusiveGroupError
 
 export type ParseResult = {

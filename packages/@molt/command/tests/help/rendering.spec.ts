@@ -1,9 +1,9 @@
-import { $, s } from '../_/helpers.js'
-import { createState } from '../environment/__helpers__.js'
 import stripAnsi from 'strip-ansi'
 import { describe, expect, it } from 'vitest'
 import { mockProcessExit } from 'vitest-mock-process'
 import { z } from 'zod'
+import { $, s } from '../_/helpers.js'
+import { createState } from '../environment/__helpers__.js'
 
 mockProcessExit()
 
@@ -89,11 +89,40 @@ it(`if there is an error trying to get default then a nice message is shown`, ()
 })
 
 it(`enums do not mess up alignment when they are widest line in the column`, () => {
-  // prettier-ignore
   $.parameter(
-    `foo`, z.enum([`a`, `b`, `c`, `d`, `e`, `f`, `g`, `h`, `i`, `j`, `k`, `l`, `m`, `n`, `o`, `p`, `q`, `r`, `s`, `t`, `u`, `v`, `w`, `x`, `y`, `z`]),).parameter(
-    `bar`, s.optional(),
-  ).settings({onOutput}).parse({line:[`-h`]})
+    `foo`,
+    z.enum([
+      `a`,
+      `b`,
+      `c`,
+      `d`,
+      `e`,
+      `f`,
+      `g`,
+      `h`,
+      `i`,
+      `j`,
+      `k`,
+      `l`,
+      `m`,
+      `n`,
+      `o`,
+      `p`,
+      `q`,
+      `r`,
+      `s`,
+      `t`,
+      `u`,
+      `v`,
+      `w`,
+      `x`,
+      `y`,
+      `z`,
+    ]),
+  ).parameter(
+    `bar`,
+    s.optional(),
+  ).settings({ onOutput }).parse({ line: [`-h`] })
   expect(stripAnsi(output.value)).toMatchSnapshot(`monochrome`)
   expect(output.value).toMatchSnapshot(`polychrome`)
 })
@@ -213,9 +242,7 @@ describe(`exclusive`, () => {
   })
   describe(`default`, () => {
     it(`shows the group default`, () => {
-      $.parametersExclusive(`foo`, (_) =>
-        _.parameter(`b bar`, s).parameter(`z baz`, s).default(`bar`, `bar_default`),
-      )
+      $.parametersExclusive(`foo`, (_) => _.parameter(`b bar`, s).parameter(`z baz`, s).default(`bar`, `bar_default`))
         .settings({ onOutput })
         .parse({
           line: [`-h`],
@@ -226,8 +253,9 @@ describe(`exclusive`, () => {
   })
   describe(`default with long value`, () => {
     it(`shows the group default`, () => {
-      $.parametersExclusive(`foo`, (_) =>
-        _.parameter(`b bar`, s).parameter(`z baz`, s).default(`bar`, `bar_defaulttttttttttttttttttttt`),
+      $.parametersExclusive(
+        `foo`,
+        (_) => _.parameter(`b bar`, s).parameter(`z baz`, s).default(`bar`, `bar_defaulttttttttttttttttttttt`),
       )
         .settings({ onOutput })
         .parse({
@@ -239,9 +267,7 @@ describe(`exclusive`, () => {
   })
   describe(`with environment disabled`, () => {
     it(`shows the group default`, () => {
-      $.parametersExclusive(`foo`, (_) =>
-        _.parameter(`b bar`, s).parameter(`z baz`, s).default(`bar`, `bar_default`),
-      )
+      $.parametersExclusive(`foo`, (_) => _.parameter(`b bar`, s).parameter(`z baz`, s).default(`bar`, `bar_default`))
         .settings({ onOutput, parameters: { environment: false } })
         .parse({
           line: [`-h`],

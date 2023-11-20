@@ -1,9 +1,9 @@
-import { $, n } from '../../_/helpers.js'
-import { s } from '../../_/helpers.js'
-import { stdout } from '../../_/mocks.js'
 import type { IsExact } from 'conditional-type-checks'
 import { assert } from 'conditional-type-checks'
 import { describe, expect, it } from 'vitest'
+import { $, n } from '../../_/helpers.js'
+import { s } from '../../_/helpers.js'
+import { stdout } from '../../_/mocks.js'
 
 it(`casts the input as a number`, () => {
   const args = $.parameter(`--age`, n).parse({ line: [`--age`, `1`] })

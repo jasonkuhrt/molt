@@ -1,9 +1,9 @@
+import { Effect, Exit, Stream } from 'effect'
+import * as Readline from 'node:readline/promises'
 import { KeyPress } from '../../KeyPress/index.js'
 import type { KeyPressEvent } from '../../KeyPress/KeyPress.js'
 import type { PromptEngine } from '../../PromptEngine/PromptEngine.js'
 import { create } from './_core.js'
-import { Effect, Exit, Stream } from 'effect'
-import * as Readline from 'node:readline/promises'
 
 export type ProcessPrompter = ReturnType<typeof createProcessPrompter>
 

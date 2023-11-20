@@ -11,7 +11,7 @@
 //     when: EventPatternsInput<T> | null
 //   }
 
-//   // prettier-ignore
+//
 //   type BasicOptionality =
 //     | { _tag: 'required' }
 //     | { _tag: 'optional' }

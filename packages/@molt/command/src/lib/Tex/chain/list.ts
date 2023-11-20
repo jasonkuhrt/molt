@@ -9,11 +9,10 @@ type Childish = string | Block | null
 type Childrenish = Childish[] | null
 type NonNullChild = Exclude<Childish, null>
 
-// prettier-ignore
 export interface ListMethod<Chain> {
-  (parameters: ListParameters, children: Childrenish)         : Chain
-  (children: Childrenish)                                     : Chain
-  (builder: NodeImplementor<ListBuilder>)                     : Chain
+  (parameters: ListParameters, children: Childrenish): Chain
+  (children: Childrenish): Chain
+  (builder: NodeImplementor<ListBuilder>): Chain
 }
 
 const resolveChild = <C extends Childish>(child: C): Exclude<C, string> => {
@@ -22,18 +21,16 @@ const resolveChild = <C extends Childish>(child: C): Exclude<C, string> => {
   return child as any
 }
 
-// prettier-ignore
 export type ListArgs =
   | [ListParameters, Childrenish]
   | [Childrenish]
   | [NodeImplementor<ListBuilder>]
 
-// prettier-ignore
 export interface ListBuilder {
-  set(parameters: ListParameters)   : ListBuilder
-  item(child: Childish)             : ListBuilder
-  items(...nodes: Childish[])       : ListBuilder
-  items(nodes: Childrenish)         : ListBuilder
+  set(parameters: ListParameters): ListBuilder
+  item(child: Childish): ListBuilder
+  items(...nodes: Childish[]): ListBuilder
+  items(nodes: Childrenish): ListBuilder
 }
 
 export const createListBuilder = (): ListBuilder => {

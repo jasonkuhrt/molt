@@ -1,7 +1,7 @@
 // import type { Type } from '../Type/helpers.js'
 // import type { Extension } from './extension.js'
 
-// // prettier-ignore
+//
 // type TypeBuilderBase<$Extensions extends Record<string, object>> = $Extensions & {
 // 	$use: <
 // 		$Namespace extends string,

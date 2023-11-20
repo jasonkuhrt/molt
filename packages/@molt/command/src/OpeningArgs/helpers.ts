@@ -1,14 +1,13 @@
+import { Either } from 'effect'
+import camelCase from 'lodash.camelcase'
 import { negateNamePattern } from '../helpers.js'
 import type { Parameter } from '../Parameter/types.js'
 import type { Value } from './types.js'
-import { Either } from 'effect'
-import camelCase from 'lodash.camelcase'
 
 export const stripeDashPrefix = (flagNameInput: string): string => {
   return flagNameInput.replace(/^-+/, ``)
 }
 
-// prettier-ignore
 export const parseSerializedValue = (name: string, serializedValue: string, spec: Parameter): Value => {
   const either = spec.type.deserialize(serializedValue)
   if (Either.isLeft(either)) {

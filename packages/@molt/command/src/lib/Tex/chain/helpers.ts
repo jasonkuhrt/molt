@@ -17,11 +17,10 @@ export interface BuilderInternal<N = Node> {
   }
 }
 
-// prettier-ignore
-export const toInternalBuilder = <Builder extends BlockBuilder<null>|TableBuilder|ListBuilder|null>(builder: Builder):
-  Builder extends null               ? null                   :
-  Builder extends BlockBuilder<null> ? BuilderInternal<Block> :
-  Builder extends TableBuilder       ? BuilderInternal<Table> :
-  Builder extends ListBuilder        ? BuilderInternal<List>  :
-                                       never => 
-  builder as any
+export const toInternalBuilder = <Builder extends BlockBuilder<null> | TableBuilder | ListBuilder | null>(
+  builder: Builder,
+): Builder extends null ? null
+  : Builder extends BlockBuilder<null> ? BuilderInternal<Block>
+  : Builder extends TableBuilder ? BuilderInternal<Table>
+  : Builder extends ListBuilder ? BuilderInternal<List>
+  : never => builder as any

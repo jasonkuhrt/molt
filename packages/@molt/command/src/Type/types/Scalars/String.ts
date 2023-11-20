@@ -1,3 +1,5 @@
+import { Alge } from 'alge'
+import { Effect, Either } from 'effect'
 import { casesExhausted, entries } from '../../../helpers.js'
 import { Patterns } from '../../../lib/Patterns/index.js'
 import { PromptEngine } from '../../../lib/PromptEngine/PromptEngine.js'
@@ -5,8 +7,6 @@ import { Tex } from '../../../lib/Tex/index.js'
 import { Term } from '../../../term.js'
 import type { Optionality } from '../../helpers.js'
 import { runtimeIgnore, type Type, TypeSymbol } from '../../helpers.js'
-import { Alge } from 'alge'
-import { Effect, Either } from 'effect'
 
 export interface String extends Type<string> {
   _tag: 'TypeString'
@@ -28,38 +28,38 @@ interface Refinements {
   length?: number
   pattern?:
     | {
-        type: 'email'
-      }
+      type: 'email'
+    }
     | {
-        type: 'url'
-      }
+      type: 'url'
+    }
     | {
-        type: 'uuid'
-      }
+      type: 'uuid'
+    }
     | {
-        type: 'cuid'
-      }
+      type: 'cuid'
+    }
     | {
-        type: 'cuid2'
-      }
+      type: 'cuid2'
+    }
     | {
-        type: 'ulid'
-      }
+      type: 'ulid'
+    }
     | {
-        type: 'emoji'
-      }
+      type: 'emoji'
+    }
     | {
-        type: 'ip'
-        /**
-         * If `null` then either IPv4 or IPv6 is allowed.
-         */
-        version: 4 | 6 | null
-      }
+      type: 'ip'
+      /**
+       * If `null` then either IPv4 or IPv6 is allowed.
+       */
+      version: 4 | 6 | null
+    }
     | {
-        type: 'dateTime'
-        offset: boolean
-        precision: null | number
-      }
+      type: 'dateTime'
+      offset: boolean
+      precision: null | number
+    }
   startsWith?: string
   endsWith?: string
   includes?: string
@@ -94,8 +94,8 @@ export const string = ({
       if (optionality._tag === `optional` && value === undefined) return Either.right(value)
       const errors: string[] = []
 
-      if (typeof value !== `string`)  return Either.left({ value, errors: [`Value is not a string.`] }) // prettier-ignore
-      if (!refinements)               return Either.right(value) // prettier-ignore
+      if (typeof value !== `string`) return Either.left({ value, errors: [`Value is not a string.`] })
+      if (!refinements) return Either.right(value)
 
       if (refinements.regex && !refinements.regex.test(value)) {
         errors.push(`Value does not conform to Regular Expression.`)
@@ -213,7 +213,7 @@ export const string = ({
       }, value)
     },
     prompt: (params) =>
-      Effect.gen(function* (_) {
+      Effect.gen(function*(_) {
         interface State {
           value: string
         }

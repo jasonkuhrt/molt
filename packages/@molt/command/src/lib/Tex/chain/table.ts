@@ -10,11 +10,10 @@ import { toInternalBuilder } from './helpers.js'
 type Childish = BlockBuilder | Block | string | null
 type NonNullChildish = Exclude<Childish, null>
 
-// prettier-ignore
 export interface TableMethod<Chain> {
-  (rows: (Childish[]|null)[])                                                      : Chain
-  (builder: NodeImplementor<TableBuilder>)                               : Chain
-  (parameters: TableParameters, builder: NodeImplementor<TableBuilder>)  : Chain
+  (rows: (Childish[] | null)[]): Chain
+  (builder: NodeImplementor<TableBuilder>): Chain
+  (parameters: TableParameters, builder: NodeImplementor<TableBuilder>): Chain
 }
 
 export type TableMethodArgs =
@@ -27,10 +26,9 @@ export const resolveTableMethodArgs = (
 ): { parameters: TableParameters | null; child: null | Table } => {
   const childrenish = args.length === 1 ? args[0] : args[1]
   const parameters = args.length === 1 ? null : args[0]
-  const child =
-    typeof childrenish === `function`
-      ? toInternalBuilder(childrenish(createTableBuilder()))?._.node ?? null
-      : new Table(resolveChildrenish(childrenish))
+  const child = typeof childrenish === `function`
+    ? toInternalBuilder(childrenish(createTableBuilder()))?._.node ?? null
+    : new Table(resolveChildrenish(childrenish))
 
   return { parameters, child }
 }
@@ -46,8 +44,8 @@ const resolveChildrenish = (childrenish: (Childish[] | null)[]): Block[][] => {
             ? new Block(new Leaf(cell))
             : cell instanceof Block
             ? cell
-            : toInternalBuilder(cell)._.node,
-        ),
+            : toInternalBuilder(cell)._.node
+        )
     )
 
   return resolved
@@ -77,7 +75,7 @@ export const createTableBuilder = (): TableBuilder => {
             ? new Block(new Leaf(cell))
             : cell instanceof Block
             ? cell
-            : toInternalBuilder(cell)._.node,
+            : toInternalBuilder(cell)._.node
         )
       if (cellsNormalized.length > 0) {
         parentNode.rows.push(cellsNormalized)
@@ -85,10 +83,9 @@ export const createTableBuilder = (): TableBuilder => {
       return $
     },
     rows: (...args) => {
-      const rows =
-        args.length === 1 && Array.isArray(args[0]?.[0])
-          ? (args[0] as (Childish[] | null)[])
-          : (args as (Childish[] | null)[])
+      const rows = args.length === 1 && Array.isArray(args[0]?.[0])
+        ? (args[0] as (Childish[] | null)[])
+        : (args as (Childish[] | null)[])
 
       const rowsNormalized = resolveChildrenish(rows)
 

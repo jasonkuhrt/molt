@@ -29,8 +29,7 @@ export class Table extends Node {
     const separators = {
       column: this.parameters.separators?.column ?? ` ${Text.chars.pipe} `,
       row: (width: number) => {
-        const separator =
-          this.parameters.separators?.row === undefined ? `-` : this.parameters.separators?.row
+        const separator = this.parameters.separators?.row === undefined ? `-` : this.parameters.separators?.row
         if (separator === null) {
           return Text.chars.newline
         }
@@ -75,7 +74,7 @@ export class Table extends Node {
     const headers = this.headers.map((cell) => cell.render(context).value)
     const rowsAndHeaders = this.headers.length > 0 ? [headers, ...rows] : rows
     const maxWidthOfEachColumn = invertTable(rowsAndHeaders).map((col) =>
-      Math.max(...col.flatMap(Text.toLines).map((_) => Text.getLength(_))),
+      Math.max(...col.flatMap(Text.toLines).map((_) => Text.getLength(_)))
     )
     const rowsWithCellWidthsNormalized = rowsAndHeaders.map((row) => {
       const maxNumberOfLinesAmongColumns = Math.max(...row.map(Text.toLines).map((lines) => lines.length))
@@ -87,12 +86,12 @@ export class Table extends Node {
         return col
       })
       const row__ = row_.map((col, i) =>
-        Text.mapLines(col, (line) => Text.padWithin(`right`, maxWidthOfEachColumn[i] ?? 0, ` `, line)),
+        Text.mapLines(col, (line) => Text.padWithin(`right`, maxWidthOfEachColumn[i] ?? 0, ` `, line))
       )
       return row__
     })
     const rowsWithCellsJoined = rowsWithCellWidthsNormalized.map((r) =>
-      Text.joinColumns(r.map(Text.toLines), separators.column),
+      Text.joinColumns(r.map(Text.toLines), separators.column)
     )
     const width = Math.max(...rowsWithCellsJoined.flatMap(Text.toLines).map((_) => Text.getLength(_)))
     const value = rowsWithCellsJoined.join(separators.row(width))

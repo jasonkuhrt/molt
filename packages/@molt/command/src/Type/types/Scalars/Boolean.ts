@@ -1,11 +1,11 @@
+import chalk from 'chalk'
+import { Effect, Either } from 'effect'
 import { parseEnvironmentVariableBoolean } from '../../../helpers.js'
 import { PromptEngine } from '../../../lib/PromptEngine/PromptEngine.js'
 import { Tex } from '../../../lib/Tex/index.js'
 import { Term } from '../../../term.js'
 import type { Optionality, Type } from '../../helpers.js'
 import { runtimeIgnore, TypeSymbol } from '../../helpers.js'
-import chalk from 'chalk'
-import { Effect, Either } from 'effect'
 
 export interface Boolean extends Type<boolean> {
   _tag: 'TypeBoolean'
@@ -43,7 +43,7 @@ export const boolean = ({
       return parseEnvironmentVariableBoolean(rawValue)
     },
     prompt: (params) => {
-      return Effect.gen(function* (_) {
+      return Effect.gen(function*(_) {
         interface State {
           value: boolean
         }

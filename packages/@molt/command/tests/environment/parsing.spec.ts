@@ -1,9 +1,9 @@
-import { $, b, n, s } from '../_/helpers.js'
-import { stdout } from '../_/mocks.js'
-import { environmentManager } from './__helpers__.js'
 import { beforeEach, expect } from 'vitest'
 import { describe, it } from 'vitest'
 import { z } from 'zod'
+import { $, b, n, s } from '../_/helpers.js'
+import { stdout } from '../_/mocks.js'
+import { environmentManager } from './__helpers__.js'
 
 beforeEach(() => environmentManager.set(`CLI_SETTINGS_READ_ARGUMENTS_FROM_ENVIRONMENT`, `true`))
 

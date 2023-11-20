@@ -47,7 +47,7 @@ FlagName.Parse<'--fooBar', { reservedNames: 'foo-bar'; usedNames: undefined }>
 FlagName.Parse<'-a', { usedNames: 'a'; reservedNames: undefined }>
 // Error: The name "a" cannot be used because it is already used for another flag.
 FlagName.Parse<'--v'>
-//Error: A long flag must be two (2) or more characters but you have: '--v
+// Error: A long flag must be two (2) or more characters but you have: '--v
 FlagName.Parse<'-foo'>
 // Error: A short flag must be exactly one (1) character but you have: '-foo'.
 FlagName.Parse<'--foo --foo'>
@@ -58,7 +58,9 @@ FlagName.Parse<'--foo --foo'>
 import { FlagName } from '@molt/types'
 
 const defineFlag = <Name>(
-  name: FlagName.Data.IsParseError<FlagName.Parse<Name>> extends true ? FlagName.Parse<Name> : Name,
+  name: FlagName.Data.IsParseError<FlagName.Parse<Name>> extends true
+    ? FlagName.Parse<Name>
+    : Name,
 ) => {
   // ...
 }
