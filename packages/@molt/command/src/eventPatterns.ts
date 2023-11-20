@@ -6,16 +6,16 @@ import type { Pattern } from './Pattern/Pattern.js'
 import type { Type } from './Type/index.js'
 
 // prettier-ignore
-export type EventPatternsInputAtLeastOne<T extends Type.Type> =
-  'optional' extends T['optionality']['_tag']  	? Pattern<BasicParameterParseEvent,'result'> :
-  'default'  extends T['optionality']['_tag']   ? Pattern<BasicParameterParseEvent,'result'> :
-                                                  Pattern<BasicParameterParseEventAccepted | BasicParameterParseEventRejected,'result'>
+export type EventPatternsInputAtLeastOne<T extends Type.Type> = 'optional' extends T['optionality']['_tag']
+  ? Pattern<BasicParameterParseEvent, 'result'>
+  : 'default' extends T['optionality']['_tag'] ? Pattern<BasicParameterParseEvent, 'result'>
+  : Pattern<BasicParameterParseEventAccepted | BasicParameterParseEventRejected, 'result'>
 
 // prettier-ignore
-export type EventPatternsInput<T extends Type.Type> =
-  T['optionality']['_tag'] extends 'optional'   ? Pattern<BasicParameterParseEvent,'result'> :
-  T['optionality']['_tag'] extends 'default'    ? Pattern<BasicParameterParseEvent,'result'> :
-                                                  Pattern<BasicParameterParseEventAccepted | BasicParameterParseEventRejected,'result'>
+export type EventPatternsInput<T extends Type.Type> = T['optionality']['_tag'] extends 'optional'
+  ? Pattern<BasicParameterParseEvent, 'result'>
+  : T['optionality']['_tag'] extends 'default' ? Pattern<BasicParameterParseEvent, 'result'>
+  : Pattern<BasicParameterParseEventAccepted | BasicParameterParseEventRejected, 'result'>
 
 export type BasicParameterParseEvent =
   | BasicParameterParseEventAccepted
@@ -55,18 +55,18 @@ export const createEvent = (parseResult: OpeningArgs.ParseResultBasic) => {
     ? { result: `accepted`, spec: specData, value: parseResult.value }
     : parseResult._tag === `omitted`
     ? { result: `omitted`, spec: specData }
-    : parseResult._tag === `error` &&
-      parseResult.errors.length > 0 &&
-      // If there are any other kinds of errors than the two named below then we do not, currently, support prompting for that case.
-      parseResult.errors.filter(
-        (_) => [`ErrorInvalidArgument`, `ErrorMissingArgument`].includes(_.name) === false,
-      ).length === 0
-    ? // It is not possible to have invalid argument and missing argument errors at once.
-      {
-        result: `rejected`,
-        spec: specData,
-        error: parseResult.errors[0]!.name as `ErrorInvalidArgument` | `ErrorMissingArgument`,
-      }
+    : parseResult._tag === `error`
+        && parseResult.errors.length > 0
+        // If there are any other kinds of errors than the two named below then we do not, currently, support prompting for that case.
+        && parseResult.errors.filter(
+            (_) => [`ErrorInvalidArgument`, `ErrorMissingArgument`].includes(_.name) === false,
+          ).length === 0
+    // It is not possible to have invalid argument and missing argument errors at once.
+    ? {
+      result: `rejected`,
+      spec: specData,
+      error: parseResult.errors[0]!.name as `ErrorInvalidArgument` | `ErrorMissingArgument`,
+    }
     : null
 }
 

@@ -1,5 +1,3 @@
-import { Command } from '../packages/@molt/command/src/_entrypoints/default.js'
-import { Zod } from '../packages/@molt/command/src/_entrypoints/extensions.js'
 import { Octokit } from '@octokit/core'
 import { Alge } from 'alge'
 import { execa } from 'execa'
@@ -9,6 +7,8 @@ import url from 'node:url'
 import Semver from 'semver'
 import semverRegex from 'semver-regex'
 import { z } from 'zod'
+import { Command } from '../packages/@molt/command/src/_entrypoints/default.js'
+import { Zod } from '../packages/@molt/command/src/_entrypoints/extensions.js'
 
 // prettier-ignore
 const args = Command.create()
@@ -17,11 +17,10 @@ const args = Command.create()
   .parameter(`publish`, z.boolean().default(true))
   .parameter(`githubRelease`, z.boolean().default(true))
   .parameter(`p package`, z.enum([`@molt/command`, `@molt/types`, `molt`]))
-  .parametersExclusive(`method`, (__) => 
+  .parametersExclusive(`method`, (__) =>
     __
       .parameter(`v version`, z.string().regex(semverRegex()))
-      .parameter(`b bump`, z.enum([`major`, `minor`, `patch`]))
-  )
+      .parameter(`b bump`, z.enum([`major`, `minor`, `patch`])))
   .settings({
     parameters: {
       environment: {
@@ -72,7 +71,13 @@ if (args.publish) {
   await execa(`git`, [`commit`, `--message`, `chore(${args.package}): bump version`], { stdio: `inherit` })
   await execa(`pnpm`, [`publish`], { cwd, stdio: `inherit` })
   // prettier-ignore
-  await execa(`git`, [`tag`, gitTagName, `--annotate`, `--message`, `Version ${newVersion} for package ${args.package}`], { stdio: `inherit` })
+  await execa(`git`, [
+    `tag`,
+    gitTagName,
+    `--annotate`,
+    `--message`,
+    `Version ${newVersion} for package ${args.package}`,
+  ], { stdio: `inherit` })
   await execa(`git`, [`push`], { stdio: `inherit` })
   await execa(`git`, [`push`, `--tags`], { stdio: `inherit` })
 }

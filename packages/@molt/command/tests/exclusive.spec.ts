@@ -1,55 +1,53 @@
-import { $, as, e, s } from './_/helpers.js'
 import { expectType } from 'tsd'
 import { describe, expect, it } from 'vitest'
+import { $, as, e, s } from './_/helpers.js'
 
 const $$ = $.settings({ onError: `throw`, helpOnError: false })
 let args
 
 describe(`optional`, () => {
   it(`leads to optional type`, () => {
-    const args = $.parametersExclusive(`method`, ($) =>
-      $.parameter(`v version`, s).parameter(`b bump`, e).optional(),
-    ).parse({ line: [`-v`, `1.0.0`] })
+    const args = $.parametersExclusive(`method`, ($) => $.parameter(`v version`, s).parameter(`b bump`, e).optional())
+      .parse({ line: [`-v`, `1.0.0`] })
     expectType<typeof args>(
       as<{
         method:
           | {
-              _tag: 'version'
-              value: string
-            }
+            _tag: 'version'
+            value: string
+          }
           | {
-              _tag: 'bump'
-              value: 'major' | 'minor' | 'patch'
-            }
+            _tag: 'bump'
+            value: 'major' | 'minor' | 'patch'
+          }
           | undefined
       }>(),
     )
   })
 
   it(`can accept line arg`, () => {
-    args = $.parametersExclusive(`method`, ($) =>
-      $.parameter(`v version`, s).parameter(`b bump`, e).optional(),
-    ).parse({ line: [`-v`, `1.0.0`] })
+    args = $.parametersExclusive(`method`, ($) => $.parameter(`v version`, s).parameter(`b bump`, e).optional()).parse({
+      line: [`-v`, `1.0.0`],
+    })
     expect(args).toMatchObject({ method: { _tag: `version`, value: `1.0.0` } })
   })
 
   it(`can accept env arg`, () => {
-    args = $.parametersExclusive(`method`, ($) =>
-      $.parameter(`v version`, s).parameter(`b bump`, e).optional(),
-    ).parse({ environment: { cli_param_v: `1.0.0` } })
+    args = $.parametersExclusive(`method`, ($) => $.parameter(`v version`, s).parameter(`b bump`, e).optional()).parse({
+      environment: { cli_param_v: `1.0.0` },
+    })
     expect(args).toMatchObject({ method: { _tag: `version`, value: `1.0.0` } })
   })
   it(`can accept nothing`, () => {
-    args = $.parametersExclusive(`method`, ($) =>
-      $.parameter(`v version`, s).parameter(`b bump`, e).optional(),
-    ).parse()
+    args = $.parametersExclusive(`method`, ($) => $.parameter(`v version`, s).parameter(`b bump`, e).optional())
+      .parse()
     expect(`method` in args).toBe(false)
   })
   it(`if two args then error`, () => {
     expect(() =>
-      $$.parametersExclusive(`method`, ($) =>
-        $.parameter(`v version`, s).parameter(`b bump`, e).optional(),
-      ).parse({ line: [`-v`, `1.0.0`, `-b`, `major`] }),
+      $$.parametersExclusive(`method`, ($) => $.parameter(`v version`, s).parameter(`b bump`, e).optional()).parse({
+        line: [`-v`, `1.0.0`, `-b`, `major`],
+      })
     ).toThrowErrorMatchingSnapshot()
   })
 })
@@ -64,7 +62,7 @@ describe(`required`, () => {
     expect(() =>
       $$.parametersExclusive(`method`, ($$) => $$.parameter(`v version`, s).parameter(`b bump`, e)).parse({
         line: [`-v`, `1.0.0`, `-b`, `major`],
-      }),
+      })
     ).toThrowErrorMatchingSnapshot()
   })
 })
@@ -83,26 +81,28 @@ describe(`default`, () => {
     })
   })
   it(`leads to non-optional type`, () => {
-    args = $$.parametersExclusive(`method`, ($) =>
-      $.parameter(`v version`, s).parameter(`b bump`, e).default(`bump`, `major`),
+    args = $$.parametersExclusive(
+      `method`,
+      ($) => $.parameter(`v version`, s).parameter(`b bump`, e).default(`bump`, `major`),
     ).parse()
     expectType<typeof args>(
       as<{
         method:
           | {
-              _tag: 'version'
-              value: string
-            }
+            _tag: 'version'
+            value: string
+          }
           | {
-              _tag: 'bump'
-              value: 'major' | 'minor' | 'patch'
-            }
+            _tag: 'bump'
+            value: 'major' | 'minor' | 'patch'
+          }
       }>(),
     )
   })
   it(`used if nothing passed for group`, () => {
-    args = $$.parametersExclusive(`method`, ($) =>
-      $.parameter(`v version`, s).parameter(`b bump`, e).default(`bump`, `patch`),
+    args = $$.parametersExclusive(
+      `method`,
+      ($) => $.parameter(`v version`, s).parameter(`b bump`, e).default(`bump`, `patch`),
     ).parse()
     expect(args.method).toMatchObject({ _tag: `bump`, value: `patch` })
   })

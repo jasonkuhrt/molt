@@ -1,3 +1,4 @@
+import { Effect } from 'effect'
 import type { RawArgInputs } from '../builders/command/types.js'
 import { createEvent } from '../eventPatterns.js'
 import { Help } from '../Help/index.js'
@@ -16,7 +17,6 @@ import type { Settings } from '../Settings/index.js'
 import { createParameters } from './helpers/createParameters.js'
 import { prompt } from './prompt.js'
 import type { ArgumentValue } from './types.js'
-import { Effect } from 'effect'
 
 export interface ParseProgressPostPromptAnnotation {
   globalErrors: OpeningArgs.ParseResult['globalErrors']
@@ -113,9 +113,8 @@ export const parse = (
   if (argInputsPrompter) {
     const basicSpecs = parametersResult.parameters.filter((_): _ is ParameterBasic => _._tag === `Basic`)
     for (const spec of basicSpecs) {
-      const promptEnabled =
-        (spec.prompt.when !== null && spec.prompt.enabled !== false) ||
-        (spec.prompt.enabled ?? settings.prompt.enabled)
+      const promptEnabled = (spec.prompt.when !== null && spec.prompt.enabled !== false)
+        || (spec.prompt.enabled ?? settings.prompt.enabled)
       if (!promptEnabled) continue
 
       const parseResult = openingArgsResult.basicParameters[spec.name.canonical]
@@ -137,10 +136,9 @@ export const parse = (
   }
 
   // eslint-disable-next-line
-  const askedForHelp =
-    `help` in openingArgsResult.basicParameters &&
-    openingArgsResult.basicParameters[`help`]._tag === `supplied` &&
-    openingArgsResult.basicParameters[`help`].value === true
+  const askedForHelp = `help` in openingArgsResult.basicParameters
+    && openingArgsResult.basicParameters[`help`]._tag === `supplied`
+    && openingArgsResult.basicParameters[`help`].value === true
 
   if (askedForHelp) {
     settings.onOutput(Help.render(parametersResult.parameters, settings) + `\n`)
@@ -171,11 +169,10 @@ export const parse = (
 
   if (parseProgressPostPromptAnnotation.globalErrors.length > 0 || argumentErrors.length > 0) {
     if (settings.helpOnError) {
-      const message =
-        `Cannot run command, you made some mistakes:\n\n` +
-        openingArgsResult.globalErrors.map((_) => _.message).join(`\nX `) +
-        argumentErrors.map((_) => _.errors.map((_) => _.message).join(`\nX `)).join(`\nX `) +
-        `\n\nHere are the docs for this command:\n`
+      const message = `Cannot run command, you made some mistakes:\n\n`
+        + openingArgsResult.globalErrors.map((_) => _.message).join(`\nX `)
+        + argumentErrors.map((_) => _.errors.map((_) => _.message).join(`\nX `)).join(`\nX `)
+        + `\n\nHere are the docs for this command:\n`
       settings.onOutput(message + `\n`)
       settings.onOutput(Help.render(parametersResult.parameters, settings) + `\n`)
     }
@@ -194,9 +191,8 @@ export const parse = (
     }
   }
 
-  const hasPrompt =
-    Object.values(parseProgressPostPromptAnnotation.basicParameters).some((_) => _.prompt.enabled) &&
-    argInputsPrompter
+  const hasPrompt = Object.values(parseProgressPostPromptAnnotation.basicParameters).some((_) => _.prompt.enabled)
+    && argInputsPrompter
 
   /**
    * Progress to the next parse stage wherein we will execute prompts.

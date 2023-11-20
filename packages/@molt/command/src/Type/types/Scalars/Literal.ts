@@ -1,8 +1,8 @@
+import { Either } from 'effect'
 import { BooleanLookup, casesExhausted } from '../../../helpers.js'
 import { Term } from '../../../term.js'
 import type { Optionality, Type } from '../../helpers.js'
 import { runtimeIgnore, TypeSymbol } from '../../helpers.js'
-import { Either } from 'effect'
 
 export interface Literal<$Value extends LiteralValue = LiteralValue> extends Type<$Value> {
   _tag: 'TypeLiteral'

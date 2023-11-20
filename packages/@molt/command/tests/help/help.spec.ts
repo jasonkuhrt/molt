@@ -1,6 +1,6 @@
-import { $, s } from '../_/helpers.js'
 import { expect, test } from 'vitest'
 import { mockProcessExit, mockProcessStdout } from 'vitest-mock-process'
+import { $, s } from '../_/helpers.js'
 
 const processExit = mockProcessExit()
 const processStdout = mockProcessStdout()

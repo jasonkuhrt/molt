@@ -1,5 +1,5 @@
-import type { Type, TypeSymbol } from './helpers.js'
 import type { Either } from 'effect'
+import type { Type, TypeSymbol } from './helpers.js'
 
 export * from './helpers.js'
 export { Scalar } from './types/Scalar.js'

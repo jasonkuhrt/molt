@@ -1,12 +1,12 @@
+import stripAnsi from 'strip-ansi'
+import { expectType } from 'tsd'
+import { beforeEach, describe, expect, it } from 'vitest'
+import { z } from 'zod'
 import type { BuilderCommandState } from '../../src/builders/command/state.js'
 import type { CommandBuilder } from '../../src/builders/command/types.js'
 import type { KeyPress } from '../../src/lib/KeyPress/index.js'
 import { $, b, e, l1, n, s, tryCatch } from '../_/helpers.js'
 import { memoryPrompter } from '../_/mocks/tty.js'
-import stripAnsi from 'strip-ansi'
-import { expectType } from 'tsd'
-import { beforeEach, describe, expect, it } from 'vitest'
-import { z } from 'zod'
 
 // TODO test that prompt order is based on order of parameter definition
 
@@ -322,27 +322,33 @@ it(`array value`, () => {
 it(`Static type tests`, () => {
   expectType<() => { a: 1 }>($.parameter(`a`, { type: l1, prompt: null }).parse)
   expectType<() => { a: 1 }>($.parameter(`a`, { type: l1, prompt: undefined }).parse)
-  expectType<() => { a: 1 }>($.parameter(`a`, { type: l1, prompt: {enabled:false} }).parse)
-  expectType<() => { a: 1 }>($.parameter(`a`, { type: l1, prompt: {enabled:false,when:{result:`accepted`}} }).parse)
+  expectType<() => { a: 1 }>($.parameter(`a`, { type: l1, prompt: { enabled: false } }).parse)
+  expectType<() => { a: 1 }>(
+    $.parameter(`a`, { type: l1, prompt: { enabled: false, when: { result: `accepted` } } }).parse,
+  )
   expectType<() => { a: 1 }>($.parameter(`a`, { type: l1 }).parse)
   expectType<() => { a: 1 }>($.parameter(`a`, { type: l1 }).settings({}).parse)
-  expectType<() => { a: 1 }>($.parameter(`a`, { type: l1 }).settings({prompt:false}).parse)
-  expectType<() => { a: 1 }>($.parameter(`a`, { type: l1 }).settings({prompt:{enabled:false}}).parse)
-  expectType<() => { a: 1 }>($.parameter(`a`, { type: l1 }).settings({prompt:{enabled:false,when:{result:`accepted`}}}).parse)
-  expectType<() => Promise<{ a: 1 }>>($.parameter(`a`, { type: l1, prompt: true }).parameter(`b`, {type:l1,prompt:false}).parse)
+  expectType<() => { a: 1 }>($.parameter(`a`, { type: l1 }).settings({ prompt: false }).parse)
+  expectType<() => { a: 1 }>($.parameter(`a`, { type: l1 }).settings({ prompt: { enabled: false } }).parse)
+  expectType<() => { a: 1 }>(
+    $.parameter(`a`, { type: l1 }).settings({ prompt: { enabled: false, when: { result: `accepted` } } }).parse,
+  )
+  expectType<() => Promise<{ a: 1 }>>(
+    $.parameter(`a`, { type: l1, prompt: true }).parameter(`b`, { type: l1, prompt: false }).parse,
+  )
   expectType<() => Promise<{ a: 1 }>>($.parameter(`a`, { type: l1, prompt: true }).parse)
-  expectType<() => Promise<{ a: 1 }>>($.parameter(`a`, { type: l1, prompt: {enabled:true} }).parse)
-  expectType<() => Promise<{ a: 1 }>>($.parameter(`a`, { type: l1, prompt: {when:{result:`accepted`}} }).parse)
-  expectType<() => Promise<{ a: 1 }>>($.parameter(`a`, { type: l1, prompt: true }).settings({prompt:false}).parse)
-  expectType<() => Promise<{ a: 1 }>>($.parameter(`a`, { type: l1 }).settings({prompt:true}).parse)
-  expectType<() => Promise<{ a: 1 }>>($.parameter(`a`, { type: l1 }).settings({prompt:{enabled:true}}).parse)
-  expectType<() => Promise<{ a: 1 }>>($.parameter(`a`, { type: l1 }).settings({prompt:{when:{result:`accepted`}}}).parse)
+  expectType<() => Promise<{ a: 1 }>>($.parameter(`a`, { type: l1, prompt: { enabled: true } }).parse)
+  expectType<() => Promise<{ a: 1 }>>($.parameter(`a`, { type: l1, prompt: { when: { result: `accepted` } } }).parse)
+  expectType<() => Promise<{ a: 1 }>>($.parameter(`a`, { type: l1, prompt: true }).settings({ prompt: false }).parse)
+  expectType<() => Promise<{ a: 1 }>>($.parameter(`a`, { type: l1 }).settings({ prompt: true }).parse)
+  expectType<() => Promise<{ a: 1 }>>($.parameter(`a`, { type: l1 }).settings({ prompt: { enabled: true } }).parse)
+  expectType<() => Promise<{ a: 1 }>>(
+    $.parameter(`a`, { type: l1 }).settings({ prompt: { when: { result: `accepted` } } }).parse,
+  )
 })
 
 /**
- *
  * Helpers
- *
  */
 
 const run = async (

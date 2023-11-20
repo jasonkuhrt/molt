@@ -1,6 +1,6 @@
-import { Tex } from '../../../src/lib/Tex/index.js'
 import chalk from 'chalk'
 import { describe, expect, it } from 'vitest'
+import { Tex } from '../../../src/lib/Tex/index.js'
 
 describe(`text`, () => {
   $(`can render text`, Tex.Tex().text(`foo`))
@@ -60,7 +60,7 @@ describe(`block`, () => {
         $.set({ padding: { left: 2 } })
           .block(`foo`)
           .block(`bar`)
-          .block(`qux`),
+          .block(`qux`)
       ),
     )
   })
@@ -74,7 +74,7 @@ describe(`block`, () => {
           $.set({ border: { right: `|` } })
             .block(`alpha`)
             .block(`bravo bravo`)
-            .block(`charlie charlie charlie`),
+            .block(`charlie charlie charlie`)
         ),
     )
     $(`bottom`, Tex.Tex().block({ border: { bottom: `-` } }, `foo`))
@@ -90,7 +90,7 @@ describe(`block`, () => {
         $.set({ border: { right: `|`, left: `|`, top: `-`, bottom: `-` } }).block(
           { border: { right: `|`, left: `|`, top: `-`, bottom: `-` } },
           `abc`,
-        ),
+        )
       ),
     )
     describe(`corners`, () => {
@@ -108,7 +108,7 @@ describe(`block`, () => {
           $.set({ border: { corners: `o`, right: `|`, left: `|`, top: `-`, bottom: `-` } }).block(
             { border: { corners: `o`, right: `|`, left: `|`, top: `-`, bottom: `-` } },
             `abc`,
-          ),
+          )
         ),
       )
     })
@@ -120,12 +120,13 @@ describe(`block`, () => {
           $.set({ border: { corners: `o`, right: `|`, left: `|`, top: `-`, bottom: `-` } }).block(
             { border: { corners: `o`, right: `|`, left: `|`, top: `-`, bottom: `-` } },
             `abc`,
-          ),
+          )
         )
         .render()
       const b = Tex.Tex()
-        .block({ border: { corners: `o`, right: `|`, left: `|`, top: `-`, bottom: `-` } }, ($) =>
-          $.block({ border: { corners: `o`, right: `|`, left: `|`, top: `-`, bottom: `-` } }, `abc`),
+        .block(
+          { border: { corners: `o`, right: `|`, left: `|`, top: `-`, bottom: `-` } },
+          ($) => $.block({ border: { corners: `o`, right: `|`, left: `|`, top: `-`, bottom: `-` } }, `abc`),
         )
         .render()
       expect(a).toEqual(b)
@@ -171,11 +172,11 @@ describe(`list`, () => {
     })
     describe(`items`, () => {
       it(`can render text`, () => {
-        expect(Tex.Tex().list(($) => $.items(`a`,`b`)).render()).toEqual(Tex.Tex().list([`a`,`b`]).render())
-        expect(Tex.Tex().list(($) => $.items([`a`,`b`])).render()).toEqual(Tex.Tex().list([`a`,`b`]).render())
+        expect(Tex.Tex().list(($) => $.items(`a`, `b`)).render()).toEqual(Tex.Tex().list([`a`, `b`]).render())
+        expect(Tex.Tex().list(($) => $.items([`a`, `b`])).render()).toEqual(Tex.Tex().list([`a`, `b`]).render())
       })
       it(`null items are removed`, () => {
-        expect(Tex.Tex().list(($) => $.items([`a`,null])).render()).toEqual(Tex.Tex().list([`a`]).render())
+        expect(Tex.Tex().list(($) => $.items([`a`, null])).render()).toEqual(Tex.Tex().list([`a`]).render())
       })
       it(`can render to nothing`, () => {
         expect(Tex.Tex().list(($) => $.items(null)).render()).toEqual(Tex.Tex().render())
@@ -200,8 +201,8 @@ describe(`table`, () => {
         $.table(($) =>
           $.header(new Tex.Block({ padding: { right: 10 } }, `alpha`))
             .header(new Tex.Block({ border: { bottom: `~` } }, `bravo`))
-            .row(`a`, `b`),
-        ),
+            .row(`a`, `b`)
+        )
       ),
     )
   })
@@ -227,8 +228,12 @@ describe(`table`, () => {
     describe(`rows`, () => {
       // prettier-ignore
       it(`single arg or vargs`, () => {
-        expect(Tex.Tex().table(($) => $.rows([[`r1c1`, `r1c2`],[`r2c1`, `r2c2`]])).render()).toEqual(Tex.Tex().table([[`r1c1`, `r1c2`],[`r2c1`, `r2c2`]]).render())
-        expect(Tex.Tex().table(($) => $.rows([`r1c1`, `r1c2`],[`r2c1`, `r2c2`])).render()).toEqual(Tex.Tex().table([[`r1c1`, `r1c2`],[`r2c1`, `r2c2`]]).render())
+        expect(Tex.Tex().table(($) => $.rows([[`r1c1`, `r1c2`], [`r2c1`, `r2c2`]])).render()).toEqual(
+          Tex.Tex().table([[`r1c1`, `r1c2`], [`r2c1`, `r2c2`]]).render(),
+        )
+        expect(Tex.Tex().table(($) => $.rows([`r1c1`, `r1c2`], [`r2c1`, `r2c2`])).render()).toEqual(
+          Tex.Tex().table([[`r1c1`, `r1c2`], [`r2c1`, `r2c2`]]).render(),
+        )
       })
       $(
         `pure null rows are not rendered`,
@@ -247,7 +252,7 @@ describe(`table`, () => {
       $.headers([`alpha`, `bravo`, `charlieeeeeeeeeeeeeeeeeee`, `delta`])
         .row(`a1`, `b1`, `c1`, `d1`)
         .row(`a222222222222222`, `b2`, `c2`, `d2`)
-        .row(`a3`, `b333333333333333333`, `c3`, `d3`),
+        .row(`a3`, `b333333333333333333`, `c3`, `d3`)
     ),
   )
   $(
@@ -256,7 +261,7 @@ describe(`table`, () => {
       $.headers([`alpha`, `bravo`, `charlieeeeeeeeeeeeeeeeeee`, `delta`])
         .row(`a1`, `b1`, `c1`, `d1`)
         .row(`a222222222222222\na2`, `b2`, `c2`, `d2`)
-        .row(`a3`, `b333333333333333333`, `c3`, `d3`),
+        .row(`a3`, `b333333333333333333`, `c3`, `d3`)
     ),
   )
   $(
@@ -270,7 +275,7 @@ describe(`table`, () => {
       Tex.Tex().table(($) =>
         $.set({ separators: { row: ` ` } })
           .headers([`alpha`, `bravo`, `charlie`])
-          .row(`a`, `b`),
+          .row(`a`, `b`)
       ),
     )
     $(
@@ -278,7 +283,7 @@ describe(`table`, () => {
       Tex.Tex().table(($) =>
         $.set({ separators: { column: ` ` } })
           .headers([`alpha`, `bravo`, `charlie`])
-          .row(`a`, `b`),
+          .row(`a`, `b`)
       ),
     )
   })

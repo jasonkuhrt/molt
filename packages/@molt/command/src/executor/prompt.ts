@@ -1,10 +1,10 @@
+import chalk from 'chalk'
+import { Effect } from 'effect'
 import type { Prompter } from '../lib/Prompter/index.js'
 import { Tex } from '../lib/Tex/index_.js'
 import { Text } from '../lib/Text/index.js'
 import { Term } from '../term.js'
 import type { ParseProgressPostPrompt, ParseProgressPostPromptAnnotation } from './parse.js'
-import chalk from 'chalk'
-import { Effect } from 'effect'
 
 /**
  * Get args from the user interactively via the console for the given parameters.
@@ -13,7 +13,7 @@ export const prompt = (
   parseProgress: ParseProgressPostPromptAnnotation,
   prompter: null | Prompter.Prompter,
 ): Effect.Effect<never, never, ParseProgressPostPrompt> =>
-  Effect.gen(function* (_) {
+  Effect.gen(function*(_) {
     if (prompter === null) return parseProgress as ParseProgressPostPrompt
 
     const args: Record<string, any> = {}
@@ -26,13 +26,16 @@ export const prompt = (
 
     for (const parameter of parameters) {
       // prettier-ignore
-      const question = Tex({ flow: `horizontal`})
-        .block({ padding: { right: 2 }}, `${Term.colors.dim(`${indexCurrent}/${indexTotal}`)}`)
+      const question = Tex({ flow: `horizontal` })
+        .block({ padding: { right: 2 } }, `${Term.colors.dim(`${indexCurrent}/${indexTotal}`)}`)
         .block((__) =>
-          __.block(Term.colors.positive(parameter.name.canonical) +  `${parameter.type.optionality._tag === `required` ? `` : chalk.dim(` optional (press esc to skip)`)}`)
+          __.block(
+            Term.colors.positive(parameter.name.canonical)
+              + `${parameter.type.optionality._tag === `required` ? `` : chalk.dim(` optional (press esc to skip)`)}`,
+          )
             .block((parameter.type.description && Term.colors.dim(parameter.type.description)) ?? null)
         )
-      .render()
+        .render()
       // eslint-disable-next-line no-constant-condition
       while (true) {
         const asking = prompter.ask({

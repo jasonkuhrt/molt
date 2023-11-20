@@ -1,8 +1,8 @@
+import { Either } from 'effect'
 import { stripeNegatePrefix } from '../../helpers.js'
 import type { Type } from '../../Type/index.js'
 import type { ValidationResult } from '../../Type/Type.js'
 import type { Parameter } from '../types.js'
-import { Either } from 'effect'
 
 export const validate = <T>(parameter: Parameter, value: unknown): ValidationResult<T> => {
   if (parameter.type.optionality._tag === `optional` && value === undefined) return Either.right(value as T)
@@ -31,15 +31,15 @@ export const getNames = (parameter: Parameter): [string, ...string[]] => {
 
 type NameHit =
   | {
-      kind: 'long' | 'longAlias'
-      /**
-       * Was the given name in negated format? e.g. noFoo instead of foo
-       */
-      negated: boolean
-    }
+    kind: 'long' | 'longAlias'
+    /**
+     * Was the given name in negated format? e.g. noFoo instead of foo
+     */
+    negated: boolean
+  }
   | {
-      kind: 'short' | 'shortAlias'
-    }
+    kind: 'short' | 'shortAlias'
+  }
 
 /**
  * Is one of the parameter's names the given name?
@@ -72,8 +72,8 @@ const parameterSpecHasNameDo = (
     ? { kind: `long`, negated }
     : parameter.name.aliases.long.includes(name)
     ? { kind: `longAlias`, negated }
-    : // Short names cannot be negated currently so short circuit with the negated check.
-    parameter.name.short === name
+    // Short names cannot be negated currently so short circuit with the negated check.
+    : parameter.name.short === name
     ? { kind: `short` }
     : parameter.name.aliases.short.includes(name)
     ? { kind: `shortAlias` }

@@ -28,7 +28,7 @@ const createEnvironmentManager = () => {
 
   function set(environment: Record<string, string>): void
   function set(key: string, value: string): void
-  //eslint-disable-next-line
+  // eslint-disable-next-line
   function set(...args: [key: string, value: string] | [Record<string, string>]): void {
     if (args.length === 1) {
       const [environment] = args

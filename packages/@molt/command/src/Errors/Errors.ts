@@ -40,7 +40,8 @@ export class ErrorDuplicateEnvArg extends Error {
     parameter: Parameter
     instances: { value: string; name: string; prefix: string | null }[]
   }) {
-    const message = `The parameter "${params.parameter.name.canonical}" was passed an argument multiple times via different parameter aliases in the environment.`
+    const message =
+      `The parameter "${params.parameter.name.canonical}" was passed an argument multiple times via different parameter aliases in the environment.`
     super(message)
     this.parameter = params.parameter
     this.instances = params.instances
@@ -68,14 +69,17 @@ export class ErrorMissingArgument extends Error {
 }
 
 export class ErrorMissingArgumentForMutuallyExclusiveParameters extends Error {
-  public override name: 'ErrorMissingArgumentForMutuallyExclusiveParameters' = `ErrorMissingArgumentForMutuallyExclusiveParameters`
+  public override name: 'ErrorMissingArgumentForMutuallyExclusiveParameters' =
+    `ErrorMissingArgumentForMutuallyExclusiveParameters`
   public group: ParameterExclusiveGroup
   constructor(params: { group: ParameterExclusiveGroup }) {
-    const message = `Missing argument for one of the following parameters: ${Object.values(
-      params.group.parameters,
-    )
-      .map((_) => _.name.canonical)
-      .join(`, `)}`
+    const message = `Missing argument for one of the following parameters: ${
+      Object.values(
+        params.group.parameters,
+      )
+        .map((_) => _.name.canonical)
+        .join(`, `)
+    }`
     super(message)
     this.group = params.group
   }
@@ -85,9 +89,11 @@ export class ErrorArgumentsToMutuallyExclusiveParameters extends Error {
   public override name: 'ErrorArgumentsToMutuallyExclusiveParameters' = `ErrorArgumentsToMutuallyExclusiveParameters`
   public group: ParameterExclusiveGroup
   constructor(params: { offenses: { spec: ParameterExclusive; arg: OpeningArgs.Argument }[] }) {
-    const message = `Arguments given to multiple mutually exclusive parameters: ${params.offenses
-      .map((_) => _.spec.name.canonical)
-      .join(`, `)}`
+    const message = `Arguments given to multiple mutually exclusive parameters: ${
+      params.offenses
+        .map((_) => _.spec.name.canonical)
+        .join(`, `)
+    }`
     super(message)
     this.group = params.offenses[0]!.spec.group
   }

@@ -76,21 +76,30 @@ import { z } from 'zod'
 const args = Command.create()
   .use(Zod)
   .parameter(`filePath`, z.string().describe(`Path to the file to convert.`))
-  .parameter(`to`, z.enum([`json`, `yaml`, `toml`]).describe(`Format to convert to.`))
+  .parameter(
+    `to`,
+    z.enum([`json`, `yaml`, `toml`]).describe(`Format to convert to.`),
+  )
   .parameter(
     `from`,
     z
       .enum([`json`, `yaml`, `toml`])
       .optional()
-      .describe(`Format to convert from. By default inferred from the file extension.`),
+      .describe(
+        `Format to convert from. By default inferred from the file extension.`,
+      ),
   )
   .parameter(
     `verbose v`,
-    z.boolean().default(false).describe(`Log detailed progress as conversion executes.`),
+    z.boolean().default(false).describe(
+      `Log detailed progress as conversion executes.`,
+    ),
   )
   .parameter(
     `move m`,
-    z.boolean().default(false).describe(`Delete the original file after it has been converted.`),
+    z.boolean().default(false).describe(
+      `Delete the original file after it has been converted.`,
+    ),
   )
   .parse()
 ```
@@ -139,7 +148,10 @@ $ mybin --help
 - Default values:
 
   ```ts
-  const args = Command.create().parameter('--path', z.string().default('./a/b/c')).parse()
+  const args = Command.create().parameter(
+    '--path',
+    z.string().default('./a/b/c'),
+  ).parse()
   args.path === './a/b/c/' //   $ mybin
   args.path === '/over/ride' // $ mybin --path /over/ride
   ```
@@ -223,7 +235,6 @@ const args = command.parameter('charlie', z.number())
 You can define parameters using dash prefixes (flag syntax).
 
 ```ts
-// prettier-ignore
 const args = Command.create()
   .parameter('--foo -f', z.string())
   .parameter('qux q', z.string())
@@ -348,7 +359,8 @@ This section covers the different kinds of built-in types and how they affect ar
 Examples:
 
 ```ts
-const args = Command.create().parameter('f force forcefully', z.boolean()).parse()
+const args = Command.create().parameter('f force forcefully', z.boolean())
+  .parse()
 // $ CLI_PARAM_NO_F='true' mybin
 // $ CLI_PARAM_NO_FORCE='true' mybin
 // $ CLI_PARAM_NO_FORCEFULLY='true' mybin
@@ -418,7 +430,7 @@ args.force === true
 
 - `min` - The minimum allowed number.
 - `max` - the maximum allowed number.
-- `multipleOf` - The multiple that the given number must be of. For example `20, 15, 10,5 ` would all be allowed if `multipleOf` was `5` since all those numbers are divisible by `5`.
+- `multipleOf` - The multiple that the given number must be of. For example `20, 15, 10,5` would all be allowed if `multipleOf` was `5` since all those numbers are divisible by `5`.
 - `int`
 
 #### Enum
@@ -454,7 +466,10 @@ args.force === true
 - By default help rendering will render something like so:
 
   ```ts
-  Command.create().parameter('xee', z.union([z.string(), z.number()]).description('Blah blah blah.'))
+  Command.create().parameter(
+    'xee',
+    z.union([z.string(), z.number()]).description('Blah blah blah.'),
+  )
   ```
 
   ```
@@ -558,7 +573,6 @@ $ mybin --filePath ./a/b/c.yaml
     ```
     1/3  level
          ❯ high | medium | low
-
     ```
 
   - string
@@ -684,7 +698,10 @@ const args = await Command.create()
   .parameter(`to`, {
     schema: z.enum([`json`, `yaml`, `toml`]),
     prompt: {
-      when: [Command.EventPatterns.rejectedMissingOrInvalid, Command.EventPatterns.omittedWithoutDefault],
+      when: [
+        Command.EventPatterns.rejectedMissingOrInvalid,
+        Command.EventPatterns.omittedWithoutDefault,
+      ],
     },
   })
   .parse()
@@ -921,7 +938,12 @@ const args = Command.create()
   .parameter('--foo', z.string().default('not_from_env'))
   .parameter('--bar', z.string().default('not_from_env'))
   .parameter('--qux', z.string().default('not_from_env'))
-  .settings({ environment: { $default: { enabled: true, prefix: 'MOO' }, bar: { prefix: true } } })
+  .settings({
+    environment: {
+      $default: { enabled: true, prefix: 'MOO' },
+      bar: { prefix: true },
+    },
+  })
   .parse()
 
 // $ MOO_FOO='foo' CLI_PARAM_BAR='bar' MOO_QUX='qux' mybin
@@ -968,7 +990,12 @@ const args = Command.create()
   .parameter('--foo', z.string().default('not_from_env'))
   .parameter('--bar', z.string().default('not_from_env'))
   .parameter('--qux', z.string().default('not_from_env'))
-  .settings({ environment: { $default: { enabled: true, prefix: false }, bar: { prefix: true } } })
+  .settings({
+    environment: {
+      $default: { enabled: true, prefix: false },
+      bar: { prefix: true },
+    },
+  })
   .parse()
 
 // $ FOO='foo' CLI_PARAM_BAR='bar' QUX='qux' mybin
@@ -1018,11 +1045,12 @@ With the chaining API you can declaratively state that two or more parameters ar
 Here is an example where you might want this feature. You are building a CLI for publishing software packages that allows the user to specify the version to publish either by [semver](https://semver.org) level to bump by OR an exact version.
 
 ```ts
-// prettier-ignore
 const args = Command.create()
-  .parametersExclusive(`method`, (_) =>
-    _.parameter(`v version`, z.string().regex(semverRegex()))
-     .parameter(`b bump`, z.enum([`major`, `minor`, `patch`]))
+  .parametersExclusive(
+    `method`,
+    (_) =>
+      _.parameter(`v version`, z.string().regex(semverRegex()))
+        .parameter(`b bump`, z.enum([`major`, `minor`, `patch`])),
   )
 ```
 
@@ -1037,10 +1065,9 @@ There are three key benefits to this method:
 In the above example `args` will end up with a `method` property whose type is:
 
 ```ts
-// prettier-ignore
 type Method =
-  | { _tag: 'version', value: string }
-  | { _tag: 'bump',    value: 'major' | 'minor' | 'patch' }
+  | { _tag: 'version'; value: string }
+  | { _tag: 'bump'; value: 'major' | 'minor' | 'patch' }
 ```
 
 You automatically get a proper TypeScript-ready discriminant property based on the canonical names of your parameters. This helps you to write type-safe code. Also, it pairs well with [Alge 🌱](https://github.com/jasonkuhrt/alge) :). In the following example `Semver.inc` expects a strongly typed semver bump level of `'major'|'minor'|'patch'`:
@@ -1057,12 +1084,13 @@ const newVersion = Alge.match(args.method)
 By default, input for a group of mutually exclusive parameters is required. You can mark the group as being optional:
 
 ```ts
-// prettier-ignore
 const args = Command.create()
-  .parametersExclusive(`method`, (_) =>
-    _.parameter(`v version`, z.string().regex(semverRegex()))
-     .parameter(`b bump`, z.enum([`major`, `minor`, `patch`]))
-     .optional()
+  .parametersExclusive(
+    `method`,
+    (_) =>
+      _.parameter(`v version`, z.string().regex(semverRegex()))
+        .parameter(`b bump`, z.enum([`major`, `minor`, `patch`]))
+        .optional(),
   )
 ```
 
@@ -1071,13 +1099,14 @@ const args = Command.create()
 By default, input for a group of mutually exclusive parameters is required. You can mark the group as being optional for users via a default so that internally there is always a value:
 
 ```ts
-// prettier-ignore
 const args = Command.create()
-  .parametersExclusive(`method`, (_) =>
-    _.parameter(`v version`, z.string().regex(semverRegex()))
-     .parameter(`b bump`, z.enum([`major`, `minor`, `patch`]))
-     .optional()
-     .default('bump', 'patch')
+  .parametersExclusive(
+    `method`,
+    (_) =>
+      _.parameter(`v version`, z.string().regex(semverRegex()))
+        .parameter(`b bump`, z.enum([`major`, `minor`, `patch`]))
+        .optional()
+        .default('bump', 'patch'),
   )
 ```
 
@@ -1096,7 +1125,7 @@ const args = Command.create()
   .description(
     'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.',
   )
-  .parameter(/* ... */)
+  .parameter() /* ... */
 ```
 
 Descriptions will show up in the auto generated help.
@@ -1169,7 +1198,10 @@ mybin --xee z     <-- enable xee using z
 You could achieve this with the following parameter definition:
 
 ```ts
-const args = Command.create().parameter('xee', z.union([z.boolean(), z.enum(['x', 'y', 'z'])]).default(false))
+const args = Command.create().parameter(
+  'xee',
+  z.union([z.boolean(), z.enum(['x', 'y', 'z'])]).default(false),
+)
 
 args.xee // type: false | true | 'x' | 'y' | 'z'
 ```
@@ -1192,5 +1224,4 @@ Molt Command is composed from multiple distinct layers that execute in a flow:
 1. Prompt/Up Front Arguments Merger (prompt overrides up front)
 
 ```
-
 ```

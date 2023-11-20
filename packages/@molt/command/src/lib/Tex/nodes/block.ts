@@ -86,17 +86,16 @@ export class Block extends Node {
     const flow = this.parameters.flow ?? `vertical`
 
     if (context.phase === `inner` || !context.phase) {
-      const widthOwn =
-        typeof this.parameters.width === `number`
-          ? { type: `absolute` as const, value: this.parameters.width }
-          : typeof this.parameters.width === `string`
-          ? this.parameters.width.match(/(\d+)%/)
-            ? {
-                type: `percentage` as const,
-                value: parseInt(this.parameters.width.match(/(\d+)%/)![1]!) / 100,
-              }
-            : null
+      const widthOwn = typeof this.parameters.width === `number`
+        ? { type: `absolute` as const, value: this.parameters.width }
+        : typeof this.parameters.width === `string`
+        ? this.parameters.width.match(/(\d+)%/)
+          ? {
+            type: `percentage` as const,
+            value: parseInt(this.parameters.width.match(/(\d+)%/)![1]!) / 100,
+          }
           : null
+        : null
       const widthOwnResolved = widthOwn
         ? widthOwn.type === `absolute`
           ? widthOwn.value
@@ -104,8 +103,8 @@ export class Block extends Node {
         : null
       const maxWidthOwn = this.parameters.maxWidth ?? Infinity
       const paddingLeftOwn = this.parameters.padding?.left ?? 0
-      const maxWidthResolved =
-        Math.min(widthOwnResolved ?? Infinity, maxWidthOwn, context.maxWidth ?? 1000) - paddingLeftOwn
+      const maxWidthResolved = Math.min(widthOwnResolved ?? Infinity, maxWidthOwn, context.maxWidth ?? 1000)
+        - paddingLeftOwn
       let intrinsicWidth = 0
 
       let renderings: string[] = []
@@ -125,9 +124,7 @@ export class Block extends Node {
 
         // TODO minWidth should be passed down to children?
         if (this.parameters.minWidth !== undefined) {
-          rendered.value = Text.mapLines(rendered.value, (_) =>
-            Text.minSpan(`left`, this.parameters.minWidth!, _),
-          )
+          rendered.value = Text.mapLines(rendered.value, (_) => Text.minSpan(`left`, this.parameters.minWidth!, _))
         }
         intrinsicWidth = Math.max(intrinsicWidth, rendered.shape.intrinsicWidth)
         renderings.push(rendered.value)
@@ -219,18 +216,18 @@ export class Block extends Node {
       const corners = this.parameters.border?.corners ?? ``
       const width = selfMeasure.maxWidth - Text.getLength(corners) * 2
       const borderTop = this.parameters.border?.top
-        ? corners +
-          (typeof this.parameters.border.top === `string`
+        ? corners
+          + (typeof this.parameters.border.top === `string`
             ? this.parameters.border.top.repeat(width)
-            : widthIndexes.map(this.parameters.border.top).join(``)) +
-          corners
+            : widthIndexes.map(this.parameters.border.top).join(``))
+          + corners
         : null
       const borderBottom = this.parameters.border?.bottom
-        ? corners +
-          (typeof this.parameters.border?.bottom === `string`
+        ? corners
+          + (typeof this.parameters.border?.bottom === `string`
             ? this.parameters.border.bottom.repeat(width)
-            : widthIndexes.map(this.parameters.border.bottom).join(``)) +
-          corners
+            : widthIndexes.map(this.parameters.border.bottom).join(``))
+          + corners
         : null
       const linesRendered = [borderTop, linesWithBorders.join(Text.chars.newline), borderBottom]
         .filter(Boolean)
@@ -238,7 +235,7 @@ export class Block extends Node {
 
       value = linesRendered
 
-      //todo
+      // todo
       // value = this.parameters.margin?.top
       //   ? Text.chars.newline.repeat(this.parameters.margin.top) + value
       //   : value

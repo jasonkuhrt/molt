@@ -79,7 +79,7 @@ const create_ = (state: BuilderCommandState): CommandBuilder => {
         ...Settings.getDefaults(argInputsEnvironment),
       }
       state.newSettingsBuffer.forEach((newSettings) =>
-        Settings.change(state.settings!, newSettings, argInputsEnvironment),
+        Settings.change(state.settings!, newSettings, argInputsEnvironment)
       )
       state.settings.typeMapper = state.typeMapper
       return parse(state.settings, state.parameterInputs, argInputs)
@@ -100,7 +100,7 @@ interface Parameter {
 
 // prettier-ignore
 interface InternalRootBuilder {
-  use: (extension:SomeExtension) => InternalRootBuilder
+  use: (extension: SomeExtension) => InternalRootBuilder
   description: (description: string) => InternalRootBuilder
   settings: (newSettings: Settings.Input) => InternalRootBuilder
   parameter: Parameter

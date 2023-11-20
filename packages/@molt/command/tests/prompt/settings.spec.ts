@@ -1,10 +1,10 @@
+import stripAnsi from 'strip-ansi'
+import { describe, expect, it } from 'vitest'
 import type { Settings } from '../../src/_entrypoints/default.js'
 import type { FromZod } from '../../src/extensions/zod/typeAdaptor/types.js'
 import type { Type } from '../../src/Type/index.js'
 import { $, s, tryCatch } from '../_/helpers.js'
 import { memoryPrompter } from '../_/mocks/tty.js'
-import stripAnsi from 'strip-ansi'
-import { describe, expect, it } from 'vitest'
 
 const S = <T extends Type.Type>(settings: Settings.PromptInput<T>) => settings
 const foo = [
@@ -20,7 +20,7 @@ describe(`parameter level`, () => {
     const args = await tryCatch(() =>
       $.parameter(`a`, { type: s, prompt: { enabled: true } })
         .settings({ onError: `throw`, helpOnError: false })
-        .parse({ line: [], tty: memoryPrompter }),
+        .parse({ line: [], tty: memoryPrompter })
     )
     expect(args).toMatchSnapshot(`args`)
     expect(memoryPrompter.history.all).toMatchSnapshot(`tty`)
@@ -45,7 +45,7 @@ it(`prompt is disabled by default`, () => {
   const args = tryCatch(() =>
     $.parameter(`a`, { type: s })
       .settings({ onError: `throw`, helpOnError: false })
-      .parse({ line: [], tty: memoryPrompter }),
+      .parse({ line: [], tty: memoryPrompter })
   )
   expect(args).toMatchSnapshot(`args`)
   expect(memoryPrompter.history.all).toMatchSnapshot(`tty`)
@@ -57,7 +57,7 @@ it(`prompt can be enabled by default`, async () => {
   const args = await tryCatch(() =>
     $.parameter(`a`, { type: s })
       .settings({ onError: `throw`, helpOnError: false, prompt: { enabled: true } })
-      .parse({ line: [], tty: memoryPrompter }),
+      .parse({ line: [], tty: memoryPrompter })
   )
   expect(args).toMatchSnapshot(`args`)
   expect(memoryPrompter.history.all).toMatchSnapshot(`tty`)
@@ -68,7 +68,7 @@ it(`parameter settings overrides default settings`, () => {
   const args = tryCatch(() =>
     $.parameter(`a`, { type: s, prompt: false })
       .settings({ onError: `throw`, helpOnError: false, prompt: { enabled: true } })
-      .parse({ line: [], tty: memoryPrompter }),
+      .parse({ line: [], tty: memoryPrompter })
   )
   expect(args).toMatchSnapshot(`args`)
   expect(memoryPrompter.history.all).toMatchSnapshot(`tty`)
@@ -87,7 +87,7 @@ describe(`prompt can be toggled by check on error`, () => {
       const args = await tryCatch(() =>
         $.parameter(`a`, { type: s })
           .settings({ onError: `throw`, helpOnError: false, prompt: settings })
-          .parse({ line: [], tty: memoryPrompter }),
+          .parse({ line: [], tty: memoryPrompter })
       )
       expect(args).toMatchSnapshot(`args`)
       expect(memoryPrompter.history.all).toMatchSnapshot(`tty`)
@@ -97,7 +97,7 @@ describe(`prompt can be toggled by check on error`, () => {
       const args = tryCatch(() =>
         $.parameter(`b`, { type: s })
           .settings({ onError: `throw`, helpOnError: false, prompt: settings })
-          .parse({ line: [], tty: memoryPrompter }),
+          .parse({ line: [], tty: memoryPrompter })
       )
       expect(args).toMatchSnapshot(`args`)
       expect(memoryPrompter.history.all).toMatchSnapshot(`tty`)
@@ -121,7 +121,7 @@ it(`parameter defaults to custom settings`, async () => {
           },
         },
       })
-      .parse({ line: [], tty: memoryPrompter }),
+      .parse({ line: [], tty: memoryPrompter })
   )
   expect(args).toMatchSnapshot(`args`)
   expect(memoryPrompter.history.all).toMatchSnapshot(`tty`)
@@ -148,7 +148,7 @@ it(`can be stack of conditional prompts`, async () => {
   const args = await tryCatch(() =>
     $.parameter(`a`, { type: s.optional() })
       .settings({ onError: `throw`, helpOnError: false, prompt: settings })
-      .parse({ line: [`-a`, `1`], tty: memoryPrompter }),
+      .parse({ line: [`-a`, `1`], tty: memoryPrompter })
   )
   expect(args).toMatchSnapshot(`args`)
   expect(memoryPrompter.history.all).toMatchSnapshot(`tty`)

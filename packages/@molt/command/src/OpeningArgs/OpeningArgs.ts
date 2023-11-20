@@ -1,3 +1,4 @@
+import { Alge } from 'alge'
 import { Errors } from '../Errors/index.js'
 import { errorFromUnknown, groupBy } from '../lib/prelude.js'
 import type { ParameterExclusive } from '../Parameter/exclusive.js'
@@ -5,7 +6,6 @@ import type { Parameter } from '../Parameter/types.js'
 import { Environment } from './Environment/index.js'
 import { Line } from './Line/index.js'
 import type { ArgumentReport, ParseResult } from './types.js'
-import { Alge } from 'alge'
 export { Environment } from './Environment/index.js'
 export { Line } from './Line/index.js'
 export * from './types.js'
@@ -51,8 +51,8 @@ export const parse = ({
      */
 
     // todo, a strict mode where errors are NOT ignored from env parsing when line is present
-    const argReport =
-      lineParseResult.reports[parameter.name.canonical] ?? envParseResult.reports[parameter.name.canonical]
+    const argReport = lineParseResult.reports[parameter.name.canonical]
+      ?? envParseResult.reports[parameter.name.canonical]
 
     /**
      * An opening argument was given. Process it.

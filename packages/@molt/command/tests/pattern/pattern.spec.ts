@@ -1,7 +1,7 @@
 /* eslint-disable */
 
-import { _, match } from '../../src/Pattern/Pattern.js'
 import { expect, it } from 'vitest'
+import { _, match } from '../../src/Pattern/Pattern.js'
 
 it.each([
   // Scalar

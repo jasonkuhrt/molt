@@ -1,3 +1,6 @@
+import type { Name } from '@molt/types'
+import type { Objects, Pipe } from 'hotscript'
+import type { Simplify } from 'type-fest'
 import type { Values } from '../../helpers.js'
 import type { HKT } from '../../helpers.js'
 import type { ParameterBasicInput } from '../../Parameter/basic.js'
@@ -7,9 +10,6 @@ import type { Settings } from '../../Settings/index.js'
 import type { Type } from '../../Type/index.js'
 import type { ExclusiveParameterConfiguration } from '../exclusive/types.js'
 import type { IsPromptEnabledInParameterSettings, ParameterConfiguration } from './types.js'
-import type { Name } from '@molt/types'
-import type { Objects, Pipe } from 'hotscript'
-import type { Simplify } from 'type-fest'
 
 export const createState = (): BuilderCommandState => {
   return {
@@ -68,10 +68,10 @@ export namespace BuilderCommandState {
   type ReservedParameterNames = 'help' | 'h'
 
   // prettier-ignore
-  export type ValidateNameExpression<State extends Base, NameExpression extends string> = 
-    Name.Data.IsParseError<Name.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>> extends true
-        ? Name.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>
-        : NameExpression
+  export type ValidateNameExpression<State extends Base, NameExpression extends string> = Name.Data.IsParseError<
+    Name.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>
+  > extends true ? Name.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>
+    : NameExpression
 
   export type GetUsedNames<State extends Base> = Values<State['Parameters']>['NameUnion']
 
@@ -88,17 +88,19 @@ export namespace BuilderCommandState {
     $State extends Base,
     Label extends string,
     Value extends boolean,
-  > =
-    Pipe<$State, [
-      Objects.Update<'ParametersExclusive',
-        Objects.Assign<{
+  > = Pipe<$State, [
+    Objects.Update<
+      'ParametersExclusive',
+      Objects.Assign<
+        {
           [_ in Label]: {
-            Optional: Value 
+            Optional: Value
             Parameters: $State['ParametersExclusive'][_]['Parameters']
           }
-        }>
+        }
       >
-    ]>
+    >,
+  ]>
 
   export type SetIsPromptEnabled<$State extends Base, value extends boolean> = Pipe<
     $State,
@@ -114,9 +116,11 @@ export namespace BuilderCommandState {
     [
       Objects.Update<
         'Parameters',
-        Objects.Assign<{
-          [_ in NameExpression]: CreateParameter<$State, NameExpression, Configuration>
-        }>
+        Objects.Assign<
+          {
+            [_ in NameExpression]: CreateParameter<$State, NameExpression, Configuration>
+          }
+        >
       >,
       Objects.Update<
         'IsPromptEnabled',
@@ -130,61 +134,71 @@ export namespace BuilderCommandState {
     $State extends Base,
     Label extends string,
     NameExpression extends string,
-    Configuration extends ExclusiveParameterConfiguration<$State>
-  > =
-    Pipe<$State, [
-      Objects.Update<'ParametersExclusive',
-        Objects.Assign<$State['ParametersExclusive'] & {
+    Configuration extends ExclusiveParameterConfiguration<$State>,
+  > = Pipe<$State, [
+    Objects.Update<
+      'ParametersExclusive',
+      Objects.Assign<
+        & $State['ParametersExclusive']
+        & {
           [_ in Label]: {
             Optional: $State['ParametersExclusive'][_]['Optional']
             Parameters: {
               [_ in NameExpression as Name.Data.GetCanonicalNameOrErrorFromParseResult<Name.Parse<NameExpression>>]: {
                 Type: HKT.Call<$State['TypeMapper'], Configuration['type']>
-                NameParsed: Name.Parse<NameExpression, { usedNames: GetUsedNames<$State>; reservedNames: ReservedParameterNames }>
-                NameUnion: Name.Data.GetNamesFromParseResult<Name.Parse<NameExpression, { usedNames: GetUsedNames<$State>; reservedNames: ReservedParameterNames }>>
+                NameParsed: Name.Parse<
+                  NameExpression,
+                  { usedNames: GetUsedNames<$State>; reservedNames: ReservedParameterNames }
+                >
+                NameUnion: Name.Data.GetNamesFromParseResult<
+                  Name.Parse<NameExpression, { usedNames: GetUsedNames<$State>; reservedNames: ReservedParameterNames }>
+                >
               }
-
             }
           }
         }
-    >>]>
+      >
+    >,
+  ]>
 
   // prettier-ignore
   export type CreateParameter<
-    $State          extends Base,
-    NameExpression  extends string,
-    Configuration   extends ParameterConfiguration<$State>,
+    $State extends Base,
+    NameExpression extends string,
+    Configuration extends ParameterConfiguration<$State>,
   > = {
     Type: HKT.Call<$State['TypeMapper'], Configuration['type']>
     NameParsed: Name.Parse<NameExpression, { usedNames: GetUsedNames<$State>; reservedNames: ReservedParameterNames }>
-    NameUnion: Name.Data.GetNamesFromParseResult<Name.Parse<NameExpression,{ usedNames: GetUsedNames<$State>; reservedNames: ReservedParameterNames }>>
+    NameUnion: Name.Data.GetNamesFromParseResult<
+      Name.Parse<NameExpression, { usedNames: GetUsedNames<$State>; reservedNames: ReservedParameterNames }>
+    >
   }
 
   // prettier-ignore
-  export type ToArgs<$State extends Base> =
-    $State['IsPromptEnabled'] extends true
-      ? Promise<ToArgs_<$State>>
-      : ToArgs_<$State>
+  export type ToArgs<$State extends Base> = $State['IsPromptEnabled'] extends true ? Promise<ToArgs_<$State>>
+    : ToArgs_<$State>
 
   // prettier-ignore
-  type ToArgs_<$State extends Base> =
-    Simplify<
-      {
-        [Name in keyof $State['Parameters'] & string as $State['Parameters'][Name]['NameParsed']['canonical']]:
-          Type.Infer<$State['Parameters'][Name]['Type']>
-      } &
-      {
-        [Label in keyof $State['ParametersExclusive'] & string]:
-          | Simplify<Values<{
-              [Name in keyof $State['ParametersExclusive'][Label]['Parameters']]:
-                {
-                  _tag: $State['ParametersExclusive'][Label]['Parameters'][Name]['NameParsed']['canonical']
-                  value: Type.Infer<$State['ParametersExclusive'][Label]['Parameters'][Name]['Type']>
-                }
-            }>>
-          | ($State['ParametersExclusive'][Label]['Optional'] extends true ? undefined : never)
-      }
-    >
+  type ToArgs_<$State extends Base> = Simplify<
+    & {
+      [Name in keyof $State['Parameters'] & string as $State['Parameters'][Name]['NameParsed']['canonical']]:
+        Type.Infer<$State['Parameters'][Name]['Type']>
+    }
+    & {
+      [Label in keyof $State['ParametersExclusive'] & string]:
+        | Simplify<
+          Values<
+            {
+              [Name in keyof $State['ParametersExclusive'][Label]['Parameters']]: {
+                _tag: $State['ParametersExclusive'][Label]['Parameters'][Name]['NameParsed']['canonical']
+                value: Type.Infer<$State['ParametersExclusive'][Label]['Parameters'][Name]['Type']>
+              }
+            }
+          >
+        >
+        | ($State['ParametersExclusive'][Label]['Optional'] extends true ? undefined : never)
+    }
+  >
 
   // prettier-ignore
   export type ToTypes<$State extends BuilderCommandState.Base> = {

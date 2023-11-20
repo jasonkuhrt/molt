@@ -1,6 +1,6 @@
+import { z } from 'zod'
 import { Command } from '../src/_entrypoints/default.js'
 import { Zod } from '../src/_entrypoints/extensions.js'
-import { z } from 'zod'
 
 const args = await Command.create()
   .use(Zod)
@@ -29,9 +29,3 @@ const args = await Command.create()
     },
   })
   .parse()
-
-args.filePath
-args.from
-args.move
-args.to
-args.verbose

@@ -1,3 +1,6 @@
+import { Alge } from 'alge'
+import type { Simplify } from 'type-fest'
+import type { z } from 'zod'
 import { Type } from '../../../Type/index.js'
 import {
   isBoolean,
@@ -10,14 +13,14 @@ import {
   isString,
   isUnion,
 } from '../guards.js'
-import { Alge } from 'alge'
-import type { Simplify } from 'type-fest'
-import type { z } from 'zod'
 
 export const fromZod = (zodType: z.ZodFirstPartySchemaTypes): Type.Type => _fromZod(zodType, {})
 
 // prettier-ignore
-const _fromZod = (zodType: z.ZodFirstPartySchemaTypes,previous:{description?:string;optionality?:Type.Optionality<any>}): Type.Type => {
+const _fromZod = (
+  zodType: z.ZodFirstPartySchemaTypes,
+  previous: { description?: string; optionality?: Type.Optionality<any> },
+): Type.Type => {
   const zt = zodType
   const description = previous.description ?? zt.description
 
@@ -27,26 +30,28 @@ const _fromZod = (zodType: z.ZodFirstPartySchemaTypes,previous:{description?:str
     : isOptional(zt)
     ? { _tag: `optional` }
     : { _tag: `required` })
-  
+
   if (isString(zt)) {
-    const {refinements,transformations} = mapZodStringChecksAndTransformations(zt._def.checks)
+    const { refinements, transformations } = mapZodStringChecksAndTransformations(zt._def.checks)
     return Type.string({ optionality, refinements, transformations, description })
   }
   if (isNumber(zt)) {
-    const {refinements} = mapZodNumberChecksAndTransformations(zt._def.checks)
+    const { refinements } = mapZodNumberChecksAndTransformations(zt._def.checks)
     return Type.number({ optionality, refinements, description })
   }
-  if (isEnum(zt))            return Type.enumeration({ optionality, members: zt._def.values, description }) // eslint-disable-line
-  if (isNativeEnum(zt))      return Type.enumeration({ optionality, members: Object.values<any>(zt._def.values), description })
-  if (isBoolean(zt))         return Type.boolean({ optionality, description })
-  if (isLiteral(zt))         return Type.literal({ optionality, value: zt._def.value, description }) // eslint-disable-line
-  if (isDefault(zt))         return _fromZod(zt._def.innerType,{...previous,description,optionality})
-  if (isOptional(zt))        return _fromZod(zt._def.innerType,{...previous,description,optionality})
-  if (isUnion(zt))           {
+  if (isEnum(zt)) return Type.enumeration({ optionality, members: zt._def.values, description }) // eslint-disable-line
+  if (isNativeEnum(zt)) {
+    return Type.enumeration({ optionality, members: Object.values<any>(zt._def.values), description })
+  }
+  if (isBoolean(zt)) return Type.boolean({ optionality, description })
+  if (isLiteral(zt)) return Type.literal({ optionality, value: zt._def.value, description }) // eslint-disable-line
+  if (isDefault(zt)) return _fromZod(zt._def.innerType, { ...previous, description, optionality })
+  if (isOptional(zt)) return _fromZod(zt._def.innerType, { ...previous, description, optionality })
+  if (isUnion(zt)) {
     if (!Array.isArray(zt._def.options)) throw new Error(`Unsupported zodType: ${JSON.stringify(zt[`_def`])}`)
-    const members = zt._def.options.map((_: {_def:{description:undefined|string}}) => {
+    const members = zt._def.options.map((_: { _def: { description: undefined | string } }) => {
       const description = _._def.description
-      return _fromZod(_ as any, {...previous,description,optionality})
+      return _fromZod(_ as any, { ...previous, description, optionality })
     })
     return Type.union({ optionality, members_: members, description })
   }
@@ -115,9 +120,9 @@ const mapZodStringChecksAndTransformations = (checks: z.ZodStringCheck[]) => {
             type: _.kind,
             version: _.version
               ? Alge.match(_.version)
-                  .v4(() => 4 as const)
-                  .v6(() => 6 as const)
-                  .done()
+                .v4(() => 4 as const)
+                .v6(() => 6 as const)
+                .done()
               : null,
           },
         }))
@@ -161,19 +166,19 @@ const mapZodStringChecksAndTransformations = (checks: z.ZodStringCheck[]) => {
       const isTransformation = transformations.includes(Object.keys(refinementOrTransformation)[0]! as any)
       return isTransformation
         ? {
-            ...acc,
-            transformations: {
-              ...acc.transformations,
-              ...refinementOrTransformation,
-            },
-          }
+          ...acc,
+          transformations: {
+            ...acc.transformations,
+            ...refinementOrTransformation,
+          },
+        }
         : {
-            ...acc,
-            refinements: {
-              ...acc.refinements,
-              ...refinementOrTransformation,
-            },
-          }
+          ...acc,
+          refinements: {
+            ...acc.refinements,
+            ...refinementOrTransformation,
+          },
+        }
     },
     {} as Simplify<Pick<Type.Scalar.String, 'refinements' | 'transformations'>>,
   )

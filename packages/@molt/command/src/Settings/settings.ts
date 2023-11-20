@@ -1,3 +1,4 @@
+import snakeCase from 'lodash.snakecase'
 import type { BuilderCommandState } from '../builders/command/state.js'
 import type { EventPatternsInput, EventPatternsInputAtLeastOne } from '../eventPatterns.js'
 import { eventPatterns } from '../eventPatterns.js'
@@ -5,16 +6,15 @@ import type { Values } from '../helpers.js'
 import { parseEnvironmentVariableBooleanOrThrow } from '../helpers.js'
 import { defaultParameterNamePrefixes } from '../OpeningArgs/Environment/Environment.js'
 import type { Type } from '../Type/index.js'
-import snakeCase from 'lodash.snakecase'
 
 export type OnErrorReaction = 'exit' | 'throw'
 
 export type PromptInput<T extends Type.Type> =
   | boolean
   | {
-      enabled?: boolean
-      when?: EventPatternsInputAtLeastOne<T>
-    }
+    enabled?: boolean
+    when?: EventPatternsInputAtLeastOne<T>
+  }
 
 // eslint-disable-next-line
 export interface Input<$State extends BuilderCommandState.Base = BuilderCommandState.BaseEmpty> {
@@ -34,11 +34,17 @@ export interface Input<$State extends BuilderCommandState.Base = BuilderCommandS
     // prettier-ignore
     environment?:
       | boolean
-      | ({
-            [NameExpression in keyof $State['Parameters'] as $State['Parameters'][NameExpression]['NameParsed']['canonical']]?: boolean | SettingInputEnvironmentParameter
-        } & {
+      | (
+        & {
+          [
+            NameExpression
+              in keyof $State['Parameters'] as $State['Parameters'][NameExpression]['NameParsed']['canonical']
+          ]?: boolean | SettingInputEnvironmentParameter
+        }
+        & {
           $default?: boolean | SettingInputEnvironmentParameter
-        })
+        }
+      )
   }
 }
 
@@ -123,8 +129,8 @@ export const change = (
 
   current.onOutput = input.onOutput
     ? (_) => {
-        input.onOutput!(_, process.stdout.write.bind(process.stdout))
-      }
+      input.onOutput!(_, process.stdout.write.bind(process.stdout))
+    }
     : current.onOutput
 
   if (input.parameters !== undefined) {
@@ -148,8 +154,9 @@ export const change = (
           // AND there is NO explicit default toggle setting, then we disable all the rest by default.
           // prettier-ignore
           if (
-            input.parameters.environment.$default === undefined ||
-            typeof input.parameters.environment.$default !== `boolean` && input.parameters.environment.$default.enabled === undefined
+            input.parameters.environment.$default === undefined
+            || typeof input.parameters.environment.$default !== `boolean`
+              && input.parameters.environment.$default.enabled === undefined
           ) {
             const parameterEnvironmentSpecs = Object.keys(input.parameters.environment).filter((k) => k !== `$default`)
             current.parameters.environment.$default.enabled = parameterEnvironmentSpecs.length === 0
@@ -194,18 +201,18 @@ export const change = (
 
 const isEnvironmentEnabled = (lowercaseEnv: NodeJS.ProcessEnv) => {
   return lowercaseEnv[`cli_settings_read_arguments_from_environment`]
-    ? //eslint-disable-next-line
-      parseEnvironmentVariableBooleanOrThrow(lowercaseEnv[`cli_settings_read_arguments_from_environment`]!)
-    : // : processEnvLowerCase[`cli_environment_arguments`]
-      // ? //eslint-disable-next-line
-      //   parseEnvironmentVariableBoolean(processEnvLowerCase[`cli_environment_arguments`]!)
-      // : processEnvLowerCase[`cli_env_args`]
-      // ? //eslint-disable-next-line
-      //   parseEnvironmentVariableBoolean(processEnvLowerCase[`cli_env_args`]!)
-      // : processEnvLowerCase[`cli_env_arguments`]
-      // ? //eslint-disable-next-line
-      //   parseEnvironmentVariableBoolean(processEnvLowerCase[`cli_env_arguments`]!)
-      true
+    // eslint-disable-next-line
+    ? parseEnvironmentVariableBooleanOrThrow(lowercaseEnv[`cli_settings_read_arguments_from_environment`]!)
+    // : processEnvLowerCase[`cli_environment_arguments`]
+    // ? //eslint-disable-next-line
+    //   parseEnvironmentVariableBoolean(processEnvLowerCase[`cli_environment_arguments`]!)
+    // : processEnvLowerCase[`cli_env_args`]
+    // ? //eslint-disable-next-line
+    //   parseEnvironmentVariableBoolean(processEnvLowerCase[`cli_env_args`]!)
+    // : processEnvLowerCase[`cli_env_arguments`]
+    // ? //eslint-disable-next-line
+    //   parseEnvironmentVariableBoolean(processEnvLowerCase[`cli_env_arguments`]!)
+    : true
 }
 
 export const getDefaults = (lowercaseEnv: NodeJS.ProcessEnv): Output => {

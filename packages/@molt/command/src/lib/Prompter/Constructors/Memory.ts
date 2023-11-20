@@ -1,7 +1,7 @@
+import { Effect, Stream } from 'effect'
 import type { KeyPress } from '../../KeyPress/index.js'
 import type { Prompter } from '../Prompter.js'
 import { create } from './_core.js'
-import { Effect, Stream } from 'effect'
 
 export type MemoryPrompter = ReturnType<typeof createMemoryPrompter>
 
@@ -36,7 +36,7 @@ export const createMemoryPrompter = () => {
     },
     readLine: () => {
       const value = state.inputScript.shift()
-      if (value === undefined)  throw new Error(`No more values in read script.`) //prettier-ignore
+      if (value === undefined) throw new Error(`No more values in read script.`) // prettier-ignore
       state.history.answers.push(value)
       state.history.all.push(value)
       return Effect.succeed(value)

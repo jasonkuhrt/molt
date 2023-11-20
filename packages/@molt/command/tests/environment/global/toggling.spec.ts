@@ -1,7 +1,7 @@
-import { $, s } from '../../_/helpers.js'
-import { createState, environmentManager } from '../__helpers__.js'
 import { expect } from 'vitest'
 import { it } from 'vitest'
+import { $, s } from '../../_/helpers.js'
+import { createState, environmentManager } from '../__helpers__.js'
 
 const output = createState<string>({
   value: (values) => values.join(``),
@@ -51,7 +51,7 @@ it(`environment supersedes settings`, () => {
       .parse({
         line: [],
         environment: { ClI_settings_READ_arguments_FROM_ENVIRONMENT: `false`, cli_param_foo: `bar` },
-      }),
+      })
   ).toThrowErrorMatchingSnapshot()
   expect(output.value).toMatchSnapshot()
 })

@@ -1,8 +1,8 @@
-import { $, s } from '../../_/helpers.js'
-import { environmentManager } from '../__helpers__.js'
 import { expect } from 'vitest'
 import { it } from 'vitest'
 import { z } from 'zod'
+import { $, s } from '../../_/helpers.js'
+import { environmentManager } from '../__helpers__.js'
 
 it(`just one can have prefix disabled`, () => {
   environmentManager.set({

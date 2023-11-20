@@ -1,10 +1,10 @@
+import chalk from 'chalk'
+import { Effect, Either } from 'effect'
 import { PromptEngine } from '../../../lib/PromptEngine/PromptEngine.js'
 import { Text } from '../../../lib/Text/index.js'
 import { Term } from '../../../term.js'
 import type { Optionality, Type } from '../../helpers.js'
 import { runtimeIgnore, TypeSymbol } from '../../helpers.js'
-import chalk from 'chalk'
-import { Effect, Either } from 'effect'
 
 export interface Enumeration<$Members extends Member[] = Member[]> extends Type<$Members[number]> {
   _tag: 'TypeEnum'
@@ -51,7 +51,7 @@ export const enumeration = <$Members extends Member[]>({
     },
     help: () => type.displayExpanded(),
     prompt: (params) => {
-      return Effect.gen(function* (_) {
+      return Effect.gen(function*(_) {
         interface State {
           active: number
         }
@@ -78,9 +78,9 @@ export const enumeration = <$Members extends Member[]>({
           ],
           draw: (state) => {
             return (
-              marginLeftSpace +
-              params.prompt +
-              members
+              marginLeftSpace
+              + params.prompt
+              + members
                 .map((item, i) => (i === state.active ? `${chalk.green(chalk.bold(item))}` : item))
                 .join(chalk.dim(` | `))
             )
@@ -92,7 +92,11 @@ export const enumeration = <$Members extends Member[]>({
 
         const choice = members[state.active]
         // prettier-ignore
-        if (!choice) throw new Error(`No choice selected. Enumeration must be empty. But enumerations should not be empty. This is a bug.`)
+        if (!choice) {
+          throw new Error(
+            `No choice selected. Enumeration must be empty. But enumerations should not be empty. This is a bug.`,
+          )
+        }
         return choice
       })
     },

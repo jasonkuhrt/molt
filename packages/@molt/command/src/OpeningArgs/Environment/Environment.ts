@@ -1,11 +1,11 @@
+import camelCase from 'lodash.camelcase'
+import snakecase from 'lodash.snakecase'
 import { Errors } from '../../Errors/index.js'
 import type { Index, RequireField } from '../../lib/prelude.js'
 import { getNames } from '../../Parameter/helpers/CommandParameter.js'
 import type { Parameter } from '../../Parameter/types.js'
 import { parseSerializedValue } from '../helpers.js'
 import type { EnvironmentArgumentReport } from '../types.js'
-import camelCase from 'lodash.camelcase'
-import snakecase from 'lodash.snakecase'
 
 export const defaultParameterNamePrefixes = [`cli_parameter`, `cli_param`]
 
@@ -86,11 +86,10 @@ export const lookupEnvironmentVariableArgument = (
   parameterName: string,
 ): null | { name: string; value: string } => {
   const parameterNameSnakeCase = snakecase(parameterName)
-  const parameterNames =
-    prefixes.length === 0
-      ? [parameterNameSnakeCase]
-      : // TODO add test coverage for the snake case conversion of a parameter name
-        prefixes.map((prefix) => `${prefix.toLowerCase()}_${parameterNameSnakeCase.toLowerCase()}`)
+  const parameterNames = prefixes.length === 0
+    ? [parameterNameSnakeCase]
+    // TODO add test coverage for the snake case conversion of a parameter name
+    : prefixes.map((prefix) => `${prefix.toLowerCase()}_${parameterNameSnakeCase.toLowerCase()}`)
 
   const args = parameterNames
     .map((name) => ({ name, value: environment[name] }))
@@ -98,10 +97,11 @@ export const lookupEnvironmentVariableArgument = (
 
   if (args.length === 0) return null
 
-  if (args.length > 1)
+  if (args.length > 1) {
     throw new Error(
       `Multiple environment variables found for same parameter "${parameterName}": ${args.join(`, `)}`,
     )
+  }
 
   // dump(prefixes, environment, parameterName)
 
@@ -185,8 +185,7 @@ const parseNegated = (string: string) => {
   }
 }
 
-const lowercaseFirst = (string: string) =>
-  string.length === 0 ? string : string[0]!.toLowerCase() + string.slice(1)
+const lowercaseFirst = (string: string) => string.length === 0 ? string : string[0]!.toLowerCase() + string.slice(1)
 
 interface Envar {
   name: {
@@ -202,12 +201,12 @@ const normalizeEnvironment = (environment: RawInputs): Envar[] => {
       value === undefined
         ? value
         : {
-            value,
-            name: {
-              raw: name,
-              camel: camelCase(name),
-            },
+          value,
+          name: {
+            raw: name,
+            camel: camelCase(name),
           },
+        }
     )
     .filter((envar): envar is Envar => envar !== undefined)
 }
