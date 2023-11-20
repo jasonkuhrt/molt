@@ -10,7 +10,6 @@ import { toInternalBuilder } from './helpers.js'
 type Childish = BlockBuilder | Block | string | null
 type NonNullChildish = Exclude<Childish, null>
 
-// prettier-ignore
 export interface TableMethod<Chain> {
   (rows: (Childish[] | null)[]): Chain
   (builder: NodeImplementor<TableBuilder>): Chain

@@ -91,7 +91,7 @@ export const enumeration = <$Members extends Member[]>({
         if (state === null) return undefined
 
         const choice = members[state.active]
-        // prettier-ignore
+
         if (!choice) {
           throw new Error(
             `No choice selected. Enumeration must be empty. But enumerations should not be empty. This is a bug.`,

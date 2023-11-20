@@ -42,7 +42,7 @@ const create_ = (state: BuilderCommandState): CommandBuilder => {
       return create_(newState) as any
     },
     parameter: (nameExpression, typeOrConfiguration) => {
-      const configuration = `type` in typeOrConfiguration ? typeOrConfiguration : { type: typeOrConfiguration } // prettier-ignore
+      const configuration = `type` in typeOrConfiguration ? typeOrConfiguration : { type: typeOrConfiguration }
       const prompt = configuration.prompt ?? null
       const type = state.typeMapper(configuration.type)
       const parameter = {
@@ -98,7 +98,6 @@ interface Parameter {
   (nameExpression: string, configuration: ParameterConfiguration): InternalRootBuilder
 }
 
-// prettier-ignore
 interface InternalRootBuilder {
   use: (extension: SomeExtension) => InternalRootBuilder
   description: (description: string) => InternalRootBuilder

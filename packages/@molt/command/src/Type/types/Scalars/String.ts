@@ -94,8 +94,8 @@ export const string = ({
       if (optionality._tag === `optional` && value === undefined) return Either.right(value)
       const errors: string[] = []
 
-      if (typeof value !== `string`) return Either.left({ value, errors: [`Value is not a string.`] }) // prettier-ignore
-      if (!refinements) return Either.right(value) // prettier-ignore
+      if (typeof value !== `string`) return Either.left({ value, errors: [`Value is not a string.`] })
+      if (!refinements) return Either.right(value)
 
       if (refinements.regex && !refinements.regex.test(value)) {
         errors.push(`Value does not conform to Regular Expression.`)

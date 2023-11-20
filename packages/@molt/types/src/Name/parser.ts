@@ -3,7 +3,6 @@ import type { BaseChecks, LongChecks, ReportFailures, ShortChecks, SomeFailures 
 import type { Name, NameEmpty } from './data.js'
 import type { $, Objects, Strings, Tuples } from 'hotscript'
 
-// prettier-ignore
 export namespace Errors {
   export type TrailingPipe =
     `Error: You have a trailing pipe. Pipes are for adding aliases. Add more names after your pipe or remove it.`
@@ -11,7 +10,6 @@ export namespace Errors {
   export type Unknown = `Error: Cannot parse your flag expression.`
 }
 
-// prettier-ignore
 type Add<
   Kind extends 'short' | 'long',
   $Name extends Name,
@@ -22,28 +20,23 @@ type Add<
     : AddAliasLong<$Name, Variant>
   : never
 
-// prettier-ignore
 type AddAliasLong<$Name extends Name, Variant extends string> = $<
   Objects.Update<'aliases.long', Tuples.Append<$<Strings.CamelCase, Variant>>>,
   $Name
 >
 
-// prettier-ignore
 type AddAliasShort<$Name extends Name, Variant extends string> = $<
   Objects.Update<'aliases.short', Tuples.Append<Variant>>,
   $Name
 >
 
-// prettier-ignore
 type AddLong<$Name extends Name, Variant extends string> = $<
   Objects.Update<'long', $<Strings.CamelCase, Variant>>,
   $Name
 >
 
-// prettier-ignore
 type AddShort<$Name extends Name, Variant extends string> = $<Objects.Update<'short', Variant>, $Name>
 
-// prettier-ignore
 type addCanonical<$Name extends Name> = $<
   Objects.Update<
     'canonical',
@@ -70,7 +63,6 @@ export type Parse<
   names extends Name = NameEmpty,
 > = _Parse<E, limits, names>
 
-// prettier-ignore
 type _Parse<E extends string, Limits extends SomeLimits, $Name extends Name> =
   // Done!
   E extends `` ? NameEmpty extends $Name ? Errors.Empty : addCanonical<$Name>

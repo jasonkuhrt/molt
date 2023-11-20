@@ -25,7 +25,6 @@ export const prompt = (
     const gutterWidth = String(indexTotal).length * 2 + 3
 
     for (const parameter of parameters) {
-      // prettier-ignore
       const question = Tex({ flow: `horizontal` })
         .block({ padding: { right: 2 } }, `${Term.colors.dim(`${indexCurrent}/${indexTotal}`)}`)
         .block((__) =>

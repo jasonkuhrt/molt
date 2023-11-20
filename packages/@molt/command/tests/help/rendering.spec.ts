@@ -89,7 +89,6 @@ it(`if there is an error trying to get default then a nice message is shown`, ()
 })
 
 it(`enums do not mess up alignment when they are widest line in the column`, () => {
-  // prettier-ignore
   $.parameter(
     `foo`,
     z.enum([

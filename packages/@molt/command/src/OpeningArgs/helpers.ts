@@ -8,7 +8,6 @@ export const stripeDashPrefix = (flagNameInput: string): string => {
   return flagNameInput.replace(/^-+/, ``)
 }
 
-// prettier-ignore
 export const parseSerializedValue = (name: string, serializedValue: string, spec: Parameter): Value => {
   const either = spec.type.deserialize(serializedValue)
   if (Either.isLeft(either)) {

@@ -160,7 +160,7 @@ describe(`list`, () => {
       `abcdefghijklmnopqrstuvwxyz`.split(``),
     ),
   )
-  // prettier-ignore
+
   describe(`builder`, () => {
     describe(`item`, () => {
       it(`can render text`, () => {
@@ -226,7 +226,6 @@ describe(`table`, () => {
       )
     })
     describe(`rows`, () => {
-      // prettier-ignore
       it(`single arg or vargs`, () => {
         expect(Tex.Tex().table(($) => $.rows([[`r1c1`, `r1c2`], [`r2c1`, `r2c2`]])).render()).toEqual(
           Tex.Tex().table([[`r1c1`, `r1c2`], [`r2c1`, `r2c2`]]).render(),

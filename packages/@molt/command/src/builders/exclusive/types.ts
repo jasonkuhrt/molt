@@ -6,7 +6,6 @@ export interface ExclusiveParameterConfiguration<$State extends BuilderCommandSt
   type: $State['Type']
 }
 
-// prettier-ignore
 interface Parameter<$State extends BuilderCommandState.Base, Label extends string> {
   <NameExpression extends string, Configuration extends ExclusiveParameterConfiguration<$State>>(
     name: BuilderCommandState.ValidateNameExpression<$State, NameExpression>,
@@ -26,7 +25,6 @@ interface Parameter<$State extends BuilderCommandState.Base, Label extends strin
   >
 }
 
-// prettier-ignore
 export interface BuilderExclusiveInitial<$State extends BuilderCommandState.Base, Label extends string> {
   _: BuilderParameterExclusiveState<$State>
   parameter: Parameter<$State, Label>

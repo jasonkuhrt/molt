@@ -4,7 +4,6 @@ import { describe, expect, it } from 'vitest'
 describe(`zod`, () => {
   describe(`validation`, () => {
     it.each(
-      // prettier-ignore
       [
         [`literal int`, { a: l1 }, { line: [`-a`, `2`] }],
         [`int`, { a: n.int() }, { line: [`-a`, `5.4`] }],

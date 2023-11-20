@@ -44,17 +44,16 @@ export const partition = <Item>(list: Item[], partitioner: (item: Item) => boole
   return [left, right]
 }
 
-// prettier-ignore
 export function groupBy<Item extends object, Key extends string>(
   items: Item[],
   keyer: (item: Item) => Key,
 ): string extends Key ? Record<string, Item[]> : { [k in Key]?: Item[] }
-// prettier-ignore
+
 export function groupBy<Item extends object, Key extends keyof Item>(
   items: Item[],
   key: Key,
 ): { [k in Item[Key] & string]?: Include<Item, { [_ in Key]: k }>[] }
-// prettier-ignore
+
 // eslint-disable-next-line
 export function groupBy<Item extends object, Key extends keyof Item>(
   items: Item[],

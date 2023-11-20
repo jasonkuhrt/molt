@@ -19,16 +19,14 @@ export interface ParameterConfiguration<
 
 export type IsHasKey<Obj extends object, Key> = Key extends keyof Obj ? true : false
 
-// prettier-ignore
 export type IsPromptEnabledInParameterSettings<P extends ParameterConfiguration<any>> = IsHasKey<P, 'prompt'> extends
   false ? false
   : IsPromptEnabled<P['prompt']>
-// prettier-ignore
+
 export type IsPromptEnabledInCommandSettings<P extends Settings.Input<any>> = IsHasKey<P, 'prompt'> extends false
   ? false
   : IsPromptEnabled<P['prompt']>
 
-// prettier-ignore
 export type IsPromptEnabled<P extends Prompt<any> | undefined> = P extends undefined ? false
   : P extends false ? false
   : P extends true ? true
@@ -36,7 +34,6 @@ export type IsPromptEnabled<P extends Prompt<any> | undefined> = P extends undef
   : Exclude<P, undefined | boolean | null>['enabled'] extends false ? false
   : true
 
-// prettier-ignore
 export interface CommandBuilder<$State extends BuilderCommandState.Base = BuilderCommandState.BaseEmpty> {
   use<$Extension extends SomeExtension>(extension: $Extension): CommandBuilder<{
     IsPromptEnabled: $State['IsPromptEnabled']

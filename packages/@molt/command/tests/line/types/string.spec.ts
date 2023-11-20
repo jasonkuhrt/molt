@@ -5,7 +5,6 @@ import { describe, expect, it } from 'vitest'
 
 describe(`errors`, () => {
   it.each(
-    // prettier-ignore
     [
       [`when argument missing (last position)`, { name: s }, { line: [`--name`] }],
       [`when argument missing (non-last position)`, { name: s, age: n }, { line: [`--name`, `--age`, `1`] }],

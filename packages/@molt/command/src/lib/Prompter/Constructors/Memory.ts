@@ -36,7 +36,7 @@ export const createMemoryPrompter = () => {
     },
     readLine: () => {
       const value = state.inputScript.shift()
-      if (value === undefined) throw new Error(`No more values in read script.`) // prettier-ignore
+      if (value === undefined) throw new Error(`No more values in read script.`)
       state.history.answers.push(value)
       state.history.all.push(value)
       return Effect.succeed(value)

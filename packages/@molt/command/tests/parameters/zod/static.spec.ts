@@ -3,7 +3,6 @@ import { expectType } from 'tsd'
 import { expect, it } from 'vitest'
 import { z } from 'zod'
 
-// prettier-ignore
 it(`Statically accepts or rejects zod types for the schema`, () => {
   expectType<() => { a: string }>($.parameter(`a`, z.string()).parse)
   expectType<() => { a: number }>($.parameter(`a`, z.number()).parse)

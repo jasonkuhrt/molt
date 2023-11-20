@@ -6,7 +6,6 @@ import { z } from 'zod'
 describe(`zod`, () => {
   describe(`transformations`, () => {
     it.each(
-      // prettier-ignore
       [
         [`trim`, { a: s.trim() }, { line: [`-a`, `abar   `] }],
         [`toLowerCase`, { a: s.toLowerCase() }, { line: [`-a`, `aBAR   `] }],
@@ -22,7 +21,6 @@ describe(`zod`, () => {
   })
   describe(`validation`, () => {
     it.each(
-      // prettier-ignore
       [
         [`regex`, { a: z.string().regex(/[a-z]+/) }, { line: [`-a`, `BAD`] }],
         [`min`, { a: z.string().min(5) }, { line: [`-a`, `BAD`] }],

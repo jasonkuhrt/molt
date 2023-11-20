@@ -31,7 +31,6 @@ export interface Input<$State extends BuilderCommandState.Base = BuilderCommandS
   onOutput?: (output: string, defaultHandler: (output: string) => void) => void
   prompt?: PromptInput<Values<BuilderCommandState.ToTypes<$State>>>
   parameters?: {
-    // prettier-ignore
     environment?:
       | boolean
       | (
@@ -152,7 +151,7 @@ export const change = (
         } else {
           // As soon as the settings begin to specify explicit parameter settings
           // AND there is NO explicit default toggle setting, then we disable all the rest by default.
-          // prettier-ignore
+
           if (
             input.parameters.environment.$default === undefined
             || typeof input.parameters.environment.$default !== `boolean`

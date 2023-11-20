@@ -17,7 +17,6 @@ export interface BuilderInternal<N = Node> {
   }
 }
 
-// prettier-ignore
 export const toInternalBuilder = <Builder extends BlockBuilder<null> | TableBuilder | ListBuilder | null>(
   builder: Builder,
 ): Builder extends null ? null

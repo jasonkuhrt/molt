@@ -9,7 +9,6 @@ describe(`errors`, () => {
     expect(stdout.mock.calls).toMatchSnapshot()
   })
   it(`when argument missing (non-last position)`, () => {
-    // prettier-ignore
     $.parameter(`--name`, s).parameter(`--mode`, z.enum([`a`, `b`])).parse({ line: [` --mode`, `--name`, `joe`] })
     expect(stdout.mock.calls).toMatchSnapshot()
   })

@@ -4,8 +4,6 @@ import { expectType } from 'tsd'
 // eslint-disable-next-line
 const as = <T>(): T => 0 as any
 
-// prettier-ignore
-
 namespace _testErrors {
   expectType<Name.Errors.Empty>(as<Name.Parse<''>>())
   expectType<Name.Errors.Empty>(as<Name.Parse<' '>>())
@@ -116,12 +114,10 @@ namespace _testErrors {
   )
 }
 
-// prettier-ignore
 namespace _case {
   expectType<{ long: 'filePath'; short: null; aliases: { short: []; long: [] } }>(as<Name.Parse<'--file-path'>>())
 }
 
-// prettier-ignore
 namespace _mixed {
   expectType<{ expression: string; canonical: 'v'; long: null; short: 'v'; aliases: { short: []; long: [] } }>(
     as<Name.Parse<'-v'>>(),

@@ -34,14 +34,12 @@ describe(`placement of describe method in zod method chain does not matter`, () 
 
 describe(`when there are multiple describe methods in the zod method chain only the last (outer most) one is used`, () => {
   it(`last description instance wins`, () => {
-    // prettier-ignore
     $.parameter(`a`, s.describe(`Blah blah blah 1.`).describe(`Blah blah blah 2.`)).parse({ line: [`-h`] })
     const output = processStdout.mock.lastCall?.[0] as string
     expect(stripAnsi(output)).toMatch(/Blah blah blah 2./)
   })
 
   it(`last description instance separated by default wins`, () => {
-    // prettier-ignore
     $.parameter(`a`, s.describe(`Blah blah blah 1.`).default(`x`).describe(`Blah blah blah 2.`)).parse({
       line: [`-h`],
     })
@@ -49,7 +47,6 @@ describe(`when there are multiple describe methods in the zod method chain only 
     expect(stripAnsi(output)).toMatch(/Blah blah blah 2./)
   })
 
-  // prettier-ignore
   it(`last description instance separated by optional wins`, () => {
     $.parameter(`a`, s.describe(`Blah blah blah 1.`).optional().describe(`Blah blah blah 2.`)).parse({ line: [`-h`] })
     const output = processStdout.mock.lastCall?.[0] as string

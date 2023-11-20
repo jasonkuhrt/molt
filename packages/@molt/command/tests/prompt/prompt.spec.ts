@@ -318,7 +318,6 @@ it(`array value`, () => {
 //   })
 // })
 
-// prettier-ignore
 it(`Static type tests`, () => {
   expectType<() => { a: 1 }>($.parameter(`a`, { type: l1, prompt: null }).parse)
   expectType<() => { a: 1 }>($.parameter(`a`, { type: l1, prompt: undefined }).parse)

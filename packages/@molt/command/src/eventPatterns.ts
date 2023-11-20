@@ -5,13 +5,11 @@ import type { ParameterBasicData } from './Parameter/basic.js'
 import type { Pattern } from './Pattern/Pattern.js'
 import type { Type } from './Type/index.js'
 
-// prettier-ignore
 export type EventPatternsInputAtLeastOne<T extends Type.Type> = 'optional' extends T['optionality']['_tag']
   ? Pattern<BasicParameterParseEvent, 'result'>
   : 'default' extends T['optionality']['_tag'] ? Pattern<BasicParameterParseEvent, 'result'>
   : Pattern<BasicParameterParseEventAccepted | BasicParameterParseEventRejected, 'result'>
 
-// prettier-ignore
 export type EventPatternsInput<T extends Type.Type> = T['optionality']['_tag'] extends 'optional'
   ? Pattern<BasicParameterParseEvent, 'result'>
   : T['optionality']['_tag'] extends 'default' ? Pattern<BasicParameterParseEvent, 'result'>

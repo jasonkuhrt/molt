@@ -20,7 +20,6 @@ interface KeyPressPatternExpressionObject {
 }
 
 const isKeyPressMatchPattern = (event: KeyPress.KeyPressEvent, keyPressMatchSpec: KeyPressPattern) => {
-  // prettier-ignore
   return (
     keyPressMatchSpec.name === undefined
     || (keyPressMatchSpec.name.includes(event.name)

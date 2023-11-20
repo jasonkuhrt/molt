@@ -13,7 +13,6 @@ import { resolveTableMethodArgs } from './table.js'
 type Childish = string | null | BlockBuilder | Block
 type Childrenish = Childish | Childish[]
 
-// prettier-ignore
 export interface BlockMethod<Chain> {
   (builder: ($: BlockBuilder) => null | BlockBuilder): Chain
   (child: Childrenish): Chain
@@ -21,7 +20,6 @@ export interface BlockMethod<Chain> {
   (parameters: BlockParameters, builder: ($: BlockBuilder) => null | BlockBuilder): Chain
 }
 
-// prettier-ignore
 export interface BlockBuilder<Chain = null> {
   block: BlockMethod<Chain extends null ? BlockBuilder : Chain>
   table: TableMethod<Chain extends null ? BlockBuilder : Chain>

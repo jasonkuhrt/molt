@@ -9,7 +9,6 @@ describe(`errors`, () => {
 })
 
 describe(`string`, () => {
-  // prettier-ignore
   test.each([
     [`--ver`, [`--ver`, `foo`], { ver: `foo` }],
     [`--ver --version`, [`--ver`, `foo`], { ver: `foo` }],
@@ -25,7 +24,6 @@ describe(`string`, () => {
 })
 
 describe(`boolean`, () => {
-  // prettier-ignore
   test.each([
     [`--ver`, [`--ver`], { ver: true }],
     [`--ver --version`, [`--ver`], { ver: true }],
@@ -73,7 +71,6 @@ describe(`separator`, () => {
 
 describe(`case`, () => {
   describe(`string`, () => {
-    // prettier-ignore
     test.each([
       [`--foo-bar`, [`--fooBar`, `foo`], { fooBar: `foo` }],
       [`--foo-bar`, [`--foo-bar`, `foo`], { fooBar: `foo` }],
@@ -86,7 +83,6 @@ describe(`case`, () => {
   })
 
   describe(`boolean`, () => {
-    // prettier-ignore
     test.each([
       [`--foo-bar`, [`--fooBar`], { fooBar: true }],
       [`--foo-bar`, [`--foo-bar`], { fooBar: true }],

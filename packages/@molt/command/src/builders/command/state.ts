@@ -67,7 +67,6 @@ export namespace BuilderCommandState {
 
   type ReservedParameterNames = 'help' | 'h'
 
-  // prettier-ignore
   export type ValidateNameExpression<State extends Base, NameExpression extends string> = Name.Data.IsParseError<
     Name.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>
   > extends true ? Name.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>
@@ -83,7 +82,6 @@ export namespace BuilderCommandState {
     }
   >
 
-  // prettier-ignore
   export type SetExclusiveOptional<
     $State extends Base,
     Label extends string,
@@ -129,7 +127,6 @@ export namespace BuilderCommandState {
     ]
   >
 
-  // prettier-ignore
   export type AddExclusiveParameter<
     $State extends Base,
     Label extends string,
@@ -161,7 +158,6 @@ export namespace BuilderCommandState {
     >,
   ]>
 
-  // prettier-ignore
   export type CreateParameter<
     $State extends Base,
     NameExpression extends string,
@@ -174,11 +170,9 @@ export namespace BuilderCommandState {
     >
   }
 
-  // prettier-ignore
   export type ToArgs<$State extends Base> = $State['IsPromptEnabled'] extends true ? Promise<ToArgs_<$State>>
     : ToArgs_<$State>
 
-  // prettier-ignore
   type ToArgs_<$State extends Base> = Simplify<
     & {
       [Name in keyof $State['Parameters'] & string as $State['Parameters'][Name]['NameParsed']['canonical']]:
@@ -200,7 +194,6 @@ export namespace BuilderCommandState {
     }
   >
 
-  // prettier-ignore
   export type ToTypes<$State extends BuilderCommandState.Base> = {
     [K in keyof $State['Parameters'] & string as $State['Parameters'][K]['NameParsed']['canonical']]:
       $State['Parameters'][K]['Type']

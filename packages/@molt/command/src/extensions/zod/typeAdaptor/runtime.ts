@@ -16,7 +16,6 @@ import type { z } from 'zod'
 
 export const fromZod = (zodType: z.ZodFirstPartySchemaTypes): Type.Type => _fromZod(zodType, {})
 
-// prettier-ignore
 const _fromZod = (
   zodType: z.ZodFirstPartySchemaTypes,
   previous: { description?: string; optionality?: Type.Optionality<any> },

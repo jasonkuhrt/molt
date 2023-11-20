@@ -10,7 +10,6 @@ import Semver from 'semver'
 import semverRegex from 'semver-regex'
 import { z } from 'zod'
 
-// prettier-ignore
 const args = Command.create()
   .use(Zod)
   .parameter(`githubToken`, z.string())
@@ -70,7 +69,7 @@ if (args.publish) {
   await execa(`git`, [`add`, `package.json`], { cwd })
   await execa(`git`, [`commit`, `--message`, `chore(${args.package}): bump version`], { stdio: `inherit` })
   await execa(`pnpm`, [`publish`], { cwd, stdio: `inherit` })
-  // prettier-ignore
+
   await execa(`git`, [
     `tag`,
     gitTagName,

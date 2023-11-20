@@ -47,7 +47,7 @@ export const union = <$Members extends Member[]>({
     displayExpanded: () => `todo`,
     help: (settings) => {
       const hasAtLeastOneMemberDescription = members.filter((_) => _.description !== null).length > 0
-      // prettier-ignore
+
       const isExpandedMode =
         (hasAtLeastOneMemberDescription && settings?.helpRendering?.union?.mode === `expandOnParameterDescription`) // eslint-disable-line
         || settings?.helpRendering?.union?.mode === 'expandAlways' // eslint-disable-line
@@ -116,10 +116,9 @@ export const union = <$Members extends Member[]>({
           ],
           draw: (state) => {
             const marginLeftSpace = ` `.repeat(params.marginLeft ?? 0)
-            // prettier-ignore
+
             const intro = marginLeftSpace + `Different kinds of answers are accepted.` + Text.chars.newline
               + marginLeftSpace + `Which kind do you want to give?`
-            // prettier-ignore
 
             const choices = marginLeftSpace
               + params.prompt
@@ -139,7 +138,7 @@ export const union = <$Members extends Member[]>({
         if (state === null) return undefined
 
         const choice = members[state.active]
-        // prettier-ignore
+
         if (!choice) {
           throw new Error(
             `No choice selected. Enumeration must be empty. But enumerations should not be empty. This is a bug.`,
