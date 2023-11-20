@@ -44,13 +44,6 @@
     "quotes": "off",
     "@typescript-eslint/quotes": ["warn", "backtick"],
     "tsdoc/syntax": "warn",
-    "simple-import-sort/imports": [
-      "warn",
-      {
-        "groups": []
-      }
-    ],
-    "simple-import-sort/exports": "warn",
     "deprecation/deprecation": "warn",
     "prefer-arrow/prefer-arrow-functions": "warn",
     // TypeScript makes these safe & effective
