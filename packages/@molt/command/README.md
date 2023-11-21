@@ -55,6 +55,7 @@
 - [Extensions](#extensions)
   - [Zod](#zod)
 - [Recipes](#recipes)
+  - [Use `dprint` Instead of Prettier](#use-dprint-instead-of-prettier)
   - [Optional Argument With Default Behavior](#optional-argument-with-default-behavior)
 - [Architecture](#architecture)
 
@@ -1182,6 +1183,12 @@ z.string().min(1).describe('...').optional()
 ```
 
 ## Recipes
+
+### Use `dprint` Instead of Prettier
+
+Prettier formatting does not work well with Prettier due to the how much Molt Command relies on chaining APIs (aka. fluent APIs) whilst Prettier formats them poorly. You can find more detail and examples of its problems [here](https://github.com/jasonkuhrt/molt/issues/257).
+
+You can try https://dprint.dev instead which works well. All examples in this repo are formatted using it.
 
 ### Optional Argument With Default Behavior
 
