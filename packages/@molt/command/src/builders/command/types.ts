@@ -4,7 +4,8 @@ import type { Prompter } from '../../lib/Prompter/Prompter.js'
 import type { OpeningArgs } from '../../OpeningArgs/index.js'
 import type { Prompt } from '../../Parameter/types.js'
 import type { Settings } from '../../Settings/index.js'
-import type { BuilderExclusiveInitial, SomeBuilderExclusive } from '../exclusive/types.js'
+import type { ExclusiveBuilderStateSymbol } from '../exclusive/state.js'
+import type { BuilderExclusive, BuilderExclusiveInitial } from '../exclusive/types.js'
 import type { BuilderCommandState } from './state.js'
 // todo
 // eslint-disable-next-line
@@ -53,11 +54,11 @@ export interface CommandBuilder<$State extends BuilderCommandState.Base = Builde
     name: BuilderCommandState.ValidateNameExpression<$State, NameExpression>,
     type: $Type,
   ): CommandBuilder<BuilderCommandState.AddParameter<$State, NameExpression, { type: $Type }>>
-  parametersExclusive<Label extends string, BuilderExclusive extends SomeBuilderExclusive<$State>>(
+  parametersExclusive<Label extends string, $BuilderExclusive extends BuilderExclusive<$State>>(
     this: void,
     label: Label,
-    ExclusiveBuilderContainer: (builder: BuilderExclusiveInitial<$State, Label>) => BuilderExclusive,
-  ): CommandBuilder<BuilderExclusive['_']['typeState']>
+    ExclusiveBuilderContainer: (builder: BuilderExclusiveInitial<$State, Label>) => $BuilderExclusive,
+  ): CommandBuilder<$BuilderExclusive[ExclusiveBuilderStateSymbol]['commandBuilderState']>
   settings<S extends Settings.Input<$State>>(
     this: void,
     newSettings: S,

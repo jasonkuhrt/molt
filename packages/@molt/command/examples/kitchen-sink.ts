@@ -9,12 +9,23 @@ const args = Command.create()
   )
   .parameter(
     `badDefault`,
-    z.string().default(() => {
-      throw new Error(`whoops`)
-    }),
+    z
+      .string()
+      .default(() => {
+        throw new Error(`whoops`)
+      }),
   )
-  .parameter(`one`, z.enum([`apple`]))
-  .parameter(`figbar`, z.enum([`zebra`, `monkey`, `giraffe`]).default(`monkey`))
+  .parameter(
+    `one`,
+    z
+      .enum([`apple`]),
+  )
+  .parameter(
+    `figbar`,
+    z
+      .enum([`zebra`, `monkey`, `giraffe`])
+      .default(`monkey`),
+  )
   .parameter(
     `big`,
     z
@@ -37,14 +48,28 @@ const args = Command.create()
     `i install`,
     z
       .union([
-        z.boolean().describe(`Use the system-detected package manager.`),
-        z.enum([`yarn`, `npm`, `pnpm`]).describe(`Force use of a specific package manager.`),
+        z
+          .boolean()
+          .describe(`Use the system-detected package manager.`),
+        z
+          .enum([`yarn`, `npm`, `pnpm`])
+          .describe(`Force use of a specific package manager.`),
       ])
       .describe(`Run dependency install after setup.`)
       .default(false),
   )
-  .parameter(`filePath`, z.string().describe(`Path to the file to convert.`))
-  .parameter(`to`, z.enum([`json`, `yaml`, `toml`]).describe(`Format to convert to.`))
+  .parameter(
+    `filePath`,
+    z
+      .string()
+      .describe(`Path to the file to convert.`),
+  )
+  .parameter(
+    `to`,
+    z
+      .enum([`json`, `yaml`, `toml`])
+      .describe(`Format to convert to.`),
+  )
   .parameter(
     `from`,
     z
@@ -54,11 +79,17 @@ const args = Command.create()
   )
   .parameter(
     `verbose v`,
-    z.boolean().default(false).describe(`Log detailed progress as conversion executes.`),
+    z
+      .boolean()
+      .default(false)
+      .describe(`Log detailed progress as conversion executes.`),
   )
   .parameter(
     `move m`,
-    z.boolean().default(false).describe(`Delete the original file after it has been converted.`),
+    z
+      .boolean()
+      .default(false)
+      .describe(`Delete the original file after it has been converted.`),
   )
   .parametersExclusive(`desert`, (_) =>
     _.parameter(
