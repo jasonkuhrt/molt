@@ -1,5 +1,5 @@
 import { expectType } from 'tsd'
-import type { Name } from '../src/index.js'
+import type { Name } from '../src/_entrypoints/default.js'
 
 // eslint-disable-next-line
 const as = <T>(): T => 0 as any

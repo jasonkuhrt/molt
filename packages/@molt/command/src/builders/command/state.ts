@@ -1,4 +1,4 @@
-import type { Name } from '@molt/types'
+import type { Name } from '@molt/name'
 import type { Objects, Pipe } from 'hotscript'
 import type { Simplify } from 'type-fest'
 import type { Values } from '../../helpers.js'

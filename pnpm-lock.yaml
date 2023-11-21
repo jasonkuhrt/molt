@@ -90,9 +90,9 @@ importers:
 
   packages/@molt/command:
     dependencies:
-      '@molt/types':
+      '@molt/name':
         specifier: workspace:*
-        version: link:../types
+        version: link:../name
       alge:
         specifier: 0.8.1
         version: 0.8.1
@@ -155,7 +155,7 @@ importers:
         specifier: ^1.0.4
         version: 1.0.4(vitest@0.34.6)
 
-  packages/@molt/types:
+  packages/@molt/name:
     dependencies:
       '@types/lodash.camelcase':
         specifier: 4.3.9
@@ -176,7 +176,7 @@ importers:
 
   packages/molt:
     dependencies:
-      '@molt/types':
+      '@molt/name':
         specifier: ../types
         version: link:../types
       zod:

@@ -1,5 +1,5 @@
 {
-  "name": "@molt/types",
+  "name": "@molt/name",
   "version": "0.2.0",
   "description": "Advanced Types for parsing CLI flags and more.",
   "scripts": {
@@ -14,12 +14,12 @@
     "src",
     "build"
   ],
-  "types": "./build/esm/index.d.ts",
+  "types": "./build/esm/_entrypoints/default.d.ts",
   "exports": {
     ".": {
       "import": {
-        "types": "./build/esm/index.d.ts",
-        "default": "./build/esm/index.js"
+        "types": "./build/esm/_entrypoints/default.d.ts",
+        "default": "./build/esm/_entrypoints/default.js"
       }
     }
   },

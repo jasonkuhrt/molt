@@ -1,6 +1,6 @@
 import camelCase from 'lodash.camelcase'
-import { partition, stripeDashPrefix } from '../prelude.js'
 import type { NameParsed } from './data.js'
+import { partition, stripeDashPrefix } from './prelude.js'
 
 export const parse = (expression: string): NameParsed => {
   const names = expression
@@ -14,7 +14,7 @@ export const parse = (expression: string): NameParsed => {
   const [longs, shorts] = partition(names, (name) => name.length > 1)
 
   // User should static error before hitting this at runtime thanks to
-  // @molt/types.
+  // @molt/name.
   if (shorts.length === 0 && longs.length === 0) {
     throw new Error(`Invalid parameter expression: ${expression}`)
   }
