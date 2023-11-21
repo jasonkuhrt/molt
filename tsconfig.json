@@ -27,7 +27,7 @@
     "baseUrl": ".",
     "paths": {
       // "@molt/parameters": ["packages/parameters/src/_entrypoints/default.ts"],
-      // "@molt/types": ["packages/types/src/_entrypoints/default.ts"],
+      // "@molt/name": ["packages/types/src/_entrypoints/default.ts"],
       // "molt": ["packages/molt/src/_entrypoints/default.ts"]
     }
   }

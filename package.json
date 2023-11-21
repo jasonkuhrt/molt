@@ -12,7 +12,7 @@
     "check:lint": "eslint . --ext .ts,.tsx --max-warnings 0",
     "check:types": "tsc --noEmit",
     "release:@molt/command": "pnpm release --package @molt/command",
-    "release:@molt/types": "pnpm release --package @molt/types",
+    "release:@molt/name": "pnpm release --package @molt/name",
     "release:molt": "pnpm release --package molt",
     "release": "tsx scripts/release.ts"
   },

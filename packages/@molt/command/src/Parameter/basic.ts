@@ -1,4 +1,4 @@
-import { Name } from '@molt/types'
+import { Name } from '@molt/name'
 import type { BuilderCommandState } from '../builders/command/state.js'
 import type { HKT } from '../helpers.js'
 import type { Pam } from '../lib/Pam/index.js'

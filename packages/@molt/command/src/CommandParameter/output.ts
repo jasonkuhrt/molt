@@ -1,7 +1,7 @@
 // import type { EventPatternsInput } from '../eventPatterns.js'
 // import type { Pam } from '../lib/Pam/index.js'
 // import type { Type } from '../Type/index.js'
-// import type { Name as MoltName } from '@molt/types'
+// import type { Name as MoltName } from '@molt/name'
 
 // export type Output = Output.Exclusive | Output.Basic //| Output.Union
 

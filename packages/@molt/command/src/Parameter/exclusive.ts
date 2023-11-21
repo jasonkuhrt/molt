@@ -1,5 +1,5 @@
-import type { Name as MoltName } from '@molt/types'
-import { Name } from '@molt/types'
+import type { Name as MoltName } from '@molt/name'
+import { Name } from '@molt/name'
 import { Alge } from 'alge'
 import type { BuilderCommandState } from '../builders/command/state.js'
 import type { Pam } from '../lib/Pam/index.js'

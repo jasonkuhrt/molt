@@ -1,11 +1,11 @@
-# @molt/types
+# @molt/name
 
 ⛑ Advanced Types for parsing CLI flags and more.
 
 ## Installation
 
 ```
-npm add @molt/types
+npm add @molt/name
 ```
 
 ## Namespaces
@@ -55,7 +55,7 @@ FlagName.Parse<'--foo --foo'>
 ```
 
 ```ts
-import { FlagName } from '@molt/types'
+import { FlagName } from '@molt/name'
 
 const defineFlag = <Name>(
   name: FlagName.Data.IsParseError<FlagName.Parse<Name>> extends true
