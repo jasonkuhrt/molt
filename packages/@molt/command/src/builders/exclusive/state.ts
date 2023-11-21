@@ -1,27 +1,19 @@
 import type { ParameterExclusiveInput } from '../../Parameter/exclusive.js'
 import type { BuilderCommandState } from '../command/state.js'
 
+export const ExclusiveBuilderStateSymbol = Symbol(`ExclusiveBuilderState`)
+export type ExclusiveBuilderStateSymbol = typeof ExclusiveBuilderStateSymbol
+
 export type BuilderParameterExclusiveState<
-  $State extends BuilderCommandState.Base = BuilderCommandState.Base,
-> = {
-  /**
-   * Used for build time. Type inference functionality.
-   */
-  typeState: $State
-  /**
-   * Used for runtime.
-   */
-  input: ParameterExclusiveInput<$State>
-}
+  $State extends BuilderCommandState.Base = BuilderCommandState.BaseEmpty,
+> = ParameterExclusiveInput<$State> & { commandBuilderState: $State }
 
 export const createState = (label: string): BuilderParameterExclusiveState => {
   return {
-    typeState: undefined as any, // eslint-disable-line
-    input: {
-      label,
-      _tag: `Exclusive`,
-      optionality: { _tag: `required` },
-      parameters: [],
-    } satisfies ParameterExclusiveInput,
+    label,
+    _tag: `Exclusive`,
+    optionality: { _tag: `required` },
+    parameters: [],
+    commandBuilderState: undefined as any, // eslint-disable-line
   }
 }

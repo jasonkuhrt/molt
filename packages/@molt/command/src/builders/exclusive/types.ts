@@ -1,6 +1,6 @@
 import type { Type } from '../../Type/index.js'
 import type { BuilderCommandState } from '../command/state.js'
-import type { BuilderParameterExclusiveState } from './state.js'
+import type { BuilderParameterExclusiveState, ExclusiveBuilderStateSymbol } from './state.js'
 
 export interface ExclusiveParameterConfiguration<$State extends BuilderCommandState.Base> {
   type: $State['Type']
@@ -26,7 +26,7 @@ interface Parameter<$State extends BuilderCommandState.Base, Label extends strin
 }
 
 export interface BuilderExclusiveInitial<$State extends BuilderCommandState.Base, Label extends string> {
-  _: BuilderParameterExclusiveState<$State>
+  [ExclusiveBuilderStateSymbol]: BuilderParameterExclusiveState<$State>
   parameter: Parameter<$State, Label>
   optional: () => BuilderExclusiveAfterOptional<BuilderCommandState.SetExclusiveOptional<$State, Label, true>>
   default: <Tag extends keyof $State['ParametersExclusive'][Label]['Parameters']>(
@@ -36,11 +36,11 @@ export interface BuilderExclusiveInitial<$State extends BuilderCommandState.Base
 }
 
 export type BuilderExclusiveAfterOptional<$State extends BuilderCommandState.Base> = {
-  _: BuilderParameterExclusiveState<$State>
+  [ExclusiveBuilderStateSymbol]: BuilderParameterExclusiveState<$State>
 }
 
 export type BuilderExclusiveAfterDefault<$State extends BuilderCommandState.Base> = {
-  _: BuilderParameterExclusiveState<$State>
+  [ExclusiveBuilderStateSymbol]: BuilderParameterExclusiveState<$State>
 }
 
 export interface SomeParameter<$State extends BuilderCommandState.Base> {
@@ -51,15 +51,15 @@ export interface SomeParameter<$State extends BuilderCommandState.Base> {
 export type SomeBuilderExclusiveInitial<
   $State extends BuilderCommandState.Base = BuilderCommandState.BaseEmpty,
 > = {
-  _: any // eslint-disable-line
+  [ExclusiveBuilderStateSymbol]: BuilderParameterExclusiveState<$State>
   parameter: SomeParameter<$State>
   optional: any // eslint-disable-line
   default: (tag: any, value: any) => any // eslint-disable-line
 }
 
-export type SomeBuilderMutuallyExclusiveAfterOptional<$State extends BuilderCommandState.Base> =
+export type BuilderMutuallyExclusiveAfterOptional<$State extends BuilderCommandState.Base> =
   BuilderExclusiveAfterOptional<$State>
 
-export type SomeBuilderExclusive<$State extends BuilderCommandState.Base> =
+export type BuilderExclusive<$State extends BuilderCommandState.Base> =
   | SomeBuilderExclusiveInitial<$State>
-  | SomeBuilderMutuallyExclusiveAfterOptional<$State>
+  | BuilderMutuallyExclusiveAfterOptional<$State>

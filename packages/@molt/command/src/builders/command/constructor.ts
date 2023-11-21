@@ -5,6 +5,7 @@ import type { ParameterBasicInput } from '../../Parameter/basic.js'
 import { Settings } from '../../Settings/index.js'
 import type { Type } from '../../Type/index.js'
 import * as ExclusiveBuilder from '../exclusive/constructor.js'
+import { ExclusiveBuilderStateSymbol } from '../exclusive/state.js'
 import type { BuilderCommandState } from './state.js'
 import { createState } from './state.js'
 import type { CommandBuilder, ParameterConfiguration, RawArgInputs } from './types.js'
@@ -61,12 +62,12 @@ const create_ = (state: BuilderCommandState): CommandBuilder => {
       return create_(newState) as any
     },
     parametersExclusive: (label, builderContainer) => {
-      const input = builderContainer(ExclusiveBuilder.create(label, state))._.input // eslint-disable-line
+      const exclusiveBuilderState = builderContainer(ExclusiveBuilder.create(label, state))[ExclusiveBuilderStateSymbol] // eslint-disable-line
       const newState = {
         ...state,
         parameterInputs: {
           ...state.parameterInputs,
-          [label]: input, // eslint-disable-line
+          [label]: exclusiveBuilderState, // eslint-disable-line
         },
       }
       return create_(newState) as any
