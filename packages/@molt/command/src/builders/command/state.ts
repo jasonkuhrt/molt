@@ -9,7 +9,17 @@ import type { Prompt } from '../../Parameter/types.js'
 import type { Settings } from '../../Settings/index.js'
 import type { Type } from '../../Type/index.js'
 import type { ExclusiveParameterConfiguration } from '../exclusive/types.js'
-import type { IsPromptEnabledInParameterSettings, ParameterConfiguration } from './types.js'
+import type {
+  IsPromptEnabledInParameterSettings,
+  ParameterConfiguration,
+} from './types.js'
+import type {
+  ParameterBuilderInfer,
+  ParameterBuilderUpdateStateProperty,
+  ParameterBuilderWithMinimumState,
+} from '../ParameterBuilder/types.js'
+import type { TypeBuilder } from '../TypeBuilder/types.js'
+import type { PrivateData } from '../../lib/PrivateData/PrivateData.js'
 
 export const createState = (): BuilderCommandState => {
   return {
@@ -28,7 +38,8 @@ export interface BuilderCommandState {
 }
 
 export namespace BuilderCommandState {
-  export interface TypeMapper<T extends Type.Type = Type.Type> extends HKT.Fn<T, T> {
+  export interface TypeMapper<T extends Type.Type = Type.Type>
+    extends HKT.Fn<T, T> {
     return: T
   }
 
@@ -49,6 +60,7 @@ export namespace BuilderCommandState {
         Optional: boolean
         Parameters: {
           [canonicalName: string]: {
+            parameterBuilder: ParameterBuilderMinimumState
             NameParsed: Name.Data.NameParsed
             NameUnion: string
             Type: Type.Type
@@ -58,6 +70,7 @@ export namespace BuilderCommandState {
     }
     Parameters: {
       [nameExpression: string]: {
+        parameterBuilder: ParameterBuilderMinimumState
         NameParsed: Name.Data.NameParsed
         NameUnion: string
         Type: Type.Type
@@ -67,12 +80,27 @@ export namespace BuilderCommandState {
 
   type ReservedParameterNames = 'help' | 'h'
 
-  export type ValidateNameExpression<State extends Base, NameExpression extends string> = Name.Data.IsParseError<
-    Name.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>
-  > extends true ? Name.Parse<NameExpression, { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }>
+  export type ValidateNameExpression<
+    State extends Base,
+    NameExpression extends string,
+  > = Name.Data.IsParseError<
+    Name.Parse<
+      NameExpression,
+      { usedNames: GetUsedNames<State>; reservedNames: ReservedParameterNames }
+    >
+  > extends true
+    ? Name.Parse<
+        NameExpression,
+        {
+          usedNames: GetUsedNames<State>
+          reservedNames: ReservedParameterNames
+        }
+      >
     : NameExpression
 
-  export type GetUsedNames<State extends Base> = Values<State['Parameters']>['NameUnion']
+  export type GetUsedNames<State extends Base> = Values<
+    State['Parameters']
+  >['NameUnion']
 
   export type ParametersConfigBase = Record<
     string,
@@ -86,23 +114,97 @@ export namespace BuilderCommandState {
     $State extends Base,
     Label extends string,
     Value extends boolean,
-  > = Pipe<$State, [
-    Objects.Update<
-      'ParametersExclusive',
-      Objects.Assign<
-        {
+  > = Pipe<
+    $State,
+    [
+      Objects.Update<
+        'ParametersExclusive',
+        Objects.Assign<{
           [_ in Label]: {
             Optional: Value
             Parameters: $State['ParametersExclusive'][_]['Parameters']
           }
-        }
-      >
-    >,
-  ]>
+        }>
+      >,
+    ]
+  >
 
-  export type SetIsPromptEnabled<$State extends Base, value extends boolean> = Pipe<
+  export type SetIsPromptEnabled<
+    $State extends Base,
+    value extends boolean,
+  > = Pipe<
     $State,
-    [Objects.Update<'IsPromptEnabled', $State['IsPromptEnabled'] extends true ? true : value>]
+    [
+      Objects.Update<
+        'IsPromptEnabled',
+        $State['IsPromptEnabled'] extends true ? true : value
+      >,
+    ]
+  >
+
+  export type ParameterBuilderMinimumState = ParameterBuilderWithMinimumState<{
+    name: string
+    typeBuilder: TypeBuilder
+  }>
+
+  export type ParameterBuilderRecordMinimumState =
+    ParameterBuilderWithMinimumState<{
+      typeBuilder: TypeBuilder
+    }>
+
+  export type AddParameterBuilders<
+    $State extends Base,
+    $Builders extends Record<string, ParameterBuilderRecordMinimumState>,
+  > = Pipe<
+    $State,
+    [
+      Objects.Update<
+        'Parameters',
+        Objects.Assign<{
+          [NameExpression in keyof $Builders &
+            string]: CreateParameterFromParameterBuilder<
+            $State,
+            ParameterBuilderUpdateStateProperty<
+              $Builders[NameExpression],
+              'name',
+              NameExpression
+            >
+          >
+        }>
+      >,
+      // TODO bring prompt back
+      // Objects.Update<
+      //   'IsPromptEnabled',
+      //   $State['IsPromptEnabled'] extends true
+      //     ? true
+      //     : IsPromptEnabledInParameterSettings<Configuration>
+      // >,
+    ]
+  >
+
+  export type AddParameterBuilder<
+    $State extends Base,
+    $Builder extends ParameterBuilderMinimumState,
+  > = Pipe<
+    $State,
+    [
+      Objects.Update<
+        'Parameters',
+        Objects.Assign<{
+          [_ in PrivateData.Get<$Builder>['name']]: CreateParameterFromParameterBuilder<
+            $State,
+            $Builder
+          >
+        }>
+      >,
+      // TODO bring prompt back
+      // Objects.Update<
+      //   'IsPromptEnabled',
+      //   $State['IsPromptEnabled'] extends true
+      //     ? true
+      //     : IsPromptEnabledInParameterSettings<Configuration>
+      // >,
+    ]
   >
 
   export type AddParameter<
@@ -114,15 +216,19 @@ export namespace BuilderCommandState {
     [
       Objects.Update<
         'Parameters',
-        Objects.Assign<
-          {
-            [_ in NameExpression]: CreateParameter<$State, NameExpression, Configuration>
-          }
-        >
+        Objects.Assign<{
+          [_ in NameExpression]: CreateParameter<
+            $State,
+            NameExpression,
+            Configuration
+          >
+        }>
       >,
       Objects.Update<
         'IsPromptEnabled',
-        $State['IsPromptEnabled'] extends true ? true : IsPromptEnabledInParameterSettings<Configuration>
+        $State['IsPromptEnabled'] extends true
+          ? true
+          : IsPromptEnabledInParameterSettings<Configuration>
       >,
     ]
   >
@@ -132,70 +238,120 @@ export namespace BuilderCommandState {
     Label extends string,
     NameExpression extends string,
     Configuration extends ExclusiveParameterConfiguration<$State>,
-  > = Pipe<$State, [
-    Objects.Update<
-      'ParametersExclusive',
-      Objects.Assign<
-        & $State['ParametersExclusive']
-        & {
-          [_ in Label]: {
-            Optional: $State['ParametersExclusive'][_]['Optional']
-            Parameters: {
-              [_ in NameExpression as Name.Data.GetCanonicalNameOrErrorFromParseResult<Name.Parse<NameExpression>>]: {
-                Type: HKT.Call<$State['TypeMapper'], Configuration['type']>
-                NameParsed: Name.Parse<
-                  NameExpression,
-                  { usedNames: GetUsedNames<$State>; reservedNames: ReservedParameterNames }
-                >
-                NameUnion: Name.Data.GetNamesFromParseResult<
-                  Name.Parse<NameExpression, { usedNames: GetUsedNames<$State>; reservedNames: ReservedParameterNames }>
-                >
+  > = Pipe<
+    $State,
+    [
+      Objects.Update<
+        'ParametersExclusive',
+        Objects.Assign<
+          $State['ParametersExclusive'] & {
+            [_ in Label]: {
+              Optional: $State['ParametersExclusive'][_]['Optional']
+              Parameters: {
+                [_ in NameExpression as Name.Data.GetCanonicalNameOrErrorFromParseResult<
+                  Name.Parse<NameExpression>
+                >]: {
+                  Type: HKT.Call<$State['TypeMapper'], Configuration['type']>
+                  NameParsed: Name.Parse<
+                    NameExpression,
+                    {
+                      usedNames: GetUsedNames<$State>
+                      reservedNames: ReservedParameterNames
+                    }
+                  >
+                  NameUnion: Name.Data.GetNamesFromParseResult<
+                    Name.Parse<
+                      NameExpression,
+                      {
+                        usedNames: GetUsedNames<$State>
+                        reservedNames: ReservedParameterNames
+                      }
+                    >
+                  >
+                }
               }
             }
           }
+        >
+      >,
+    ]
+  >
+
+  export type CreateParameterFromParameterBuilder<
+    $State extends Base,
+    $ParameterBuilder extends ParameterBuilderMinimumState,
+  > = {
+    parameterBuilder: $ParameterBuilder
+    Type: HKT.Call<
+      $State['TypeMapper'],
+      PrivateData.Get<PrivateData.Get<$ParameterBuilder>['typeBuilder']>['type']
+    >
+    NameParsed: Name.Parse<
+      PrivateData.Get<$ParameterBuilder>['name'],
+      { usedNames: GetUsedNames<$State>; reservedNames: ReservedParameterNames }
+    >
+    NameUnion: Name.Data.GetNamesFromParseResult<
+      Name.Parse<
+        PrivateData.Get<$ParameterBuilder>['name'],
+        {
+          usedNames: GetUsedNames<$State>
+          reservedNames: ReservedParameterNames
         }
       >
-    >,
-  ]>
-
+    >
+  }
   export type CreateParameter<
     $State extends Base,
     NameExpression extends string,
     Configuration extends ParameterConfiguration<$State>,
   > = {
     Type: HKT.Call<$State['TypeMapper'], Configuration['type']>
-    NameParsed: Name.Parse<NameExpression, { usedNames: GetUsedNames<$State>; reservedNames: ReservedParameterNames }>
+    NameParsed: Name.Parse<
+      NameExpression,
+      { usedNames: GetUsedNames<$State>; reservedNames: ReservedParameterNames }
+    >
     NameUnion: Name.Data.GetNamesFromParseResult<
-      Name.Parse<NameExpression, { usedNames: GetUsedNames<$State>; reservedNames: ReservedParameterNames }>
+      Name.Parse<
+        NameExpression,
+        {
+          usedNames: GetUsedNames<$State>
+          reservedNames: ReservedParameterNames
+        }
+      >
     >
   }
 
-  export type ToArgs<$State extends Base> = $State['IsPromptEnabled'] extends true ? Promise<ToArgs_<$State>>
-    : ToArgs_<$State>
+  export type ToArgs<$State extends Base> =
+    $State['IsPromptEnabled'] extends true
+      ? Promise<ToArgs_<$State>>
+      : ToArgs_<$State>
 
   type ToArgs_<$State extends Base> = Simplify<
-    & {
-      [Name in keyof $State['Parameters'] & string as $State['Parameters'][Name]['NameParsed']['canonical']]:
-        Type.Infer<$State['Parameters'][Name]['Type']>
-    }
-    & {
+    {
+      [Name in keyof $State['Parameters'] &
+        string as $State['Parameters'][Name]['NameParsed']['canonical']]: ParameterBuilderInfer<
+        $State['Parameters'][Name]['parameterBuilder']
+      >
+    } & {
       [Label in keyof $State['ParametersExclusive'] & string]:
         | Simplify<
-          Values<
-            {
+            Values<{
               [Name in keyof $State['ParametersExclusive'][Label]['Parameters']]: {
                 _tag: $State['ParametersExclusive'][Label]['Parameters'][Name]['NameParsed']['canonical']
-                value: Type.Infer<$State['ParametersExclusive'][Label]['Parameters'][Name]['Type']>
+                value: Type.Infer<
+                  $State['ParametersExclusive'][Label]['Parameters'][Name]['Type']
+                >
               }
-            }
+            }>
           >
-        >
-        | ($State['ParametersExclusive'][Label]['Optional'] extends true ? undefined : never)
+        | ($State['ParametersExclusive'][Label]['Optional'] extends true
+            ? undefined
+            : never)
     }
   >
 
   export type ToTypes<$State extends BuilderCommandState.Base> = {
-    [K in keyof $State['Parameters'] & string as $State['Parameters'][K]['NameParsed']['canonical']]:
-      $State['Parameters'][K]['Type']
+    [K in keyof $State['Parameters'] &
+      string as $State['Parameters'][K]['NameParsed']['canonical']]: $State['Parameters'][K]['Type']
   }
 }

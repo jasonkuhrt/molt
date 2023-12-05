@@ -1,3 +1,4 @@
+import { produce } from 'immer'
 import { Either } from 'effect'
 import camelCase from 'lodash.camelcase'
 
@@ -18,16 +19,20 @@ export const stripeDashPrefix = (flagNameInput: string): string => {
 
 export type Values<T> = T[keyof T]
 
-export const getLowerCaseEnvironment = (): NodeJS.ProcessEnv => lowerCaseObjectKeys(process.env)
+export const getLowerCaseEnvironment = (): NodeJS.ProcessEnv =>
+  lowerCaseObjectKeys(process.env)
 
 export const lowerCaseObjectKeys = (obj: object) =>
   Object.fromEntries(Object.entries(obj).map(([k, v]) => [k.toLowerCase(), v]))
 
-export const parseEnvironmentVariableBoolean = (serializedValue: string): Either.Either<Error, boolean> => {
+export const parseEnvironmentVariableBoolean = (
+  serializedValue: string,
+): Either.Either<Error, boolean> => {
   // @ts-expect-error ignore
   // eslint-disable-next-line
   const value = environmentVariableBooleanLookup[serializedValue]
-  if (value === undefined) return Either.left(new Error(`Invalid boolean value: ${value}`))
+  if (value === undefined)
+    return Either.left(new Error(`Invalid boolean value: ${value}`))
   return Either.right(value)
 }
 
@@ -70,7 +75,8 @@ export const invertTable = <T>(rows: T[][]): T[][] => {
 
 export const entries = <O extends object>(
   obj: O,
-): Exclude<{ [k in keyof O]: [k, O[k]] }[keyof O], undefined>[] => Object.entries(obj) as any
+): Exclude<{ [k in keyof O]: [k, O[k]] }[keyof O], undefined>[] =>
+  Object.entries(obj) as any
 
 export const casesExhausted = (_: never): never => {
   throw new Error(`Cases exhausted: ${_}`) // eslint-disable-line
@@ -96,3 +102,51 @@ export namespace HKT {
     return: this['params']
   }
 }
+
+export const createUpdater =
+  <$State, $Builder extends (state: $State) => unknown>(params: {
+    state: $State
+    builder: $Builder
+  }) =>
+  <$Args extends unknown[]>(
+    pathExpression: string,
+    updater?: (...args: $Args) => unknown,
+  ) =>
+  (...args: $Args) => {
+    return params.builder(
+      produce(params.state, (draft) => {
+        const path = pathExpression.split(`.`)
+        const objectPath = path.slice(0, -1)
+        const valuePath = path.slice(-1)
+        const object = objectPath.reduce((acc, key) => {
+          // @ts-expect-error fixme
+          if (acc[key] === undefined) acc[key] = {}
+          // @ts-expect-error fixme
+          return acc[key]
+        }, draft)
+        // @ts-expect-error fixme
+        object[valuePath] = updater?.(...args) ?? args[0]
+      }),
+    )
+  }
+
+export type SetObjectProperty<
+  $Obj extends object,
+  $P extends string | symbol | number,
+  $V,
+> = Omit<$Obj, $P> & {
+  [_ in $P]: $V
+}
+
+export type UpdateObjectProperty<
+  $Obj extends object,
+  $P extends keyof $Obj,
+  $V extends $Obj[$P],
+> = Omit<$Obj, $P> & {
+  [_ in $P]: $V
+}
+
+export type UpdateObject<
+  $ObjA extends object,
+  $ObjB extends Partial<$ObjA>,
+> = Omit<$ObjA, keyof $ObjB> & $ObjB

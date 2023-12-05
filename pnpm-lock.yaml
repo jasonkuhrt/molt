@@ -108,6 +108,9 @@ importers:
       hotscript:
         specifier: ^1.0.13
         version: 1.0.13
+      immer:
+        specifier: ^10.0.3
+        version: 10.0.3
       lodash.camelcase:
         specifier: ^4.3.0
         version: 4.3.0
@@ -120,6 +123,9 @@ importers:
       strip-ansi:
         specifier: ^7.1.0
         version: 7.1.0
+      structurajs:
+        specifier: ^0.11.6
+        version: 0.11.6
       type-fest:
         specifier: ^4.5.0
         version: 4.5.0
@@ -1854,6 +1860,10 @@ packages:
     engines: {node: '>= 4'}
     dev: true
 
+  /immer@10.0.3:
+    resolution: {integrity: sha512-pwupu3eWfouuaowscykeckFmVTpqbzW+rXFCX8rQLkZzM9ftBmU/++Ra+o+L27mz03zJTlyV4UUr+fdKNffo4A==}
+    dev: false
+
   /import-fresh@3.3.0:
     resolution: {integrity: sha512-veYYhQa+D1QBKznvhUHxb8faxlrwUnxseDAbAp457E0wLNio2bOSKnjYDhMj+YiAq61xrMGhQk9iXVk5FzgQMw==}
     engines: {node: '>=6'}
@@ -2905,6 +2915,10 @@ packages:
     dependencies:
       acorn: 8.10.0
     dev: true
+
+  /structurajs@0.11.6:
+    resolution: {integrity: sha512-mmro++p0ULrfGGOglZmHB0vkXbiA6E4GFWzKoqSnWrOMMzpl6YakV1PCXGtzlJURPTkvWJJTvoZL5RJHXNeAQw==}
+    dev: false
 
   /supports-color@5.5.0:
     resolution: {integrity: sha512-QjVjwdXIt408MIiAqCX4oUKsgU2EqAGzs2Ppkm4aQYbjm+ZEWEcW4SfFNTr4uMNZma0ey4f5lgLrkB0aX0QMow==}

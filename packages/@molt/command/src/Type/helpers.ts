@@ -10,9 +10,18 @@ export const runtimeIgnore: any = true
 export type TypeSymbol = typeof TypeSymbol
 
 export type Optionality<T = unknown> =
-  | { _tag: 'required' }
-  | { _tag: 'optional' }
-  | { _tag: 'default'; getValue: () => T }
+  | OptionalityRequired
+  | OptionalityOptional
+  | OptionalityDefault<T>
+
+export type OptionalityRequired = { _tag: 'required' }
+
+export type OptionalityOptional = { _tag: 'optional' }
+
+export type OptionalityDefault<T = unknown> = {
+  _tag: 'default'
+  getValue: () => T
+}
 
 export interface Type<T = any> {
   _tag: string

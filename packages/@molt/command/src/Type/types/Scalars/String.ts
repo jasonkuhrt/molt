@@ -10,60 +10,62 @@ import { runtimeIgnore, type Type, TypeSymbol } from '../../helpers.js'
 
 export interface String extends Type<string> {
   _tag: 'TypeString'
-  refinements: Refinements
-  transformations: Transformations
+  refinements: StringRefinements
+  transformations: StringTransformations
 }
 
 type String_ = String // eslint-disable-line
 
-interface Transformations {
+export interface StringTransformations {
   trim?: boolean
   toCase?: 'upper' | 'lower'
 }
 
-interface Refinements {
-  regex?: RegExp
+export interface StringRefinements {
   min?: number
   max?: number
   length?: number
-  pattern?:
-    | {
-      type: 'email'
-    }
-    | {
-      type: 'url'
-    }
-    | {
-      type: 'uuid'
-    }
-    | {
-      type: 'cuid'
-    }
-    | {
-      type: 'cuid2'
-    }
-    | {
-      type: 'ulid'
-    }
-    | {
-      type: 'emoji'
-    }
-    | {
-      type: 'ip'
-      /**
-       * If `null` then either IPv4 or IPv6 is allowed.
-       */
-      version: 4 | 6 | null
-    }
-    | {
-      type: 'dateTime'
-      offset: boolean
-      precision: null | number
-    }
   startsWith?: string
   endsWith?: string
   includes?: string
+  regex?: RegExp
+  pattern?:
+    | {
+        type: 'email'
+      }
+    | {
+        type: 'url'
+      }
+    | {
+        type: 'uuid'
+      }
+    | {
+        type: 'cuid'
+      }
+    | {
+        type: 'cuid2'
+      }
+    | {
+        type: 'ulid'
+      }
+    | {
+        type: 'emoji'
+      }
+    | {
+        type: 'ip'
+        /**
+         * If `null` then either IPv4 or IPv6 is allowed.
+         */
+        version: 4 | 6 | null
+      }
+    | {
+        type: 'dateTime'
+        offset: boolean
+        precision: null | number
+      }
 }
+
+// string().pattern(`dateTime`, { offset: true })
 
 export const string = ({
   refinements,
@@ -72,8 +74,8 @@ export const string = ({
   optionality,
 }: {
   optionality: Optionality<string>
-  refinements?: Refinements
-  transformations?: Transformations
+  refinements?: StringRefinements
+  transformations?: StringTransformations
   description?: string
 }): String_ => {
   const type: String_ = {
@@ -87,14 +89,18 @@ export const string = ({
     display: () => Term.colors.positive(`string`),
     displayExpanded: () => type.display(),
     help: () => {
-      return Tex.block(($) => $.block(type.displayExpanded()).block(description ?? null)) as Tex.Block
+      return Tex.block(($) =>
+        $.block(type.displayExpanded()).block(description ?? null),
+      ) as Tex.Block
     },
     deserialize: (rawValue) => Either.right(rawValue),
     validate: (value) => {
-      if (optionality._tag === `optional` && value === undefined) return Either.right(value)
+      if (optionality._tag === `optional` && value === undefined)
+        return Either.right(value)
       const errors: string[] = []
 
-      if (typeof value !== `string`) return Either.left({ value, errors: [`Value is not a string.`] })
+      if (typeof value !== `string`)
+        return Either.left({ value, errors: [`Value is not a string.`] })
       if (!refinements) return Either.right(value)
 
       if (refinements.regex && !refinements.regex.test(value)) {
@@ -146,7 +152,12 @@ export const string = ({
             }
           })
           .dateTime((type) => {
-            if (!Patterns.dateTime({ offset: type.offset, precision: type.precision }).test(value)) {
+            if (
+              !Patterns.dateTime({
+                offset: type.offset,
+                precision: type.precision,
+              }).test(value)
+            ) {
               errors.push(`Value is not a conforming datetime.`)
             }
           })
@@ -202,18 +213,21 @@ export const string = ({
     transform: (value) => {
       if (!transformations) return value
 
-      return entries(transformations ?? {}).reduce((_value, [kind, kindValue]) => {
-        return kind === `trim`
-          ? _value.trim()
-          : kind === `toCase`
-          ? kindValue === `upper`
-            ? _value.toUpperCase()
-            : _value.toLowerCase()
-          : casesExhausted(kind)
-      }, value)
+      return entries(transformations ?? {}).reduce(
+        (_value, [kind, kindValue]) => {
+          return kind === `trim`
+            ? _value.trim()
+            : kind === `toCase`
+            ? kindValue === `upper`
+              ? _value.toUpperCase()
+              : _value.toLowerCase()
+            : casesExhausted(kind)
+        },
+        value,
+      )
     },
     prompt: (params) =>
-      Effect.gen(function*(_) {
+      Effect.gen(function* (_) {
         interface State {
           value: string
         }
@@ -228,7 +242,10 @@ export const string = ({
             {
               run: (state, event) => {
                 return {
-                  value: event.name === `backspace` ? state.value.slice(0, -1) : state.value + event.sequence,
+                  value:
+                    event.name === `backspace`
+                      ? state.value.slice(0, -1)
+                      : state.value + event.sequence,
                 }
               },
             },
