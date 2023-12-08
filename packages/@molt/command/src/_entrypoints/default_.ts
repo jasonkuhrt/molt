@@ -1,2 +1,2 @@
-export { create } from '../builders/CommandBuilder/create.js'
+export { create } from '../builders/CommandBuilder/chain.js'
 export { eventPatterns } from '../eventPatterns.js'
