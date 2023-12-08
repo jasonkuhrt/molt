@@ -123,30 +123,21 @@ export const create = (): TypeStringBuilder<State.Base> =>
 
 const create_ = (state: State.Base): TypeStringBuilder => {
   const update = createUpdater({ builder: create_, state })
-  const refinement = (name: string) => {
-    return update(`refinements.${name}`) as any
-  }
-  const transformation = (name: string) => {
-    return update(`transformations.${name}`) as any
-  }
 
   return PrivateData.set(state, {
-    toCase: transformation(`toCase`), // eslint-disable-line
-    trim: (...args) => {
-      const value = args.length === 0 ? true : args[0]
-      return transformation(`trim`)(value) // eslint-disable-line
-    },
-    min: refinement(`min`), // eslint-disable-line
-    max: refinement(`max`), // eslint-disable-line
-    length: refinement(`length`), // eslint-disable-line
-    endsWith: refinement(`endsWith`), // eslint-disable-line
-    startsWith: refinement(`startsWith`), // eslint-disable-line
-    includes: refinement(`includes`), // eslint-disable-line
-    regex: refinement(`regex`), // eslint-disable-line
-    pattern: (...args) => {
-      const value = args
-      return refinement(`pattern`)(value) // eslint-disable-line
-    },
+    toCase: update(`transformations.toCase`) as any, // eslint-disable-line
+    // eslint-disable-next-line
+    trim: update<[] | [boolean]>(`transformations.trim`, (...args) => {
+      return args.length === 0 ? true : args[0]
+    }) as any,
+    min: update(`refinements.min`) as any, // eslint-disable-line
+    max: update(`refinements.max`) as any, // eslint-disable-line
+    length: update(`refinements.length`) as any, // eslint-disable-line
+    endsWith: update(`refinements.endsWith`) as any, // eslint-disable-line
+    startsWith: update(`refinements.startsWith`) as any, // eslint-disable-line
+    includes: update(`refinements.includes`) as any, // eslint-disable-line
+    regex: update(`refinements.regex`) as any, // eslint-disable-line
+    pattern: update<Pattern>(`refinements.pattern`, (...args) => args) as any, // eslint-disable-line
   } satisfies PrivateData.Remove<TypeStringBuilder>)
 }
 

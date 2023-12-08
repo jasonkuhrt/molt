@@ -2,8 +2,9 @@ import stripAnsi from 'strip-ansi'
 import { describe, expect, it } from 'vitest'
 import { mockProcessExit } from 'vitest-mock-process'
 import { z } from 'zod'
-import { $, s } from '../_/helpers.js'
+import { $, n, ps, s } from '../_/helpers.js'
 import { createState } from '../environment/__helpers__.js'
+import { p, t } from '../../src/_entrypoints/default.js'
 
 mockProcessExit()
 
@@ -15,7 +16,7 @@ const onOutput = output.set
 
 it(`if command has description it is shown`, () => {
   $.description(`Blah blah blah`)
-    .parameter(`foo`, s.optional())
+    .parameter(`foo`, ps.optional())
     .settings({ onOutput })
     .parse({ line: [`-h`] })
   expect(stripAnsi(output.value)).toMatchSnapshot(`monochrome`)
@@ -23,7 +24,7 @@ it(`if command has description it is shown`, () => {
 })
 
 it(`if there is optional param it is shown`, () => {
-  $.parameter(`a`, s.optional())
+  $.parameter(`a`, ps.optional())
     .settings({ onOutput })
     .parse({ line: [`-h`] })
   expect(stripAnsi(output.value)).toMatchSnapshot(`monochrome`)
@@ -31,7 +32,7 @@ it(`if there is optional param it is shown`, () => {
 })
 
 it(`if parameter has description it is shown`, () => {
-  $.parameter(`a`, s.optional().describe(`Blah blah blah.`))
+  $.parameter(`a`, ps.optional().description(`Blah blah blah.`))
     .settings({ onOutput })
     .parse({ line: [`-h`] })
   expect(stripAnsi(output.value)).toMatchSnapshot(`monochrome`)
@@ -39,7 +40,12 @@ it(`if parameter has description it is shown`, () => {
 })
 
 it(`long description wraps within column`, () => {
-  $.parameter(`a`, s.optional().describe(`Blah blah blah. Blah blah blah. Blah blah blah.`))
+  $.parameter(
+    `a`,
+    ps
+      .optional()
+      .description(`Blah blah blah. Blah blah blah. Blah blah blah.`),
+  )
     .settings({ onOutput })
     .parse({ line: [`-h`] })
   expect(stripAnsi(output.value)).toMatchSnapshot(`monochrome`)
@@ -47,7 +53,7 @@ it(`long description wraps within column`, () => {
 })
 
 it(`if parameter has default it is shown`, () => {
-  $.parameter(`foo`, s.default(`bar`))
+  $.parameter(`foo`, ps.default(`bar`))
     .settings({ onOutput })
     .parse({ line: [`-h`] })
   expect(stripAnsi(output.value)).toMatchSnapshot(`monochrome`)
@@ -55,7 +61,7 @@ it(`if parameter has default it is shown`, () => {
 })
 
 it(`if parameter is optional without default then its default shows up as "undefined"`, () => {
-  $.parameter(`foo`, s.optional())
+  $.parameter(`foo`, ps.optional())
     .settings({ onOutput })
     .parse({ line: [`-h`] })
   expect(stripAnsi(output.value)).toMatchSnapshot(`monochrome`)
@@ -65,7 +71,7 @@ it(`if parameter is optional without default then its default shows up as "undef
 it(`if there is an error trying to get default then a nice message is shown`, () => {
   $.parameter(
     `foo`,
-    s.default(() => {
+    ps.default(() => {
       throw new Error(`whoops`)
     }),
   )
@@ -78,7 +84,7 @@ it(`if there is an error trying to get default then a nice message is shown`, ()
 it(`if there is an error trying to get default then a nice message is shown`, () => {
   $.parameter(
     `foo`,
-    s.default(() => {
+    ps.default(() => {
       throw new Error(`whoops`)
     }),
   )
@@ -91,7 +97,7 @@ it(`if there is an error trying to get default then a nice message is shown`, ()
 it(`enums do not mess up alignment when they are widest line in the column`, () => {
   $.parameter(
     `foo`,
-    z.enum([
+    t.enum([
       `a`,
       `b`,
       `c`,
@@ -119,17 +125,17 @@ it(`enums do not mess up alignment when they are widest line in the column`, () 
       `y`,
       `z`,
     ]),
-  ).parameter(
-    `bar`,
-    s.optional(),
-  ).settings({ onOutput }).parse({ line: [`-h`] })
+  )
+    .parameter(`bar`, ps.optional())
+    .settings({ onOutput })
+    .parse({ line: [`-h`] })
   expect(stripAnsi(output.value)).toMatchSnapshot(`monochrome`)
   expect(output.value).toMatchSnapshot(`polychrome`)
 })
 
 describe(`enum`, () => {
   it(`enum members are listed`, () => {
-    $.parameter(`foo`, z.enum([`apple`, `dolphin`, `cab`]))
+    $.parameter(`foo`, t.enum([`apple`, `dolphin`, `cab`]))
       .settings({ onOutput })
       .parse({ line: [`-h`] })
     expect(stripAnsi(output.value)).toMatchSnapshot(`monochrome`)
@@ -137,7 +143,7 @@ describe(`enum`, () => {
   })
 
   it(`optional enum members are listed`, () => {
-    $.parameter(`foo`, z.enum([`apple`, `dolphin`, `cab`]).optional())
+    $.parameter(`foo`, p.type(t.enum([`apple`, `dolphin`, `cab`])).optional())
       .settings({ onOutput })
       .parse({ line: [`-h`] })
     expect(stripAnsi(output.value)).toMatchSnapshot(`monochrome`)
@@ -145,7 +151,7 @@ describe(`enum`, () => {
   })
 
   it(`when there is only one enum member it is prefixed with "enum:" to avoid confusion of it looking like the name of a kind of type`, () => {
-    $.parameter(`foo`, z.enum([`apple`]))
+    $.parameter(`foo`, t.enum([`apple`]))
       .settings({ onOutput })
       .parse({ line: [`-h`] })
     expect(stripAnsi(output.value)).toMatchSnapshot(`monochrome`)
@@ -155,7 +161,7 @@ describe(`enum`, () => {
   it(`when there are many members they wrap`, () => {
     $.parameter(
       `foo`,
-      z.enum([
+      t.enum([
         `apple`,
         `baby`,
         `cannabis`,
@@ -194,7 +200,10 @@ describe(`environment`, () => {
   it(`when environment is disabled for one parameter it has X indicating that`, () => {
     $.parameter(`foo`, s)
       .parameter(`bar`, s)
-      .settings({ onOutput, parameters: { environment: { $default: true, foo: false } } })
+      .settings({
+        onOutput,
+        parameters: { environment: { $default: true, foo: false } },
+      })
       .parse({ line: [`-h`] })
     expect(stripAnsi(output.value)).toMatchSnapshot(`monochrome`)
     expect(output.value).toMatchSnapshot(`polychrome`)
@@ -202,7 +211,10 @@ describe(`environment`, () => {
   it(`when environment has custom prefix it is displayed`, () => {
     $.parameter(`foo`, s)
       .parameter(`bar`, s)
-      .settings({ onOutput, parameters: { environment: { $default: true, foo: { prefix: `moo` } } } })
+      .settings({
+        onOutput,
+        parameters: { environment: { $default: true, foo: { prefix: `moo` } } },
+      })
       .parse({ line: [`-h`] })
     expect(stripAnsi(output.value)).toMatchSnapshot(`monochrome`)
     expect(output.value).toMatchSnapshot(`polychrome`)
@@ -212,7 +224,9 @@ describe(`environment`, () => {
       .parameter(`bar`, s)
       .settings({
         onOutput,
-        parameters: { environment: { $default: true, foo: { prefix: [`moo`, `boo`] } } },
+        parameters: {
+          environment: { $default: true, foo: { prefix: [`moo`, `boo`] } },
+        },
       })
       .parse({ line: [`-h`] })
     expect(stripAnsi(output.value)).toMatchSnapshot(`monochrome`)
@@ -221,7 +235,10 @@ describe(`environment`, () => {
   it(`when environment has no prefix it is displayed`, () => {
     $.parameter(`foo`, s)
       .parameter(`bar`, s)
-      .settings({ onOutput, parameters: { environment: { $default: true, foo: { prefix: false } } } })
+      .settings({
+        onOutput,
+        parameters: { environment: { $default: true, foo: { prefix: false } } },
+      })
       .parse({ line: [`-h`] })
     expect(stripAnsi(output.value)).toMatchSnapshot(`monochrome`)
     expect(output.value).toMatchSnapshot(`polychrome`)
@@ -231,7 +248,9 @@ describe(`environment`, () => {
 describe(`exclusive`, () => {
   describe(`optional`, () => {
     it(`shows exclusive parameters as a group`, () => {
-      $.parametersExclusive(`foo`, (_) => _.parameter(`b bar`, s).parameter(`z baz`, s).optional())
+      $.parametersExclusive(`foo`, (_) =>
+        _.parameter(`b bar`, s).parameter(`z baz`, s).optional(),
+      )
         .settings({ onOutput })
         .parse({
           line: [`-h`],
@@ -242,7 +261,11 @@ describe(`exclusive`, () => {
   })
   describe(`default`, () => {
     it(`shows the group default`, () => {
-      $.parametersExclusive(`foo`, (_) => _.parameter(`b bar`, s).parameter(`z baz`, s).default(`bar`, `bar_default`))
+      $.parametersExclusive(`foo`, (_) =>
+        _.parameter(`b bar`, s)
+          .parameter(`z baz`, s)
+          .default(`bar`, `bar_default`),
+      )
         .settings({ onOutput })
         .parse({
           line: [`-h`],
@@ -253,9 +276,10 @@ describe(`exclusive`, () => {
   })
   describe(`default with long value`, () => {
     it(`shows the group default`, () => {
-      $.parametersExclusive(
-        `foo`,
-        (_) => _.parameter(`b bar`, s).parameter(`z baz`, s).default(`bar`, `bar_defaulttttttttttttttttttttt`),
+      $.parametersExclusive(`foo`, (_) =>
+        _.parameter(`b bar`, s)
+          .parameter(`z baz`, s)
+          .default(`bar`, `bar_defaulttttttttttttttttttttt`),
       )
         .settings({ onOutput })
         .parse({
@@ -267,7 +291,11 @@ describe(`exclusive`, () => {
   })
   describe(`with environment disabled`, () => {
     it(`shows the group default`, () => {
-      $.parametersExclusive(`foo`, (_) => _.parameter(`b bar`, s).parameter(`z baz`, s).default(`bar`, `bar_default`))
+      $.parametersExclusive(`foo`, (_) =>
+        _.parameter(`b bar`, s)
+          .parameter(`z baz`, s)
+          .default(`bar`, `bar_default`),
+      )
         .settings({ onOutput, parameters: { environment: false } })
         .parse({
           line: [`-h`],
@@ -290,7 +318,10 @@ describe(`union parameter`, () => {
       expect(output.value).toMatchSnapshot(`polychrome`)
     })
     it(`used when only overall description given`, () => {
-      $.parameter(`b bar`, z.union([z.string(), z.number()]).describe(`Blah blah blah.`))
+      $.parameter(
+        `b bar`,
+        z.union([z.string(), z.number()]).description(`Blah blah blah.`),
+      )
         .settings({ onOutput })
         .parse({
           line: [`-h`],
@@ -301,8 +332,11 @@ describe(`union parameter`, () => {
   })
   describe(`expanded style`, () => {
     it(`can be forced via settings`, () => {
-      $.parameter(`b bar`, z.union([z.string(), z.number()]))
-        .settings({ onOutput, helpRendering: { union: { mode: `expandAlways` } } })
+      $.parameter(`b bar`, z.union([s, n]))
+        .settings({
+          onOutput,
+          helpRendering: { union: { mode: `expandAlways` } },
+        })
         .parse({ line: [`-h`] })
       expect(stripAnsi(output.value)).toMatchSnapshot(`monochrome`)
       expect(output.value).toMatchSnapshot(`polychrome`)
@@ -311,8 +345,8 @@ describe(`union parameter`, () => {
       $.parameter(
         `b bar`,
         z.union([
-          z.string().describe(`Blah blah blah string.`),
-          z.number().describe(`Blah blah blah number.`),
+          s.description(`Blah blah blah string.`),
+          z.description(`Blah blah blah number.`),
         ]),
       )
         .settings({ onOutput })
@@ -323,7 +357,10 @@ describe(`union parameter`, () => {
       expect(output.value).toMatchSnapshot(`polychrome`)
     })
     it(`shows member on each line if at least one has description`, () => {
-      $.parameter(`b bar`, z.union([z.string(), z.number().describe(`Blah blah blah number.`)]))
+      $.parameter(
+        `b bar`,
+        z.union([s, n.description(`Blah blah blah number.`)]),
+      )
         .settings({ onOutput })
         .parse({
           line: [`-h`],
@@ -336,10 +373,10 @@ describe(`union parameter`, () => {
         `b bar`,
         z
           .union([
-            z.string().describe(`Blah blah blah string.`),
-            z.number().describe(`Blah blah blah number.`),
+            s.description(`Blah blah blah string.`),
+            n.description(`Blah blah blah number.`),
           ])
-          .describe(`Blah blah blah overall.`),
+          .description(`Blah blah blah overall.`),
       )
         .settings({ onOutput })
         .parse({
@@ -353,9 +390,12 @@ describe(`union parameter`, () => {
     $.parameter(
       `b bar`,
       z
-        .union([z.string().describe(`Blah blah blah string.`), z.number().describe(`Blah blah blah number.`)])
+        .union([
+          s.description(`Blah blah blah string.`),
+          n.description(`Blah blah blah number.`),
+        ])
         .default(1)
-        .describe(`Blah blah blah overall.`),
+        .description(`Blah blah blah overall.`),
     )
       .settings({ onOutput })
       .parse({
@@ -368,9 +408,12 @@ describe(`union parameter`, () => {
     $.parameter(
       `b bar`,
       z
-        .union([z.string().describe(`Blah blah blah string.`), z.number().describe(`Blah blah blah number.`)])
+        .union([
+          s.description(`Blah blah blah string.`),
+          n.description(`Blah blah blah number.`),
+        ])
         .optional()
-        .describe(`Blah blah blah overall.`),
+        .description(`Blah blah blah overall.`),
     )
       .settings({ onOutput })
       .parse({

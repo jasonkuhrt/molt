@@ -1,7 +1,6 @@
 import { Command, p, t } from '../src/_entrypoints/default.js'
 
 const args = Command.create()
-
   .parameters({
     filePath: p.type(t.string()),
     to: p

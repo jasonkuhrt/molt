@@ -1,11 +1,8 @@
 import type { ParameterExclusiveInput } from '../../Parameter/exclusive.js'
-import type { BuilderCommandState } from '../command/state.js'
-
-export const ExclusiveBuilderStateSymbol = Symbol(`ExclusiveBuilderState`)
-export type ExclusiveBuilderStateSymbol = typeof ExclusiveBuilderStateSymbol
+import type { BuilderCommandState } from '../CommandBuilder/state.js'
 
 export type BuilderParameterExclusiveState<
-  $State extends BuilderCommandState.Base = BuilderCommandState.BaseEmpty,
+  $State extends BuilderCommandState.Base = BuilderCommandState.Initial,
 > = ParameterExclusiveInput<$State> & { commandBuilderState: $State }
 
 export const createState = (label: string): BuilderParameterExclusiveState => {

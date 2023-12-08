@@ -1,5 +1,5 @@
 import { Name } from '@molt/name'
-import type { BuilderCommandState } from '../builders/command/state.js'
+import type { BuilderCommandState } from '../builders/CommandBuilder/state.js'
 import type { HKT } from '../helpers.js'
 import type { Pam } from '../lib/Pam/index.js'
 import type { Settings } from '../Settings/index.js'
@@ -8,7 +8,7 @@ import { processEnvironment } from './helpers/environment.js'
 import type { Environment, Prompt } from './helpers/types.js'
 
 export interface ParameterBasicInput<
-  $State extends BuilderCommandState.Base = BuilderCommandState.BaseEmpty,
+  $State extends BuilderCommandState.Base = BuilderCommandState.Initial,
 > {
   _tag: 'Basic'
   nameExpression: string
@@ -28,15 +28,24 @@ export const parameterBasicCreate = (
 ): ParameterBasic => {
   const name = Name.parse(input.nameExpression)
   const environment = processEnvironment(settings, name)
-  const prompt = input.prompt as boolean | null | { enabled?: boolean; when?: object } // eslint-disable-line
-  const promptEnabled = prompt === true
-    ? true
-    : prompt === false
-    ? false
-    : prompt === null
-    ? null
-    : prompt.enabled ?? null
-  const promptEnabledWhen = prompt === null ? null : typeof prompt === `object` ? prompt.when ?? null : null
+  const prompt = input.prompt as
+    | boolean
+    | null
+    | { enabled?: boolean; when?: object } // eslint-disable-line
+  const promptEnabled =
+    prompt === true
+      ? true
+      : prompt === false
+      ? false
+      : prompt === null
+      ? null
+      : prompt.enabled ?? null
+  const promptEnabledWhen =
+    prompt === null
+      ? null
+      : typeof prompt === `object`
+      ? prompt.when ?? null
+      : null
   return {
     _tag: `Basic`,
     environment,

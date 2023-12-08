@@ -1,5 +1,4 @@
-import { z } from 'zod'
-import { Command } from '../../src/_entrypoints/default.js'
+import { Command, p, t } from '../../src/_entrypoints/default.js'
 import { Zod } from '../../src/_entrypoints/extensions.js'
 import { isPromiseLikeValue } from '../../src/lib/prelude.js'
 
@@ -8,11 +7,14 @@ export const $ = Command.create().use(Zod) // .settings({ onError: `throw` })
 
 export const assertAssignable = <T>(_: T): [T] => 0 as any // eslint-disable-line
 export const as = <T>(): T => undefined as any // eslint-disable-line
-export const n = z.number()
-export const s = z.string()
-export const b = z.boolean()
-export const l1 = z.literal(1)
-export const e = z.enum([`major`, `minor`, `patch`])
+export const n = t.number()
+export const s = t.string()
+export const b = t.boolean()
+export const l1 = t.literal(1)
+export const e = t.enum([`major`, `minor`, `patch`])
+export const pn = p.type(n)
+export const ps = p.type(s)
+export const pb = p.type(b)
 export const tryCatch = <T, E extends Error = Error>(
   fn: () => T,
 ): T extends Promise<any> ? Promise<Awaited<T> | E> : T | E => {

@@ -1,5 +1,5 @@
 import type { TypeBuilder } from '../TypeBuilder/types.js'
-import { create } from './ParameterBuilder.js'
+import { create } from './chain.js'
 
 export const name = <$Name extends string>(name: $Name) => {
   return create().name(name)

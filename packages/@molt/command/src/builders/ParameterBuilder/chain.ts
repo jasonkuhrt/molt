@@ -1,25 +1,10 @@
+import { createUpdater } from '../../helpers.js'
 import type { $, Objects } from 'hotscript'
 import type { TypeBuilder } from '../TypeBuilder/types.js'
-import type { PrivateData } from '../../lib/PrivateData/PrivateData.js'
-import type { Optionality, OptionalityOptional } from '../../Type/helpers.js'
+import { PrivateData } from '../../lib/PrivateData/PrivateData.js'
 import type { Type } from '../../Type/index.js'
-
-export type ParameterBuilderWithMinimumState<
-  $StateNew extends Partial<State.Base>,
-> = ParameterBuilderUpdateState<ParameterBuilder<State.Base>, $StateNew>
-
-export type ParameterBuilderUpdateState<
-  $Builder extends ParameterBuilder<State.Base>,
-  $StateNew extends Partial<State.Base>,
-  // @ts-expect-error fixme
-> = ParameterBuilder<PrivateData.UpdateObject<$Builder, $StateNew>>
-
-export type ParameterBuilderUpdateStateProperty<
-  $Builder extends ParameterBuilder<State.Base>,
-  $P extends keyof PrivateData.Get<$Builder>,
-  $V extends PrivateData.Get<$Builder>[$P],
-  // @ts-expect-error fixme
-> = ParameterBuilder<PrivateData.UpdateProperty<$Builder, $P, $V>>
+import { State } from './state.js'
+import type { ParameterBuilderUpdateStateProperty } from './state.js'
 
 export type ParameterBuilderInfer<
   $ParameterBuilder extends ParameterBuilderWithStateTypeBuilder,
@@ -99,6 +84,14 @@ export type ParameterBuilder<$State extends State.Base = State.Base> =
       : {
           default(
             this: void,
+            thun: () => Type.Infer<
+              PrivateData.Get<Exclude<$State['typeBuilder'], null>>['type']
+            >,
+          ): ParameterBuilder<
+            $<Objects.Update<'optionality', { _tag: 'default' }>, $State>
+          >
+          default(
+            this: void,
             value: Type.Infer<
               PrivateData.Get<Exclude<$State['typeBuilder'], null>>['type']
             >,
@@ -111,34 +104,35 @@ export type ParameterBuilder<$State extends State.Base = State.Base> =
 export type ParameterBuilderWithStateTypeBuilder =
   PrivateData.HostUpdateProperty<ParameterBuilder, 'typeBuilder', TypeBuilder>
 
-export namespace State {
-  export type PromptInput = {
-    enabled?: boolean
-    when: object
-  }
-  export type Prompt = {
-    enabled: boolean
-    when: object
-  }
-  export interface Base {
-    name: null | string
-    description: null | string
-    typeBuilder: null | TypeBuilder
-    optionality: Optionality
-    prompt: null | Prompt
-  }
-  export interface Initial {
-    name: null
-    description: null
-    typeBuilder: null
-    prompt: null
-    optionality: OptionalityOptional
-  }
-  export const initial: Initial = {
-    description: null,
-    name: null,
-    typeBuilder: null,
-    prompt: null,
-    optionality: { _tag: `optional` },
-  }
+export const create = () => {
+  return create_(State.initial)
+}
+
+const create_ = <$State extends State.Base>(
+  state: $State,
+): ParameterBuilder => {
+  const update = createUpdater({ builder: create_, state })
+  return PrivateData.set(state, {
+    name: update(`name`) as any, // eslint-disable-line
+    description: update(`description`) as any, // eslint-disable-line
+    type: update('type') as any, // eslint-disable-line
+    optional: update(`optionality`, () => ({ _tag: `optional` })) as any, // eslint-disable-line
+    // eslint-disable-next-line
+    prompt: update<[] | [boolean] | [State.PromptInput]>(
+      `prompt`,
+      (...args) => {
+        return args.length === 0
+          ? { enabled: true, when: {} }
+          : typeof args[0] === `boolean`
+          ? { enabled: args[0], when: {} }
+          : { enabled: args[0].enabled ?? true, when: args[0].when }
+      },
+    ) as any,
+    // @ts-expect-error ignore
+    // eslint-disable-next-line
+    default: update(`optionality`, (value) => ({
+      _tag: `default`,
+      getValue: typeof value === `function` ? value : () => value,
+    })) as any,
+  } satisfies PrivateData.Remove<ParameterBuilder>)
 }

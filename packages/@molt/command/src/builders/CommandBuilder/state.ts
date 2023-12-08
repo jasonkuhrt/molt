@@ -8,18 +8,15 @@ import type { ParameterExclusiveInput } from '../../Parameter/exclusive.js'
 import type { Prompt } from '../../Parameter/types.js'
 import type { Settings } from '../../Settings/index.js'
 import type { Type } from '../../Type/index.js'
-import type { ExclusiveParameterConfiguration } from '../exclusive/types.js'
-import type {
-  IsPromptEnabledInParameterSettings,
-  ParameterConfiguration,
-} from './types.js'
-import type {
-  ParameterBuilderInfer,
-  ParameterBuilderUpdateStateProperty,
-  ParameterBuilderWithMinimumState,
-} from '../ParameterBuilder/types.js'
+import type { ExclusiveParameterConfiguration } from '../ExclusiveBuilder/chain.js'
+import type { ParameterBuilderInfer } from '../ParameterBuilder/chain.js'
 import type { TypeBuilder } from '../TypeBuilder/types.js'
 import type { PrivateData } from '../../lib/PrivateData/PrivateData.js'
+import type {
+  ParameterBuilderWithMinimumState,
+  ParameterBuilderUpdateStateProperty,
+} from '../ParameterBuilder/state.js'
+import type { ParameterConfiguration } from './chain.js'
 
 export const createState = (): BuilderCommandState => {
   return {
@@ -43,7 +40,7 @@ export namespace BuilderCommandState {
     return: T
   }
 
-  export interface BaseEmpty extends Base {
+  export interface Initial extends Base {
     IsPromptEnabled: false
     ParametersExclusive: {} // eslint-disable-line
     Parameters: {} // eslint-disable-line
@@ -60,7 +57,7 @@ export namespace BuilderCommandState {
         Optional: boolean
         Parameters: {
           [canonicalName: string]: {
-            parameterBuilder: ParameterBuilderMinimumState
+            parameterBuilder: ParameterBuilderWithAtLeastNameAndType
             NameParsed: Name.Data.NameParsed
             NameUnion: string
             Type: Type.Type
@@ -70,7 +67,7 @@ export namespace BuilderCommandState {
     }
     Parameters: {
       [nameExpression: string]: {
-        parameterBuilder: ParameterBuilderMinimumState
+        parameterBuilder: ParameterBuilderWithAtLeastNameAndType
         NameParsed: Name.Data.NameParsed
         NameUnion: string
         Type: Type.Type
@@ -142,10 +139,16 @@ export namespace BuilderCommandState {
     ]
   >
 
-  export type ParameterBuilderMinimumState = ParameterBuilderWithMinimumState<{
-    name: string
-    typeBuilder: TypeBuilder
-  }>
+  export type ParameterBuilderWithAtLeastType =
+    ParameterBuilderWithMinimumState<{
+      typeBuilder: TypeBuilder
+    }>
+
+  export type ParameterBuilderWithAtLeastNameAndType =
+    ParameterBuilderWithMinimumState<{
+      name: string
+      typeBuilder: TypeBuilder
+    }>
 
   export type ParameterBuilderRecordMinimumState =
     ParameterBuilderWithMinimumState<{
@@ -184,7 +187,7 @@ export namespace BuilderCommandState {
 
   export type AddParameterBuilder<
     $State extends Base,
-    $Builder extends ParameterBuilderMinimumState,
+    $Builder extends ParameterBuilderWithAtLeastNameAndType,
   > = Pipe<
     $State,
     [
@@ -204,32 +207,6 @@ export namespace BuilderCommandState {
       //     ? true
       //     : IsPromptEnabledInParameterSettings<Configuration>
       // >,
-    ]
-  >
-
-  export type AddParameter<
-    $State extends Base,
-    NameExpression extends string,
-    Configuration extends ParameterConfiguration<$State>,
-  > = Pipe<
-    $State,
-    [
-      Objects.Update<
-        'Parameters',
-        Objects.Assign<{
-          [_ in NameExpression]: CreateParameter<
-            $State,
-            NameExpression,
-            Configuration
-          >
-        }>
-      >,
-      Objects.Update<
-        'IsPromptEnabled',
-        $State['IsPromptEnabled'] extends true
-          ? true
-          : IsPromptEnabledInParameterSettings<Configuration>
-      >,
     ]
   >
 
@@ -279,7 +256,7 @@ export namespace BuilderCommandState {
 
   export type CreateParameterFromParameterBuilder<
     $State extends Base,
-    $ParameterBuilder extends ParameterBuilderMinimumState,
+    $ParameterBuilder extends ParameterBuilderWithAtLeastNameAndType,
   > = {
     parameterBuilder: $ParameterBuilder
     Type: HKT.Call<

@@ -1,11 +1,16 @@
 import { beforeEach, expect } from 'vitest'
 import { describe, it } from 'vitest'
-import { z } from 'zod'
-import { $, b, n, s } from '../_/helpers.js'
+import { $, b, n, pb, s } from '../_/helpers.js'
 import { stdout } from '../_/mocks.js'
 import { environmentManager } from './__helpers__.js'
+import { t } from '../../src/_entrypoints/default.js'
 
-beforeEach(() => environmentManager.set(`CLI_SETTINGS_READ_ARGUMENTS_FROM_ENVIRONMENT`, `true`))
+beforeEach(() =>
+  environmentManager.set(
+    `CLI_SETTINGS_READ_ARGUMENTS_FROM_ENVIRONMENT`,
+    `true`,
+  ),
+)
 
 describe(`boolean can be parsed`, () => {
   it(`parses value of true`, () => {
@@ -15,7 +20,7 @@ describe(`boolean can be parsed`, () => {
   })
   it(`parses value of true which overrides a spec default of false`, () => {
     environmentManager.set(`CLI_PARAM_VERBOSE`, `true`)
-    const args = $.parameter(`--verbose`, b.default(false)).parse({ line: [] })
+    const args = $.parameter(`--verbose`, pb.default(false)).parse({ line: [] })
     expect(args).toMatchObject({ verbose: true })
   })
   it(`parses value of false`, () => {
@@ -26,24 +31,24 @@ describe(`boolean can be parsed`, () => {
   describe(`alias`, () => {
     it(`parses value of true`, () => {
       environmentManager.set(`cli_param_VERB`, `true`)
-      const args = $.parameter(`--verbose --verb`, z.boolean()).parse({ line: [] })
+      const args = $.parameter(`--verbose --verb`, b).parse({ line: [] })
       expect(args).toMatchObject({ verbose: true })
     })
     it(`parses value of false`, () => {
       environmentManager.set(`cli_param_VERB`, `false`)
-      const args = $.parameter(`--verbose --verb`, z.boolean()).parse({ line: [] })
+      const args = $.parameter(`--verbose --verb`, b).parse({ line: [] })
       expect(args).toMatchObject({ verbose: false })
     })
   })
   describe(`negated`, () => {
     it(`parses negated name with false value`, () => {
       environmentManager.set(`cli_param_no_foo`, `false`)
-      const args = $.parameter(`--foo`, z.boolean()).parse({ line: [] })
+      const args = $.parameter(`--foo`, b).parse({ line: [] })
       expect(args).toMatchObject({ foo: true })
     })
     it(`parses negated name with true value`, () => {
       environmentManager.set(`cli_param_no_foo`, `true`)
-      const args = $.parameter(`--foo`, z.boolean()).parse({ line: [] })
+      const args = $.parameter(`--foo`, b).parse({ line: [] })
       expect(args).toMatchObject({ foo: false })
     })
     describe(`alias`, () => {
@@ -74,7 +79,7 @@ it(`parses a value specified to be a number`, () => {
 describe(`enum can be parsed`, () => {
   it(`throws an error if the value does not pass validation`, () => {
     environmentManager.set(`cli_param_foo`, `d`)
-    $.parameter(`--foo`, z.enum([`a`, `b`, `c`])).parse({ line: [] })
+    $.parameter(`--foo`, t.enum([`a`, `b`, `c`])).parse({ line: [] })
     expect(stdout.mock.calls).toMatchSnapshot()
   })
 })

@@ -1,7 +1,7 @@
 import type { IsExact } from 'conditional-type-checks'
 import { assert } from 'conditional-type-checks'
 import { describe, expect, test } from 'vitest'
-import { $, b, s } from '../_/helpers.js'
+import { $, b, pb, ps, s } from '../_/helpers.js'
 
 describe(`errors`, () => {
   test.todo(`when a flag and an alias of it are given there is an error`)
@@ -48,10 +48,10 @@ describe(`stacked short flags`, () => {
     [[`-ac`], { a: true, b: false, c: true }],
     [[`-abcd`, `foo`], { a: true, b: true, c: true, d: `foo` }],
   ])(`stacked short flag input of %s becomes %s`, (input, expectedArgs) => {
-    const args = $.parameter(`a`, b.default(false))
-      .parameter(`b`, b.default(false))
-      .parameter(`c`, b.default(false))
-      .parameter(`d`, s.optional())
+    const args = $.parameter(`a`, pb.default(false))
+      .parameter(`b`, pb.default(false))
+      .parameter(`c`, pb.default(false))
+      .parameter(`d`, ps.optional())
       .parse({ line: input })
     expect(args).toMatchObject(expectedArgs)
   })
@@ -99,15 +99,21 @@ describe(`case`, () => {
   })
 
   test(`kebab case param spec can be passed camel case parameter`, () => {
-    const args = $.parameter(`--foo-bar`, s).parse({ line: [`--fooBar`, `foo`] })
+    const args = $.parameter(`--foo-bar`, s).parse({
+      line: [`--fooBar`, `foo`],
+    })
     assert<IsExact<{ fooBar: string }, typeof args>>(true)
   })
   test(`kebab case param spec can be passed kebab case parameter`, () => {
-    const args = $.parameter(`--foo-bar`, s).parse({ line: [`--foo-bar`, `foo`] })
+    const args = $.parameter(`--foo-bar`, s).parse({
+      line: [`--foo-bar`, `foo`],
+    })
     assert<IsExact<{ fooBar: string }, typeof args>>(true)
   })
   test(`camel case param spec can be passed kebab case parameter`, () => {
-    const args = $.parameter(`--fooBar`, s).parse({ line: [`--foo-bar`, `foo`] })
+    const args = $.parameter(`--fooBar`, s).parse({
+      line: [`--foo-bar`, `foo`],
+    })
     assert<IsExact<{ fooBar: string }, typeof args>>(true)
   })
   test(`camel case param spec can be passed camel case parameter`, () => {

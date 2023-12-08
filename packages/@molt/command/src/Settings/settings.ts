@@ -1,6 +1,9 @@
 import snakeCase from 'lodash.snakecase'
-import type { BuilderCommandState } from '../builders/command/state.js'
-import type { EventPatternsInput, EventPatternsInputAtLeastOne } from '../eventPatterns.js'
+import type { BuilderCommandState } from '../builders/CommandBuilder/state.js'
+import type {
+  EventPatternsInput,
+  EventPatternsInputAtLeastOne,
+} from '../eventPatterns.js'
 import { eventPatterns } from '../eventPatterns.js'
 import type { Values } from '../helpers.js'
 import { parseEnvironmentVariableBooleanOrThrow } from '../helpers.js'
@@ -12,12 +15,14 @@ export type OnErrorReaction = 'exit' | 'throw'
 export type PromptInput<T extends Type.Type> =
   | boolean
   | {
-    enabled?: boolean
-    when?: EventPatternsInputAtLeastOne<T>
-  }
+      enabled?: boolean
+      when?: EventPatternsInputAtLeastOne<T>
+    }
 
 // eslint-disable-next-line
-export interface Input<$State extends BuilderCommandState.Base = BuilderCommandState.BaseEmpty> {
+export interface Input<
+  $State extends BuilderCommandState.Base = BuilderCommandState.Initial,
+> {
   description?: string
   help?: boolean
   helpOnNoArguments?: boolean
@@ -33,17 +38,13 @@ export interface Input<$State extends BuilderCommandState.Base = BuilderCommandS
   parameters?: {
     environment?:
       | boolean
-      | (
-        & {
-          [
-            NameExpression
-              in keyof $State['Parameters'] as $State['Parameters'][NameExpression]['NameParsed']['canonical']
-          ]?: boolean | SettingInputEnvironmentParameter
-        }
-        & {
+      | ({
+          [NameExpression in keyof $State['Parameters'] as $State['Parameters'][NameExpression]['NameParsed']['canonical']]?:
+            | boolean
+            | SettingInputEnvironmentParameter
+        } & {
           $default?: boolean | SettingInputEnvironmentParameter
-        }
-      )
+        })
   }
 }
 
@@ -94,14 +95,15 @@ interface Environment {
 // eslint-disable-next-line
 export const change = (
   current: Output,
-  input: Input<BuilderCommandState.BaseEmpty>,
+  input: Input<BuilderCommandState.Initial>,
   environment: Environment,
 ): void => {
   if (input.prompt !== undefined) {
     if (typeof input.prompt === `boolean`) {
       current.prompt.enabled = input.prompt
     } else {
-      if (input.prompt.enabled !== undefined) current.prompt.enabled = input.prompt.enabled
+      if (input.prompt.enabled !== undefined)
+        current.prompt.enabled = input.prompt.enabled
       if (input.prompt.when !== undefined) {
         // @ts-expect-error fixme
         current.prompt.when = input.prompt.when
@@ -115,7 +117,8 @@ export const change = (
 
   current.description = input.description ?? current.description
 
-  current.helpOnNoArguments = input.helpOnNoArguments ?? current.helpOnNoArguments
+  current.helpOnNoArguments =
+    input.helpOnNoArguments ?? current.helpOnNoArguments
 
   current.helpOnError = input.helpOnError ?? current.helpOnError
 
@@ -128,8 +131,8 @@ export const change = (
 
   current.onOutput = input.onOutput
     ? (_) => {
-      input.onOutput!(_, process.stdout.write.bind(process.stdout))
-    }
+        input.onOutput!(_, process.stdout.write.bind(process.stdout))
+      }
     : current.onOutput
 
   if (input.parameters !== undefined) {
@@ -139,29 +142,38 @@ export const change = (
 
     // Handle environment
     if (input.parameters.environment !== undefined) {
-      const explicitGlobalToggle = environment.cli_settings_read_arguments_from_environment
-        ? parseEnvironmentVariableBooleanOrThrow(environment.cli_settings_read_arguments_from_environment)
-        : null
+      const explicitGlobalToggle =
+        environment.cli_settings_read_arguments_from_environment
+          ? parseEnvironmentVariableBooleanOrThrow(
+              environment.cli_settings_read_arguments_from_environment,
+            )
+          : null
 
       if (explicitGlobalToggle === false) {
         current.parameters.environment.$default.enabled = false
       } else {
         if (typeof input.parameters.environment === `boolean`) {
-          current.parameters.environment.$default.enabled = input.parameters.environment
+          current.parameters.environment.$default.enabled =
+            input.parameters.environment
         } else {
           // As soon as the settings begin to specify explicit parameter settings
           // AND there is NO explicit default toggle setting, then we disable all the rest by default.
 
           if (
-            input.parameters.environment.$default === undefined
-            || typeof input.parameters.environment.$default !== `boolean`
-              && input.parameters.environment.$default.enabled === undefined
+            input.parameters.environment.$default === undefined ||
+            (typeof input.parameters.environment.$default !== `boolean` &&
+              input.parameters.environment.$default.enabled === undefined)
           ) {
-            const parameterEnvironmentSpecs = Object.keys(input.parameters.environment).filter((k) => k !== `$default`)
-            current.parameters.environment.$default.enabled = parameterEnvironmentSpecs.length === 0
+            const parameterEnvironmentSpecs = Object.keys(
+              input.parameters.environment,
+            ).filter((k) => k !== `$default`)
+            current.parameters.environment.$default.enabled =
+              parameterEnvironmentSpecs.length === 0
           }
 
-          for (const [parameterName, spec] of Object.entries(input.parameters.environment)) {
+          for (const [parameterName, spec] of Object.entries(
+            input.parameters.environment,
+          )) {
             let spec_ = current.parameters.environment[parameterName]
             if (!spec_) {
               spec_ = {}
@@ -187,7 +199,9 @@ export const change = (
                 } else if (typeof spec.prefix === `string`) {
                   spec_.prefix = [snakeCase(spec.prefix).toLowerCase()]
                 } else {
-                  spec_.prefix = spec.prefix.map((prefix) => snakeCase(prefix).toLowerCase())
+                  spec_.prefix = spec.prefix.map((prefix) =>
+                    snakeCase(prefix).toLowerCase(),
+                  )
                 }
               }
             }
@@ -200,18 +214,20 @@ export const change = (
 
 const isEnvironmentEnabled = (lowercaseEnv: NodeJS.ProcessEnv) => {
   return lowercaseEnv[`cli_settings_read_arguments_from_environment`]
-    // eslint-disable-next-line
-    ? parseEnvironmentVariableBooleanOrThrow(lowercaseEnv[`cli_settings_read_arguments_from_environment`]!)
-    // : processEnvLowerCase[`cli_environment_arguments`]
-    // ? //eslint-disable-next-line
-    //   parseEnvironmentVariableBoolean(processEnvLowerCase[`cli_environment_arguments`]!)
-    // : processEnvLowerCase[`cli_env_args`]
-    // ? //eslint-disable-next-line
-    //   parseEnvironmentVariableBoolean(processEnvLowerCase[`cli_env_args`]!)
-    // : processEnvLowerCase[`cli_env_arguments`]
-    // ? //eslint-disable-next-line
-    //   parseEnvironmentVariableBoolean(processEnvLowerCase[`cli_env_arguments`]!)
-    : true
+    ? // eslint-disable-next-line
+      parseEnvironmentVariableBooleanOrThrow(
+        lowercaseEnv[`cli_settings_read_arguments_from_environment`]!,
+      )
+    : // : processEnvLowerCase[`cli_environment_arguments`]
+      // ? //eslint-disable-next-line
+      //   parseEnvironmentVariableBoolean(processEnvLowerCase[`cli_environment_arguments`]!)
+      // : processEnvLowerCase[`cli_env_args`]
+      // ? //eslint-disable-next-line
+      //   parseEnvironmentVariableBoolean(processEnvLowerCase[`cli_env_args`]!)
+      // : processEnvLowerCase[`cli_env_arguments`]
+      // ? //eslint-disable-next-line
+      //   parseEnvironmentVariableBoolean(processEnvLowerCase[`cli_env_arguments`]!)
+      true
 }
 
 export const getDefaults = (lowercaseEnv: NodeJS.ProcessEnv): Output => {

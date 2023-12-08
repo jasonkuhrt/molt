@@ -1,7 +1,7 @@
 import type { Name as MoltName } from '@molt/name'
 import { Name } from '@molt/name'
 import { Alge } from 'alge'
-import type { BuilderCommandState } from '../builders/command/state.js'
+import type { BuilderCommandState } from '../builders/CommandBuilder/state.js'
 import type { Pam } from '../lib/Pam/index.js'
 import type { Settings } from '../Settings/index.js'
 import type { Type } from '../Type/index.js'
@@ -9,7 +9,7 @@ import { processEnvironment } from './helpers/environment.js'
 import type { Environment } from './helpers/types.js'
 
 export interface ParameterExclusiveInput<
-  $State extends BuilderCommandState.Base = BuilderCommandState.BaseEmpty,
+  $State extends BuilderCommandState.Base = BuilderCommandState.Initial,
 > {
   _tag: 'Exclusive'
   label: string

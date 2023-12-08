@@ -1,4 +1,4 @@
-import type { SetObjectProperty } from '../../helpers.js'
+import type { SetObjectProperty, UpdateObject } from '../../helpers.js'
 
 export namespace PrivateData {
   export type Set<$Data, $Obj extends object> = SetObjectProperty<
@@ -39,6 +39,11 @@ export namespace PrivateData {
     $P extends keyof PrivateData.Get<$Obj>,
     $V extends PrivateData.Get<$Obj>[$P],
   > = PrivateData.Set<SetObjectProperty<PrivateData.Get<$Obj>, $P, $V>, $Obj>
+
+  export type Update<
+    $Obj extends PrivateData.Obj<any>,
+    $ObjNew extends Partial<PrivateData.Get<$Obj>>,
+  > = UpdateObject<PrivateData.Get<$Obj>, $ObjNew>
 
   const PrivateDataSymbol = Symbol(`PrivateData`)
 

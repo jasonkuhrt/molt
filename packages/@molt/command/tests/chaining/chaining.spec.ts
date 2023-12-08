@@ -1,9 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { z } from 'zod'
-import { $ } from '../_/helpers.js'
+import { $, s } from '../_/helpers.js'
 
 let c
-const s = z.string()
 
 describe(`errors`, () => {
   describe(`reserved flag`, () => {
@@ -45,8 +43,8 @@ describe(`errors`, () => {
 })
 
 it(`works`, () => {
-  const args = $.parameter(`foo`, z.string())
-    .parameter(`bar`, z.string())
+  const args = $.parameter(`foo`, s)
+    .parameter(`bar`, s)
     .parse({ line: [`--foo`, `1`, `--bar`, `2`] })
   expect(args).toMatchObject({ foo: `1`, bar: `2` })
 })

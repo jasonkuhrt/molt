@@ -1,6 +1,6 @@
 import { expect } from 'vitest'
 import { it } from 'vitest'
-import { $, s } from '../../_/helpers.js'
+import { $, ps, s } from '../../_/helpers.js'
 import { createState, environmentManager } from '../__helpers__.js'
 
 const output = createState<string>({
@@ -36,7 +36,7 @@ it(`can be enabled by environment`, () => {
 it(`can be disabled by environment`, () => {
   environmentManager.set(`ClI_settings_READ_arguments_FROM_ENVIRONMENT`, `false`)
   environmentManager.set(`cli_param_foo`, `foo_env`)
-  const args = $.parameter(`--foo`, s.default(`foo_default`)).parse({ line: [] })
+  const args = $.parameter(`--foo`, ps.default(`foo_default`)).parse({ line: [] })
   expect(args).toMatchObject({ foo: `foo_default` })
 })
 it(`environment supersedes settings`, () => {
