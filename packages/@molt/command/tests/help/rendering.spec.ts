@@ -1,10 +1,10 @@
 import stripAnsi from 'strip-ansi'
 import { describe, expect, it } from 'vitest'
 import { mockProcessExit } from 'vitest-mock-process'
-import { z } from 'zod'
 import { $, n, ps, s } from '../_/helpers.js'
 import { createState } from '../environment/__helpers__.js'
 import { p, t } from '../../src/_entrypoints/default.js'
+import { z } from 'zod'
 
 mockProcessExit()
 
@@ -309,7 +309,7 @@ describe(`exclusive`, () => {
 describe(`union parameter`, () => {
   describe(`condensed pipe style`, () => {
     it(`used when no descriptions given for anything`, () => {
-      $.parameter(`b bar`, z.union([z.string(), z.number()]))
+      $.parameter(`b bar`, t.union([t.string(), t.number()]))
         .settings({ onOutput })
         .parse({
           line: [`-h`],
@@ -320,7 +320,7 @@ describe(`union parameter`, () => {
     it(`used when only overall description given`, () => {
       $.parameter(
         `b bar`,
-        z.union([z.string(), z.number()]).description(`Blah blah blah.`),
+        t.union([t.string(), t.number()]).description(`Blah blah blah.`),
       )
         .settings({ onOutput })
         .parse({
@@ -332,7 +332,7 @@ describe(`union parameter`, () => {
   })
   describe(`expanded style`, () => {
     it(`can be forced via settings`, () => {
-      $.parameter(`b bar`, z.union([s, n]))
+      $.parameter(`b bar`, t.union([s, n]))
         .settings({
           onOutput,
           helpRendering: { union: { mode: `expandAlways` } },
@@ -344,7 +344,7 @@ describe(`union parameter`, () => {
     it(`shows member on each line if each has description`, () => {
       $.parameter(
         `b bar`,
-        z.union([
+        t.union([
           s.description(`Blah blah blah string.`),
           z.description(`Blah blah blah number.`),
         ]),
@@ -357,10 +357,7 @@ describe(`union parameter`, () => {
       expect(output.value).toMatchSnapshot(`polychrome`)
     })
     it(`shows member on each line if at least one has description`, () => {
-      $.parameter(
-        `b bar`,
-        z.union([s, n.description(`Blah blah blah number.`)]),
-      )
+      $.parameter(`bar`, t.union([s, n.description(`Blah blah blah number.`)]))
         .settings({ onOutput })
         .parse({
           line: [`-h`],
@@ -371,7 +368,7 @@ describe(`union parameter`, () => {
     it(`shows overall description above all members when members also have descriptions`, () => {
       $.parameter(
         `b bar`,
-        z
+        t
           .union([
             s.description(`Blah blah blah string.`),
             n.description(`Blah blah blah number.`),
@@ -389,7 +386,7 @@ describe(`union parameter`, () => {
   it(`shows default when overall has a default`, () => {
     $.parameter(
       `b bar`,
-      z
+      t
         .union([
           s.description(`Blah blah blah string.`),
           n.description(`Blah blah blah number.`),
@@ -407,7 +404,7 @@ describe(`union parameter`, () => {
   it(`shows default as undefined when overall optional`, () => {
     $.parameter(
       `b bar`,
-      z
+      t
         .union([
           s.description(`Blah blah blah string.`),
           n.description(`Blah blah blah number.`),

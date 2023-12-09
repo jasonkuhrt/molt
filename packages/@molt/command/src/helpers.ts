@@ -1,6 +1,7 @@
 import { produce } from 'immer'
 import { Either } from 'effect'
 import camelCase from 'lodash.camelcase'
+import type { Key } from './lib/KeyPress/KeyPress.js'
 
 export const BooleanLookup = {
   true: true,
@@ -82,6 +83,32 @@ export const casesExhausted = (_: never): never => {
   throw new Error(`Cases exhausted: ${_}`) // eslint-disable-line
 }
 
+type x = { a: 1; b: 2 }
+type y<i extends keyof x> = x[i]
+
+export namespace Path {
+  export type Get<
+    $Path extends string,
+    $Obj extends object,
+  > = $Path extends `${infer $Key}.${infer $Rest}`
+    ? $Key extends keyof $Obj
+      ? $Obj[$Key] extends object
+        ? Get<$Rest, $Obj[$Key]>
+        : `Error: Path: Expected object at key: ${Key}`
+      : `Error: Path: Key does not exist: ${$Key}`
+    : $Path extends `${infer $Key}`
+    ? $Key extends ''
+      ? $Obj
+      : $Key extends keyof $Obj
+      ? $Obj[$Key]
+      : `Error: Path: Key does not exist: ${$Key}`
+    : never
+
+  export type Join<$Path extends string, $Key extends string> = $Path extends ''
+    ? $Key
+    : `${$Path}.${$Key}`
+}
+
 export namespace HKT {
   /**
    * Model a Higher Kinded Type (HKT).
@@ -106,14 +133,14 @@ export namespace HKT {
 export const createUpdater =
   <$State, $Builder extends (state: $State) => unknown>(params: {
     state: $State
-    builder: $Builder
+    createBuilder: $Builder
   }) =>
   <$Args extends unknown[]>(
     pathExpression: string,
     updater?: (...args: $Args) => unknown,
   ) =>
   (...args: $Args) => {
-    return params.builder(
+    return params.createBuilder(
       produce(params.state, (draft) => {
         const path = pathExpression.split(`.`)
         const objectPath = path.slice(0, -1)

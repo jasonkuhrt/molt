@@ -1,117 +1,67 @@
+import type { HKT } from '../../helpers.js'
 import { createUpdater } from '../../helpers.js'
-import type { $, Objects } from 'hotscript'
 import type { TypeBuilder } from '../TypeBuilder/types.js'
-import { PrivateData } from '../../lib/PrivateData/PrivateData.js'
-import type { Type } from '../../Type/index.js'
 import { State } from './state.js'
-import type { ParameterBuilderUpdateStateProperty } from './state.js'
+import type { BuilderKit } from '../../lib/BuilderKit/BuilderKit.js'
+import { PrivateData } from '../../lib/PrivateData/PrivateData.js'
+import type {
+  OptionalityDefault,
+  OptionalityOptional,
+} from '../../Type/helpers.js'
 
-export type ParameterBuilderInfer<
-  $ParameterBuilder extends ParameterBuilderWithStateTypeBuilder,
-> = PrivateData.Get<$ParameterBuilder>['optionality']['_tag'] extends 'optional'
-  ?
-      | Type.Infer<
-          PrivateData.Get<
-            PrivateData.Get<$ParameterBuilder>['typeBuilder']
-          >['type']
-        >
-      | undefined
-  : Type.Infer<
-      PrivateData.Get<PrivateData.Get<$ParameterBuilder>['typeBuilder']>['type']
+interface BuilderFn extends HKT.Fn {
+  // @ts-expect-error ignoreme
+  return: Builder<this['params']>
+}
+
+type Builder<$State extends State.Base = State.Base> = BuilderKit.State.Set<
+  $State,
+  {
+    name: BuilderKit.Updater<$State, 'name', BuilderFn>
+    description: BuilderKit.Updater<$State, 'description', BuilderFn>
+    type: BuilderKit.Updater<$State, 'typeBuilder', BuilderFn>
+    prompt: BuilderKit.Updater<$State, 'prompt', BuilderFn>
+    optional: BuilderKit.Updater<
+      $State,
+      'optionality',
+      BuilderFn,
+      { args: []; return: OptionalityOptional }
     >
-
-export type ParameterBuilder<$State extends State.Base = State.Base> =
-  PrivateData.Set<
-    $State,
-    {
-      name<const $Name extends string>(
-        this: void,
-        name: $Name,
-      ): ParameterBuilder<
-        $<
-          // Objects.Update<'excludeMethods', Tuples.Append<'name'>>,
-          Objects.Update<'name', $Name>,
-          $State
+  } & (BuilderKit.State.IsPropertyUnset<$State, 'typeBuilder'> extends true
+    ? {}
+    : {
+        default: BuilderKit.Updater<
+          $State,
+          'optionality',
+          BuilderFn,
+          {
+            args: [
+              | TypeBuilder.$InferType<
+                  BuilderKit.State.GetProperty<$State, 'typeBuilder'>['value']
+                >
+              | (() => TypeBuilder.$InferType<
+                  BuilderKit.State.GetProperty<$State, 'typeBuilder'>['value']
+                >),
+            ]
+            return: OptionalityDefault
+          }
         >
-      >
+      })
+>
 
-      description(
-        this: void,
-        description: string,
-      ): ParameterBuilder<$<Objects.Update<'description', string>, $State>>
-
-      type<$TypeBuilder extends TypeBuilder>(
-        this: void,
-        type: $TypeBuilder,
-      ): ParameterBuilderUpdateStateProperty<
-        ParameterBuilder,
-        'typeBuilder',
-        $TypeBuilder
-      >
-
-      optional(
-        this: void,
-      ): ParameterBuilder<
-        $<Objects.Update<'optionality', { _tag: 'optional' }>, $State>
-      >
-
-      prompt<$Config extends State.PromptInput>(
-        config: $Config,
-      ): ParameterBuilder<
-        $<
-          Objects.Update<
-            'prompt',
-            {
-              enabled: $Config['enabled'] extends boolean
-                ? $Config['enabled']
-                : true
-              when: $Config['when']
-            }
-          >,
-          $State
-        >
-      >
-      prompt(): ParameterBuilder<
-        $<Objects.Update<'prompt', { enabled: true; when: object }>, $State>
-      >
-      prompt<$Enabled extends boolean>(
-        enabled: $Enabled,
-      ): ParameterBuilder<
-        $<Objects.Update<'prompt', { enabled: $Enabled; when: object }>, $State>
-      >
-    } & (null extends $State['typeBuilder']
-      ? {}
-      : {
-          default(
-            this: void,
-            thun: () => Type.Infer<
-              PrivateData.Get<Exclude<$State['typeBuilder'], null>>['type']
-            >,
-          ): ParameterBuilder<
-            $<Objects.Update<'optionality', { _tag: 'default' }>, $State>
-          >
-          default(
-            this: void,
-            value: Type.Infer<
-              PrivateData.Get<Exclude<$State['typeBuilder'], null>>['type']
-            >,
-          ): ParameterBuilder<
-            $<Objects.Update<'optionality', { _tag: 'default' }>, $State>
-          >
-        })
-  >
-
-export type ParameterBuilderWithStateTypeBuilder =
-  PrivateData.HostUpdateProperty<ParameterBuilder, 'typeBuilder', TypeBuilder>
+type BuilderWithStateTypeBuilder = BuilderKit.UpdateStateProperty<
+  State.Initial,
+  'typeBuilder',
+  TypeBuilder,
+  BuilderFn
+>
 
 export const create = () => {
   return create_(State.initial)
 }
 
-const create_ = <$State extends State.Base>(
-  state: $State,
-): ParameterBuilder => {
-  const update = createUpdater({ builder: create_, state })
+const create_ = <$State extends State.Base>(state: $State): Builder => {
+  const update = createUpdater({ createBuilder: create_, state })
   return PrivateData.set(state, {
     name: update(`name`) as any, // eslint-disable-line
     description: update(`description`) as any, // eslint-disable-line
@@ -134,5 +84,18 @@ const create_ = <$State extends State.Base>(
       _tag: `default`,
       getValue: typeof value === `function` ? value : () => value,
     })) as any,
-  } satisfies PrivateData.Remove<ParameterBuilder>)
+  } satisfies PrivateData.Unset<Builder>)
+}
+
+type InferType<
+  $Builder extends BuilderWithStateTypeBuilder,
+  _State extends BuilderKit.State.Get<$Builder> = BuilderKit.State.Get<$Builder>,
+> = _State['optionality']['_tag'] extends 'optional'
+  ? TypeBuilder.$InferType<_State['typeBuilder']> | undefined
+  : TypeBuilder.$InferType<_State['typeBuilder']>
+
+export {
+  Builder as ParameterBuilder,
+  InferType as ParameterBuilderInfer,
+  BuilderWithStateTypeBuilder as ParameterBuilderWithStateTypeBuilder,
 }

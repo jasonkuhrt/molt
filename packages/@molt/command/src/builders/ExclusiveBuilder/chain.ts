@@ -49,7 +49,7 @@ interface Parameter<
 export type BuilderExclusiveInitial<
   $State extends BuilderCommandState.Base,
   Label extends string,
-> = PrivateData.Set<
+> = PrivateData.SetupHost<
   $State,
   {
     parameter: Parameter<$State, Label>
@@ -71,11 +71,11 @@ export type BuilderExclusiveInitial<
 
 export type BuilderExclusiveAfterOptional<
   $State extends BuilderCommandState.Base,
-> = PrivateData.Set<$State, {}>
+> = PrivateData.SetupHost<$State, {}>
 
 export type BuilderExclusiveAfterDefault<
   $State extends BuilderCommandState.Base,
-> = PrivateData.Set<$State, {}>
+> = PrivateData.SetupHost<$State, {}>
 
 export interface SomeParameter<$State extends BuilderCommandState.Base> {
   (nameExpression: any, type: $State['Type']): any // eslint-disable-line
@@ -87,7 +87,7 @@ export interface SomeParameter<$State extends BuilderCommandState.Base> {
 
 export type SomeBuilderExclusiveInitial<
   $State extends BuilderCommandState.Base = BuilderCommandState.Initial,
-> = PrivateData.Set<
+> = PrivateData.SetupHost<
   $State,
   {
     parameter: SomeParameter<$State>

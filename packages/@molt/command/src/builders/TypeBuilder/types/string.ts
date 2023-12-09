@@ -1,78 +1,8 @@
-import type { $, Objects } from 'hotscript'
 import { createUpdater } from '../../../helpers.js'
 import type { Type } from '../../../Type/index.js'
 import { PrivateData } from '../../../lib/PrivateData/PrivateData.js'
-
-export type TypeStringBuilder<$State extends State.Base = State.Base> =
-  PrivateData.Set<
-    $State,
-    {
-      toCase: <$CaseType extends 'upper' | 'lower'>(
-        caseType: $CaseType,
-      ) => TypeStringBuilder<
-        $<Objects.Update<'transformations.toCase', $CaseType>, $State>
-      >
-      trim: <$P extends [] | [enabled: boolean]>(
-        ...args: $P
-      ) => TypeStringBuilder<
-        $<
-          Objects.Update<
-            'transformations.trim',
-            $P[0] extends undefined ? true : $P[0]
-          >,
-          $State
-        >
-      >
-      min: <$Value extends number>(
-        value: $Value,
-      ) => TypeStringBuilder<
-        $<Objects.Update<'refinements.min', $Value>, $State>
-      >
-      max: <$Value extends number>(
-        value: $Value,
-      ) => TypeStringBuilder<
-        $<Objects.Update<'refinements.max', $Value>, $State>
-      >
-      length: <$Value extends number>(
-        value: $Value,
-      ) => TypeStringBuilder<
-        $<Objects.Update<'refinements.length', $Value>, $State>
-      >
-      startsWith: <$Value extends string>(
-        value: $Value,
-      ) => TypeStringBuilder<
-        $<Objects.Update<'refinements.startsWith', $Value>, $State>
-      >
-      endsWith: <$Value extends string>(
-        value: $Value,
-      ) => TypeStringBuilder<
-        $<Objects.Update<'refinements.endsWith', $Value>, $State>
-      >
-      includes: <$Value extends string>(
-        value: $Value,
-      ) => TypeStringBuilder<
-        $<Objects.Update<'refinements.includes', $Value>, $State>
-      >
-      regex: <$Value extends RegExp>(
-        value: $Value,
-      ) => TypeStringBuilder<
-        $<Objects.Update<'refinements.regex', $Value>, $State>
-      >
-      pattern: <$Args extends Pattern>(
-        ...args: $Args
-      ) => TypeStringBuilder<
-        $<
-          Objects.Update<
-            'refinements.pattern',
-            $Args[1] extends object
-              ? { type: $Args[0] } | { type: $Args[0]; options: $Args[1] }
-              : { type: $Args[0] }
-          >,
-          $State
-        >
-      >
-    }
-  >
+import type { HKT } from '../../../helpers.js'
+import type { BuilderKit } from '../../../lib/BuilderKit/BuilderKit.js'
 
 type Pattern =
   | [pattern: 'email']
@@ -89,40 +19,68 @@ type Pattern =
     ]
 
 namespace State {
+  // type x<b extends Base> = BuilderKit.ListPaths<'', b>
+  // declare const x: x<Base>
+  // x === `transformations.trim`
+
   export interface Base {
     type: Type.String
-    transformations: {
-      trim?: boolean
-      toCase?: 'upper' | 'lower'
-    }
-    refinements: {
-      min?: number
-      max?: number
-      length?: number
-      startsWith?: string
-      endsWith?: string
-      includes?: string
-      regex?: RegExp
-      pattern?: Pattern
-    }
+    description: PrivateData.Values.DefineSimpleString
+    transformations: PrivateData.Values.Namespace<{
+      trim: PrivateData.Values.Define<
+        boolean,
+        true,
+        // TODO fixme
+        { args: [boolean] } | { args: []; return: true }
+        // { args: []; return: true }
+      >
+      toCase: PrivateData.Values.DefineSimple<'upper' | 'lower'>
+    }>
+    refinements: PrivateData.Values.Namespace<{
+      min: PrivateData.Values.DefineSimpleNumber
+      max: PrivateData.Values.DefineSimpleNumber
+      length: PrivateData.Values.DefineSimpleNumber
+      startsWith: PrivateData.Values.DefineSimpleString
+      endsWith: PrivateData.Values.DefineSimpleString
+      includes: PrivateData.Values.DefineSimpleString
+      regex: PrivateData.Values.DefineSimple<RegExp>
+      pattern: PrivateData.Values.DefineSimple<Pattern>
+    }>
   }
-  export interface Initial {
-    type: Type.String
-    transformations: {} // eslint-disable-line
-    refinements: {} // eslint-disable-line
-  }
+  export type Initial = PrivateData.GetInitial<Base>
   export const initial: Initial = {
     type: null as any, // eslint-disable-line
     transformations: {},
     refinements: {},
+    description: PrivateData.Values.unsetSymbol,
   }
 }
 
-export const create = (): TypeStringBuilder<State.Base> =>
-  create_(State.initial) as any
+type Builder<$State extends State.Base = State.Base> = PrivateData.SetupHost<
+  $State,
+  {
+    description: BuilderKit.Updater<$State, 'description', BuilderFn>
+    toCase: BuilderKit.Updater<$State, 'transformations.toCase', BuilderFn>
+    trim: BuilderKit.Updater<$State, 'transformations.trim', BuilderFn>
+    min: BuilderKit.Updater<$State, 'refinements.min', BuilderFn>
+    max: BuilderKit.Updater<$State, 'refinements.max', BuilderFn>
+    length: BuilderKit.Updater<$State, 'refinements.length', BuilderFn>
+    startsWith: BuilderKit.Updater<$State, 'refinements.startsWith', BuilderFn>
+    endsWith: BuilderKit.Updater<$State, 'refinements.endsWith', BuilderFn>
+    includes: BuilderKit.Updater<$State, 'refinements.includes', BuilderFn>
+    regex: BuilderKit.Updater<$State, 'refinements.regex', BuilderFn>
+    pattern: BuilderKit.Updater<$State, 'refinements.pattern', BuilderFn>
+  }
+>
 
-const create_ = (state: State.Base): TypeStringBuilder => {
-  const update = createUpdater({ builder: create_, state })
+interface BuilderFn extends HKT.Fn {
+  return: Builder<this['params']>
+}
+
+export const create = (): Builder<State.Base> => create_(State.initial) as any
+
+const create_ = (state: State.Base): Builder => {
+  const update = createUpdater({ createBuilder: create_, state })
 
   return PrivateData.set(state, {
     toCase: update(`transformations.toCase`) as any, // eslint-disable-line
@@ -138,7 +96,7 @@ const create_ = (state: State.Base): TypeStringBuilder => {
     includes: update(`refinements.includes`) as any, // eslint-disable-line
     regex: update(`refinements.regex`) as any, // eslint-disable-line
     pattern: update<Pattern>(`refinements.pattern`, (...args) => args) as any, // eslint-disable-line
-  } satisfies PrivateData.Remove<TypeStringBuilder>)
+  } satisfies PrivateData.Unset<Builder>)
 }
 
-export { create as string }
+export { create as string, Builder as TypeBuilderString }

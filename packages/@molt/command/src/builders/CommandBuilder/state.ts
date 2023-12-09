@@ -141,18 +141,18 @@ export namespace BuilderCommandState {
 
   export type ParameterBuilderWithAtLeastType =
     ParameterBuilderWithMinimumState<{
-      typeBuilder: TypeBuilder
+      typeBuilder: PrivateData.Values.Define<TypeBuilder>
     }>
 
   export type ParameterBuilderWithAtLeastNameAndType =
     ParameterBuilderWithMinimumState<{
-      name: string
-      typeBuilder: TypeBuilder
+      name: PrivateData.Values.Define<string>
+      typeBuilder: PrivateData.Values.Define<TypeBuilder>
     }>
 
   export type ParameterBuilderRecordMinimumState =
     ParameterBuilderWithMinimumState<{
-      typeBuilder: TypeBuilder
+      typeBuilder: PrivateData.Values.Define<TypeBuilder>
     }>
 
   export type AddParameterBuilders<

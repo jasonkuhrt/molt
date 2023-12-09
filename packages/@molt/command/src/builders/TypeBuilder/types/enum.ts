@@ -1,44 +1,56 @@
 import type { Type } from '../../../Type/index.js'
 import type { Member } from '../../../Type/types/Scalars/Enumeration.js'
+import { createUpdater } from '../../../helpers.js'
+import type { BuilderKit } from '../../../lib/BuilderKit/BuilderKit.js'
 import { PrivateData } from '../../../lib/PrivateData/PrivateData.js'
+import type { HKT } from '../../../helpers.js'
 
 namespace State {
   export interface Base<$Members extends Member[] = any> {
     type: Type.Enumeration<$Members>
     transformations: {}
     refinements: {}
+    description: PrivateData.Values.DefineSimpleString
   }
   export interface Initial<$Members extends Member[] = any> {
     type: Type.Enumeration<$Members>
     transformations: {} // eslint-disable-line
     refinements: {} // eslint-disable-line
+    description: PrivateData.Values.UnsetSymbol
   }
   export const initial: Base<any> = {
     type: null as any, // eslint-disable-line
     transformations: {},
     refinements: {},
+    description: PrivateData.Values.unsetSymbol,
   }
 }
 
-export type TypeEnumerationBuilder<$State extends State.Base = State.Base> =
-  PrivateData.Set<$State, {}>
+type Builder<$State extends State.Base = State.Base> = PrivateData.SetupHost<
+  $State,
+  {
+    description: BuilderKit.Updater<$State, 'description', BuilderHKT<$State>>
+  }
+>
 
-export const create = <
+interface BuilderHKT<$State extends State.Base> extends HKT.Fn<$State> {
+  return: Builder<this['params']>
+}
+
+const create = <
   $Member extends Member,
   $Members extends [$Member, ...$Member[]],
 >(
   members: $Members,
-): TypeEnumerationBuilder<State.Initial<$Members>> => create_(State.initial)
+): Builder<State.Initial<$Members>> => create_(State.initial)
 
 const create_ = <$Members extends Member[]>(
   state: State.Base<$Members>,
-): TypeEnumerationBuilder<State.Base<$Members>> => {
-  return PrivateData.set(
-    state,
-    {} satisfies PrivateData.Remove<
-      TypeEnumerationBuilder<State.Base<$Members>>
-    >,
-  )
+): Builder<State.Base<$Members>> => {
+  const updater = createUpdater({ state, createBuilder: create_ })
+  return PrivateData.set(state, {
+    description: updater(`description`),
+  } satisfies PrivateData.Unset<Builder<State.Base<$Members>>>)
 }
 
-export { create as enum }
+export { create as enum, Builder as TypeBuilderEnumeration }
