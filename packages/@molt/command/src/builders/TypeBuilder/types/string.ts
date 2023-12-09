@@ -5,24 +5,22 @@ import type { HKT } from '../../../helpers.js'
 import type { BuilderKit } from '../../../lib/BuilderKit/BuilderKit.js'
 
 type Pattern =
-  | [pattern: 'email']
-  | [pattern: 'url']
-  | [pattern: 'uuid']
-  | [pattern: 'cuid']
-  | [pattern: 'cuid2']
-  | [pattern: 'ulid']
-  | [pattern: 'emoji']
-  | [pattern: 'ip', options: { version: 4 | 6 | null }]
-  | [
-      pattern: 'dateTime',
-      options: { offset: boolean; precision: null | number },
-    ]
+  | { type: 'email' }
+  | { type: 'ip'; options: { version: 4 | 6 | null } }
+// TODO
+// | [pattern: 'email']
+// | [pattern: 'url']
+// | [pattern: 'uuid']
+// | [pattern: 'cuid']
+// | [pattern: 'cuid2']
+// | [pattern: 'ulid']
+// | [pattern: 'emoji']
+// | [
+//     pattern: 'dateTime',
+//     options: { offset: boolean; precision: null | number },
+//   ]
 
 namespace State {
-  // type x<b extends Base> = BuilderKit.ListPaths<'', b>
-  // declare const x: x<Base>
-  // x === `transformations.trim`
-
   export interface Base {
     type: Type.String
     description: PrivateData.Values.DefineSimpleString
@@ -30,9 +28,7 @@ namespace State {
       trim: PrivateData.Values.Define<
         boolean,
         true,
-        // TODO fixme
         { args: [boolean] } | { args: []; return: true }
-        // { args: []; return: true }
       >
       toCase: PrivateData.Values.DefineSimple<'upper' | 'lower'>
     }>
@@ -44,7 +40,11 @@ namespace State {
       endsWith: PrivateData.Values.DefineSimpleString
       includes: PrivateData.Values.DefineSimpleString
       regex: PrivateData.Values.DefineSimple<RegExp>
-      pattern: PrivateData.Values.DefineSimple<Pattern>
+      pattern: PrivateData.Values.Define<
+        Pattern,
+        PrivateData.Values.UnsetSymbol,
+        { args: ['email'] } | { args: ['ip', { version: 4 | 6 | null }] }
+      >
     }>
   }
   export type Initial = PrivateData.GetInitial<Base>

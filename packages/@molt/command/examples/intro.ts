@@ -2,7 +2,14 @@ import { Command, p, t } from '../src/_entrypoints/default.js'
 
 const args = Command.create()
   .parameters({
-    filePath: p.type(t.string().description(`abc`).toCase(`upper`).trim()),
+    filePath: p.type(
+      t
+        .string()
+        .description(`abc`)
+        .toCase(`upper`)
+        .trim()
+        .pattern(`ip`, { version: 4 }),
+    ),
     to: p
       .type(t.enum([`json`, `yaml`, `toml`]))
       .description(`Format to convert to.`)
