@@ -10,7 +10,7 @@ namespace State {
     type: Type.Enumeration<$Members>
     transformations: {}
     refinements: {}
-    description: PrivateData.Values.DefineSimpleString
+    description: PrivateData.Values.ValueString
   }
   export interface Initial<$Members extends Member[] = any> {
     type: Type.Enumeration<$Members>
@@ -29,7 +29,11 @@ namespace State {
 type Builder<$State extends State.Base = State.Base> = PrivateData.SetupHost<
   $State,
   {
-    description: BuilderKit.Updater<$State, 'description', BuilderHKT<$State>>
+    description: BuilderKit.UpdaterAtomic<
+      $State,
+      'description',
+      BuilderHKT<$State>
+    >
   }
 >
 

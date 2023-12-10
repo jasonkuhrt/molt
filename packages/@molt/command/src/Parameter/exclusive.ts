@@ -1,7 +1,7 @@
 import type { Name as MoltName } from '@molt/name'
 import { Name } from '@molt/name'
 import { Alge } from 'alge'
-import type { BuilderCommandState } from '../builders/CommandBuilder/state.js'
+import type { BuilderCommandState } from '../builders/CommandBuilder/stateOld.js'
 import type { Pam } from '../lib/Pam/index.js'
 import type { Settings } from '../Settings/index.js'
 import type { Type } from '../Type/index.js'

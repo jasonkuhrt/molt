@@ -14,23 +14,23 @@ interface BuilderFn extends HKT.Fn {
   return: Builder<this['params']>
 }
 
-type Builder<$State extends State.Base = State.Base> = BuilderKit.State.Set<
+type Builder<$State extends State.Base = State.Base> = BuilderKit.Create<
   $State,
   {
-    name: BuilderKit.Updater<$State, 'name', BuilderFn>
-    description: BuilderKit.Updater<$State, 'description', BuilderFn>
-    type: BuilderKit.Updater<$State, 'typeBuilder', BuilderFn>
-    prompt: BuilderKit.Updater<$State, 'prompt', BuilderFn>
-    optional: BuilderKit.Updater<
+    name: BuilderKit.UpdaterAtomic<$State, 'name', BuilderFn>
+    description: BuilderKit.UpdaterAtomic<$State, 'description', BuilderFn>
+    type: BuilderKit.UpdaterAtomic<$State, 'typeBuilder', BuilderFn>
+    prompt: BuilderKit.UpdaterAtomic<$State, 'prompt', BuilderFn>
+    optional: BuilderKit.UpdaterAtomic<
       $State,
       'optionality',
       BuilderFn,
       { args: []; return: OptionalityOptional }
     >
-  } & (BuilderKit.State.IsPropertyUnset<$State, 'typeBuilder'> extends true
+  } & (BuilderKit.State.IsUnset<$State, 'typeBuilder'> extends true
     ? {}
     : {
-        default: BuilderKit.Updater<
+        default: BuilderKit.UpdaterAtomic<
           $State,
           'optionality',
           BuilderFn,
@@ -49,11 +49,12 @@ type Builder<$State extends State.Base = State.Base> = BuilderKit.State.Set<
       })
 >
 
-type BuilderWithStateTypeBuilder = BuilderKit.UpdateStateProperty<
-  State.Initial,
-  'typeBuilder',
-  TypeBuilder,
-  BuilderFn
+type BuilderWithStateTypeBuilder = BuilderKit.WithMinState<
+  BuilderFn,
+  State.Base,
+  {
+    typeBuilder: TypeBuilder
+  }
 >
 
 export const create = () => {
@@ -89,13 +90,15 @@ const create_ = <$State extends State.Base>(state: $State): Builder => {
 
 type InferType<
   $Builder extends BuilderWithStateTypeBuilder,
-  _State extends BuilderKit.State.Get<$Builder> = BuilderKit.State.Get<$Builder>,
-> = _State['optionality']['_tag'] extends 'optional'
-  ? TypeBuilder.$InferType<_State['typeBuilder']> | undefined
-  : TypeBuilder.$InferType<_State['typeBuilder']>
+  _State extends BuilderKit.GetState<$Builder> = BuilderKit.GetState<$Builder>,
+> = _State['optionality']['value']['_tag'] extends 'optional'
+  ? TypeBuilder.$InferType<_State['typeBuilder']['value']> | undefined
+  : TypeBuilder.$InferType<_State['typeBuilder']['value']>
 
 export {
   Builder as ParameterBuilder,
+  BuilderFn as ParameterBuilderFn,
   InferType as ParameterBuilderInfer,
   BuilderWithStateTypeBuilder as ParameterBuilderWithStateTypeBuilder,
+  State as ParameterBuilderState,
 }

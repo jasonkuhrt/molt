@@ -9,7 +9,7 @@ namespace State {
     type: Type.Number
     transformations: {}
     refinements: {}
-    description: PrivateData.Values.DefineSimpleString
+    description: PrivateData.Values.ValueString
   }
   export interface Initial {
     type: Type.Number
@@ -28,7 +28,11 @@ namespace State {
 type Builder<$State extends State.Base = State.Base> = PrivateData.SetupHost<
   $State,
   {
-    description: BuilderKit.Updater<$State, 'description', BuilderHKT<$State>>
+    description: BuilderKit.UpdaterAtomic<
+      $State,
+      'description',
+      BuilderHKT<$State>
+    >
   }
 >
 

@@ -1,5 +1,5 @@
 import { Name } from '@molt/name'
-import type { BuilderCommandState } from '../builders/CommandBuilder/state.js'
+import type { BuilderCommandState } from '../builders/CommandBuilder/stateOld.js'
 import type { HKT } from '../helpers.js'
 import type { Pam } from '../lib/Pam/index.js'
 import type { Settings } from '../Settings/index.js'

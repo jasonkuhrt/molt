@@ -26,7 +26,7 @@ namespace State {
     members: $Members
     transformations: {}
     refinements: {}
-    description: PrivateData.Values.DefineSimpleString
+    description: PrivateData.Values.ValueString
   }
   export interface Initial<$Members extends Member[] = Member[]> {
     type: Type.Union<TupleTypeBuildersToTypes<$Members>>
@@ -50,7 +50,11 @@ type Builder<
 > = PrivateData.SetupHost<
   $State,
   {
-    description: BuilderKit.Updater<$State, 'description', BuilderHKT<$State>>
+    description: BuilderKit.UpdaterAtomic<
+      $State,
+      'description',
+      BuilderHKT<$State>
+    >
   }
 >
 

@@ -1,10 +1,12 @@
-import type { SetObjectProperty, UpdateObject } from '../../helpers.js'
+import type { Path, SetObjectProperty, UpdateObject } from '../../helpers.js'
 
 export namespace PrivateData {
   type Args = [...unknown[]]
-  type Host = object
-  export type Data = object
-  // type Data2 =
+  export type HostTarget = object
+  export type Data = Record<string, Values.Value | Values.Namespace>
+  export type Host<$Data extends Data = Data> = {
+    [PrivateDataSymbol]: $Data
+  }
 
   export namespace Values {
     const unsetSymbol = Symbol(`Unset`)
@@ -15,24 +17,47 @@ export namespace PrivateData {
 
     const valueSymbol = Symbol(`Value`)
 
-    export type Define<
-      $Type extends unknown,
-      $ValueDefault extends $Type | UnsetSymbol = UnsetSymbol,
-      $UpdateSignature extends UnsetSymbol | UpdateSignature = UnsetSymbol,
+    export type Atomic<
+      $Type extends unknown = unknown,
+      $ValueDefault extends $Type | UnsetSymbol = UnsetSymbol | $Type,
+      $UpdateSignature extends UnsetSymbol | UpdateSignature =
+        | UnsetSymbol
+        | UpdateSignature,
+      $Value extends $Type | UnsetSymbol = UnsetSymbol | $Type,
     > = {
       [valueSymbol]: 1
       type: $Type
       updateSignature: $UpdateSignature
       valueDefault: $ValueDefault
+      value: $Value
+    }
+
+    export type ValueString = Atomic<string>
+    export type ValueBoolean = Atomic<boolean>
+    export type ValueNumber = Atomic<number>
+
+    // -- index
+    export type IndexUpdateSignature =
+      | { key: string; args: Args }
+      | { key: string; args: Args; return: unknown }
+
+    const indexSymbol = Symbol(`Index`)
+
+    export type Index<
+      $Type extends unknown = unknown,
+      // $ValueDefault extends $Type | UnsetSymbol = UnsetSymbol | $Type,
+      // $UpdateSignature extends UnsetSymbol | UpdateSignature =
+      //   | UnsetSymbol
+      //   | UpdateSignature,
+    > = {
+      [indexSymbol]: 1
+      type: Record<string, $Type>
+      // updateSignature: $UpdateSignature
+      // valueDefault: $ValueDefault
       value: $Type | UnsetSymbol
     }
 
-    export type DefineSimple<$Value extends unknown = unknown> = Define<$Value>
-    export type DefineSimpleString = Define<string>
-    export type DefineSimpleBoolean = Define<boolean>
-    export type DefineSimpleNumber = Define<number>
-
-    export type Value = Define<unknown, unknown, UnsetSymbol | UpdateSignature>
+    export type Value = Atomic //| Index
 
     // -- utilities
 
@@ -40,7 +65,7 @@ export namespace PrivateData {
       UnsetSymbol extends $Value['value'] ? false : true
 
     export type Set<
-      $Value extends Value,
+      $Value extends Atomic,
       $ValueValue extends $Value['type'],
     > = SetObjectProperty<$Value, 'value', $ValueValue>
 
@@ -49,14 +74,14 @@ export namespace PrivateData {
     const namespaceSymbol = Symbol(`Namespace`)
 
     export type Namespace<
-      $Values extends Record<string, Value> = Record<string, Value>,
+      $Values extends Record<string, Atomic> = Record<string, Atomic>,
     > = {
       [namespaceSymbol]: 1
     } & $Values
 
     // --- terms
 
-    export const valueUnset: Define<any> = {
+    export const valueUnset: Atomic<any> = {
       [valueSymbol]: 1,
       type: 0, // ignoreme, just for type level
       updateSignature: unsetSymbol,
@@ -66,31 +91,31 @@ export namespace PrivateData {
   }
 
   export type GetInitial<$Data extends Data> = {
-    [K in keyof $Data & string]: $Data[K] extends Values.Value
+    [K in keyof $Data & string]: $Data[K] extends Values.Atomic
       ? GetInitialFromValue<$Data[K]>
       : $Data[K] extends Values.Namespace
       ? GetInitialFromNamespace<$Data[K]>
       : $Data[K]
   }
-  type GetInitialFromValue<$Value extends Values.Value> =
+  type GetInitialFromValue<$Value extends Values.Atomic> =
     Values.UnsetSymbol extends $Value['valueDefault']
       ? $Value['value']
       : $Value['valueDefault']
   type GetInitialFromNamespace<$Namespace extends Values.Namespace> = {
-    [K in keyof $Namespace & string]: $Namespace[K] extends Values.Value
+    [K in keyof $Namespace & string]: $Namespace[K] extends Values.Atomic
       ? GetInitialFromValue<$Namespace[K]>
       : $Namespace[K] extends Values.Namespace
       ? GetInitialFromNamespace<$Namespace[K]>
       : never
   }
 
-  export type SetupHost<$Data, $Obj extends Host> = SetObjectProperty<
+  export type SetupHost<$Data, $Obj extends HostTarget> = SetObjectProperty<
     $Obj,
     PrivateDataSymbol,
     $Data
   >
 
-  export type Unset<$Obj extends Obj> = Omit<$Obj, PrivateDataSymbol>
+  export type Unset<$Obj extends Host> = Omit<$Obj, PrivateDataSymbol>
 
   export const set = <$PrivateData, $Obj extends object>(
     privateData: $PrivateData,
@@ -102,23 +127,34 @@ export namespace PrivateData {
     }
   }
 
-  export type Get<$Obj extends Obj> = $Obj[PrivateDataSymbol]
+  export type Get<$Host extends Host> = $Host[PrivateDataSymbol]
 
-  export const get = <$Obj extends Obj>(obj: $Obj): Get<$Obj> =>
+  export const get = <$Host extends Host>(obj: $Host): Get<$Host> =>
     obj[PrivateDataSymbol]
 
-  export type Obj<$Data extends Data = Data> = {
-    [_ in PrivateDataSymbol]: $Data
-  }
+  export type MarkPropertyAsSet<
+    $Data extends Data,
+    $Path extends keyof $Data & string,
+  > = Path.Get<$Path, $Data> extends Values.Value
+    ? SetObjectProperty<
+        $Data,
+        $Path,
+        SetObjectProperty<
+          Path.Get<$Path, $Data>,
+          'value',
+          Path.Get<$Path, $Data>['type']
+        >
+      >
+    : never
 
   export type UpdateProperty<
-    $Obj extends PrivateData.Obj<any>,
+    $Obj extends PrivateData.Host<any>,
     $P extends keyof PrivateData.Get<$Obj>,
     $V extends PrivateData.Get<$Obj>[$P],
   > = SetObjectProperty<PrivateData.Get<$Obj>, $P, $V>
 
   export type HostUpdateProperty<
-    $Obj extends PrivateData.Obj<any>,
+    $Obj extends PrivateData.Host<any>,
     $P extends keyof PrivateData.Get<$Obj>,
     $V extends PrivateData.Get<$Obj>[$P],
   > = PrivateData.SetupHost<
@@ -127,7 +163,7 @@ export namespace PrivateData {
   >
 
   export type Update<
-    $Obj extends PrivateData.Obj<any>,
+    $Obj extends PrivateData.Host<any>,
     $ObjNew extends Partial<PrivateData.Get<$Obj>>,
   > = UpdateObject<PrivateData.Get<$Obj>, $ObjNew>
 

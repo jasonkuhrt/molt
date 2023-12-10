@@ -1,9 +1,21 @@
 import type { ParameterExclusiveInput } from '../../Parameter/exclusive.js'
-import type { BuilderCommandState } from '../CommandBuilder/state.js'
+import type { Optionality } from '../../Type/helpers.js'
+import type { PrivateData } from '../../lib/PrivateData/PrivateData.js'
+import type { CommandBuilder } from '../CommandBuilder/chain.js'
+import type { BuilderCommandState } from '../CommandBuilder/stateOld.js'
 
 export type BuilderParameterExclusiveState<
   $State extends BuilderCommandState.Base = BuilderCommandState.Initial,
 > = ParameterExclusiveInput<$State> & { commandBuilderState: $State }
+
+export namespace State {
+  export interface Base {
+    commandBuilder: CommandBuilder
+    label: PrivateData.Values.ValueString
+    optionality: PrivateData.Values.Atomic<Optionality>
+    parameters: []
+  }
+}
 
 export const createState = (label: string): BuilderParameterExclusiveState => {
   return {

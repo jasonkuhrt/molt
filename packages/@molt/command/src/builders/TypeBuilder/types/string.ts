@@ -23,24 +23,24 @@ type Pattern =
 namespace State {
   export interface Base {
     type: Type.String
-    description: PrivateData.Values.DefineSimpleString
+    description: PrivateData.Values.ValueString
     transformations: PrivateData.Values.Namespace<{
-      trim: PrivateData.Values.Define<
+      trim: PrivateData.Values.Atomic<
         boolean,
         true,
         { args: [boolean] } | { args: []; return: true }
       >
-      toCase: PrivateData.Values.DefineSimple<'upper' | 'lower'>
+      toCase: PrivateData.Values.Atomic<'upper' | 'lower'>
     }>
     refinements: PrivateData.Values.Namespace<{
-      min: PrivateData.Values.DefineSimpleNumber
-      max: PrivateData.Values.DefineSimpleNumber
-      length: PrivateData.Values.DefineSimpleNumber
-      startsWith: PrivateData.Values.DefineSimpleString
-      endsWith: PrivateData.Values.DefineSimpleString
-      includes: PrivateData.Values.DefineSimpleString
-      regex: PrivateData.Values.DefineSimple<RegExp>
-      pattern: PrivateData.Values.Define<
+      min: PrivateData.Values.ValueNumber
+      max: PrivateData.Values.ValueNumber
+      length: PrivateData.Values.ValueNumber
+      startsWith: PrivateData.Values.ValueString
+      endsWith: PrivateData.Values.ValueString
+      includes: PrivateData.Values.ValueString
+      regex: PrivateData.Values.Atomic<RegExp>
+      pattern: PrivateData.Values.Atomic<
         Pattern,
         PrivateData.Values.UnsetSymbol,
         { args: ['email'] } | { args: ['ip', { version: 4 | 6 | null }] }
@@ -59,17 +59,33 @@ namespace State {
 type Builder<$State extends State.Base = State.Base> = PrivateData.SetupHost<
   $State,
   {
-    description: BuilderKit.Updater<$State, 'description', BuilderFn>
-    toCase: BuilderKit.Updater<$State, 'transformations.toCase', BuilderFn>
-    trim: BuilderKit.Updater<$State, 'transformations.trim', BuilderFn>
-    min: BuilderKit.Updater<$State, 'refinements.min', BuilderFn>
-    max: BuilderKit.Updater<$State, 'refinements.max', BuilderFn>
-    length: BuilderKit.Updater<$State, 'refinements.length', BuilderFn>
-    startsWith: BuilderKit.Updater<$State, 'refinements.startsWith', BuilderFn>
-    endsWith: BuilderKit.Updater<$State, 'refinements.endsWith', BuilderFn>
-    includes: BuilderKit.Updater<$State, 'refinements.includes', BuilderFn>
-    regex: BuilderKit.Updater<$State, 'refinements.regex', BuilderFn>
-    pattern: BuilderKit.Updater<$State, 'refinements.pattern', BuilderFn>
+    description: BuilderKit.UpdaterAtomic<$State, 'description', BuilderFn>
+    toCase: BuilderKit.UpdaterAtomic<
+      $State,
+      'transformations.toCase',
+      BuilderFn
+    >
+    trim: BuilderKit.UpdaterAtomic<$State, 'transformations.trim', BuilderFn>
+    min: BuilderKit.UpdaterAtomic<$State, 'refinements.min', BuilderFn>
+    max: BuilderKit.UpdaterAtomic<$State, 'refinements.max', BuilderFn>
+    length: BuilderKit.UpdaterAtomic<$State, 'refinements.length', BuilderFn>
+    startsWith: BuilderKit.UpdaterAtomic<
+      $State,
+      'refinements.startsWith',
+      BuilderFn
+    >
+    endsWith: BuilderKit.UpdaterAtomic<
+      $State,
+      'refinements.endsWith',
+      BuilderFn
+    >
+    includes: BuilderKit.UpdaterAtomic<
+      $State,
+      'refinements.includes',
+      BuilderFn
+    >
+    regex: BuilderKit.UpdaterAtomic<$State, 'refinements.regex', BuilderFn>
+    pattern: BuilderKit.UpdaterAtomic<$State, 'refinements.pattern', BuilderFn>
   }
 >
 

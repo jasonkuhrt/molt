@@ -1,5 +1,5 @@
 import snakeCase from 'lodash.snakecase'
-import type { BuilderCommandState } from '../builders/CommandBuilder/state.js'
+import type { BuilderCommandState } from '../builders/CommandBuilder/stateOld.js'
 import type {
   EventPatternsInput,
   EventPatternsInputAtLeastOne,

@@ -18,7 +18,7 @@ export const stripeDashPrefix = (flagNameInput: string): string => {
   return flagNameInput.replace(/^-+/, ``)
 }
 
-export type Values<T> = T[keyof T]
+export type Values<T extends object> = T[keyof T]
 
 export const getLowerCaseEnvironment = (): NodeJS.ProcessEnv =>
   lowerCaseObjectKeys(process.env)

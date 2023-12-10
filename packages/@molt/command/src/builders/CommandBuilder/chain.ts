@@ -6,25 +6,14 @@ import type { ParameterBasicInput } from '../../Parameter/basic.js'
 import { Settings } from '../../Settings/index.js'
 import type { Type } from '../../Type/index.js'
 import * as ExclusiveBuilder from '../ExclusiveBuilder/chain.js'
-import { createState } from './state.js'
-import type { HKT } from '../../helpers.js'
+import { createState } from './stateOld.js'
+import type { HKT, UpdateObject } from '../../helpers.js'
 import type { Prompter } from '../../lib/Prompter/Prompter.js'
 import type { OpeningArgs } from '../../OpeningArgs/index.js'
 import type { Prompt } from '../../Parameter/types.js'
-import type {
-  BuilderExclusive,
-  BuilderExclusiveInitial,
-} from '../ExclusiveBuilder/chain.js'
-import type {
-  ParameterBuilderUpdateState,
-  ParameterBuilderUpdateStateProperty,
-} from '../ParameterBuilder/state.js'
-import type { ParameterBuilder } from '../ParameterBuilder/chain.js'
-import type { TypeBuilder } from '../TypeBuilder/types.js'
-import type { BuilderCommandState } from './state.js'
-// todo
-// eslint-disable-next-line
-import type { Objects, Pipe } from 'hotscript'
+import type { BuilderCommandState } from './stateOld.js'
+import type { State } from './state.js'
+import type { BuilderKit } from '../../lib/BuilderKit/BuilderKit.js'
 
 export interface ParameterConfiguration<
   $State extends BuilderCommandState.Base = BuilderCommandState.Initial,
@@ -57,99 +46,97 @@ export type IsPromptEnabled<P extends Prompt<any> | undefined> =
     ? false
     : true
 
-export interface CommandBuilder<
-  $State extends BuilderCommandState.Base = BuilderCommandState.Initial,
-> {
-  use<$Extension extends SomeExtension>(
-    extension: $Extension,
-  ): CommandBuilder<{
-    IsPromptEnabled: $State['IsPromptEnabled']
-    Parameters: $State['Parameters']
-    ParametersExclusive: $State['ParametersExclusive']
-    Type: $Extension['types']['type']
-    TypeMapper: $Extension['types']['typeMapper']
-  }>
-
-  description(this: void, description: string): CommandBuilder<$State>
-
-  parameters<
-    $Parameters extends Record<
-      string,
-      BuilderCommandState.ParameterBuilderRecordMinimumState
-    >,
-  >(
-    parameters: $Parameters,
-  ): CommandBuilder<
-    BuilderCommandState.AddParameterBuilders<$State, $Parameters>
-  >
-
-  parameter<
-    $Builder extends BuilderCommandState.ParameterBuilderWithAtLeastNameAndType,
-  >(
-    this: void,
-    builder: $Builder,
-  ): CommandBuilder<BuilderCommandState.AddParameterBuilder<$State, $Builder>>
-
-  parameter<
-    $Builder extends BuilderCommandState.ParameterBuilderWithAtLeastType,
-    $NameExpression extends string,
-  >(
-    this: void,
-    name: BuilderCommandState.ValidateNameExpression<$State, $NameExpression>,
-    builder: $Builder,
-  ): CommandBuilder<
-    BuilderCommandState.AddParameterBuilder<
-      $State,
-      // @ts-expect-error TODO Why does the constraint of "BuilderCommandState.ParameterBuilderWithAtLeastType" not satisfy the type?
-      ParameterBuilderUpdateStateProperty<$Builder, 'name', $NameExpression>
-    >
-  >
-  // TODO TypeBuilder
-  parameter<$NameExpression extends string, $TypeBuilder extends TypeBuilder>(
-    this: void,
-    name: BuilderCommandState.ValidateNameExpression<$State, $NameExpression>,
-    type: $TypeBuilder,
-  ): CommandBuilder<
-    BuilderCommandState.AddParameterBuilder<
-      $State,
-      // @ts-expect-error TODO Why does this not work?
-      ParameterBuilderUpdateState<
-        ParameterBuilder,
-        { name: $NameExpression; typeBuilder: $TypeBuilder }
-      >
-    >
-  >
-
-  parametersExclusive<
-    Label extends string,
-    $Builder extends BuilderExclusive<$State>,
-  >(
-    this: void,
-    label: Label,
-    ExclusiveBuilderBlock: (
-      builder: BuilderExclusiveInitial<$State, Label>,
-    ) => $Builder,
-  ): CommandBuilder<PrivateData.Get<$Builder>['commandBuilderState']>
-  settings<S extends Settings.Input<$State>>(
-    this: void,
-    newSettings: S,
-  ): CommandBuilder<
-    Pipe<
-      $State,
-      [
-        Objects.Update<
-          'IsPromptEnabled',
-          Objects.Assign<
-            $State['IsPromptEnabled'] extends true
-              ? true
-              : IsPromptEnabledInCommandSettings<S>
-          >
-        >,
-      ]
-    >
-  >
-  parse(this: void, inputs?: RawArgInputs): BuilderCommandState.ToArgs<$State>
+interface BuilderFn extends HKT.Fn {
+  // @ts-expect-error ignoreme
+  return: Builder<this['params']>
 }
+
+type Builder<$State extends State.Base = State.Base> = BuilderKit.Create<
+  $State,
+  {
+    description: BuilderKit.UpdaterAtomic<$State, 'description', BuilderFn>
+    parameters<$Parameters extends State.Base['parameterBuilders']['type']>(
+      parameters: $Parameters,
+    ): BuilderKit.SetProperty<
+      BuilderFn,
+      $State,
+      'parameterBuilders',
+      UpdateObject<$State['parameterBuilders']['value'], $Parameters>
+    >
+
+    // use<$Extension extends SomeExtension>(
+    //   extension: $Extension,
+    // ): Builder<{
+    //   IsPromptEnabled: $State['IsPromptEnabled']
+    //   Parameters: $State['Parameters']
+    //   ParametersExclusive: $State['ParametersExclusive']
+    //   Type: $Extension['types']['type']
+    //   TypeMapper: $Extension['types']['typeMapper']
+    // }>
+
+    // parameter<
+    //   $Builder extends BuilderCommandState.ParameterBuilderWithAtLeastNameAndType,
+    // >(
+    //   this: void,
+    //   builder: $Builder,
+    // ): Builder<BuilderCommandState.AddParameterBuilder<$State, $Builder>>
+    // parameter<
+    //   $Builder extends BuilderCommandState.ParameterBuilderWithAtLeastType,
+    //   $NameExpression extends string,
+    // >(
+    //   this: void,
+    //   name: BuilderCommandState.ValidateNameExpression<$State, $NameExpression>,
+    //   builder: $Builder,
+    // ): Builder<
+    //   BuilderCommandState.AddParameterBuilder<
+    //     $State,
+    //     // @ts-expect-error TODO Why does the constraint of "BuilderCommandState.ParameterBuilderWithAtLeastType" not satisfy the type?
+    //     ParameterBuilderUpdateStateProperty<$Builder, 'name', $NameExpression>
+    //   >
+    // >
+    // // TODO TypeBuilder
+    // parameter<$NameExpression extends string, $TypeBuilder extends TypeBuilder>(
+    //   this: void,
+    //   name: BuilderCommandState.ValidateNameExpression<$State, $NameExpression>,
+    //   type: $TypeBuilder,
+    // ): Builder<
+    //   BuilderCommandState.AddParameterBuilder<
+    //     $State,
+    //     // @ts-expect-error TODO Why does this not work?
+    //     ParameterBuilderUpdateState<
+    //       ParameterBuilder,
+    //       { name: $NameExpression; typeBuilder: $TypeBuilder }
+    //     >
+    //   >
+    // >
+    // parametersExclusive<Label extends string, $Builder extends Builder<$State>>(
+    //   this: void,
+    //   label: Label,
+    //   ExclusiveBuilderBlock: (
+    //     builder: BuilderExclusiveInitial<$State, Label>,
+    //   ) => $Builder,
+    // ): Builder<PrivateData.Get<$Builder>['commandBuilderState']>
+    // settings<S extends Settings.Input<$State>>(
+    //   this: void,
+    //   newSettings: S,
+    // ): Builder<
+    //   Pipe<
+    //     $State,
+    //     [
+    //       Objects.Update<
+    //         'IsPromptEnabled',
+    //         Objects.Assign<
+    //           $State['IsPromptEnabled'] extends true
+    //             ? true
+    //             : IsPromptEnabledInCommandSettings<S>
+    //         >
+    //       >,
+    //     ]
+    //   >
+    // >
+    parse(this: void, inputs?: RawArgInputs): State.ToArgs<$State>
+  }
+>
 
 export type RawArgInputs = {
   line?: OpeningArgs.Line.RawInputs
@@ -159,11 +146,11 @@ export type RawArgInputs = {
 
 export type SomeArgsNormalized = Record<string, unknown>
 
-export const create = (): CommandBuilder => {
+export const create = (): Builder => {
   return create_(createState())
 }
 
-const create_ = (state: BuilderCommandState): CommandBuilder => {
+const create_ = (state: BuilderCommandState): Builder => {
   const builder: InternalRootBuilder = {
     use: (extension) => {
       const newState = {
@@ -267,3 +254,5 @@ interface InternalRootBuilder {
   ) => InternalRootBuilder
   parse: (args: RawArgInputs) => object
 }
+
+export { Builder as CommandBuilder }
