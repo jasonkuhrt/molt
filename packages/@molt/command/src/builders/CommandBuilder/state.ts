@@ -1,4 +1,4 @@
-import type { BuilderKit } from '../../lib/BuilderKit/BuilderKit.js'
+import { BuilderKit } from '../../lib/BuilderKit/BuilderKit.js'
 import type { PrivateData } from '../../lib/PrivateData/PrivateData.js'
 import type {
   ParameterBuilderFn,
@@ -17,10 +17,16 @@ export namespace State {
       PrivateData.Values.UnsetSymbol,
       Record<string, ParameterBuildersRecordBuilderMinimumState>
     >
-    // isPromptEnabled: PrivateData.Values.Atomic<boolean, false>
+    isPromptEnabled: PrivateData.Values.Atomic<boolean, false>
   }
 
   export type Initial = Base
+
+  export const initial: BuilderKit.State.Initial<Base> = {
+    parameterBuilders: {},
+    description: BuilderKit.State.Values.unset,
+    isPromptEnabled: false,
+  }
 
   export type ParameterBuildersRecordBuilderMinimumState =
     BuilderKit.WithMinState<

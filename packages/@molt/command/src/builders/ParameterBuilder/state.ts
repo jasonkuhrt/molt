@@ -1,8 +1,8 @@
 import type { TypeBuilder } from '../TypeBuilder/types.js'
 import type { Optionality, OptionalityOptional } from '../../Type/helpers.js'
-import type { ParameterBuilder } from './chain.js'
 import type { PrivateData } from '../../lib/PrivateData/PrivateData.js'
 import type { HKT } from '../../helpers.js'
+import { BuilderKit } from '../../lib/BuilderKit/BuilderKit.js'
 
 export namespace State {
   export type PromptInput = {
@@ -33,29 +33,12 @@ export namespace State {
     >
     optionality: PrivateData.Values.Atomic<Optionality, OptionalityOptional>
   }
-  // export type Initial = PrivateData.GetInitial<Base>
-  // export const initial: Initial = {
-  //   description: PrivateData.Values.valueUnset,
-  //   name: PrivateData.Values.valueUnset,
-  //   typeBuilder: PrivateData.Values.valueUnset,
-  //   prompt: PrivateData.Values.valueUnset,
-  //   optionality: { _tag: `optional` },
-  // }
+
+  export const initial: BuilderKit.State.Initial<Base> = {
+    description: BuilderKit.State.Values.unset,
+    name: BuilderKit.State.Values.unset,
+    typeBuilder: BuilderKit.State.Values.unset,
+    prompt: BuilderKit.State.Values.unset,
+    optionality: { _tag: `optional` },
+  }
 }
-
-// export type ParameterBuilderWithMinimumState<
-//   $StateNew extends Partial<State.Base>,
-// > = ParameterBuilderUpdateState<ParameterBuilder, $StateNew>
-
-export type ParameterBuilderUpdateState<
-  $Builder extends ParameterBuilder<State.Base>,
-  $StateNew extends Partial<State.Base>,
-  // @ts-expect-error fixme
-> = ParameterBuilder<PrivateData.Update<$Builder, $StateNew>>
-
-export type ParameterBuilderUpdateStateProperty<
-  $Builder extends ParameterBuilder<State.Base>,
-  $P extends keyof PrivateData.Get<$Builder>,
-  $V extends PrivateData.Get<$Builder>[$P],
-  // @ts-expect-error fixme
-> = ParameterBuilder<PrivateData.UpdateProperty<$Builder, $P, $V>>

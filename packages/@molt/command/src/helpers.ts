@@ -1,4 +1,3 @@
-import { produce } from 'immer'
 import { Either } from 'effect'
 import camelCase from 'lodash.camelcase'
 import type { Key } from './lib/KeyPress/KeyPress.js'
@@ -129,33 +128,6 @@ export namespace HKT {
     return: this['params']
   }
 }
-
-export const createUpdater =
-  <$State, $Builder extends (state: $State) => unknown>(params: {
-    state: $State
-    createBuilder: $Builder
-  }) =>
-  <$Args extends unknown[]>(
-    pathExpression: string,
-    updater?: (...args: $Args) => unknown,
-  ) =>
-  (...args: $Args) => {
-    return params.createBuilder(
-      produce(params.state, (draft) => {
-        const path = pathExpression.split(`.`)
-        const objectPath = path.slice(0, -1)
-        const valuePath = path.slice(-1)
-        const object = objectPath.reduce((acc, key) => {
-          // @ts-expect-error fixme
-          if (acc[key] === undefined) acc[key] = {}
-          // @ts-expect-error fixme
-          return acc[key]
-        }, draft)
-        // @ts-expect-error fixme
-        object[valuePath] = updater?.(...args) ?? args[0]
-      }),
-    )
-  }
 
 export type SetObjectProperty<
   $Obj extends object,

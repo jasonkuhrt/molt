@@ -1,8 +1,7 @@
 import type { HKT } from '../../helpers.js'
-import { createUpdater } from '../../helpers.js'
 import type { TypeBuilder } from '../TypeBuilder/types.js'
 import { State } from './state.js'
-import type { BuilderKit } from '../../lib/BuilderKit/BuilderKit.js'
+import { BuilderKit, BuilderKit } from '../../lib/BuilderKit/BuilderKit.js'
 import { PrivateData } from '../../lib/PrivateData/PrivateData.js'
 import type {
   OptionalityDefault,
@@ -61,8 +60,14 @@ export const create = () => {
   return create_(State.initial)
 }
 
-const create_ = <$State extends State.Base>(state: $State): Builder => {
-  const update = createUpdater({ createBuilder: create_, state })
+const create_ = <$State extends BuilderKit.State.Initial<State.Base>>(
+  state: $State,
+): Builder => {
+  const $state = state as any as State.Base
+  const update = BuilderKit.createUpdater({
+    createBuilder: create_,
+    state: $state,
+  })
   return PrivateData.set(state, {
     name: update(`name`) as any, // eslint-disable-line
     description: update(`description`) as any, // eslint-disable-line

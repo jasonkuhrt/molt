@@ -1,5 +1,7 @@
+import { produce } from 'immer'
 import type { HKT, Path, SetObjectProperty, Values } from '../../helpers.js'
-import type { PrivateData } from '../PrivateData/PrivateData.js'
+import { PrivateData } from '../PrivateData/PrivateData.js'
+import type { Simplify } from 'type-fest'
 
 export namespace BuilderKit {
   export type Builder = PrivateData.Host
@@ -144,6 +146,21 @@ export namespace BuilderKit {
     PrivateData.Get<$Builder>
 
   export namespace State {
+    export namespace Values {
+      export type Unset = PrivateData.Values.UnsetSymbol
+      export const unset: Unset = PrivateData.Values.unsetSymbol
+    }
+    export type Initial<$State extends State> = Simplify<{
+      [K in keyof $State & string as $State[K] extends PrivateData.Values.Type
+        ? never
+        : K]: $State[K] extends PrivateData.Values.Atomic
+        ? Values.Unset extends $State[K]['valueDefault']
+          ? $State[K]['value']
+          : $State[K]['valueDefault']
+        : $State[K] extends PrivateData.Values.Namespace
+        ? Initial<$State[K]>
+        : never
+    }>
     export type IsPropertySet<
       $State extends State,
       $Path extends PropertyPaths<$State>,
@@ -212,6 +229,35 @@ export namespace BuilderKit {
         : never
     }>
   }
+  export const createUpdater =
+    <
+      $State extends State,
+      $Builder extends (state: State.Initial<$State>) => unknown,
+    >(params: {
+      state: $State
+      createBuilder: $Builder
+    }) =>
+    <$Args extends unknown[]>(
+      pathExpression: State.PropertyPaths<$State>,
+      updater?: (...args: $Args) => unknown,
+    ) =>
+    (...args: $Args) => {
+      return params.createBuilder(
+        produce(params.state, (draft) => {
+          const path = pathExpression.split(`.`)
+          const objectPath = path.slice(0, -1)
+          const valuePath = path.slice(-1)
+          const object = objectPath.reduce((acc, key) => {
+            // @ts-expect-error fixme
+            if (acc[key] === undefined) acc[key] = {}
+            // @ts-expect-error fixme
+            return acc[key]
+          }, draft)
+          // @ts-expect-error fixme
+          object[valuePath] = updater?.(...args) ?? args[0]
+        }) as any as State.Initial<$State>,
+      )
+    }
 }
 
 // tests
@@ -220,6 +266,7 @@ type T<A, B extends A> = { A: A; B: B }
 
 type VA = PrivateData.Values.Atomic<number>
 type VB = PrivateData.Values.Atomic<number> & { value: 2 }
+type VC = PrivateData.Values.Atomic<1 | 2 | 3, 2>
 type SA = { a: VA }
 type SB = { a: VB }
 type B<S extends BuilderKit.State> = BuilderKit.Create<S, { x: 0 }>
@@ -249,4 +296,16 @@ type _ = [
   T<BuilderKit.Create<{ a: VA }, { x: 0 }>, PrivateData.SetupHost<{a:VA},{x:0}>>,
   T<BuilderKit.WithMinState<BFn, SA, { a: 2 }>, B<SB>>,
   T<BuilderKit.GetState<BuilderKit.WithMinState<BFn, SA, { a: 2 }>>, SB>,
+  //---
+  T<BuilderKit.State.Initial<{ a: VC }>, { a: 2 }>,
+  T<BuilderKit.State.Initial<{ a: VA }>, { a: 1 | BuilderKit.State.Values.Unset }>,
+  T<BuilderKit.State.Initial<{ a: VA }>, { a: 1 | typeof BuilderKit.State.Values.unset }>,
+  T<BuilderKit.State.Initial<{ a: VB }>, { a: 2 }>,
+  // @ts-expect-error test
+  T<BuilderKit.State.Initial<{ a: VB }>, { a: 2 | BuilderKit.State.Values.Unset }>,
+  // @ts-expect-error test
+  T<BuilderKit.State.Initial<{ a: VA }>, { a: string }>,
+  // @ts-expect-error test
+  T<BuilderKit.State.Initial<{ a: VA }>, { a: 1 | '' }>,
+
 ]

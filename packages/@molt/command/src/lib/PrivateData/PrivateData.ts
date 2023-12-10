@@ -3,17 +3,26 @@ import type { Path, SetObjectProperty, UpdateObject } from '../../helpers.js'
 export namespace PrivateData {
   type Args = [...unknown[]]
   export type HostTarget = object
-  export type Data = Record<string, Values.Value | Values.Namespace>
+  export type Data = Record<
+    string,
+    Values.Value | Values.Namespace | Values.Type
+  >
   export type Host<$Data extends Data = Data> = {
     [PrivateDataSymbol]: $Data
   }
 
   export namespace Values {
-    const unsetSymbol = Symbol(`Unset`)
+    export const unsetSymbol = Symbol(`Unset`)
     export type UnsetSymbol = typeof unsetSymbol
     export type UpdateSignature =
       | { args: Args; return: unknown }
       | { args: Args }
+
+    const typeSymbol = Symbol(`Type`)
+    export type Type<$Type = unknown> = {
+      [typeSymbol]: 1
+      type: $Type
+    }
 
     const valueSymbol = Symbol(`Value`)
 
@@ -57,12 +66,15 @@ export namespace PrivateData {
       value: $Type | UnsetSymbol
     }
 
-    export type Value = Atomic //| Index
+    export type Value = Atomic | Type //| Index
 
     // -- utilities
 
-    export type IsSet<$Value extends Value> =
-      UnsetSymbol extends $Value['value'] ? false : true
+    export type IsSet<$Value extends Value> = $Value extends Atomic
+      ? UnsetSymbol extends $Value['value']
+        ? false
+        : true
+      : true
 
     export type Set<
       $Value extends Atomic,

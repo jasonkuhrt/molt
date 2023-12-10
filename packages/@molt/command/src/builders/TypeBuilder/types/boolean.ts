@@ -1,27 +1,16 @@
 import type { Type } from '../../../Type/index.js'
-import { createUpdater } from '../../../helpers.js'
-import type { BuilderKit } from '../../../lib/BuilderKit/BuilderKit.js'
+import { BuilderKit } from '../../../lib/BuilderKit/BuilderKit.js'
 import { PrivateData } from '../../../lib/PrivateData/PrivateData.js'
 import type { HKT } from '../../../helpers.js'
 
 namespace State {
-  export interface Base {
-    type: Type.Boolean
-    transformations: {}
-    refinements: {}
+  export type Base = {
+    type: PrivateData.Values.Type<Type.Boolean>
     description: PrivateData.Values.ValueString
   }
-  export interface Initial {
-    type: Type.Boolean
-    transformations: {} // eslint-disable-line
-    refinements: {} // eslint-disable-line
-    description: PrivateData.Values.UnsetSymbol
-  }
-  export const initial: Base = {
-    type: null as any, // eslint-disable-line
-    transformations: {},
-    refinements: {},
-    description: PrivateData.Values.unsetSymbol,
+
+  export const initial: BuilderKit.State.Initial<Base> = {
+    description: BuilderKit.State.Values.unset,
   }
 }
 
@@ -40,11 +29,14 @@ interface BuilderHKT<$State extends State.Base> extends HKT.Fn<$State> {
   return: Builder<this['params']>
 }
 
-export const create = (): Builder<State.Initial> =>
-  create_(State.initial) as any
+export const create = (): Builder<State.Base> => create_(State.initial) as any
 
-const create_ = (state: State.Base): Builder => {
-  const updater = createUpdater({ state, createBuilder: create_ })
+const create_ = (state: BuilderKit.State.Initial<State.Base>): Builder => {
+  const $state = state as any as State.Base
+  const updater = BuilderKit.createUpdater({
+    state: $state,
+    createBuilder: create_,
+  })
 
   const builder = PrivateData.set(state, {
     description: updater(`description`),
