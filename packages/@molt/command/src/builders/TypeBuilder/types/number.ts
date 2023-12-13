@@ -1,6 +1,5 @@
 import type { Type } from '../../../Type/index.js'
-import { createUpdater } from '../../../helpers.js'
-import type { BuilderKit } from '../../../lib/BuilderKit/BuilderKit.js'
+import { BuilderKit } from '../../../lib/BuilderKit/BuilderKit.js'
 import type { HKT } from '../../../helpers.js'
 import { PrivateData } from '../../../lib/PrivateData/PrivateData.js'
 
@@ -40,13 +39,13 @@ interface BuilderHKT<$State extends State.Base> extends HKT.Fn<$State> {
   return: Builder<this['params']>
 }
 
-const create = (): Builder<State.Initial> => create_(State.initial) as any
-
-const create_ = (state: State.Base): Builder => {
-  const updater = createUpdater({ state, createBuilder: create_ })
-  return PrivateData.set(state, {
-    description: updater(`description`),
-  } satisfies PrivateData.Unset<Builder>)
-}
+const create = BuilderKit.createBuilder<State.Initial>({
+  initialState: State.initial,
+  implementation: ({ updater }) => {
+    return {
+      description: updater(`description`),
+    }
+  },
+})
 
 export { create as number, Builder as TypeBuilderNumber }

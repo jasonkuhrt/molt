@@ -1,12 +1,6 @@
-import { parse } from '../../executor/parse.js'
 import type { SomeExtension } from '../../extension.js'
-import { getLowerCaseEnvironment, lowerCaseObjectKeys } from '../../helpers.js'
-import { PrivateData } from '../../lib/PrivateData/PrivateData.js'
-import type { ParameterBasicInput } from '../../Parameter/basic.js'
 import type { Settings } from '../../Settings/index.js'
 import type { Type } from '../../Type/index.js'
-import * as ExclusiveBuilder from '../ExclusiveBuilder/chain.js'
-import { createState } from './stateOld.js'
 import type { HKT, UpdateObject } from '../../helpers.js'
 import type { Prompter } from '../../lib/Prompter/Prompter.js'
 import type { OpeningArgs } from '../../OpeningArgs/index.js'
@@ -146,84 +140,76 @@ export type RawArgInputs = {
 
 export type SomeArgsNormalized = Record<string, unknown>
 
-export const create = (): Builder => {
-  return create_(State.initial)
-}
-
-const create_ = (state: BuilderKit.State.Initial<State.Base>): Builder => {
-  const $state = state as any as State.Base
-  const updater = BuilderKit.createUpdater({
-    createBuilder: create_,
-    state: $state,
-  })
-  const builder = PrivateData.set(state, {
-    description: updater(`description`),
-    // use: (extension) => {
-    //   const newState = {
-    //     ...state,
-    //     typeMapper: extension.typeMapper,
-    //   }
-    //   return create_(newState) as any
-    // },
-    // settings: (newSettings) => {
-    //   const newState = {
-    //     ...state,
-    //     newSettingsBuffer: [...state.newSettingsBuffer, newSettings],
-    //   }
-    //   return create_(newState) as any
-    // },
-    // parameter: (nameExpression, typeOrConfiguration) => {
-    //   const configuration =
-    //     `type` in typeOrConfiguration
-    //       ? typeOrConfiguration
-    //       : { type: typeOrConfiguration }
-    //   const prompt = configuration.prompt ?? null
-    //   const type = state.typeMapper(configuration.type)
-    //   const parameter = {
-    //     _tag: `Basic`,
-    //     type,
-    //     nameExpression,
-    //     prompt: prompt as any, // eslint-disable-line
-    //   } satisfies ParameterBasicInput
-    //   const newState = {
-    //     ...state,
-    //     parameterInputs: {
-    //       ...state.parameterInputs,
-    //       [nameExpression]: parameter,
-    //     },
-    //   }
-    //   return create_(newState) as any
-    // },
-    // parametersExclusive: (label, builderBlock) => {
-    //   const exclusiveBuilderState = PrivateData.get(
-    //     builderBlock(ExclusiveBuilder.create(label, state)),
-    //   ) // eslint-disable-line
-    //   const newState = {
-    //     ...state,
-    //     parameterInputs: {
-    //       ...state.parameterInputs,
-    //       [label]: exclusiveBuilderState, // eslint-disable-line
-    //     },
-    //   }
-    //   return create_(newState) as any
-    // },
-    // parse: (argInputs) => {
-    //   const argInputsEnvironment = argInputs?.environment
-    //     ? lowerCaseObjectKeys(argInputs.environment)
-    //     : getLowerCaseEnvironment()
-    //   state.settings = {
-    //     ...Settings.getDefaults(argInputsEnvironment),
-    //   }
-    //   state.newSettingsBuffer.forEach((newSettings) =>
-    //     Settings.change(state.settings!, newSettings, argInputsEnvironment),
-    //   )
-    //   state.settings.typeMapper = state.typeMapper
-    //   return parse(state.settings, state.parameterInputs, argInputs)
-    // },
-  })
-
-  return builder as any
-}
+export const create = BuilderKit.createBuilder<State.Initial>({
+  initialState: State.initial,
+  implementation: ({ updater }) => {
+    return {
+      description: updater(`description`),
+      // use: (extension) => {
+      //   const newState = {
+      //     ...state,
+      //     typeMapper: extension.typeMapper,
+      //   }
+      //   return create_(newState) as any
+      // },
+      // settings: (newSettings) => {
+      //   const newState = {
+      //     ...state,
+      //     newSettingsBuffer: [...state.newSettingsBuffer, newSettings],
+      //   }
+      //   return create_(newState) as any
+      // },
+      // parameter: (nameExpression, typeOrConfiguration) => {
+      //   const configuration =
+      //     `type` in typeOrConfiguration
+      //       ? typeOrConfiguration
+      //       : { type: typeOrConfiguration }
+      //   const prompt = configuration.prompt ?? null
+      //   const type = state.typeMapper(configuration.type)
+      //   const parameter = {
+      //     _tag: `Basic`,
+      //     type,
+      //     nameExpression,
+      //     prompt: prompt as any, // eslint-disable-line
+      //   } satisfies ParameterBasicInput
+      //   const newState = {
+      //     ...state,
+      //     parameterInputs: {
+      //       ...state.parameterInputs,
+      //       [nameExpression]: parameter,
+      //     },
+      //   }
+      //   return create_(newState) as any
+      // },
+      // parametersExclusive: (label, builderBlock) => {
+      //   const exclusiveBuilderState = PrivateData.get(
+      //     builderBlock(ExclusiveBuilder.create(label, state)),
+      //   ) // eslint-disable-line
+      //   const newState = {
+      //     ...state,
+      //     parameterInputs: {
+      //       ...state.parameterInputs,
+      //       [label]: exclusiveBuilderState, // eslint-disable-line
+      //     },
+      //   }
+      //   return create_(newState) as any
+      // },
+      // parse: (argInputs) => {
+      //   const argInputsEnvironment = argInputs?.environment
+      //     ? lowerCaseObjectKeys(argInputs.environment)
+      //     : getLowerCaseEnvironment()
+      //   state.settings = {
+      //     ...Settings.getDefaults(argInputsEnvironment),
+      //   }
+      //   state.newSettingsBuffer.forEach((newSettings) =>
+      //     Settings.change(state.settings!, newSettings, argInputsEnvironment),
+      //   )
+      //   state.settings.typeMapper = state.typeMapper
+      //   return parse(state.settings, state.parameterInputs, argInputs)
+      // },
+    }
+  },
+})
 
 //
 // Internal Types

@@ -93,26 +93,25 @@ interface BuilderFn extends HKT.Fn {
   return: Builder<this['params']>
 }
 
-export const create = (): Builder<State.Base> => create_(State.initial) as any
-
-const create_ = (state: State.Base): Builder => {
-  const update = createUpdater({ createBuilder: create_, state })
-
-  return PrivateData.set(state, {
-    toCase: update(`transformations.toCase`) as any, // eslint-disable-line
-    // eslint-disable-next-line
-    trim: update<[] | [boolean]>(`transformations.trim`, (...args) => {
-      return args.length === 0 ? true : args[0]
-    }) as any,
-    min: update(`refinements.min`) as any, // eslint-disable-line
-    max: update(`refinements.max`) as any, // eslint-disable-line
-    length: update(`refinements.length`) as any, // eslint-disable-line
-    endsWith: update(`refinements.endsWith`) as any, // eslint-disable-line
-    startsWith: update(`refinements.startsWith`) as any, // eslint-disable-line
-    includes: update(`refinements.includes`) as any, // eslint-disable-line
-    regex: update(`refinements.regex`) as any, // eslint-disable-line
-    pattern: update<Pattern>(`refinements.pattern`, (...args) => args) as any, // eslint-disable-line
-  } satisfies PrivateData.Unset<Builder>)
-}
+const create = BuilderKit.createBuilder<State.Initial>({
+  initialState: State.initial,
+  implementation: ({ updater }) => {
+    return {
+      toCase: update(`transformations.toCase`) as any, // eslint-disable-line
+      // eslint-disable-next-line
+      trim: update<[] | [boolean]>(`transformations.trim`, (...args) => {
+        return args.length === 0 ? true : args[0]
+      }) as any,
+      min: update(`refinements.min`) as any, // eslint-disable-line
+      max: update(`refinements.max`) as any, // eslint-disable-line
+      length: update(`refinements.length`) as any, // eslint-disable-line
+      endsWith: update(`refinements.endsWith`) as any, // eslint-disable-line
+      startsWith: update(`refinements.startsWith`) as any, // eslint-disable-line
+      includes: update(`refinements.includes`) as any, // eslint-disable-line
+      regex: update(`refinements.regex`) as any, // eslint-disable-line
+      pattern: update<Pattern>(`refinements.pattern`, (...args) => args) as any, // eslint-disable-line
+    }
+  },
+})
 
 export { create as string, Builder as TypeBuilderString }

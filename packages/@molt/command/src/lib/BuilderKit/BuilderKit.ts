@@ -2,6 +2,7 @@ import { produce } from 'immer'
 import type { HKT, Path, SetObjectProperty, Values } from '../../helpers.js'
 import { PrivateData } from '../PrivateData/PrivateData.js'
 import type { Simplify } from 'type-fest'
+import { object } from 'zod'
 
 export namespace BuilderKit {
   export type Builder = PrivateData.Host
@@ -219,16 +220,50 @@ export namespace BuilderKit {
         : never
       : never //'Error: Non-atomic path on atomic'
 
-    export type PropertyPaths<$State extends State> = PropertyPaths_<'', $State>
+    export type PropertyPaths<$State extends State> = string
+    // export type PropertyPaths<$State extends State> = PropertyPaths_<'', $State>
 
-    type PropertyPaths_<$Path extends string, $State extends State> = Values<{
-      [K in keyof $State & string]: $State[K] extends PrivateData.Values.Atomic
-        ? Path.Join<$Path, K>
-        : $State[K] extends PrivateData.Values.Namespace
-        ? PropertyPaths_<Path.Join<$Path, K>, $State[K]>
-        : never
-    }>
+    // type PropertyPaths_<$Path extends string, $State extends State> = Values<{
+    //   [K in keyof $State & string]: $State[K] extends PrivateData.Values.Atomic
+    //     ? Path.Join<$Path, K>
+    //     : $State[K] extends PrivateData.Values.Namespace
+    //     ? PropertyPaths_<Path.Join<$Path, K>, $State[K]>
+    //     : never
+    // }>
   }
+  export const createBuilder = <$State extends State>(params: {
+    initialState: State.Initial<$State>
+    implementation: (params: {
+      state: State.Initial<$State>
+      updater: Updater<$State>
+    }) => object
+  }) => {
+    const create = () => {
+      return create_(initialState)
+    }
+
+    const create_ = (state: $State) => {
+      const updater = createUpdater({ state, createBuilder: create_ })
+      const builder = PrivateData.set(
+        state,
+        params.implementation({ state, updater }),
+      )
+      return builder
+    }
+
+    return create
+  }
+
+  type Updater<$State extends State> = <
+    $Builder extends (state: State.Initial<$State>) => unknown,
+  >(params: {
+    state: $State
+    createBuilder: $Builder
+  }) => <$Args extends unknown[]>(
+    pathExpression: State.PropertyPaths<$State>,
+    updater?: (...args: $Args) => unknown,
+  ) => (...args: $Args) => object
+
   export const createUpdater =
     <
       $State extends State,

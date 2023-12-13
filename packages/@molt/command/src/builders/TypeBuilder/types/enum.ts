@@ -1,7 +1,7 @@
 import type { Type } from '../../../Type/index.js'
 import type { Member } from '../../../Type/types/Scalars/Enumeration.js'
 import { createUpdater } from '../../../helpers.js'
-import type { BuilderKit } from '../../../lib/BuilderKit/BuilderKit.js'
+import { BuilderKit } from '../../../lib/BuilderKit/BuilderKit.js'
 import { PrivateData } from '../../../lib/PrivateData/PrivateData.js'
 import type { HKT } from '../../../helpers.js'
 

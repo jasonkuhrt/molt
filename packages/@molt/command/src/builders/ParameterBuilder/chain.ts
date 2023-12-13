@@ -1,8 +1,7 @@
 import type { HKT } from '../../helpers.js'
 import type { TypeBuilder } from '../TypeBuilder/types.js'
 import { State } from './state.js'
-import { BuilderKit, BuilderKit } from '../../lib/BuilderKit/BuilderKit.js'
-import { PrivateData } from '../../lib/PrivateData/PrivateData.js'
+import { BuilderKit } from '../../lib/BuilderKit/BuilderKit.js'
 import type {
   OptionalityDefault,
   OptionalityOptional,
@@ -56,42 +55,34 @@ type BuilderWithStateTypeBuilder = BuilderKit.WithMinState<
   }
 >
 
-export const create = () => {
-  return create_(State.initial)
-}
-
-const create_ = <$State extends BuilderKit.State.Initial<State.Base>>(
-  state: $State,
-): Builder => {
-  const $state = state as any as State.Base
-  const update = BuilderKit.createUpdater({
-    createBuilder: create_,
-    state: $state,
-  })
-  return PrivateData.set(state, {
-    name: update(`name`) as any, // eslint-disable-line
-    description: update(`description`) as any, // eslint-disable-line
-    type: update('type') as any, // eslint-disable-line
-    optional: update(`optionality`, () => ({ _tag: `optional` })) as any, // eslint-disable-line
-    // eslint-disable-next-line
-    prompt: update<[] | [boolean] | [State.PromptInput]>(
-      `prompt`,
-      (...args) => {
-        return args.length === 0
-          ? { enabled: true, when: {} }
-          : typeof args[0] === `boolean`
-          ? { enabled: args[0], when: {} }
-          : { enabled: args[0].enabled ?? true, when: args[0].when }
-      },
-    ) as any,
-    // @ts-expect-error ignore
-    // eslint-disable-next-line
-    default: update(`optionality`, (value) => ({
-      _tag: `default`,
-      getValue: typeof value === `function` ? value : () => value,
-    })) as any,
-  } satisfies PrivateData.Unset<Builder>)
-}
+export const create = BuilderKit.createBuilder<State.Initial>({
+  initialState: State.initial,
+  implementation: ({ updater }) => {
+    return {
+      name: updater(`name`) as any, // eslint-disable-line
+      description: updater(`description`) as any, // eslint-disable-line
+      type: updater('type') as any, // eslint-disable-line
+      optional: updater(`optionality`, () => ({ _tag: `optional` })) as any, // eslint-disable-line
+      // eslint-disable-next-line
+      prompt: updater<[] | [boolean] | [State.PromptInput]>(
+        `prompt`,
+        (...args) => {
+          return args.length === 0
+            ? { enabled: true, when: {} }
+            : typeof args[0] === `boolean`
+            ? { enabled: args[0], when: {} }
+            : { enabled: args[0].enabled ?? true, when: args[0].when }
+        },
+      ) as any,
+      // @ts-expect-error ignore
+      // eslint-disable-next-line
+      default: update(`optionality`, (value) => ({
+        _tag: `default`,
+        getValue: typeof value === `function` ? value : () => value,
+      })) as any,
+    }
+  },
+})
 
 type InferType<
   $Builder extends BuilderWithStateTypeBuilder,
