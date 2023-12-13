@@ -11,41 +11,41 @@ export namespace BuilderKit {
 
   export type State = PrivateData.Data
 
-  export namespace State {
-    // export type Get<$Builder extends PrivateData.Host> =
-    //   PrivateData.Get<$Builder>
-    // export type Set<
-    //   $State extends State,
-    //   $Builder extends object,
-    // > = PrivateData.SetupHost<$State, $Builder>
-    // export type GetPropertyType<
-    //   $State extends State,
-    //   $Path extends string,
-    // > = PrivateData.Values.Atomic extends Path.Get<$Path, $State>
-    //   ? AccessValue<$Path, $State>['type']
-    //   : never
-    // export type GetPropertyValue<
-    //   $State extends State,
-    //   $Path extends string,
-    // > = Path.Get<$Path, $State> extends PrivateData.Values.Atomic
-    //   ? Path.Get<$Path, $State>['value']
-    //   : never
-    // export type GetProperty<
-    //   $State extends State,
-    //   $Path extends string,
-    // > = Path.Get<$Path, $State> extends PrivateData.Values.Atomic
-    //   ? Path.Get<$Path, $State>
-    //   : never
-    // export type UpdateProperty<
-    //   $State extends State,
-    //   $Path extends string,
-    //   $Value extends State.GetPropertyType<$State, $Path>,
-    // > = SetObjectProperty<
-    //   $State,
-    //   $Path,
-    //   PrivateData.Values.Set<Path.Get<$Path, $State>, $Value>
-    // >
-  }
+  // export namespace State {
+  // export type Get<$Builder extends PrivateData.Host> =
+  //   PrivateData.Get<$Builder>
+  // export type Set<
+  //   $State extends State,
+  //   $Builder extends object,
+  // > = PrivateData.SetupHost<$State, $Builder>
+  // export type GetPropertyType<
+  //   $State extends State,
+  //   $Path extends string,
+  // > = PrivateData.Values.Atomic extends Path.Get<$Path, $State>
+  //   ? AccessValue<$Path, $State>['type']
+  //   : never
+  // export type GetPropertyValue<
+  //   $State extends State,
+  //   $Path extends string,
+  // > = Path.Get<$Path, $State> extends PrivateData.Values.Atomic
+  //   ? Path.Get<$Path, $State>['value']
+  //   : never
+  // export type GetProperty<
+  //   $State extends State,
+  //   $Path extends string,
+  // > = Path.Get<$Path, $State> extends PrivateData.Values.Atomic
+  //   ? Path.Get<$Path, $State>
+  //   : never
+  // export type UpdateProperty<
+  //   $State extends State,
+  //   $Path extends string,
+  //   $Value extends State.GetPropertyType<$State, $Path>,
+  // > = SetObjectProperty<
+  //   $State,
+  //   $Path,
+  //   PrivateData.Values.Set<Path.Get<$Path, $State>, $Value>
+  // >
+  // }
 
   // export type UpdateStateProperty<
   //   $State extends State,
@@ -230,14 +230,18 @@ export namespace BuilderKit {
     //     ? PropertyPaths_<Path.Join<$Path, K>, $State[K]>
     //     : never
     // }>
+    export const get = PrivateData.get
   }
-  export const createBuilder = <$State extends State>(params: {
+  export const createBuilder = <
+    $State extends State,
+    $Builder extends Builder,
+  >(params: {
     initialState: State.Initial<$State>
     implementation: (params: {
       state: State.Initial<$State>
       updater: Updater<$State>
     }) => object
-  }) => {
+  }): (() => $Builder) => {
     const create = () => {
       return create_(initialState)
     }

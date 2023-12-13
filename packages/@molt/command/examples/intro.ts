@@ -2,28 +2,28 @@ import { Command, p, t } from '../src/_entrypoints/default.js'
 
 const args = Command.create()
   .parameters({
-    x: p.name(`abc`).type(t.string()),
     filePath: p.type(
-      t.string(),
-      // .name('foobar')
-      // .description(`abc`)
-      // .toCase(`upper`)
-      // .trim()
+      t.string().description(`abc`).toCase(`upper`),
+      // .trim(),
       // .pattern(`ip`, { version: 4 }),
     ),
-    // to: p
-    //   .type(t.enum([`json`, `yaml`, `toml`]))
-    //   .description(`Format to convert to.`)
-    //   .prompt(),
-    // from: p.type(t.enum([`json`, `yaml`, `toml`])).optional(),
-    // 'verbose v': p
-    //   .type(t.boolean())
-    //   .default(false)
-    //   .description(`Log detailed progress as conversion executes.`),
-    // 'move m': p
-    //   .type(t.boolean())
-    //   .default(false)
-    //   .description(`Delete the original file after it has been converted.`),
+    to: p
+      .type(t.enum([`json`, `yaml`, `toml`]))
+      .description(`Format to convert to.`)
+      .prompt(),
+    from: p.type(t.enum([`json`, `yaml`, `toml`])).optional(),
+    'verbose v': p
+      // todo
+      .type(t.boolean())
+      .type(t.string()),
+    // .default(false)
+    // .description(`Log detailed progress as conversion executes.`),
+    'move m': p
+      // todo
+      // .type(t.boolean())
+      .type(t.string()),
+    // .default(false)
+    // .description(`Delete the original file after it has been converted.`),
   })
   //   // .settings({
   //   //   prompt: {
@@ -41,10 +41,10 @@ const args = Command.create()
   .parse()
 
 args.filePath
-// args.from
-// args.move
-// args.to
-// args.verbose
+args.from
+args.move
+args.to
+args.verbose
 
 // // .parameter(
 // //   p

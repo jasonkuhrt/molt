@@ -1,6 +1,5 @@
 import type { Type } from '../../../Type/index.js'
 import type { Member } from '../../../Type/types/Scalars/Enumeration.js'
-import { createUpdater } from '../../../helpers.js'
 import { BuilderKit } from '../../../lib/BuilderKit/BuilderKit.js'
 import { PrivateData } from '../../../lib/PrivateData/PrivateData.js'
 import type { HKT } from '../../../helpers.js'
@@ -51,7 +50,7 @@ const create = <
 const create_ = <$Members extends Member[]>(
   state: State.Base<$Members>,
 ): Builder<State.Base<$Members>> => {
-  const updater = createUpdater({ state, createBuilder: create_ })
+  const updater = BuilderKit.createUpdater({ state, createBuilder: create_ })
   return PrivateData.set(state, {
     description: updater(`description`),
   } satisfies PrivateData.Unset<Builder<State.Base<$Members>>>)

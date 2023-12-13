@@ -1,13 +1,21 @@
 import type { SomeExtension } from '../../extension.js'
 import type { Settings } from '../../Settings/index.js'
 import type { Type } from '../../Type/index.js'
-import type { HKT, UpdateObject } from '../../helpers.js'
+import type { HKT, SetObjectProperty, UpdateObject } from '../../helpers.js'
 import type { Prompter } from '../../lib/Prompter/Prompter.js'
 import type { OpeningArgs } from '../../OpeningArgs/index.js'
 import type { Prompt } from '../../Parameter/types.js'
 import type { BuilderCommandState } from './stateOld.js'
 import { State } from './state.js'
 import { BuilderKit } from '../../lib/BuilderKit/BuilderKit.js'
+import type {
+  ParameterBuilderFn,
+  ParameterBuilderState,
+} from '../ParameterBuilder/chain.js'
+import { ParameterBuilderWithStateTypeBuilder } from '../ParameterBuilder/chain.js'
+import type { TypeBuilder } from '../TypeBuilder/types.js'
+import { parse } from 'semver'
+import { Line } from '../../OpeningArgs/OpeningArgs.js'
 
 export interface ParameterConfiguration<
   $State extends BuilderCommandState.Base = BuilderCommandState.Initial,
@@ -56,6 +64,27 @@ type Builder<$State extends State.Base = State.Base> = BuilderKit.Create<
       $State,
       'parameterBuilders',
       UpdateObject<$State['parameterBuilders']['value'], $Parameters>
+    >
+    parameter<
+      $Builder extends BuilderKit.WithMinState<
+        ParameterBuilderFn,
+        ParameterBuilderState.Base,
+        {
+          name: string
+          typeBuilder: TypeBuilder
+        }
+      >,
+    >(
+      builder: $Builder,
+    ): BuilderKit.SetProperty<
+      BuilderFn,
+      $State,
+      'parameterBuilders',
+      SetObjectProperty<
+        $State['parameterBuilders']['value'],
+        BuilderKit.GetState<$Builder>['name']['value'],
+        $Builder
+      >
     >
 
     // use<$Extension extends SomeExtension>(
@@ -140,7 +169,7 @@ export type RawArgInputs = {
 
 export type SomeArgsNormalized = Record<string, unknown>
 
-export const create = BuilderKit.createBuilder<State.Initial>({
+export const create = BuilderKit.createBuilder<State.Initial, Builder>({
   initialState: State.initial,
   implementation: ({ updater }) => {
     return {

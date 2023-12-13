@@ -1,3 +1,4 @@
+import { Simplify } from 'type-fest'
 import type { Path, SetObjectProperty, UpdateObject } from '../../helpers.js'
 
 export namespace PrivateData {
@@ -141,7 +142,7 @@ export namespace PrivateData {
 
   export type Get<$Host extends Host> = $Host[PrivateDataSymbol]
 
-  export const get = <$Host extends Host>(obj: $Host): Get<$Host> =>
+  export const get = <$Host extends Host>(obj: $Host): Simplify<Get<$Host>> =>
     obj[PrivateDataSymbol]
 
   export type MarkPropertyAsSet<

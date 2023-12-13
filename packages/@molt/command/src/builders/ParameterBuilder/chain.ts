@@ -55,7 +55,7 @@ type BuilderWithStateTypeBuilder = BuilderKit.WithMinState<
   }
 >
 
-export const create = BuilderKit.createBuilder<State.Initial>({
+export const create = BuilderKit.createBuilder<State.Initial, Builder>({
   initialState: State.initial,
   implementation: ({ updater }) => {
     return {

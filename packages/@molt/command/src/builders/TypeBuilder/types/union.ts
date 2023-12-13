@@ -1,7 +1,6 @@
 import type { HKT } from '../../../helpers.js'
 import type { Type } from '../../../Type/index.js'
-import { createUpdater } from '../../../helpers.js'
-import type { BuilderKit } from '../../../lib/BuilderKit/BuilderKit.js'
+import { BuilderKit } from '../../../lib/BuilderKit/BuilderKit.js'
 import { PrivateData } from '../../../lib/PrivateData/PrivateData.js'
 import type { TypeBuilderBoolean } from './boolean.js'
 import type { TypeBuilderEnumeration } from './enum.js'
@@ -67,7 +66,7 @@ const create = <$Members extends Member[]>(
 ): Builder<$Members, State.Initial<$Members>> => create_(State.initial) as any
 
 const create_ = (state: State.Base): Builder => {
-  const updater = createUpdater({ state, createBuilder: create_ })
+  const updater = BuilderKit.createUpdater({ state, createBuilder: create_ })
   return PrivateData.set(state, {
     description: updater(`description`),
   } satisfies PrivateData.Unset<Builder>)

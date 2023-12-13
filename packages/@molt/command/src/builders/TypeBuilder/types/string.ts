@@ -1,8 +1,8 @@
-import { createUpdater } from '../../../helpers.js'
 import type { Type } from '../../../Type/index.js'
 import { PrivateData } from '../../../lib/PrivateData/PrivateData.js'
 import type { HKT } from '../../../helpers.js'
-import type { BuilderKit } from '../../../lib/BuilderKit/BuilderKit.js'
+import { BuilderKit } from '../../../lib/BuilderKit/BuilderKit.js'
+import { update } from 'effect/Differ'
 
 type Pattern =
   | { type: 'email' }
@@ -93,7 +93,7 @@ interface BuilderFn extends HKT.Fn {
   return: Builder<this['params']>
 }
 
-const create = BuilderKit.createBuilder<State.Initial>({
+const create = BuilderKit.createBuilder<State.Initial, Builder>({
   initialState: State.initial,
   implementation: ({ updater }) => {
     return {

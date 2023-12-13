@@ -1,12 +1,14 @@
+import type { RemoveIndex } from '../../helpers.js'
 import { BuilderKit } from '../../lib/BuilderKit/BuilderKit.js'
 import type { PrivateData } from '../../lib/PrivateData/PrivateData.js'
+import type { Name as MoltName } from '@molt/name'
 import type {
   ParameterBuilderFn,
   ParameterBuilderInfer,
   ParameterBuilderState,
 } from '../ParameterBuilder/chain.js'
 import type { TypeBuilder } from '../TypeBuilder/types.js'
-import type { Values } from '../../helpers.js'
+import type { Simplify } from 'type-fest'
 
 export namespace State {
   export type Base = {
@@ -37,18 +39,19 @@ export namespace State {
       }
     >
 
-  // export type ToArgs<$State extends Base> = $State
+  // TODO handle inferring exclusive parameters
   export type ToArgs<$State extends Base> =
     $State['isPromptEnabled']['value'] extends true
       ? Promise<ToArgs_<$State>>
       : ToArgs_<$State>
 
-  // type ToArgs_<$State extends Base> = $State
-  type ToArgs_<$State extends Base> = Values<{
-    [Name in keyof $State['parameterBuilders']['value']]: ParameterBuilderInfer<
-      $State['parameterBuilders']['value'][Name]
-    >
+  type ToArgs_<$State extends Base> = Simplify<{
+    [$Name in keyof RemoveIndex<$State['parameterBuilders']['value']> &
+      string as MoltName.Data.GetCanonicalNameOrErrorFromParseResult<
+      MoltName.Parse<$Name>
+    >]: ParameterBuilderInfer<$State['parameterBuilders']['value'][$Name]>
   }>
+
   // }>
   // & {
   //   [Label in keyof $State['ParametersExclusive'] & string]:

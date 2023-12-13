@@ -82,9 +82,6 @@ export const casesExhausted = (_: never): never => {
   throw new Error(`Cases exhausted: ${_}`) // eslint-disable-line
 }
 
-type x = { a: 1; b: 2 }
-type y<i extends keyof x> = x[i]
-
 export namespace Path {
   export type Get<
     $Path extends string,
@@ -149,3 +146,13 @@ export type UpdateObject<
   $ObjA extends object,
   $ObjB extends Partial<$ObjA>,
 > = Omit<$ObjA, keyof $ObjB> & $ObjB
+
+export type RemoveIndex<T> = {
+  [K in keyof T as string extends K
+    ? never
+    : number extends K
+    ? never
+    : symbol extends K
+    ? never
+    : K]: T[K]
+}

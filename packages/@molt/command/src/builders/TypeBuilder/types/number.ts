@@ -39,7 +39,7 @@ interface BuilderHKT<$State extends State.Base> extends HKT.Fn<$State> {
   return: Builder<this['params']>
 }
 
-const create = BuilderKit.createBuilder<State.Initial>({
+const create = BuilderKit.createBuilder<State.Initial, Builder>({
   initialState: State.initial,
   implementation: ({ updater }) => {
     return {
