@@ -1,5 +1,5 @@
 import type { Type } from '../../Type/index.js'
-import type { PrivateData } from '../../lib/PrivateData/PrivateData.js'
+import type { BuilderKit } from '../../lib/BuilderKit/BuilderKit.js'
 import type { TypeBuilderBoolean } from './types/boolean.js'
 import type { TypeBuilderEnumeration } from './types/enum.js'
 import type { TypeBuilderNumber } from './types/number.js'
@@ -13,7 +13,10 @@ export namespace TypeBuilder {
   export type Enumeration = TypeBuilderEnumeration<any>
   export type Number = TypeBuilderNumber
   export type $InferType<$TypeBuilder extends TypeBuilder> = Type.Infer<
-    PrivateData.Get<$TypeBuilder>['type']
+    BuilderKit.State.Property.Value.Get<
+      BuilderKit.State.Get<$TypeBuilder>,
+      'type'
+    >
   >
 }
 

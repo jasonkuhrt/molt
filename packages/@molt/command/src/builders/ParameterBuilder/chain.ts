@@ -6,6 +6,8 @@ import type {
   OptionalityDefault,
   OptionalityOptional,
 } from '../../Type/helpers.js'
+import type { Simplify } from 'type-fest'
+import type { SimplifyDeep } from 'type-fest/source/merge-deep.js'
 
 interface BuilderFn extends HKT.Fn {
   // @ts-expect-error ignoreme
@@ -87,18 +89,16 @@ export const create = BuilderKit.createBuilder<State.Initial, Builder>({
   },
 })
 
-type InferType<$Builder extends BuilderWithStateTypeBuilder> = InferType_<
-  BuilderKit.State.Get<$Builder>
+type InferType<$Builder extends BuilderWithStateTypeBuilder> = Simplify<
+  InferType_<BuilderKit.State.Get<$Builder>>
 >
 type InferType_<
-  State extends BuilderKit.State.Get<BuilderWithStateTypeBuilder>,
-> =
-  | TypeBuilder.$InferType<State['typeBuilder']['value']>
-  | (BuilderKit.State.Values.ExcludeUnset<
-      BuilderKit.State.Property.Value.GetOrDefault<State, 'optionality'>
-    >['_tag'] extends 'optional'
-      ? undefined
-      : never)
+  $State extends BuilderKit.State.Get<BuilderWithStateTypeBuilder>,
+> = BuilderKit.State.Values.ExcludeUnset<
+  BuilderKit.State.Property.Value.GetOrDefault<$State, 'optionality'>
+>['_tag'] extends 'optional'
+  ? TypeBuilder.$InferType<$State['typeBuilder']['value']> | undefined
+  : TypeBuilder.$InferType<$State['typeBuilder']['value']>
 
 export {
   Builder as ParameterBuilder,

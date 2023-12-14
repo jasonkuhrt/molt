@@ -142,6 +142,12 @@ export type UpdateObjectProperty<
   [_ in $P]: $V
 }
 
+export type MergeObject<
+  $ObjA extends object,
+  $ObjB extends Partial<$ObjA>,
+> = $ObjA, keyof $ObjB> & $ObjB
+
+
 export type UpdateObject<
   $ObjA extends object,
   $ObjB extends Partial<$ObjA>,

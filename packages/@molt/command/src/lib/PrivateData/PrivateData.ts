@@ -24,6 +24,7 @@ export namespace PrivateData {
     export type Type<$Type = unknown> = {
       [typeSymbol]: 1
       type: $Type
+      value: $Type
     }
 
     const valueSymbol = Symbol(`Value`)

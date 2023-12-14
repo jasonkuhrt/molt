@@ -51,16 +51,18 @@ type Builder<$State extends State.Base = State.Base> = BuilderKit.State.Setup<
   $State,
   {
     description: BuilderKit.UpdaterAtomic<$State, 'description', BuilderFn>
-    parameters<$Parameters extends State.Base['parameterBuilders']['type']>(
-      parameters: $Parameters,
+    parameters<
+      $ParameterBuilders extends State.Base['parameterBuilders']['type'],
+    >(
+      parameters: $ParameterBuilders,
     ): BuilderKit.SetPropertyValue<
       BuilderFn,
       $State,
       'parameterBuilders',
-      UpdateObject<$State['parameterBuilders']['value'], $Parameters>
+      $State['parameterBuilders']['value'] & $ParameterBuilders
     >
     parameter<
-      $Builder extends BuilderKit.WithMinState<
+      $ParameterBuilder extends BuilderKit.WithMinState<
         ParameterBuilderFn,
         ParameterBuilderState.Base,
         {
@@ -69,15 +71,15 @@ type Builder<$State extends State.Base = State.Base> = BuilderKit.State.Setup<
         }
       >,
     >(
-      builder: $Builder,
+      builder: $ParameterBuilder,
     ): BuilderKit.SetPropertyValue<
       BuilderFn,
       $State,
       'parameterBuilders',
       SetObjectProperty<
         $State['parameterBuilders']['value'],
-        BuilderKit.State.Get<$Builder>['name']['value'],
-        $Builder
+        BuilderKit.State.Get<$ParameterBuilder>['name']['value'],
+        $ParameterBuilder
       >
     >
 
