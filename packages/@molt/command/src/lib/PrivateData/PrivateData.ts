@@ -1,22 +1,23 @@
-import { Simplify } from 'type-fest'
+import type { Simplify } from 'type-fest'
 import type { Path, SetObjectProperty, UpdateObject } from '../../helpers.js'
 
 export namespace PrivateData {
   type Args = [...unknown[]]
   export type HostTarget = object
-  export type Data = Record<
-    string,
-    Values.Value | Values.Namespace | Values.Type
-  >
+  export type Data = Record<string, Values.Value>
   export type Host<$Data extends Data = Data> = {
     [PrivateDataSymbol]: $Data
   }
 
   export namespace Values {
+    export type ExcludeUnsetSymbol<$Value extends unknown> = Exclude<
+      $Value,
+      UnsetSymbol
+    >
     export const unsetSymbol = Symbol(`Unset`)
     export type UnsetSymbol = typeof unsetSymbol
-    export type UpdateSignature =
-      | { args: Args; return: unknown }
+    export type UpdateSignature<$Return extends unknown = unknown> =
+      | { args: Args; return: $Return }
       | { args: Args }
 
     const typeSymbol = Symbol(`Type`)
@@ -30,9 +31,9 @@ export namespace PrivateData {
     export type Atomic<
       $Type extends unknown = unknown,
       $ValueDefault extends $Type | UnsetSymbol = UnsetSymbol | $Type,
-      $UpdateSignature extends UnsetSymbol | UpdateSignature =
+      $UpdateSignature extends UnsetSymbol | UpdateSignature<$Type> =
         | UnsetSymbol
-        | UpdateSignature,
+        | UpdateSignature<$Type>,
       $Value extends $Type | UnsetSymbol = UnsetSymbol | $Type,
     > = {
       [valueSymbol]: 1
@@ -47,27 +48,27 @@ export namespace PrivateData {
     export type ValueNumber = Atomic<number>
 
     // -- index
-    export type IndexUpdateSignature =
-      | { key: string; args: Args }
-      | { key: string; args: Args; return: unknown }
+    // export type IndexUpdateSignature =
+    //   | { key: string; args: Args }
+    //   | { key: string; args: Args; return: unknown }
 
-    const indexSymbol = Symbol(`Index`)
+    // const indexSymbol = Symbol(`Index`)
 
-    export type Index<
-      $Type extends unknown = unknown,
-      // $ValueDefault extends $Type | UnsetSymbol = UnsetSymbol | $Type,
-      // $UpdateSignature extends UnsetSymbol | UpdateSignature =
-      //   | UnsetSymbol
-      //   | UpdateSignature,
-    > = {
-      [indexSymbol]: 1
-      type: Record<string, $Type>
-      // updateSignature: $UpdateSignature
-      // valueDefault: $ValueDefault
-      value: $Type | UnsetSymbol
-    }
+    // export type Index<
+    //   $Type extends unknown = unknown,
+    //   // $ValueDefault extends $Type | UnsetSymbol = UnsetSymbol | $Type,
+    //   // $UpdateSignature extends UnsetSymbol | UpdateSignature =
+    //   //   | UnsetSymbol
+    //   //   | UpdateSignature,
+    // > = {
+    //   [indexSymbol]: 1
+    //   type: Record<string, $Type>
+    //   // updateSignature: $UpdateSignature
+    //   // valueDefault: $ValueDefault
+    //   value: $Type | UnsetSymbol
+    // }
 
-    export type Value = Atomic | Type //| Index
+    export type Value = Atomic | Type
 
     // -- utilities
 
@@ -84,13 +85,13 @@ export namespace PrivateData {
 
     // -- namespace
 
-    const namespaceSymbol = Symbol(`Namespace`)
+    // const namespaceSymbol = Symbol(`Namespace`)
 
-    export type Namespace<
-      $Values extends Record<string, Atomic> = Record<string, Atomic>,
-    > = {
-      [namespaceSymbol]: 1
-    } & $Values
+    // export type Namespace<
+    //   $Values extends Record<string, Atomic> = Record<string, Atomic>,
+    // > = {
+    //   [namespaceSymbol]: 1
+    // } & $Values
 
     // --- terms
 

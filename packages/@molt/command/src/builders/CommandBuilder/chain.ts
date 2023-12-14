@@ -1,6 +1,4 @@
-import type { SomeExtension } from '../../extension.js'
 import type { Settings } from '../../Settings/index.js'
-import type { Type } from '../../Type/index.js'
 import type { HKT, SetObjectProperty, UpdateObject } from '../../helpers.js'
 import type { Prompter } from '../../lib/Prompter/Prompter.js'
 import type { OpeningArgs } from '../../OpeningArgs/index.js'
@@ -12,10 +10,7 @@ import type {
   ParameterBuilderFn,
   ParameterBuilderState,
 } from '../ParameterBuilder/chain.js'
-import { ParameterBuilderWithStateTypeBuilder } from '../ParameterBuilder/chain.js'
 import type { TypeBuilder } from '../TypeBuilder/types.js'
-import { parse } from 'semver'
-import { Line } from '../../OpeningArgs/OpeningArgs.js'
 
 export interface ParameterConfiguration<
   $State extends BuilderCommandState.Base = BuilderCommandState.Initial,
@@ -53,13 +48,13 @@ interface BuilderFn extends HKT.Fn {
   return: Builder<this['params']>
 }
 
-type Builder<$State extends State.Base = State.Base> = BuilderKit.Create<
+type Builder<$State extends State.Base = State.Base> = BuilderKit.State.Setup<
   $State,
   {
     description: BuilderKit.UpdaterAtomic<$State, 'description', BuilderFn>
     parameters<$Parameters extends State.Base['parameterBuilders']['type']>(
       parameters: $Parameters,
-    ): BuilderKit.SetProperty<
+    ): BuilderKit.SetPropertyValue<
       BuilderFn,
       $State,
       'parameterBuilders',
@@ -76,13 +71,13 @@ type Builder<$State extends State.Base = State.Base> = BuilderKit.Create<
       >,
     >(
       builder: $Builder,
-    ): BuilderKit.SetProperty<
+    ): BuilderKit.SetPropertyValue<
       BuilderFn,
       $State,
       'parameterBuilders',
       SetObjectProperty<
         $State['parameterBuilders']['value'],
-        BuilderKit.GetState<$Builder>['name']['value'],
+        BuilderKit.State.Get<$Builder>['name']['value'],
         $Builder
       >
     >
@@ -239,29 +234,5 @@ export const create = BuilderKit.createBuilder<State.Initial, Builder>({
     }
   },
 })
-
-//
-// Internal Types
-//
-
-interface Parameter {
-  (nameExpression: string, type: Type.Type): InternalRootBuilder
-  (
-    nameExpression: string,
-    configuration: ParameterConfiguration,
-  ): InternalRootBuilder
-}
-
-interface InternalRootBuilder {
-  use: (extension: SomeExtension) => InternalRootBuilder
-  description: (description: string) => InternalRootBuilder
-  settings: (newSettings: Settings.Input) => InternalRootBuilder
-  parameter: Parameter
-  parametersExclusive: (
-    label: string,
-    builderContainer: any,
-  ) => InternalRootBuilder
-  parse: (args: RawArgInputs) => object
-}
 
 export { Builder as CommandBuilder }

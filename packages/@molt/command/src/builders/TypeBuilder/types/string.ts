@@ -24,28 +24,28 @@ namespace State {
   export interface Base {
     type: Type.String
     description: PrivateData.Values.ValueString
-    transformations: PrivateData.Values.Namespace<{
-      trim: PrivateData.Values.Atomic<
-        boolean,
-        true,
-        { args: [boolean] } | { args: []; return: true }
-      >
-      toCase: PrivateData.Values.Atomic<'upper' | 'lower'>
-    }>
-    refinements: PrivateData.Values.Namespace<{
-      min: PrivateData.Values.ValueNumber
-      max: PrivateData.Values.ValueNumber
-      length: PrivateData.Values.ValueNumber
-      startsWith: PrivateData.Values.ValueString
-      endsWith: PrivateData.Values.ValueString
-      includes: PrivateData.Values.ValueString
-      regex: PrivateData.Values.Atomic<RegExp>
-      pattern: PrivateData.Values.Atomic<
-        Pattern,
-        PrivateData.Values.UnsetSymbol,
-        { args: ['email'] } | { args: ['ip', { version: 4 | 6 | null }] }
-      >
-    }>
+    // transformations: PrivateData.Values.Namespace<{
+    transformationsTrim: PrivateData.Values.Atomic<
+      boolean,
+      true,
+      { args: [boolean] } | { args: []; return: true }
+    >
+    transformationsToCase: PrivateData.Values.Atomic<'upper' | 'lower'>
+    // }>
+    // refinements: PrivateData.Values.Namespace<{
+    //   min: PrivateData.Values.ValueNumber
+    //   max: PrivateData.Values.ValueNumber
+    //   length: PrivateData.Values.ValueNumber
+    //   startsWith: PrivateData.Values.ValueString
+    //   endsWith: PrivateData.Values.ValueString
+    //   includes: PrivateData.Values.ValueString
+    //   regex: PrivateData.Values.Atomic<RegExp>
+    //   pattern: PrivateData.Values.Atomic<
+    //     Pattern,
+    //     PrivateData.Values.UnsetSymbol,
+    //     { args: ['email'] } | { args: ['ip', { version: 4 | 6 | null }] }
+    //   >
+    // }>
   }
   export type Initial = PrivateData.GetInitial<Base>
   export const initial: Initial = {
@@ -60,12 +60,8 @@ type Builder<$State extends State.Base = State.Base> = PrivateData.SetupHost<
   $State,
   {
     description: BuilderKit.UpdaterAtomic<$State, 'description', BuilderFn>
-    toCase: BuilderKit.UpdaterAtomic<
-      $State,
-      'transformations.toCase',
-      BuilderFn
-    >
-    trim: BuilderKit.UpdaterAtomic<$State, 'transformations.trim', BuilderFn>
+    toCase: BuilderKit.UpdaterAtomic<$State, 'transformationsToCase', BuilderFn>
+    trim: BuilderKit.UpdaterAtomic<$State, 'transformationsTrim', BuilderFn>
     min: BuilderKit.UpdaterAtomic<$State, 'refinements.min', BuilderFn>
     max: BuilderKit.UpdaterAtomic<$State, 'refinements.max', BuilderFn>
     length: BuilderKit.UpdaterAtomic<$State, 'refinements.length', BuilderFn>

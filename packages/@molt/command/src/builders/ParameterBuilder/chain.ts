@@ -12,7 +12,7 @@ interface BuilderFn extends HKT.Fn {
   return: Builder<this['params']>
 }
 
-type Builder<$State extends State.Base = State.Base> = BuilderKit.Create<
+type Builder<$State extends State.Base = State.Base> = BuilderKit.State.Setup<
   $State,
   {
     name: BuilderKit.UpdaterAtomic<$State, 'name', BuilderFn>
@@ -35,10 +35,10 @@ type Builder<$State extends State.Base = State.Base> = BuilderKit.Create<
           {
             args: [
               | TypeBuilder.$InferType<
-                  BuilderKit.State.GetProperty<$State, 'typeBuilder'>['value']
+                  BuilderKit.State.Property.Value.GetSet<$State, 'typeBuilder'>
                 >
               | (() => TypeBuilder.$InferType<
-                  BuilderKit.State.GetProperty<$State, 'typeBuilder'>['value']
+                  BuilderKit.State.Property.Value.GetSet<$State, 'typeBuilder'>
                 >),
             ]
             return: OptionalityDefault
