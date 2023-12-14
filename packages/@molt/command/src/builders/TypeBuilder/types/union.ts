@@ -20,25 +20,17 @@ type TupleTypeBuildersToTypes<$Tuple extends Member[]> = {
 }
 
 namespace State {
-  export interface Base<$Members extends Member[] = Member[]> {
-    type: Type.Union<TupleTypeBuildersToTypes<$Members>>
-    members: $Members
-    transformations: {}
-    refinements: {}
+  export type Base<$Members extends Member[] = Member[]> = {
+    type: PrivateData.Values.Type<
+      Type.Union<TupleTypeBuildersToTypes<$Members>>
+    >
+    members: PrivateData.Values.Atomic<$Members>
     description: PrivateData.Values.ValueString
   }
-  export interface Initial<$Members extends Member[] = Member[]> {
-    type: Type.Union<TupleTypeBuildersToTypes<$Members>>
-    members: $Members
-    transformations: {} // eslint-disable-line
-    refinements: {} // eslint-disable-line
-    description: PrivateData.Values.UnsetSymbol
-  }
-  export const initial: Base = {
-    type: null as any, // eslint-disable-line
+  export type Initial<$Members extends Member[] = Member[]> =
+    BuilderKit.State.Initial<Base<$Members>>
+  export const initial: Initial = {
     members: null as any, // eslint-disable-line
-    transformations: {},
-    refinements: {},
     description: PrivateData.Values.unsetSymbol,
   }
 }
@@ -46,7 +38,7 @@ namespace State {
 type Builder<
   $Members extends Member[] = Member[],
   $State extends State.Base<$Members> = State.Base<$Members>,
-> = PrivateData.SetupHost<
+> = BuilderKit.State.Setup<
   $State,
   {
     description: BuilderKit.UpdaterAtomic<

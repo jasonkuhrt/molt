@@ -3,7 +3,6 @@ import type { HKT, SetObjectProperty, UpdateObject } from '../../helpers.js'
 import type { Prompter } from '../../lib/Prompter/Prompter.js'
 import type { OpeningArgs } from '../../OpeningArgs/index.js'
 import type { Prompt } from '../../Parameter/types.js'
-import type { BuilderCommandState } from './stateOld.js'
 import { State } from './state.js'
 import { BuilderKit } from '../../lib/BuilderKit/BuilderKit.js'
 import type {
@@ -12,36 +11,36 @@ import type {
 } from '../ParameterBuilder/chain.js'
 import type { TypeBuilder } from '../TypeBuilder/types.js'
 
-export interface ParameterConfiguration<
-  $State extends BuilderCommandState.Base = BuilderCommandState.Initial,
-> {
-  type: $State['Type']
-  prompt?: Prompt<HKT.Call<$State['TypeMapper'], this['type']>>
-}
+// export interface ParameterConfiguration<
+//   $State extends BuilderCommandState.Base = BuilderCommandState.Initial,
+// > {
+//   type: $State['Type']
+//   prompt?: Prompt<HKT.Call<$State['TypeMapper'], this['type']>>
+// }
 
 export type IsHasKey<Obj extends object, Key> = Key extends keyof Obj
   ? true
   : false
 
-export type IsPromptEnabledInParameterSettings<
-  P extends ParameterConfiguration<any>,
-> = IsHasKey<P, 'prompt'> extends false ? false : IsPromptEnabled<P['prompt']>
+// export type IsPromptEnabledInParameterSettings<
+//   P extends ParameterConfiguration<any>,
+// > = IsHasKey<P, 'prompt'> extends false ? false : IsPromptEnabled<P['prompt']>
 
-export type IsPromptEnabledInCommandSettings<P extends Settings.Input<any>> =
-  IsHasKey<P, 'prompt'> extends false ? false : IsPromptEnabled<P['prompt']>
+// export type IsPromptEnabledInCommandSettings<P extends Settings.Input<any>> =
+//   IsHasKey<P, 'prompt'> extends false ? false : IsPromptEnabled<P['prompt']>
 
-export type IsPromptEnabled<P extends Prompt<any> | undefined> =
-  P extends undefined
-    ? false
-    : P extends false
-    ? false
-    : P extends true
-    ? true
-    : P extends null
-    ? false
-    : Exclude<P, undefined | boolean | null>['enabled'] extends false
-    ? false
-    : true
+// export type IsPromptEnabled<P extends Prompt<any> | undefined> =
+//   P extends undefined
+//     ? false
+//     : P extends false
+//     ? false
+//     : P extends true
+//     ? true
+//     : P extends null
+//     ? false
+//     : Exclude<P, undefined | boolean | null>['enabled'] extends false
+//     ? false
+//     : true
 
 interface BuilderFn extends HKT.Fn {
   // @ts-expect-error ignoreme

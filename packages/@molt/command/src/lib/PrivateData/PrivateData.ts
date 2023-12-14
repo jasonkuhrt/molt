@@ -40,6 +40,7 @@ export namespace PrivateData {
       type: $Type
       updateSignature: $UpdateSignature
       valueDefault: $ValueDefault
+      // value: UnsetSymbol extends $ValueDefault ? $Value : $ValueDefault
       value: $Value
     }
 
@@ -104,24 +105,24 @@ export namespace PrivateData {
     }
   }
 
-  export type GetInitial<$Data extends Data> = {
-    [K in keyof $Data & string]: $Data[K] extends Values.Atomic
-      ? GetInitialFromValue<$Data[K]>
-      : $Data[K] extends Values.Namespace
-      ? GetInitialFromNamespace<$Data[K]>
-      : $Data[K]
-  }
+  // export type GetInitial<$Data extends Data> = {
+  //   [K in keyof $Data & string]: $Data[K] extends Values.Atomic
+  //     ? GetInitialFromValue<$Data[K]>
+  //     : // : $Data[K] extends Values.Namespace
+  //       // ? GetInitialFromNamespace<$Data[K]>
+  //       $Data[K]
+  // }
   type GetInitialFromValue<$Value extends Values.Atomic> =
     Values.UnsetSymbol extends $Value['valueDefault']
       ? $Value['value']
       : $Value['valueDefault']
-  type GetInitialFromNamespace<$Namespace extends Values.Namespace> = {
-    [K in keyof $Namespace & string]: $Namespace[K] extends Values.Atomic
-      ? GetInitialFromValue<$Namespace[K]>
-      : $Namespace[K] extends Values.Namespace
-      ? GetInitialFromNamespace<$Namespace[K]>
-      : never
-  }
+  // type GetInitialFromNamespace<$Namespace extends Values.Namespace> = {
+  //   [K in keyof $Namespace & string]: $Namespace[K] extends Values.Atomic
+  //     ? GetInitialFromValue<$Namespace[K]>
+  //     : $Namespace[K] extends Values.Namespace
+  //     ? GetInitialFromNamespace<$Namespace[K]>
+  //     : never
+  // }
 
   export type SetupHost<$Data, $Obj extends HostTarget> = SetObjectProperty<
     $Obj,
@@ -144,7 +145,7 @@ export namespace PrivateData {
   export type Get<$Host extends Host> = $Host[PrivateDataSymbol]
 
   export const get = <$Host extends Host>(obj: $Host): Simplify<Get<$Host>> =>
-    obj[PrivateDataSymbol]
+    obj[PrivateDataSymbol] as any
 
   export type MarkPropertyAsSet<
     $Data extends Data,

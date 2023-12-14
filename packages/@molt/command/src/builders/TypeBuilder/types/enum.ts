@@ -5,27 +5,18 @@ import { PrivateData } from '../../../lib/PrivateData/PrivateData.js'
 import type { HKT } from '../../../helpers.js'
 
 namespace State {
-  export interface Base<$Members extends Member[] = any> {
-    type: Type.Enumeration<$Members>
-    transformations: {}
-    refinements: {}
+  export type Base<$Members extends Member[] = any> = {
+    type: PrivateData.Values.Type<Type.Enumeration<$Members>>
     description: PrivateData.Values.ValueString
   }
-  export interface Initial<$Members extends Member[] = any> {
-    type: Type.Enumeration<$Members>
-    transformations: {} // eslint-disable-line
-    refinements: {} // eslint-disable-line
-    description: PrivateData.Values.UnsetSymbol
-  }
-  export const initial: Base<any> = {
-    type: null as any, // eslint-disable-line
-    transformations: {},
-    refinements: {},
+  export type Initial<$Members extends Member[] = any> =
+    BuilderKit.State.Initial<Base<$Members>>
+  export const initial: Initial<any> = {
     description: PrivateData.Values.unsetSymbol,
   }
 }
 
-type Builder<$State extends State.Base = State.Base> = PrivateData.SetupHost<
+type Builder<$State extends State.Base = State.Base> = BuilderKit.State.Setup<
   $State,
   {
     description: BuilderKit.UpdaterAtomic<

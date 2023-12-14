@@ -49,8 +49,9 @@ export namespace State {
     [$Name in keyof RemoveIndex<$State['parameterBuilders']['value']> &
       string as MoltName.Data.GetCanonicalNameOrErrorFromParseResult<
       MoltName.Parse<$Name>
-      // >]: ParameterBuilderInfer<$State['parameterBuilders']['value'][$Name]>
-    >]: $State['parameterBuilders']['value'][$Name]
+      // todo (leads to unknown right now)
+    >]: ParameterBuilderInfer<$State['parameterBuilders']['value'][$Name]>
+    // >]: $State['parameterBuilders']['value'][$Name]
   }>
 
   // }>

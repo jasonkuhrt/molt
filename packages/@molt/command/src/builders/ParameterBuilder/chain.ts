@@ -25,7 +25,10 @@ type Builder<$State extends State.Base = State.Base> = BuilderKit.State.Setup<
       BuilderFn,
       { args: []; return: OptionalityOptional }
     >
-  } & (BuilderKit.State.IsUnset<$State, 'typeBuilder'> extends true
+  } & (BuilderKit.State.Property.Value.IsUnset<
+    $State,
+    'typeBuilder'
+  > extends true
     ? {}
     : {
         default: BuilderKit.UpdaterAtomic<
@@ -84,12 +87,18 @@ export const create = BuilderKit.createBuilder<State.Initial, Builder>({
   },
 })
 
-type InferType<
-  $Builder extends BuilderWithStateTypeBuilder,
-  _State extends BuilderKit.GetState<$Builder> = BuilderKit.GetState<$Builder>,
-> = _State['optionality']['value']['_tag'] extends 'optional'
-  ? TypeBuilder.$InferType<_State['typeBuilder']['value']> | undefined
-  : TypeBuilder.$InferType<_State['typeBuilder']['value']>
+type InferType<$Builder extends BuilderWithStateTypeBuilder> = InferType_<
+  BuilderKit.State.Get<$Builder>
+>
+type InferType_<
+  State extends BuilderKit.State.Get<BuilderWithStateTypeBuilder>,
+> =
+  | TypeBuilder.$InferType<State['typeBuilder']['value']>
+  | (BuilderKit.State.Values.ExcludeUnset<
+      BuilderKit.State.Property.Value.GetOrDefault<State, 'optionality'>
+    >['_tag'] extends 'optional'
+      ? undefined
+      : never)
 
 export {
   Builder as ParameterBuilder,

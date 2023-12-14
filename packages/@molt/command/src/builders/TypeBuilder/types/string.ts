@@ -1,5 +1,5 @@
 import type { Type } from '../../../Type/index.js'
-import { PrivateData } from '../../../lib/PrivateData/PrivateData.js'
+import type { PrivateData } from '../../../lib/PrivateData/PrivateData.js'
 import type { HKT } from '../../../helpers.js'
 import { BuilderKit } from '../../../lib/BuilderKit/BuilderKit.js'
 import { update } from 'effect/Differ'
@@ -21,8 +21,8 @@ type Pattern =
 //   ]
 
 namespace State {
-  export interface Base {
-    type: Type.String
+  export type Base = {
+    type: PrivateData.Values.Type<Type.String>
     description: PrivateData.Values.ValueString
     // transformations: PrivateData.Values.Namespace<{
     transformationsTrim: PrivateData.Values.Atomic<
@@ -47,16 +47,17 @@ namespace State {
     //   >
     // }>
   }
-  export type Initial = PrivateData.GetInitial<Base>
+  export type Initial = BuilderKit.State.Initial<Base>
   export const initial: Initial = {
-    type: null as any, // eslint-disable-line
-    transformations: {},
-    refinements: {},
-    description: PrivateData.Values.unsetSymbol,
+    transformationsTrim: true,
+    transformationsToCase: BuilderKit.State.Values.unset,
+    // transformations: {},
+    // refinements: {},
+    description: BuilderKit.State.Values.unset,
   }
 }
 
-type Builder<$State extends State.Base = State.Base> = PrivateData.SetupHost<
+type Builder<$State extends State.Base = State.Base> = BuilderKit.State.Setup<
   $State,
   {
     description: BuilderKit.UpdaterAtomic<$State, 'description', BuilderFn>

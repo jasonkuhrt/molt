@@ -14,7 +14,7 @@ namespace State {
   }
 }
 
-type Builder<$State extends State.Base = State.Base> = PrivateData.SetupHost<
+type Builder<$State extends State.Base = State.Base> = BuilderKit.State.Setup<
   $State,
   {
     description: BuilderKit.UpdaterAtomic<
@@ -37,21 +37,5 @@ export const create = BuilderKit.createBuilder<State.Base, Builder>({
     }
   },
 })
-
-// export const create = (): Builder<State.Base> => create_(State.initial) as any
-
-// const create_ = (state: BuilderKit.State.Initial<State.Base>): Builder => {
-//   const $state = state as any as State.Base
-//   const updater = BuilderKit.createUpdater({
-//     state: $state,
-//     createBuilder: create_,
-//   })
-
-//   const builder = PrivateData.set(state, {
-//     description: updater(`description`),
-//   } satisfies PrivateData.Unset<Builder>)
-
-//   return builder
-// }
 
 export { create as boolean, Builder as TypeBuilderBoolean }

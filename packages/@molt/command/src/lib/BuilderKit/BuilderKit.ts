@@ -104,6 +104,8 @@ export namespace BuilderKit {
     export namespace Values {
       export type Unset = PrivateData.Values.UnsetSymbol
       export const unset: Unset = PrivateData.Values.unsetSymbol
+      export type ExcludeUnset<$Value> =
+        PrivateData.Values.ExcludeUnsetSymbol<$Value>
     }
     export type Initial<$State extends State> = Simplify<{
       [K in keyof $State & string as $State[K] extends PrivateData.Values.Type
@@ -161,6 +163,13 @@ export namespace BuilderKit {
       > = $State[$Path] extends PrivateData.Values.Value ? $State[$Path] : never
 
       export namespace Value {
+        export type Get<
+          $State extends State,
+          $Path extends Paths<$State>,
+        > = $State[$Path] extends PrivateData.Values.Atomic
+          ? $State[$Path]['value']
+          : never
+
         export type IsSet<
           $State extends State,
           $Path extends Paths<$State>,
@@ -191,11 +200,15 @@ export namespace BuilderKit {
             : $State[$Key]
         }
 
-        export type Get<
+        export type GetOrDefault<
           $State extends State,
           $Path extends Paths<$State>,
         > = $State[$Path] extends PrivateData.Values.Atomic
-          ? $State[$Path]['value']
+          ? Values.Unset extends $State[$Path]['value']
+            ? Values.Unset extends $State[$Path]['valueDefault']
+              ? $State[$Path]['value']
+              : $State[$Path]['valueDefault']
+            : $State[$Path]['value']
           : never
 
         export type GetSet<
@@ -336,7 +349,11 @@ type _ = [
   T<BuilderKit.State.Property.Get<S1,'a'>, V1>,
   // T<BuilderKit.State.GetProperty<{ a: PrivateData.Values.Namespace<{a:VA}> },'a.a'>, VA>,
   //---
-  T<BuilderKit.State.Property.Value.Get<S1, 'a'>, number>,
+  T<BuilderKit.State.Property.Value.GetSetOrDefaultSet<S1, 'a'>, number | BuilderKit.State.Values.Unset>,
+  T<BuilderKit.State.Property.Value.GetSetOrDefaultSet<{a:PrivateData.Values.Atomic<1|2>}, 'a'>, 1|2|BuilderKit.State.Values.Unset>,
+  T<BuilderKit.State.Property.Value.GetSetOrDefaultSet<{a:PrivateData.Values.Atomic<1|2,1>}, 'a'>, 1>,
+  // @ts-expect-error test
+  T<BuilderKit.State.Property.Value.GetSetOrDefaultSet<{a:PrivateData.Values.Atomic<1|2,1>}, 'a'>, 1 | BuilderKit.State.Values.Unset>,
   //---
   T<BuilderKit.State.Property.Value.GetSet<S1, 'a'>, number>,
   T<BuilderKit.State.Property.Value.GetSet<{ a: V1Set }, 'a'>, 2>,
