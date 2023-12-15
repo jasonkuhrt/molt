@@ -49,15 +49,20 @@ interface BuilderFn extends HKT.Fn<State.Base<any>> {
   return: Builder<this['params']['members'], this['params']>
 }
 
-const create = <$Members extends Member[]>(
-  members: $Members,
-): Builder<$Members, State.Initial<$Members>> => create_(State.initial) as any
+const create = BuilderKit.createBuilder<
+  State.Base,
+  BuilderFn,
+  [members: Member[]]
+>()(({ updater }) => {})
+// const create = <$Members extends Member[]>(
+//   members: $Members,
+// ): Builder<$Members, State.Initial<$Members>> => create_(State.initial) as any
 
-const create_ = (state: State.Base): Builder => {
-  const updater = BuilderKit.createUpdater({ state, createBuilder: create_ })
-  return PrivateData.set(state, {
-    description: updater(`description`),
-  } satisfies PrivateData.Unset<Builder>)
-}
+// const create_ = (state: State.Base): Builder => {
+//   const updater = BuilderKit.createUpdater({ state, createBuilder: create_ })
+//   return PrivateData.set(state, {
+//     description: updater(`description`),
+//   } satisfies PrivateData.Unset<Builder>)
+// }
 
 export { create as union, Builder as TypeBuilderUnion }

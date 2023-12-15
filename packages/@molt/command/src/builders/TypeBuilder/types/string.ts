@@ -2,7 +2,6 @@ import type { Type } from '../../../Type/index.js'
 import type { PrivateData } from '../../../lib/PrivateData/PrivateData.js'
 import type { HKT } from '../../../helpers.js'
 import { BuilderKit } from '../../../lib/BuilderKit/BuilderKit.js'
-import { update } from 'effect/Differ'
 
 type Pattern =
   | { type: 'email' }
@@ -90,23 +89,26 @@ interface BuilderFn extends HKT.Fn<State.Base> {
   return: Builder<this['params']>
 }
 
-const create = BuilderKit.createBuilder<State.Initial, BuilderFn, []>()({
+const create = BuilderKit.createBuilder<State.Base, BuilderFn, []>()({
   initialState: State.initial,
   implementation: ({ updater }) => {
     return {
-      toCase: update(`transformations.toCase`) as any, // eslint-disable-line
+      toCase: updater(`transformations.toCase`) as any, // eslint-disable-line
       // eslint-disable-next-line
-      trim: update<[] | [boolean]>(`transformations.trim`, (...args) => {
+      trim: updater<[] | [boolean]>(`transformations.trim`, (...args) => {
         return args.length === 0 ? true : args[0]
       }) as any,
-      min: update(`refinements.min`) as any, // eslint-disable-line
-      max: update(`refinements.max`) as any, // eslint-disable-line
-      length: update(`refinements.length`) as any, // eslint-disable-line
-      endsWith: update(`refinements.endsWith`) as any, // eslint-disable-line
-      startsWith: update(`refinements.startsWith`) as any, // eslint-disable-line
-      includes: update(`refinements.includes`) as any, // eslint-disable-line
-      regex: update(`refinements.regex`) as any, // eslint-disable-line
-      pattern: update<Pattern>(`refinements.pattern`, (...args) => args) as any, // eslint-disable-line
+      min: updater(`refinements.min`) as any, // eslint-disable-line
+      max: updater(`refinements.max`) as any, // eslint-disable-line
+      length: updater(`refinements.length`) as any, // eslint-disable-line
+      endsWith: updater(`refinements.endsWith`) as any, // eslint-disable-line
+      startsWith: updater(`refinements.startsWith`) as any, // eslint-disable-line
+      includes: updater(`refinements.includes`) as any, // eslint-disable-line
+      regex: updater(`refinements.regex`) as any, // eslint-disable-line
+      pattern: updater<Pattern>(
+        `refinements.pattern`,
+        (...args) => args,
+      ) as any, // eslint-disable-line
     }
   },
 })

@@ -299,13 +299,8 @@ export namespace BuilderKit {
       return create
     }
 
-  type Updater<$State extends State> = <
-    $Builder extends (state: State.Initial<$State>) => unknown,
-  >(params: {
-    state: $State
-    createBuilder: $Builder
-  }) => <$Args extends unknown[]>(
-    pathExpression: State.PropertyPaths<$State>,
+  type Updater<$State extends State> = <$Args extends unknown[]>(
+    pathExpression: State.Property.Paths<$State>,
     updater?: (...args: $Args) => unknown,
   ) => (...args: $Args) => object
 
