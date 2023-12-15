@@ -50,3 +50,5 @@ export const errorFromMaybeError = (maybeError: unknown): Error => {
 
   return new Error(String(maybeError))
 }
+
+export type T<A, B extends A> = { A: A; B: B }

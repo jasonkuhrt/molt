@@ -7,7 +7,6 @@ import type {
   OptionalityOptional,
 } from '../../Type/helpers.js'
 import type { Simplify } from 'type-fest'
-import type { SimplifyDeep } from 'type-fest/source/merge-deep.js'
 
 interface BuilderFn extends HKT.Fn {
   // @ts-expect-error ignoreme
@@ -60,7 +59,7 @@ type BuilderWithStateTypeBuilder = BuilderKit.WithMinState<
   }
 >
 
-export const create = BuilderKit.createBuilder<State.Initial, Builder>({
+export const create = BuilderKit.createBuilder<State.Initial, BuilderFn, []>()({
   initialState: State.initial,
   implementation: ({ updater }) => {
     return {

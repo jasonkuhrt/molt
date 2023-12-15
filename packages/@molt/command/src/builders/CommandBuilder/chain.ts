@@ -1,8 +1,6 @@
-import type { Settings } from '../../Settings/index.js'
-import type { HKT, SetObjectProperty, UpdateObject } from '../../helpers.js'
+import type { HKT, SetObjectProperty } from '../../helpers.js'
 import type { Prompter } from '../../lib/Prompter/Prompter.js'
 import type { OpeningArgs } from '../../OpeningArgs/index.js'
-import type { Prompt } from '../../Parameter/types.js'
 import { State } from './state.js'
 import { BuilderKit } from '../../lib/BuilderKit/BuilderKit.js'
 import type {
@@ -165,7 +163,7 @@ export type RawArgInputs = {
 
 export type SomeArgsNormalized = Record<string, unknown>
 
-export const create = BuilderKit.createBuilder<State.Initial, Builder>({
+export const create = BuilderKit.createBuilder<State.Initial, BuilderFn, []>()({
   initialState: State.initial,
   implementation: ({ updater }) => {
     return {

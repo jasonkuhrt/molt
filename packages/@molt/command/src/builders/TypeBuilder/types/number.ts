@@ -27,19 +27,15 @@ namespace State {
 type Builder<$State extends State.Base = State.Base> = BuilderKit.State.Setup<
   $State,
   {
-    description: BuilderKit.UpdaterAtomic<
-      $State,
-      'description',
-      BuilderHKT<$State>
-    >
+    description: BuilderKit.UpdaterAtomic<$State, 'description', BuilderFn>
   }
 >
 
-interface BuilderHKT<$State extends State.Base> extends HKT.Fn<$State> {
+interface BuilderFn extends HKT.Fn<State.Base> {
   return: Builder<this['params']>
 }
 
-const create = BuilderKit.createBuilder<State.Initial, Builder>({
+const create = BuilderKit.createBuilder<State.Initial, BuilderFn, []>()({
   initialState: State.initial,
   implementation: ({ updater }) => {
     return {

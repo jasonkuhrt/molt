@@ -86,11 +86,11 @@ type Builder<$State extends State.Base = State.Base> = BuilderKit.State.Setup<
   }
 >
 
-interface BuilderFn extends HKT.Fn {
+interface BuilderFn extends HKT.Fn<State.Base> {
   return: Builder<this['params']>
 }
 
-const create = BuilderKit.createBuilder<State.Initial, Builder>({
+const create = BuilderKit.createBuilder<State.Initial, BuilderFn, []>()({
   initialState: State.initial,
   implementation: ({ updater }) => {
     return {

@@ -2,7 +2,7 @@ import { Command, p, t } from '../src/_entrypoints/default.js'
 
 const args = Command.create()
   .parameter(
-    p.type(t.string().description(`abc`).toCase(`upper`).trim()).name(`xyz`),
+    p.name(`xyz`).type(t.string().description(`abc`).toCase(`upper`).trim()),
   )
   .parameters({
     filePath: p.type(t.string()),

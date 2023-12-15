@@ -41,15 +41,11 @@ type Builder<
 > = BuilderKit.State.Setup<
   $State,
   {
-    description: BuilderKit.UpdaterAtomic<
-      $State,
-      'description',
-      BuilderHKT<$State>
-    >
+    description: BuilderKit.UpdaterAtomic<$State, 'description', BuilderFn>
   }
 >
 
-interface BuilderHKT<$State extends State.Base<any>> extends HKT.Fn<$State> {
+interface BuilderFn extends HKT.Fn<State.Base<any>> {
   return: Builder<this['params']['members'], this['params']>
 }
 
