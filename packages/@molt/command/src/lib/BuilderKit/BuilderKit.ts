@@ -268,9 +268,6 @@ export namespace BuilderKit {
         ? {} // eslint-disable-line
         : {
             constructor: _$Constructor
-            // constructor: (
-            //   ...args: $ConstructorInput
-            // ) => Partial<BuilderKit.State.Initial<$State>>
           }),
     ): $ConstructorInput extends []
       ? () => HKT.Call<$BuilderFn, $State>
