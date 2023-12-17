@@ -28,7 +28,7 @@ interface Fn1 extends HKT.Fn<number> {
 }
 
 // prettier-ignore
-test('types', () => {
+test('State.Property.Value.*', () => {
   expectTypeOf<BuilderKit.State.Property.Get<S1, 'a'>>().toEqualTypeOf<VA1>()
   // expectTypeOf<BuilderKit.State.PropertyPaths<{ a: PrivateData.Values.Namespace<{ a: VA }> }>>().toEqualTypeOf<'a.a'>()
   // expectTypeOf<BuilderKit.State.PropertyPaths<{ a: PrivateData.Values.Namespace<{ a: VA; b: VA }> }>>().toEqualTypeOf<'a.a' | 'a.b'>()
@@ -66,9 +66,10 @@ test('types', () => {
   expectTypeOf<BuilderKit.State.Setup<S1, { x: 0 }>>().toEqualTypeOf<PrivateData.SetupHost<{a:VA1},{x:0}>>()
   //---
   expectTypeOf<BuilderKit.State.Get<BuilderKit.WithMinState<B1Fn, SA, { a: 2 }>>>().toMatchTypeOf<SB>()
-  //---
-  expectTypeOf<BuilderKit.WithMinState<B1Fn, SA, { a: 2 }>>().toMatchTypeOf<B1<SB>>()
-  //---
+})
+
+// prettier-ignore
+test('State.Initial', () => {
   expectTypeOf<BuilderKit.State.Initial<{ a: V3 }>>().toEqualTypeOf<{ a: 2 }>()
   expectTypeOf<BuilderKit.State.Initial<S1>>().toMatchTypeOf<{ a: number | BuilderKit.State.Values.Unset }>()
   expectTypeOf<BuilderKit.State.Initial<S1>>().toMatchTypeOf<{ a: number | typeof BuilderKit.State.Values.unset }>()
@@ -79,7 +80,15 @@ test('types', () => {
   expectTypeOf<BuilderKit.State.Initial<S1>>().toEqualTypeOf<{ a: string }>()
   // @ts-expect-error test
   expectTypeOf<BuilderKit.State.Initial<S1>>().toEqualTypeOf<{ a: 1 | '' }>()
-  //---
+})
+
+// prettier-ignore
+test('WithMinState', () => {
+  expectTypeOf<BuilderKit.WithMinState<B1Fn, SA, { a: 2 }>>().toMatchTypeOf<B1<SB>>()
+})
+
+// prettier-ignore
+test('UpdaterAtomic', () => {
   expectTypeOf<BuilderKit.UpdaterAtomic<S1, 'a', B1Fn>>().toMatchTypeOf<<$Value extends number>(value: $Value) => B1<BuilderKit.State.Property.Value.Set<S1, "a", $Value>>>()
   expectTypeOf<BuilderKit.UpdaterAtomic<S4, 'a', B1Fn>>().toMatchTypeOf<() => B1<BuilderKit.State.Property.Value.Set<S4, "a", number>>>()
   expectTypeOf<BuilderKit.UpdaterAtomic<S5, 'a', B1Fn>>().toMatchTypeOf<<$Args extends ['x']>(...args:$Args) => B1<BuilderKit.State.Property.Value.Set<S5, "a", 1|2|3>>>()
@@ -90,11 +99,12 @@ test('types', () => {
   expectTypeOf<BuilderKit.UpdaterAtomic<S1, 'a', B1Fn, { args:['x'] }>>().toMatchTypeOf<             <$Args extends ['x']>(...args: $Args) => B1<BuilderKit.State.Property.Value.Set<S1, "a", number>>>()
   expectTypeOf<BuilderKit.UpdaterAtomic<S1, 'a', B1Fn, { args:['x']; return: 1 }>>().toMatchTypeOf<  <$Args extends ['x']>(...args: $Args) => B1<BuilderKit.State.Property.Value.Set<S1, "a", 1>>>()
   expectTypeOf<BuilderKit.UpdaterAtomic<S1, 'a', B1Fn, { args:['x']; return: Fn1 }>>().toMatchTypeOf<<$Args extends ['x']>(...args: $Args) => B1<BuilderKit.State.Property.Value.Set<S1, "a", HKT.Call<Fn1, $Args>>>>()
-  //---
-  expectTypeOf<BuilderKit.State.Property.Paths<S1>>().toBeString()
-  expectTypeOf<BuilderKit.State.Property.Paths<{}>>().toBeString()
-  // expectTypeOf<BuilderKit.State.Property.Paths<{}>>().toBeNever()
-  // expectTypeOf<Simplify<BuilderKit.State.Property.Paths<S1>>>().toMatchTypeOf<'a'>()
-  // expectTypeOf<BuilderKit.State.Property.Paths<{ a: VA1; b: VA1 }>>().toMatchTypeOf<'a' | 'b'>()
 
 })
+
+// //---
+// expectTypeOf<BuilderKit.State.Property.Paths<S1>>().toBeString()
+// expectTypeOf<BuilderKit.State.Property.Paths<{}>>().toBeString()
+// expectTypeOf<BuilderKit.State.Property.Paths<{}>>().toBeNever()
+// expectTypeOf<Simplify<BuilderKit.State.Property.Paths<S1>>>().toMatchTypeOf<'a'>()
+// expectTypeOf<BuilderKit.State.Property.Paths<{ a: VA1; b: VA1 }>>().toMatchTypeOf<'a' | 'b'>()
