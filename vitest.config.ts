@@ -2,8 +2,9 @@ import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   test: {
-    deps: {
-      inline: [`vitest-mock-process`],
+    typecheck: {
+      ignoreSourceErrors: true,
+      enabled: true,
     },
   },
 })

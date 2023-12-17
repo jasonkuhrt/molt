@@ -103,3 +103,5 @@ dist
 
 # This library
 build
+
+tsconfig.vitest-temp.json

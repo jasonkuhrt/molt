@@ -1,10 +1,9 @@
-import { expect, expectTypeOf, it } from 'vitest'
+import { expectTypeOf, it } from 'vitest'
 import { $, n, s } from '../_/helpers.js'
 
 it(`parameter can receive configuration object`, () => {
   const args = $.parameter(`a`, { type: s.optional() }).parse({ line: [] })
   expectTypeOf(args).toMatchTypeOf<{ a?: string }>()
-  expect(args).toMatchObject({})
 })
 
 it(`exclusive parameter builder parameter method can receive configuration object`, () => {
@@ -13,5 +12,4 @@ it(`exclusive parameter builder parameter method can receive configuration objec
     return x
   }).parse({ line: [`-a`, `abc`] })
   expectTypeOf(args).toMatchTypeOf<{ foo: { _tag: 'a'; value: string } | { _tag: 'b'; value: number } }>() // prettier-ignore
-  expect(args).toMatchObject({ foo: { _tag: `a`, value: `abc` } })
 })

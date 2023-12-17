@@ -54,7 +54,7 @@
     "alge": "0.8.1",
     "ansi-escapes": "^6.2.0",
     "chalk": "^5.3.0",
-    "effect": "2.0.0-next.56",
+    "effect": "2.0.0-next.60",
     "hotscript": "^1.0.13",
     "immer": "^10.0.3",
     "lodash.camelcase": "^4.3.0",
@@ -62,18 +62,14 @@
     "string-length": "^6.0.0",
     "strip-ansi": "^7.1.0",
     "structurajs": "^0.11.6",
-    "type-fest": "^4.5.0",
+    "type-fest": "^4.8.3",
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@types/lodash.camelcase": "4.3.8",
-    "@types/lodash.snakecase": "^4.1.8",
-    "conditional-type-checks": "1.0.6",
+    "@types/lodash.camelcase": "4.3.9",
+    "@types/lodash.snakecase": "^4.1.9",
     "execa": "8.0.1",
-    "fast-glob": "3.3.1",
-    "fs-jetpack": "5.1.0",
-    "tsd": "0.29.0",
-    "vitest": "0.34.6",
-    "vitest-mock-process": "^1.0.4"
+    "fast-glob": "3.3.2",
+    "fs-jetpack": "5.1.0"
   }
 }

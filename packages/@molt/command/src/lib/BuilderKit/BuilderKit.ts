@@ -2,7 +2,6 @@ import { produce } from 'immer'
 import type { HKT, SetObjectProperty } from '../../helpers.js'
 import { PrivateData } from '../PrivateData/PrivateData.js'
 import type { Simplify } from 'type-fest'
-import type { HKT } from 'effect'
 
 export namespace BuilderKit {
   export type Builder = PrivateData.Host

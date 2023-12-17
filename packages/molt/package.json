@@ -30,8 +30,7 @@
   "author": "Jason Kuhrt",
   "license": "MIT",
   "dependencies": {
-    "@molt/name": "../types",
-    "zod": "^3.22.2"
+    "@molt/name": "../types"
   },
   "devDependencies": {
     "execa": "8.0.1",

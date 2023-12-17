@@ -5,8 +5,6 @@ import { isPromiseLikeValue } from '../../src/lib/prelude.js'
 // todo enable throw on all tests
 export const $ = Command.create().use(Zod) // .settings({ onError: `throw` })
 
-export const assertAssignable = <T>(_: T): [T] => 0 as any // eslint-disable-line
-export const as = <T>(): T => undefined as any // eslint-disable-line
 export const n = t.number()
 export const s = t.string()
 export const b = t.boolean()
@@ -50,5 +48,3 @@ export const errorFromMaybeError = (maybeError: unknown): Error => {
 
   return new Error(String(maybeError))
 }
-
-export type T<A, B extends A> = { A: A; B: B }

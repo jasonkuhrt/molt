@@ -1,5 +1,9 @@
 import type { Simplify } from 'type-fest'
-import type { Path, SetObjectProperty, UpdateObject } from '../../helpers.js'
+import type {
+  Path,
+  SetObjectProperty,
+  ReplaceObjectProperties,
+} from '../../helpers.js'
 
 export namespace PrivateData {
   type Args = [...unknown[]]
@@ -181,7 +185,7 @@ export namespace PrivateData {
   export type Update<
     $Obj extends PrivateData.Host<any>,
     $ObjNew extends Partial<PrivateData.Get<$Obj>>,
-  > = UpdateObject<PrivateData.Get<$Obj>, $ObjNew>
+  > = ReplaceObjectProperties<PrivateData.Get<$Obj>, $ObjNew>
 
   const PrivateDataSymbol = Symbol(`PrivateData`)
 

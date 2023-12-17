@@ -3,6 +3,7 @@
   "version": "0.2.0",
   "description": "Advanced Types for parsing CLI flags and more.",
   "scripts": {
+    "test": "vitest --typecheck",
     "clean": "tsc --build --clean",
     "check:types": "tsc --noEmit",
     "build": "pnpm clean && pnpm build:esm",
@@ -26,10 +27,6 @@
   "keywords": [],
   "author": "Jason Kuhrt",
   "license": "MIT",
-  "devDependencies": {
-    "conditional-type-checks": "1.0.6",
-    "tsd": "0.29.0"
-  },
   "dependencies": {
     "@types/lodash.camelcase": "4.3.9",
     "hotscript": "^1.0.13",

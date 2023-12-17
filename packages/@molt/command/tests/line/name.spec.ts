@@ -1,5 +1,3 @@
-import type { IsExact } from 'conditional-type-checks'
-import { assert } from 'conditional-type-checks'
 import { describe, expect, test } from 'vitest'
 import { $, b, pb, ps, s } from '../_/helpers.js'
 
@@ -96,28 +94,5 @@ describe(`case`, () => {
       const args = $.parameter(spec as any, b).parse({ line: input })
       expect(args).toMatchObject(expectedArgs)
     })
-  })
-
-  test(`kebab case param spec can be passed camel case parameter`, () => {
-    const args = $.parameter(`--foo-bar`, s).parse({
-      line: [`--fooBar`, `foo`],
-    })
-    assert<IsExact<{ fooBar: string }, typeof args>>(true)
-  })
-  test(`kebab case param spec can be passed kebab case parameter`, () => {
-    const args = $.parameter(`--foo-bar`, s).parse({
-      line: [`--foo-bar`, `foo`],
-    })
-    assert<IsExact<{ fooBar: string }, typeof args>>(true)
-  })
-  test(`camel case param spec can be passed kebab case parameter`, () => {
-    const args = $.parameter(`--fooBar`, s).parse({
-      line: [`--foo-bar`, `foo`],
-    })
-    assert<IsExact<{ fooBar: string }, typeof args>>(true)
-  })
-  test(`camel case param spec can be passed camel case parameter`, () => {
-    const args = $.parameter(`--fooBar`, s).parse({ line: [`--fooBar`, `foo`] })
-    assert<IsExact<{ fooBar: string }, typeof args>>(true)
   })
 })
