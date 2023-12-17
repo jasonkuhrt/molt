@@ -1,6 +1,6 @@
-import type { BuilderKit } from '../../../src/lib/BuilderKit/BuilderKit.js'
-import type { PrivateData } from '../../../src/lib/PrivateData/PrivateData.js'
-import type { HKT } from '../../../src/helpers.js'
+import type { BuilderKit } from '../BuilderKit.js'
+import type { PrivateData } from '../../PrivateData/PrivateData.js'
+import type { HKT } from '../../../helpers.js'
 import { expectTypeOf, test } from 'vitest'
 
 type VT1 = PrivateData.Values.Type<1>

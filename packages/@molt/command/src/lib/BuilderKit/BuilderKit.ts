@@ -4,11 +4,20 @@ import { PrivateData } from '../PrivateData/PrivateData.js'
 import type { Simplify } from 'type-fest'
 
 export namespace BuilderKit {
+  // TODO use EmptyObject
+  export type Fn<
+    Params extends State = {},
+    Return extends object = object,
+  > = HKT.Fn<Params, Return>
+
   export type Builder = PrivateData.Host
 
   export type BuilderFn = HKT.Fn<unknown, unknown>
 
   export type State = PrivateData.Data
+
+  export type PublicType<$Builder extends Builder> =
+    PrivateData.PublicType<$Builder>
 
   export type UpdaterAtomic<
     $State extends State,
@@ -102,6 +111,7 @@ export namespace BuilderKit {
       PrivateData.Get<$Builder>
 
     export namespace Values {
+      export type Atom = PrivateData.Values.Atomic
       export type Unset = PrivateData.Values.UnsetSymbol
       export const unset: Unset = PrivateData.Values.unsetSymbol
       export type ExcludeUnset<$Value> =
@@ -280,7 +290,7 @@ export namespace BuilderKit {
           >
         > => {
       const create = () => {
-        return create_(initialState)
+        return create_(params.initialState)
       }
 
       const create_ = (state: $State) => {
@@ -295,7 +305,7 @@ export namespace BuilderKit {
       return create
     }
 
-  type Updater<$State extends State> = <$Args extends unknown[]>(
+  export type Updater<$State extends State> = <$Args extends unknown[]>(
     pathExpression: State.Property.Paths<$State>,
     updater?: (...args: $Args) => unknown,
   ) => (...args: $Args) => object

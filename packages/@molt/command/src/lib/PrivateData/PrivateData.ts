@@ -135,6 +135,8 @@ export namespace PrivateData {
     $Data
   >
 
+  export type PublicType<$Host extends Host> = Omit<$Host, PrivateDataSymbol>
+
   export type Unset<$Obj extends Host> = Omit<$Obj, PrivateDataSymbol>
 
   export const set = <$PrivateData, $Obj extends object>(
