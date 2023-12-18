@@ -46,14 +46,6 @@ namespace State {
     //   >
     // }>
   }
-  export type Initial = BuilderKit.State.RuntimeData<Base>
-  export const initial: Initial = {
-    transformationsTrim: true,
-    transformationsToCase: BuilderKit.State.Values.unset,
-    // transformations: {},
-    // refinements: {},
-    description: BuilderKit.State.Values.unset,
-  }
 }
 
 type Builder<$State extends State.Base = State.Base> = BuilderKit.State.Setup<
@@ -90,25 +82,26 @@ interface BuilderFn extends HKT.Fn<State.Base> {
 }
 
 const create = BuilderKit.createBuilder<State.Base, BuilderFn, []>()({
-  initialState: State.initial,
+  initialState: {
+    transformationsTrim: true,
+    transformationsToCase: BuilderKit.State.Values.unset,
+    description: BuilderKit.State.Values.unset,
+  },
   implementation: ({ updater }) => {
     return {
-      toCase: updater(`transformations.toCase`) as any, // eslint-disable-line
-      // eslint-disable-next-line
-      trim: updater<[] | [boolean]>(`transformations.trim`, (...args) => {
+      description: updater(`description`),
+      toCase: updater(`transformationsToCase`),
+      trim: updater<[] | [boolean]>(`transformationsTrim`, (...args) => {
         return args.length === 0 ? true : args[0]
-      }) as any,
-      min: updater(`refinements.min`) as any, // eslint-disable-line
-      max: updater(`refinements.max`) as any, // eslint-disable-line
-      length: updater(`refinements.length`) as any, // eslint-disable-line
-      endsWith: updater(`refinements.endsWith`) as any, // eslint-disable-line
-      startsWith: updater(`refinements.startsWith`) as any, // eslint-disable-line
-      includes: updater(`refinements.includes`) as any, // eslint-disable-line
-      regex: updater(`refinements.regex`) as any, // eslint-disable-line
-      pattern: updater<Pattern>(
-        `refinements.pattern`,
-        (...args) => args,
-      ) as any, // eslint-disable-line
+      }),
+      min: updater(`refinements.min`),
+      max: updater(`refinements.max`),
+      length: updater(`refinements.length`),
+      endsWith: updater(`refinements.endsWith`),
+      startsWith: updater(`refinements.startsWith`),
+      includes: updater(`refinements.includes`),
+      regex: updater(`refinements.regex`),
+      pattern: updater<Pattern>(`refinements.pattern`, (...args) => args),
     }
   },
 })
