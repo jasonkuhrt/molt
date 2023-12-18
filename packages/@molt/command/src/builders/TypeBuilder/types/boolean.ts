@@ -9,7 +9,7 @@ namespace State {
     description: PrivateData.Values.ValueString
   }
 
-  export const initial: BuilderKit.State.Initial<Base> = {
+  export const initial: BuilderKit.State.RuntimeData<Base> = {
     description: BuilderKit.State.Values.unset,
   }
 }

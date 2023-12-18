@@ -11,7 +11,7 @@ namespace State {
     description: PrivateData.Values.ValueString
   }
   export type Initial<$Members extends Member[] = Member[]> =
-    BuilderKit.State.Initial<Base<$Members>>
+    BuilderKit.State.RuntimeData<Base<$Members>>
   export const initial: Initial<any> = {
     members: PrivateData.Values.unsetSymbol,
     description: PrivateData.Values.unsetSymbol,

@@ -46,7 +46,7 @@ namespace State {
     //   >
     // }>
   }
-  export type Initial = BuilderKit.State.Initial<Base>
+  export type Initial = BuilderKit.State.RuntimeData<Base>
   export const initial: Initial = {
     transformationsTrim: true,
     transformationsToCase: BuilderKit.State.Values.unset,

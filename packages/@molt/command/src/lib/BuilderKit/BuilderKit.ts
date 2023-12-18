@@ -12,11 +12,11 @@ export namespace BuilderKit {
 
   export type Builder = PrivateData.Host
 
-  export type BuilderFn = HKT.Fn<unknown, unknown>
+  export type BuilderFn = HKT.Fn<unknown, Builder>
 
   export type State = PrivateData.Data
 
-  export type PublicType<$Builder extends Builder> =
+  export type StateRemove<$Builder extends Builder> =
     PrivateData.PublicType<$Builder>
 
   export type UpdaterAtomic<
@@ -117,7 +117,7 @@ export namespace BuilderKit {
       export type ExcludeUnset<$Value> =
         PrivateData.Values.ExcludeUnsetSymbol<$Value>
     }
-    export type Initial<$State extends State> = Simplify<{
+    export type RuntimeData<$State extends State> = Simplify<{
       [K in keyof $State & string as $State[K] extends PrivateData.Values.Type
         ? never
         : K]: $State[K] extends PrivateData.Values.Atomic
@@ -254,38 +254,60 @@ export namespace BuilderKit {
 
     export const get = PrivateData.get
   }
+
+  /**
+   * Simplify a builder's methods to always return the same builder type.
+   *
+   * This type is useful in some generic coding situations where types need to be loosened.
+   */
+  export type BuilderToStaticReturn<$Builder extends StateRemove<Builder>> = {
+    [K in keyof $Builder]: $Builder[K] extends (...args: infer $Args) => any
+      ? (...args: $Args) => BuilderToStaticReturn<$Builder>
+      : never
+  }
+
+  export namespace Builder {
+    export type ToStaticInterface<$Builder extends Builder> =
+      BuilderToStaticReturn<StateRemove<$Builder>>
+  }
+
   // TODO how to collapse into a single function?
   export const createBuilder =
     <
-      $State extends State,
+      $StateBase extends State,
       $BuilderFn extends BuilderFn,
       $ConstructorInput extends [...any[]], // TODO how to make 'any' here be 'unknown'?
     >() =>
     <
       _$Constructor extends (
         ...args: $ConstructorInput
-      ) => Partial<BuilderKit.State.Initial<$State>>,
+      ) => Partial<BuilderKit.State.RuntimeData<$StateBase>>,
+      _$BuilderInternal extends Builder.ToStaticInterface<
+        HKT.Call<$BuilderFn, $StateBase>
+      > = Builder.ToStaticInterface<HKT.Call<$BuilderFn, $StateBase>>,
     >(
       params: {
-        initialState: State.Initial<$State>
+        initialState: State.RuntimeData<$StateBase>
         implementation: (params: {
-          state: State.Initial<$State>
-          updater: Updater<$State>
-        }) => object
-        // constructor: _$Constructor
+          state: $StateBase
+          updater: Updater<$StateBase, _$BuilderInternal>
+          recurse: <$State extends $StateBase>(
+            state: State.RuntimeData<$State>,
+          ) => _$BuilderInternal
+        }) => _$BuilderInternal
       } & ($ConstructorInput extends []
         ? {} // eslint-disable-line
         : {
             constructor: _$Constructor
           }),
     ): $ConstructorInput extends []
-      ? () => HKT.Call<$BuilderFn, $State>
+      ? () => HKT.Call<$BuilderFn, $StateBase>
       : (
           ...args: $ConstructorInput
         ) => HKT.Call<
           $BuilderFn,
           BuilderKit.State.Property.Value.SetAll<
-            $State,
+            $StateBase,
             ReturnType<_$Constructor>
           >
         > => {
@@ -293,11 +315,11 @@ export namespace BuilderKit {
         return create_(params.initialState)
       }
 
-      const create_ = (state: $State) => {
+      const create_ = (state: $StateBase) => {
         const updater = createUpdater({ state, createBuilder: create_ })
         const builder = PrivateData.set(
           state,
-          params.implementation({ state, updater }),
+          params.implementation({ state, updater, recurse: create_ }),
         )
         return builder
       }
@@ -305,21 +327,29 @@ export namespace BuilderKit {
       return create
     }
 
-  export type Updater<$State extends State> = <$Args extends unknown[]>(
-    pathExpression: State.Property.Paths<$State>,
-    updater?: (...args: $Args) => unknown,
-  ) => (...args: $Args) => object
+  export type Updater<
+    $State extends State,
+    $Builder extends StateRemove<Builder>,
+  > = <
+    $PathExpression extends State.Property.Paths<$State>,
+    $Args extends [State.Property.Get<$State, $PathExpression>['type']],
+  >(
+    pathExpression: $PathExpression,
+    updater?: (
+      ...args: $Args
+    ) => State.Property.Get<$State, $PathExpression>['type'],
+  ) => (...args: $Args) => $Builder
 
   export const createUpdater =
     <
       $State extends State,
-      $Builder extends (state: State.Initial<$State>) => unknown,
+      $Builder extends (state: State.RuntimeData<$State>) => unknown,
     >(params: {
       state: $State
       createBuilder: $Builder
     }) =>
     <$Args extends unknown[]>(
-      pathExpression: State.PropertyPaths<$State>,
+      pathExpression: State.Property.Paths<$State>,
       updater?: (...args: $Args) => unknown,
     ) =>
     (...args: $Args) => {
@@ -336,7 +366,7 @@ export namespace BuilderKit {
           }, draft)
           // @ts-expect-error fixme
           object[valuePath] = updater?.(...args) ?? args[0]
-        }) as any as State.Initial<$State>,
+        }) as any as State.RuntimeData<$State>,
       )
     }
 }

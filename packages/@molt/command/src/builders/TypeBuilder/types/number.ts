@@ -16,7 +16,7 @@ namespace State {
   //   // refinements: {} // eslint-disable-line
   //   description: PrivateData.Values.UnsetSymbol
   // }
-  export const initial: BuilderKit.State.Initial<Base> = {
+  export const initial: BuilderKit.State.RuntimeData<Base> = {
     // type: null as any, // eslint-disable-line
     // transformations: {},
     // refinements: {},

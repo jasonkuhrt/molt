@@ -34,7 +34,7 @@ export namespace State {
     optionality: PrivateData.Values.Atomic<Optionality, OptionalityOptional>
   }
 
-  export type Initial = BuilderKit.State.Initial<Base>
+  export type Initial = BuilderKit.State.RuntimeData<Base>
 
   export const initial: Initial = {
     description: BuilderKit.State.Values.unset,

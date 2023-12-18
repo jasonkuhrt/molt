@@ -28,7 +28,7 @@ namespace State {
     description: PrivateData.Values.ValueString
   }
   export type Initial<$Members extends Member[] = Member[]> =
-    BuilderKit.State.Initial<Base<$Members>>
+    BuilderKit.State.RuntimeData<Base<$Members>>
   export const initial: Initial = {
     members: null as any, // eslint-disable-line
     description: PrivateData.Values.unsetSymbol,

@@ -70,16 +70,16 @@ test('State.Property.Value.*', () => {
 
 // prettier-ignore
 test('State.Initial', () => {
-  expectTypeOf<BuilderKit.State.Initial<{ a: V3 }>>().toEqualTypeOf<{ a: 2 }>()
-  expectTypeOf<BuilderKit.State.Initial<S1>>().toMatchTypeOf<{ a: number | BuilderKit.State.Values.Unset }>()
-  expectTypeOf<BuilderKit.State.Initial<S1>>().toMatchTypeOf<{ a: number | typeof BuilderKit.State.Values.unset }>()
-  expectTypeOf<BuilderKit.State.Initial<{ a: V1Set }>>().toEqualTypeOf<{ a: 2 }>()
+  expectTypeOf<BuilderKit.State.RuntimeData<{ a: V3 }>>().toEqualTypeOf<{ a: 2 }>()
+  expectTypeOf<BuilderKit.State.RuntimeData<S1>>().toMatchTypeOf<{ a: number | BuilderKit.State.Values.Unset }>()
+  expectTypeOf<BuilderKit.State.RuntimeData<S1>>().toMatchTypeOf<{ a: number | typeof BuilderKit.State.Values.unset }>()
+  expectTypeOf<BuilderKit.State.RuntimeData<{ a: V1Set }>>().toEqualTypeOf<{ a: 2 }>()
   // @ts-expect-error test
-  expectTypeOf<BuilderKit.State.Initial<{ a: V1Set }>>().toEqualTypeOf<{ a: 2 | BuilderKit.State.Values.Unset }>()
+  expectTypeOf<BuilderKit.State.RuntimeData<{ a: V1Set }>>().toEqualTypeOf<{ a: 2 | BuilderKit.State.Values.Unset }>()
   // @ts-expect-error test
-  expectTypeOf<BuilderKit.State.Initial<S1>>().toEqualTypeOf<{ a: string }>()
+  expectTypeOf<BuilderKit.State.RuntimeData<S1>>().toEqualTypeOf<{ a: string }>()
   // @ts-expect-error test
-  expectTypeOf<BuilderKit.State.Initial<S1>>().toEqualTypeOf<{ a: 1 | '' }>()
+  expectTypeOf<BuilderKit.State.RuntimeData<S1>>().toEqualTypeOf<{ a: 1 | '' }>()
 })
 
 // prettier-ignore

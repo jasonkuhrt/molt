@@ -24,7 +24,7 @@ export namespace State {
 
   export type Initial = Base
 
-  export const initial: BuilderKit.State.Initial<Base> = {
+  export const initial: BuilderKit.State.RuntimeData<Base> = {
     parameterBuilders: {},
     description: BuilderKit.State.Values.unset,
     isPromptEnabled: false,
