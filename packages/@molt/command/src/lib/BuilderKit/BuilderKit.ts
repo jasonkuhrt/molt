@@ -255,20 +255,21 @@ export namespace BuilderKit {
     export const get = PrivateData.get
   }
 
-  /**
-   * Simplify a builder's methods to always return the same builder type.
-   *
-   * This type is useful in some generic coding situations where types need to be loosened.
-   */
-  export type BuilderToStaticReturn<$Builder extends StateRemove<Builder>> = {
-    [K in keyof $Builder]: $Builder[K] extends (...args: infer $Args) => any
-      ? (...args: $Args) => BuilderToStaticReturn<$Builder>
-      : never
-  }
-
   export namespace Builder {
-    export type ToStaticInterface<$Builder extends Builder> =
-      BuilderToStaticReturn<StateRemove<$Builder>>
+    export type ToStaticInterface<$Builder extends Builder> = ToStaticReturn<
+      StateRemove<$Builder>
+    >
+
+    /**
+     * Simplify a builder's methods to always return the same builder type.
+     *
+     * This type is useful in some generic coding situations where types need to be loosened.
+     */
+    export type ToStaticReturn<$Builder extends StateRemove<Builder>> = {
+      [K in keyof $Builder]: $Builder[K] extends (...args: infer $Args) => any
+        ? (...args: $Args) => ToStaticReturn<$Builder>
+        : never
+    }
   }
 
   // TODO how to collapse into a single function?

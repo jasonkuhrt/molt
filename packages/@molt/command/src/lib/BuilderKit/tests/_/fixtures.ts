@@ -10,6 +10,7 @@ export namespace Fixtures {
     export interface BuilderFn extends BuilderKit.Fn<State> {
       return: Builder<this['params']>
     }
+    export type BuilderStatic = BuilderKit.Builder.ToStaticInterface<Builder>
   }
   export namespace B {
     export type State = {
@@ -21,5 +22,6 @@ export namespace Fixtures {
     export interface BuilderFn extends BuilderKit.Fn<State> {
       return: Builder<this['params']>
     }
+    export type BuilderStatic = BuilderKit.Builder.ToStaticInterface<Builder>
   }
 }

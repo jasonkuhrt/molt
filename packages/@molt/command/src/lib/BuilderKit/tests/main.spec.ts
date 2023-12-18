@@ -61,3 +61,7 @@ describe('state updaters', () => {
     expect.soft(state).toMatchObject({ a: 'foobar' })
   })
 })
+
+describe('builder with constructor params', () => {
+  // todo test with non-empty constructor params
+})

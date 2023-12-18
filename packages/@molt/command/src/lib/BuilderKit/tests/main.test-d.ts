@@ -1,5 +1,4 @@
 import { BuilderKit } from '../BuilderKit.js'
-import { PrivateData } from '../../PrivateData/PrivateData.js'
 import { describe, expectTypeOf, test } from 'vitest'
 import { Fixtures } from './_/fixtures.js'
 
@@ -13,20 +12,18 @@ describe('Empty builder', () => {
       .toHaveProperty('initialState')
       .toEqualTypeOf<{}>()
 
-    // expectTypeOf(create1)
-    //   .parameter(0)
-    //   .toHaveProperty('implementation')
-    //   .returns.toMatchTypeOf<2>()
-
-    // expectTypeOf(create1)
-    //   .parameter(0)
-    //   .toHaveProperty('implementation')
-    //   .toMatchTypeOf<
-    //     (params: {
-    //       state: { a: string | typeof PrivateData.Values.unsetSymbol }
-    //       updater: BuilderKit.Updater<Fixtures.B.State, BuilderKit.BuilderToStaticReturn<Fixtures.B.Builder>>
-    //     }) => BuilderKit.BuilderToStaticReturn<BuilderKit.BuilderToPublic<Fixtures.B.Builder>>
-    //   >()
+    expectTypeOf(create1)
+      .parameter(0)
+      // todo we could make this be gone, there are no methods...
+      .toHaveProperty('implementation')
+      .toMatchTypeOf<
+        (params: {
+          state: {}
+          // todo we could make updater gone here, there is no state...
+          updater: (property: string) => () => Fixtures.A.BuilderStatic
+          recurse: (state: {}) => Fixtures.A.BuilderStatic
+        }) => Fixtures.A.BuilderStatic
+      >()
   })
 
   test('initial state', () => {
@@ -40,14 +37,13 @@ describe('Empty builder', () => {
 describe('Simple builder', async () => {
   const initialState: BuilderKit.State.RuntimeData<Fixtures.B.State> = { a: 'value' } // prettier-ignore
   const create1 = BuilderKit.createBuilder<Fixtures.B.State, Fixtures.B.BuilderFn, []>() // prettier-ignore
-  // const create2 = create1({ initialState, implementation: () => ({}) }) // prettier-ignore
 
   test('param implementation updater', () => {
-    const create2 = create1({
+    create1({
       initialState,
       implementation: ({ updater }) => {
         expectTypeOf(updater).parameter(0).toBeString()
-        expectTypeOf(updater('a')).toMatchTypeOf<(value: string) => BuilderKit.Builder.ToStaticInterface<Fixtures.B.Builder>>() // prettier-ignore
+        expectTypeOf(updater('a')).toMatchTypeOf<(value: string) => Fixtures.B.BuilderStatic>() // prettier-ignore
         expectTypeOf(updater('b')).parameter(0).toBeNever() // TODO make typos a type error
         return {
           setA: updater('a'),
@@ -55,10 +51,10 @@ describe('Simple builder', async () => {
       },
     })
     expectTypeOf(create1).parameter(0).toHaveProperty('implementation').returns
-      .toMatchTypeOf<
-      BuilderKit.BuilderToStaticReturn<
-        BuilderKit.StateRemove<Fixtures.B.Builder>
-      >
-    >
+      .toMatchTypeOf<Fixtures.B.BuilderStatic>
   })
+})
+
+describe('builder with constructor params', () => {
+  // todo test with non-empty constructor params
 })
