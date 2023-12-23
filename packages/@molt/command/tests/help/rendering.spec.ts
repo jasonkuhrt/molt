@@ -97,7 +97,7 @@ it(`if there is an error trying to get default then a nice message is shown`, ()
 it(`enums do not mess up alignment when they are widest line in the column`, () => {
   $.parameter(
     `foo`,
-    t.enum([
+    t.enumeration([
       `a`,
       `b`,
       `c`,
@@ -135,7 +135,7 @@ it(`enums do not mess up alignment when they are widest line in the column`, () 
 
 describe(`enum`, () => {
   it(`enum members are listed`, () => {
-    $.parameter(`foo`, t.enum([`apple`, `dolphin`, `cab`]))
+    $.parameter(`foo`, t.enumeration([`apple`, `dolphin`, `cab`]))
       .settings({ onOutput })
       .parse({ line: [`-h`] })
     expect(stripAnsi(output.value)).toMatchSnapshot(`monochrome`)
@@ -143,7 +143,10 @@ describe(`enum`, () => {
   })
 
   it(`optional enum members are listed`, () => {
-    $.parameter(`foo`, p.type(t.enum([`apple`, `dolphin`, `cab`])).optional())
+    $.parameter(
+      `foo`,
+      p.type(t.enumeration([`apple`, `dolphin`, `cab`])).optional(),
+    )
       .settings({ onOutput })
       .parse({ line: [`-h`] })
     expect(stripAnsi(output.value)).toMatchSnapshot(`monochrome`)
@@ -151,7 +154,7 @@ describe(`enum`, () => {
   })
 
   it(`when there is only one enum member it is prefixed with "enum:" to avoid confusion of it looking like the name of a kind of type`, () => {
-    $.parameter(`foo`, t.enum([`apple`]))
+    $.parameter(`foo`, t.enumeration([`apple`]))
       .settings({ onOutput })
       .parse({ line: [`-h`] })
     expect(stripAnsi(output.value)).toMatchSnapshot(`monochrome`)
@@ -161,7 +164,7 @@ describe(`enum`, () => {
   it(`when there are many members they wrap`, () => {
     $.parameter(
       `foo`,
-      t.enum([
+      t.enumeration([
         `apple`,
         `baby`,
         `cannabis`,

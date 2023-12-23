@@ -1,5 +1,5 @@
 export { string } from './types/string.js'
 export { boolean } from './types/boolean.js'
-export { enum } from './types/enum.js'
+export { enumeration } from './types/enumeration.js'
 export { number } from './types/number.js'
 export { union } from './types/union.js'

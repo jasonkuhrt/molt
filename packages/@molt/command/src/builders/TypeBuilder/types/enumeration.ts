@@ -71,4 +71,4 @@ const create = BuilderKit.createBuilder<
 //   } satisfies PrivateData.Unset<Builder<State.Base<$Members>>>)
 // }
 
-export { create as enum, Builder as TypeBuilderEnumeration }
+export { create as enumeration, Builder as TypeBuilderEnumeration }

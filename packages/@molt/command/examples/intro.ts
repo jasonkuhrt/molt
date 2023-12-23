@@ -8,10 +8,10 @@ const args = Command.create()
     filePath: p.type(t.string()),
     // .pattern(`ip`, { version: 4 }),
     to: p
-      .type(t.enum([`json`, `yaml`, `toml`]))
+      .type(t.enumeration([`json`, `yaml`, `toml`]))
       .description(`Format to convert to.`),
     // .prompt(),
-    from: p.type(t.enum([`json`, `yaml`, `toml`])).optional(),
+    from: p.type(t.enumeration([`json`, `yaml`, `toml`])).optional(),
     'verbose v': p
       // todo
       // .type(t.boolean())

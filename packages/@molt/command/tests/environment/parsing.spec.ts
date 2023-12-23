@@ -79,7 +79,7 @@ it(`parses a value specified to be a number`, () => {
 describe(`enum can be parsed`, () => {
   it(`throws an error if the value does not pass validation`, () => {
     environmentManager.set(`cli_param_foo`, `d`)
-    $.parameter(`--foo`, t.enum([`a`, `b`, `c`])).parse({ line: [] })
+    $.parameter(`--foo`, t.enumeration([`a`, `b`, `c`])).parse({ line: [] })
     expect(stdout.mock.calls).toMatchSnapshot()
   })
 })

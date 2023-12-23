@@ -2,7 +2,7 @@ import { expectTypeOf, test } from 'vitest'
 import { t } from '../../../src/_entrypoints/default.js'
 import type { BuilderKit } from '../../../src/lib/BuilderKit/BuilderKit.js'
 
-const t1 = t.enum([`json`, `yaml`, `toml`])
+const t1 = t.enumeration([`json`, `yaml`, `toml`])
 type t1 = typeof t1
 // const t2 = t.enum([`json`, `yaml`, `toml`]).description(`abc`)
 // type t2 = typeof t2

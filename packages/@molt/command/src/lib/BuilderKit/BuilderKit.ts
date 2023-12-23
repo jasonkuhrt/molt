@@ -312,8 +312,14 @@ export namespace BuilderKit {
             ReturnType<_$Constructor>
           >
         > => {
-      const create = () => {
-        return create_(params.initialState)
+      const create = (...args: any[]) => {
+        const initialState = params.constructor
+          ? {
+              ...params.initialState,
+              ...params.constructor?.(...args),
+            }
+          : params.initialState
+        return create_(initialState)
       }
 
       const create_ = (state: $StateBase) => {

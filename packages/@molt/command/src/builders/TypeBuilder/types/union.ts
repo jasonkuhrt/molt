@@ -3,7 +3,7 @@ import type { Type } from '../../../Type/index.js'
 import { BuilderKit } from '../../../lib/BuilderKit/BuilderKit.js'
 import { PrivateData } from '../../../lib/PrivateData/PrivateData.js'
 import type { TypeBuilderBoolean } from './boolean.js'
-import type { TypeBuilderEnumeration } from './enum.js'
+import type { TypeBuilderEnumeration } from './enumeration.js'
 import type { TypeBuilderNumber } from './number.js'
 import type { TypeBuilderString } from './string.js'
 
