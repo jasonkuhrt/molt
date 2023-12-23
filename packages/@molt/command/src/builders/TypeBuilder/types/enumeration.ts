@@ -5,14 +5,12 @@ import { PrivateData } from '../../../lib/PrivateData/PrivateData.js'
 import type { HKT } from '../../../helpers.js'
 
 namespace State {
-  export type Base<$Members extends Member[] = Member[]> = {
+  export type Base<$Members extends readonly Member[] = Member[]> = {
     type: PrivateData.Values.Type<Type.Enumeration<$Members>>
     members: PrivateData.Values.Atomic<$Members>
     description: PrivateData.Values.ValueString
   }
-  export type Initial<$Members extends Member[] = Member[]> =
-    BuilderKit.State.RuntimeData<Base<$Members>>
-  export const initial: Initial<any> = {
+  export const initial: BuilderKit.State.RuntimeData<Base> = {
     members: PrivateData.Values.unsetSymbol,
     description: PrivateData.Values.unsetSymbol,
   }
@@ -40,7 +38,7 @@ interface BuilderFn extends HKT.Fn<State.Base> {
 const create = BuilderKit.createBuilder<
   State.Base,
   BuilderFn,
-  [members: string[]]
+  [members: readonly string[]]
 >()({
   initialState: State.initial,
   constructor: (members) => {

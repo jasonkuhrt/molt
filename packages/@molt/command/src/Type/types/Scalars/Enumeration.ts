@@ -6,14 +6,15 @@ import { Term } from '../../../term.js'
 import type { Optionality, Type } from '../../helpers.js'
 import { runtimeIgnore, TypeSymbol } from '../../helpers.js'
 
-export interface Enumeration<$Members extends Member[] = Member[]>
-  extends Type<$Members[number]> {
+export interface Enumeration<
+  $Members extends readonly Member[] = readonly Member[],
+> extends Type<$Members[number]> {
   _tag: 'TypeEnum'
   members: $Members
 }
 export type Member = number | string
 
-export const enumeration = <$Members extends Member[]>({
+export const enumeration = <$Members extends readonly Member[]>({
   members,
   description,
   optionality,

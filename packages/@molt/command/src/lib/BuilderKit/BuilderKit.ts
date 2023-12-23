@@ -283,6 +283,7 @@ export namespace BuilderKit {
       _$Constructor extends (
         ...args: $ConstructorInput
       ) => Partial<BuilderKit.State.RuntimeData<$StateBase>>,
+      // TODO the constructor return type needs to be integrated into the initial returned builder state
       _$BuilderInternal extends Builder.ToStaticInterface<
         HKT.Call<$BuilderFn, $StateBase>
       > = Builder.ToStaticInterface<HKT.Call<$BuilderFn, $StateBase>>,
