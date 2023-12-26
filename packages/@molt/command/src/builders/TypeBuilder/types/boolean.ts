@@ -25,7 +25,7 @@ interface BuilderFn extends HKT.Fn<State.Base> {
   return: Builder<this['params']>
 }
 
-export const create = BuilderKit.createBuilder<State.Base, BuilderFn, []>()({
+export const create = BuilderKit.createBuilder<State.Base, BuilderFn, []>()()({
   initialState: State.initial,
   implementation: ({ updater }) => {
     return {

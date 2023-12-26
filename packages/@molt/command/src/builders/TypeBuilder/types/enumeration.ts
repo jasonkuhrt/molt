@@ -1,12 +1,13 @@
-import type { Type } from '../../../Type/index.js'
-import type { Member } from '../../../Type/types/Scalars/Enumeration.js'
+import type {
+  Enumeration,
+  Member,
+} from '../../../Type/types/Scalars/Enumeration.js'
 import { BuilderKit } from '../../../lib/BuilderKit/BuilderKit.js'
 import { PrivateData } from '../../../lib/PrivateData/PrivateData.js'
 import type { HKT } from '../../../helpers.js'
 
-namespace State {
-  export type Base<$Members extends readonly Member[] = Member[]> = {
-    type: PrivateData.Values.Type<Type.Enumeration<$Members>>
+export namespace State {
+  export type Base<$Members extends readonly Member[] = readonly Member[]> = {
     members: PrivateData.Values.Atomic<$Members>
     description: PrivateData.Values.ValueString
   }
@@ -19,19 +20,13 @@ namespace State {
 type Builder<$State extends State.Base = State.Base> = BuilderKit.State.Setup<
   $State,
   {
-    description: BuilderKit.UpdaterAtomic<
-      $State,
-      'description',
-      // BuilderFn<$State>
-      BuilderFn
-    >
+    description: BuilderKit.UpdaterAtomic<$State, 'description', BuilderFn>
   }
 >
 
-// interface BuilderFn<$State extends State.Base> extends HKT.Fn<$State> {
-//   return: Builder<this['params']>
-// }
-interface BuilderFn extends HKT.Fn<State.Base> {
+// TODO when putting a non-unknown constraint on params parameter it leads to HKT calls doing an interesection ... why?
+interface BuilderFn extends HKT.Fn<PrivateData.Data> {
+  // @ts-expect-error todo
   return: Builder<this['params']>
 }
 
@@ -39,34 +34,18 @@ const create = BuilderKit.createBuilder<
   State.Base,
   BuilderFn,
   [members: readonly string[]]
->()({
+>()((members) => {
+  return {
+    type: null as any as Enumeration<typeof members>,
+    members,
+  }
+})({
   initialState: State.initial,
-  constructor: (members) => {
-    return {
-      members,
-    }
-  },
   implementation: ({ updater }) => {
     return {
       description: updater(`description`),
     }
   },
 })
-
-// const create = <
-//   $Member extends Member,
-//   $Members extends [$Member, ...$Member[]],
-// >(
-//   members: $Members,
-// ): Builder<State.Initial<$Members>> => create_(State.initial)
-
-// const create_ = <$Members extends Member[]>(
-//   state: State.Base<$Members>,
-// ): Builder<State.Base<$Members>> => {
-//   const updater = BuilderKit.createUpdater({ state, createBuilder: create_ })
-//   return PrivateData.set(state, {
-//     description: updater(`description`),
-//   } satisfies PrivateData.Unset<Builder<State.Base<$Members>>>)
-// }
 
 export { create as enumeration, Builder as TypeBuilderEnumeration }

@@ -1,23 +1,15 @@
 import { describe, expect, expectTypeOf, test } from 'vitest'
 import { enumeration } from './enumeration.js'
 import { BuilderKit } from '../../../lib/BuilderKit/BuilderKit.js'
-import type { Enumeration } from '../../../Type/Type.js'
-// import { Type } from '../../../Type/index.js'
 
 const m = [`a`] as const
 type m = typeof m
-// const t = Type.enumeration({
-//   members: [`a`],
-//   optionality: { _tag: `required` },
-// })
 
 describe(`members`, () => {
   test(`constructor sets members`, () => {
-    expectTypeOf(BuilderKit.State.get(enumeration(m)).type.type).toMatchTypeOf<
-      // works, but it should narrow to string
-      // Enumeration<(number|string)[]>
-      Enumeration<string[]>
-    >()
+    expectTypeOf(
+      BuilderKit.State.get(enumeration(m)).members.value,
+    ).toMatchTypeOf<readonly string[]>()
   })
 })
 
