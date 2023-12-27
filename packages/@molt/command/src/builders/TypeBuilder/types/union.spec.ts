@@ -1,9 +1,10 @@
 import { describe, expect, expectTypeOf, test } from 'vitest'
-import { enumeration } from './enumeration.js'
+import { union } from './union.js'
+import { string } from './string.js'
+import { number } from './number.js'
 import { BuilderKit } from '../../../lib/BuilderKit/BuilderKit.js'
 
-const m = [`a`]
-const t = enumeration(m)
+const t = union([number, string])
 
 describe(`state`, () => {
   describe(`members`, () => {

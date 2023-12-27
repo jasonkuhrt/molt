@@ -1,5 +1,4 @@
 import type { HKT } from '../../../helpers.js'
-import type { Type } from '../../../Type/index.js'
 import { BuilderKit } from '../../../lib/BuilderKit/BuilderKit.js'
 import { PrivateData } from '../../../lib/PrivateData/PrivateData.js'
 import type { TypeBuilderBoolean } from './boolean.js'
@@ -13,17 +12,17 @@ type Member =
   | TypeBuilderNumber
   | TypeBuilderString
 
-type TupleTypeBuildersToTypes<$Tuple extends Member[]> = {
-  [I in keyof $Tuple]: $Tuple[I] extends Member
-    ? PrivateData.Get<$Tuple[I]>['type']
-    : never
-}
+// type TupleTypeBuildersToTypes<$Tuple extends Member[]> = {
+//   [I in keyof $Tuple]: $Tuple[I] extends Member
+//     ? PrivateData.Get<$Tuple[I]>['type']
+//     : never
+// }
 
 namespace State {
   export type Base<$Members extends Member[] = Member[]> = {
-    type: PrivateData.Values.Type<
-      Type.Union<TupleTypeBuildersToTypes<$Members>>
-    >
+    // type: PrivateData.Values.Type<
+    //   Type.Union<TupleTypeBuildersToTypes<$Members>>
+    // >
     members: PrivateData.Values.Atomic<$Members>
     description: PrivateData.Values.ValueString
   }
@@ -53,16 +52,17 @@ const create = BuilderKit.createBuilder<
   State.Base,
   BuilderFn,
   [members: Member[]]
->()(({ updater }) => {})
-// const create = <$Members extends Member[]>(
-//   members: $Members,
-// ): Builder<$Members, State.Initial<$Members>> => create_(State.initial) as any
-
-// const create_ = (state: State.Base): Builder => {
-//   const updater = BuilderKit.createUpdater({ state, createBuilder: create_ })
-//   return PrivateData.set(state, {
-//     description: updater(`description`),
-//   } satisfies PrivateData.Unset<Builder>)
-// }
+>()((members) => {
+  return {
+    members,
+  }
+})({
+  initialState: State.initial,
+  implementation: ({ updater }) => {
+    return {
+      description: updater(`description`),
+    }
+  },
+})
 
 export { create as union, Builder as TypeBuilderUnion }
