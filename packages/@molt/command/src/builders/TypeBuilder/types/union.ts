@@ -20,24 +20,16 @@ type Member =
 
 namespace State {
   export type Base<$Members extends Member[] = Member[]> = {
-    // type: PrivateData.Values.Type<
-    //   Type.Union<TupleTypeBuildersToTypes<$Members>>
-    // >
     members: PrivateData.Values.Atomic<$Members>
     description: PrivateData.Values.ValueString
   }
-  export type Initial<$Members extends Member[] = Member[]> =
-    BuilderKit.State.RuntimeData<Base<$Members>>
-  export const initial: Initial = {
-    members: null as any, // eslint-disable-line
+  export const initial: BuilderKit.State.RuntimeData<Base> = {
+    members: PrivateData.Values.unsetSymbol,
     description: PrivateData.Values.unsetSymbol,
   }
 }
 
-type Builder<
-  $Members extends Member[] = Member[],
-  $State extends State.Base<$Members> = State.Base<$Members>,
-> = BuilderKit.State.Setup<
+type Builder<$State extends State.Base = State.Base> = BuilderKit.State.Setup<
   $State,
   {
     description: BuilderKit.UpdaterAtomic<$State, 'description', BuilderFn>
@@ -45,7 +37,7 @@ type Builder<
 >
 
 interface BuilderFn extends HKT.Fn<State.Base<any>> {
-  return: Builder<this['params']['members'], this['params']>
+  return: Builder<this['params']>
 }
 
 const create = BuilderKit.createBuilder<
