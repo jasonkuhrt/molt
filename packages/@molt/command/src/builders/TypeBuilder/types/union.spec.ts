@@ -17,9 +17,12 @@ describe(`members`, () => {
 
 describe(`description`, () => {
   test(`initially unset`, () => {
-    expect(state.description.value).toMatchObject({ description: BuilderKit.State.Values.unset }) // prettier-ignore
+    expect(state).toMatchObject({ description: BuilderKit.State.Values.unset }) // prettier-ignore
+    expectTypeOf(state).toMatchTypeOf<{ description: { value: string | BuilderKit.State.Values.Unset }}>() // prettier-ignore
   })
   test(`set after method call`, () => {
-    expect(BuilderKit.State.get(t.description(`foo`))).toMatchObject({ description: `foo` }) // prettier-ignore
+    const state = BuilderKit.State.get(t.description(`foo`))
+    expect(state).toMatchObject({ description: `foo` }) // prettier-ignore
+    expectTypeOf(state).toMatchTypeOf<{ description: { value: 'foo' }}>() // prettier-ignore
   })
 })
