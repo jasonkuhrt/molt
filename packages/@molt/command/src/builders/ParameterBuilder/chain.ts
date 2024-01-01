@@ -59,13 +59,13 @@ type BuilderWithStateTypeBuilder = BuilderKit.WithMinState<
   }
 >
 
-export const create = BuilderKit.createBuilder<State.Base, BuilderFn, []>()({
+export const create = BuilderKit.createBuilder<State.Base, BuilderFn, null>()({
   initialState: State.initial,
   implementation: ({ updater }) => {
     return {
       name: updater(`name`) as any, // eslint-disable-line
       description: updater(`description`) as any, // eslint-disable-line
-      type: updater('type') as any, // eslint-disable-line
+      type: updater('typeBuilder') as any, // eslint-disable-line
       optional: updater(`optionality`, () => ({ _tag: `optional` })) as any, // eslint-disable-line
       // eslint-disable-next-line
       prompt: updater<[] | [boolean] | [State.PromptInput]>(
@@ -80,7 +80,7 @@ export const create = BuilderKit.createBuilder<State.Base, BuilderFn, []>()({
       ) as any,
       // @ts-expect-error ignore
       // eslint-disable-next-line
-      default: update(`optionality`, (value) => ({
+      default: updater(`optionality`, (value) => ({
         _tag: `default`,
         getValue: typeof value === `function` ? value : () => value,
       })) as any,

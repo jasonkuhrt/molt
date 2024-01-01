@@ -1,1 +1,1 @@
-export * as Type from './_*.js'
+export * as TypeBuilder from './_*.js'
