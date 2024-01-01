@@ -1,13 +1,11 @@
-import type {
-  Enumeration,
-  Member,
-} from '../../../Type/types/Scalars/Enumeration.js'
+import type { Member } from '../../../Type/types/Scalars/Enumeration.js'
 import { BuilderKit } from '../../../lib/BuilderKit/BuilderKit.js'
 import { PrivateData } from '../../../lib/PrivateData/PrivateData.js'
-import type { HKT } from '../../../helpers.js'
+import type { Assume, HKT } from '../../../helpers.js'
 
 export namespace State {
-  export type Base<$Members extends readonly Member[] = readonly Member[]> = {
+  export type Members = readonly [...Member[]]
+  export type Base<$Members extends Members = Members> = {
     members: PrivateData.Values.Atomic<$Members>
     description: PrivateData.Values.ValueString
   }
@@ -30,22 +28,31 @@ interface BuilderFn extends HKT.Fn<PrivateData.Data> {
   return: Builder<this['params']>
 }
 
-const create = BuilderKit.createBuilder<
-  State.Base,
-  BuilderFn,
-  [members: readonly string[]]
->()((members) => {
-  return {
-    type: null as any as Enumeration<typeof members>,
-    members,
+interface ConstructorFn extends HKT.Fn {
+  paramsConstraint: [members: State.Members]
+  return: ConstructorFnReturn<Assume<this['params'], [State.Members]>>
+}
+
+// prettier-ignore
+type ConstructorFnReturn<$Params extends [State.Members]> =
+  {
+    members: $Params[0]
   }
-})({
-  initialState: State.initial,
-  implementation: ({ updater }) => {
-    return {
-      description: updater(`description`),
-    }
+
+const create = BuilderKit.createBuilder<State.Base, BuilderFn, ConstructorFn>()(
+  {
+    initialState: State.initial,
+    constructor: (members) => {
+      return {
+        members,
+      }
+    },
+    implementation: ({ updater }) => {
+      return {
+        description: updater(`description`),
+      }
+    },
   },
-})
+)
 
 export { create as enumeration, Builder as TypeBuilderEnumeration }

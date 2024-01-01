@@ -15,7 +15,7 @@ export namespace BuilderKit {
 
   export type Builder = PrivateData.Host
 
-  export type BuilderFn = HKT.Fn<State, Builder>
+  export type BuilderFn = HKT.Fn<unknown, unknown>
 
   export type StateRemove<$Builder extends Builder> =
     PrivateData.PublicType<$Builder>
@@ -282,10 +282,22 @@ export namespace BuilderKit {
     }
   }
 
+  // prettier-ignore
+  type OptionalTypeFunction =
+    | null
+    | TypeFunction
+
+  // prettier-ignore
+  type TypeFunction =
+    HKT.Fn&{paramsConstraint:[...unknown[]]}
+
+  // prettier-ignore
+  type GetTypeFunctionParameters<$TypeFunction extends OptionalTypeFunction> =
+    $TypeFunction extends TypeFunction ? $TypeFunction['paramsConstraint'] : []
+
   // TODO how to make 'any' here be 'unknown'?
   // prettier-ignore
-  type CreateBuilder =  <$StateBase extends State, $BuilderFn extends BuilderFn, $ConstructorInput extends [...any[]]>() =>
-                          <_$Constructor extends (...args: $ConstructorInput) => Partial<BuilderKit.State.RuntimeData<$StateBase>>>(...args: $ConstructorInput extends [] ? [] : [constructor: _$Constructor]) =>
+  type CreateBuilder =  <$StateBase extends State, $BuilderFn extends BuilderFn, $ConstructorFn extends OptionalTypeFunction>() =>
                             <_$BuilderInternal extends Builder.ToStaticInterface<HKT.Call<$BuilderFn, $StateBase>>, const _$Params extends {
                                 initialState: State.RuntimeData<$StateBase>
                                 implementation: (params: {
@@ -293,38 +305,40 @@ export namespace BuilderKit {
                                   updater: Updater<$StateBase, _$BuilderInternal>
                                   recurse: <$State extends $StateBase>(state: State.RuntimeData<$State>) => _$BuilderInternal
                                 }) => _$BuilderInternal
-                              }
+                              } & (
+                                $ConstructorFn extends TypeFunction
+                                  ? { constructor: ( ...args: GetTypeFunctionParameters<$ConstructorFn>) => HKT.Call<$ConstructorFn, GetTypeFunctionParameters<$ConstructorFn>> }
+                                  : { }
+                              )
                             >(params: _$Params) =>
-                              $ConstructorInput extends []
-                              ? () => HKT.Call<$BuilderFn, $StateBase>
-                              : (...args: $ConstructorInput) => HKT.Call<$BuilderFn, BuilderKit.State.Property.Value.SetAll<$StateBase, ReturnType<_$Constructor>>>
+  $ConstructorFn extends TypeFunction
+  ? <const $ConstructorArgs extends $ConstructorFn['paramsConstraint']>(...args: $ConstructorArgs) => HKT.Call<$BuilderFn, BuilderKit.State.Property.Value.SetAll<$StateBase, HKT.Call<$ConstructorFn,$ConstructorArgs>>>
+  : () => HKT.Call<$BuilderFn, $StateBase>
 
   // TODO how to collapse into a single function?
   export const createBuilder: CreateBuilder = () => {
-    return ((constructor?: any) => {
-      return (params: any) => {
-        const create = (...args: any[]) => {
-          const initialState = constructor
-            ? {
-                ...params.initialState,
-                ...constructor?.(...args),
-              }
-            : params.initialState
-          return create_(initialState)
-        }
-
-        const create_: any = (state: any) => {
-          const updater: any = createUpdater({ state, createBuilder: create_ })
-          const builder = PrivateData.set(
-            state,
-            params.implementation({ state, updater, recurse: create_ }),
-          )
-          return builder
-        }
-
-        return create
+    return (params: any) => {
+      const create = (...args: any[]) => {
+        const initialState = params.constructor
+          ? {
+              ...params.initialState,
+              ...params.constructor?.(...args),
+            }
+          : params.initialState
+        return create_(initialState)
       }
-    }) as any
+
+      const create_: any = (state: any) => {
+        const updater: any = createUpdater({ state, createBuilder: create_ })
+        const builder = PrivateData.set(
+          state,
+          params.implementation({ state, updater, recurse: create_ }),
+        )
+        return builder
+      }
+
+      return create
+    }
   }
 
   export type Updater<

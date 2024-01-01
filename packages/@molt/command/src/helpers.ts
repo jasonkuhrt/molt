@@ -156,3 +156,5 @@ export type RemoveIndex<T> = {
     ? never
     : K]: T[K]
 }
+
+export type Assume<T, U> = T extends U ? T : U
