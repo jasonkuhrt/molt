@@ -1,7 +1,7 @@
 import type { Assume, HKT } from '../../../helpers.js'
 import { BuilderKit } from '../../../lib/BuilderKit/BuilderKit.js'
 import { PrivateData } from '../../../lib/PrivateData/PrivateData.js'
-import type { TypeBuilderBoolean } from './boolean.js'
+import type { Chain } from './boolean.js'
 import type { TypeBuilderEnumeration } from './enumeration.js'
 import type { TypeBuilderNumber } from './number.js'
 import type { TypeBuilderString } from './string.js'
@@ -15,7 +15,7 @@ import type { TypeBuilderString } from './string.js'
 export namespace State {
   export type Members = readonly [State.Member, State.Member, ...State.Member[]]
   export type Member =
-    | TypeBuilderBoolean
+    | Chain
     | TypeBuilderEnumeration
     | TypeBuilderNumber
     | TypeBuilderString

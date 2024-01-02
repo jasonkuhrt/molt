@@ -297,23 +297,25 @@ export namespace BuilderKit {
 
   // TODO how to make 'any' here be 'unknown'?
   // prettier-ignore
-  type CreateBuilder =  <$StateBase extends State, $BuilderFn extends BuilderFn, $ConstructorFn extends OptionalTypeFunction>() =>
-                            <_$BuilderInternal extends Builder.ToStaticInterface<HKT.Call<$BuilderFn, $StateBase>>, const _$Params extends {
-                                initialState: State.RuntimeData<$StateBase>
+  // type CreateBuilder =  <$StateBase extends State, $BuilderFn extends BuilderFn, $ConstructorFn extends OptionalTypeFunction>() =>
+  type CreateBuilder =  <$Builder extends { state: State; resolve: unknown; chain: BuilderFn; constructor: OptionalTypeFunction }>() =>
+                            <_$BuilderInternal extends Builder.ToStaticInterface<HKT.Call<$Builder['chain'], $Builder['state']>>, const _$Params extends {
+                                initialState: State.RuntimeData<$Builder['state']>
+                                resolve: (state: State.RuntimeData<$Builder['state']>) => $Builder['resolve'] extends HKT.Fn ? HKT.Call<$Builder['resolve'], $Builder['state']> : $Builder['resolve']
                                 implementation: (params: {
-                                  state: $StateBase
-                                  updater: Updater<$StateBase, _$BuilderInternal>
-                                  recurse: <$State extends $StateBase>(state: State.RuntimeData<$State>) => _$BuilderInternal
+                                  state: BuilderKit.State.RuntimeData<$Builder['state']>
+                                  updater: Updater<$Builder['state'], _$BuilderInternal>
+                                  recurse: <$State extends $Builder['state']>(state: State.RuntimeData<$State>) => _$BuilderInternal
                                 }) => _$BuilderInternal
                               } & (
-                                $ConstructorFn extends TypeFunction
-                                  ? { constructor: ( ...args: GetTypeFunctionParameters<$ConstructorFn>) => HKT.Call<$ConstructorFn, GetTypeFunctionParameters<$ConstructorFn>> }
+                                $Builder['constructor'] extends TypeFunction
+                                  ? { constructor: ( ...args: GetTypeFunctionParameters<$Builder['constructor']>) => HKT.Call<$Builder['constructor'], GetTypeFunctionParameters<$Builder['constructor']>> }
                                   : { }
                               )
                             >(params: _$Params) =>
-  $ConstructorFn extends TypeFunction
-  ? <const $ConstructorArgs extends $ConstructorFn['paramsConstraint']>(...args: $ConstructorArgs) => HKT.Call<$BuilderFn, BuilderKit.State.Property.Value.SetAll<$StateBase, HKT.Call<$ConstructorFn,$ConstructorArgs>>>
-  : () => HKT.Call<$BuilderFn, $StateBase>
+                              $Builder['constructor'] extends TypeFunction
+                              ? <const $ConstructorArgs extends $Builder['constructor']['paramsConstraint']>(...args: $ConstructorArgs) => HKT.Call<$Builder['constructor'], BuilderKit.State.Property.Value.SetAll<$Builder['state'], HKT.Call<$Builder['constructor'], $ConstructorArgs>>>
+                              : () => HKT.Call<$Builder['chain'], $Builder['state']>
 
   // TODO how to collapse into a single function?
   export const createBuilder: CreateBuilder = () => {
@@ -354,6 +356,11 @@ export namespace BuilderKit {
     ) => State.Property.Get<$State, $PathExpression>['type'],
   ) => (...args: $Args) => $Builder
 
+  export const valueOrUndefined = <$Value>(
+    value: $Value,
+  ): BuilderKit.State.Values.ExcludeUnset<$Value> | undefined => {
+    return value === BuilderKit.State.Values.unset ? undefined : value
+  }
   export const createUpdater =
     <
       $State extends State,

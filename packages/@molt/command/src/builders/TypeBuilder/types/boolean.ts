@@ -1,32 +1,39 @@
-import type { Type } from '../../../Type/index.js'
+import { Type } from '../../../Type/index.js'
 import { BuilderKit } from '../../../lib/BuilderKit/BuilderKit.js'
 import type { PrivateData } from '../../../lib/PrivateData/PrivateData.js'
-import type { HKT } from '../../../helpers.js'
+import type { Assume, HKT } from '../../../helpers.js'
 
-namespace State {
-  export type Base = {
-    type: PrivateData.Values.Type<Type.Boolean>
+interface Builder2 {
+  state: {
     description: PrivateData.Values.ValueString
   }
+  chain: ChainFn
+  resolve: Type.Boolean
+  constructor: null
+}
 
-  export const initial: BuilderKit.State.RuntimeData<Base> = {
+type Chain<$State extends Builder2['state'] = Builder2['state']> =
+  BuilderKit.State.Setup<
+    $State,
+    {
+      description: BuilderKit.UpdaterAtomic<$State, 'description', ChainFn>
+    }
+  >
+
+interface ChainFn extends HKT.Fn {
+  return: Chain<Assume<this['params'], Builder2['state']>>
+}
+
+export const create = BuilderKit.createBuilder<Builder2>()({
+  initialState: {
     description: BuilderKit.State.Values.unset,
-  }
-}
-
-type Builder<$State extends State.Base = State.Base> = BuilderKit.State.Setup<
-  $State,
-  {
-    description: BuilderKit.UpdaterAtomic<$State, 'description', BuilderFn>
-  }
->
-
-interface BuilderFn extends HKT.Fn<State.Base> {
-  return: Builder<this['params']>
-}
-
-export const create = BuilderKit.createBuilder<State.Base, BuilderFn, null>()({
-  initialState: State.initial,
+  },
+  resolve: (state) => {
+    return Type.boolean({
+      optionality: { _tag: `required` },
+      description: BuilderKit.valueOrUndefined(state.description),
+    })
+  },
   implementation: ({ updater }) => {
     return {
       description: updater(`description`),
@@ -34,4 +41,4 @@ export const create = BuilderKit.createBuilder<State.Base, BuilderFn, null>()({
   },
 })
 
-export { create as boolean, Builder as TypeBuilderBoolean }
+export { create as boolean, Chain as TypeBuilderBoolean }

@@ -1,6 +1,6 @@
 import { describe, expect, expectTypeOf, test } from 'vitest'
 import { union } from './union.js'
-import type { TypeBuilderBoolean } from './boolean.js'
+import type { Chain } from './boolean.js'
 import { boolean } from './boolean.js'
 import type { TypeBuilderNumber } from './number.js'
 import { number } from './number.js'
@@ -13,7 +13,7 @@ const state = BuilderKit.State.get(t)
 describe(`members`, () => {
   test(`set after constructor call`, () => {
     expect(state).toMatchObject({ members })
-    expectTypeOf(state.members.value).toEqualTypeOf<readonly [TypeBuilderNumber, TypeBuilderBoolean]>() // prettier-ignore
+    expectTypeOf(state.members.value).toEqualTypeOf<readonly [TypeBuilderNumber, Chain]>() // prettier-ignore
   })
 })
 
