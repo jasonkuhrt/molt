@@ -8,23 +8,16 @@ const t = enumeration(m)
 describe(`state`, () => {
   describe(`members`, () => {
     test(`constructor sets members`, () => {
-      expect(BuilderKit.State.get(t)).toMatchObject({ members: [`a`] })
-      expectTypeOf(BuilderKit.State.get(t).members.value).toMatchTypeOf<readonly ['a']>() // prettier-ignore
+      expect(BuilderKit.State.get(t).data.members).toEqual([`a`])
+      expectTypeOf(BuilderKit.State.get(t).data.members).toMatchTypeOf<readonly ['a']>() // prettier-ignore
     })
   })
   describe(`description`, () => {
     test(`initially unset`, () => {
-      expect(BuilderKit.State.get(t)).toMatchObject({
-        description: BuilderKit.State.Values.unset,
-      })
-      expect(BuilderKit.State.get(t)).toMatchObject({
-        description: BuilderKit.State.Values.unset,
-      })
+      expect(BuilderKit.State.get(t).data.description).toEqual(BuilderKit.State.Values.unset) // prettier-ignore
     })
     test(`set after method call`, () => {
-      expect(BuilderKit.State.get(t.description(`foo`))).toMatchObject({
-        description: `foo`,
-      })
+      expect(BuilderKit.State.get(t.description(`foo`)).data.description).toMatchObject(`foo`) // prettier-ignore
     })
   })
 })

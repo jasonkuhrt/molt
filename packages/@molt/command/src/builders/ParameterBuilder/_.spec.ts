@@ -17,7 +17,7 @@ describe(`name()`, () => {
     const $p = p.name(`foo`)
     const state = BuilderKit.State.get($p)
     type state = BuilderKit.State.Get<typeof $p>
-    expect(state.name).toMatchObject(`foo`)
+    expect(state.data.name).toEqual(`foo`)
     expectTypeOf<state['name']['value']>().toEqualTypeOf<`foo`>()
   })
 })
@@ -27,7 +27,7 @@ describe(`type()`, () => {
     const $p = p.type(b)
     const state = BuilderKit.State.get($p)
     type state = BuilderKit.State.Get<typeof $p>
-    expect(state.typeBuilder).toMatchObject(b)
+    expect(state.data.typeBuilder).toEqual(b)
     expectTypeOf<state['typeBuilder']['value']>().toEqualTypeOf<typeof b>()
   })
 })
@@ -47,14 +47,14 @@ describe(`default()`, () => {
   })
   test(`state defaults to optional`, () => {
     const state = BuilderKit.State.get(p.type(b))
-    expect(state.optionality).toMatchObject({ _tag: `optional` })
+    expect(state.data.optionality).toMatchObject({ _tag: `optional` })
     type state = typeof state
     expectTypeOf<state['optionality']['valueDefault']>().toEqualTypeOf<{ _tag: 'optional' }>() // prettier-ignore
   })
   test(`sets default`, () => {
     const state = BuilderKit.State.get(p.type(b).default(true))
-    expect(state.optionality).toMatchObject({ _tag: `default` }) // prettier-ignore
-    expect(state.optionality.getValue()).toMatchObject(true) // prettier-ignore
+    expect(state.data.optionality).toMatchObject({ _tag: `default` }) // prettier-ignore
+    expect(state.data.optionality.getValue()).toMatchObject(true) // prettier-ignore
     type state = typeof state
     expectTypeOf<state['optionality']['value']>().toEqualTypeOf<{ _tag: 'default'; getValue: () => boolean }>() // prettier-ignore
   })

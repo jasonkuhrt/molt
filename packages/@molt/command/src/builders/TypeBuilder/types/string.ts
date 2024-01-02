@@ -1,5 +1,4 @@
 import { Type } from '../../../Type/index.js'
-import type { PrivateData } from '../../../lib/PrivateData/PrivateData.js'
 import type { HKT } from '../../../helpers.js'
 import { BuilderKit } from '../../../lib/BuilderKit/BuilderKit.js'
 
@@ -23,29 +22,21 @@ type Chain<$State extends Builder['state'] = Builder['state']> =
   BuilderKit.State.Setup<
     $State,
     {
-      description: BuilderKit.UpdaterAtomic<$State, 'description', ChainFn>
-      toCase: BuilderKit.UpdaterAtomic<$State, 'transformationsToCase', ChainFn>
-      trim: BuilderKit.UpdaterAtomic<$State, 'transformationsTrim', ChainFn>
-      min: BuilderKit.UpdaterAtomic<$State, 'refinements.min', ChainFn>
-      max: BuilderKit.UpdaterAtomic<$State, 'refinements.max', ChainFn>
-      length: BuilderKit.UpdaterAtomic<$State, 'refinements.length', ChainFn>
-      startsWith: BuilderKit.UpdaterAtomic<
+      description: BuilderKit.UpdaterAtom<$State, 'description', ChainFn>
+      toCase: BuilderKit.UpdaterAtom<$State, 'transformationsToCase', ChainFn>
+      trim: BuilderKit.UpdaterAtom<$State, 'transformationsTrim', ChainFn>
+      min: BuilderKit.UpdaterAtom<$State, 'refinements.min', ChainFn>
+      max: BuilderKit.UpdaterAtom<$State, 'refinements.max', ChainFn>
+      length: BuilderKit.UpdaterAtom<$State, 'refinements.length', ChainFn>
+      startsWith: BuilderKit.UpdaterAtom<
         $State,
         'refinements.startsWith',
         ChainFn
       >
-      endsWith: BuilderKit.UpdaterAtomic<
-        $State,
-        'refinements.endsWith',
-        ChainFn
-      >
-      includes: BuilderKit.UpdaterAtomic<
-        $State,
-        'refinements.includes',
-        ChainFn
-      >
-      regex: BuilderKit.UpdaterAtomic<$State, 'refinements.regex', ChainFn>
-      pattern: BuilderKit.UpdaterAtomic<$State, 'refinements.pattern', ChainFn>
+      endsWith: BuilderKit.UpdaterAtom<$State, 'refinements.endsWith', ChainFn>
+      includes: BuilderKit.UpdaterAtom<$State, 'refinements.includes', ChainFn>
+      regex: BuilderKit.UpdaterAtom<$State, 'refinements.regex', ChainFn>
+      pattern: BuilderKit.UpdaterAtom<$State, 'refinements.pattern', ChainFn>
     }
   >
 
@@ -55,33 +46,34 @@ interface ChainFn extends HKT.Fn {
 
 interface Builder {
   state: {
-    type: PrivateData.Values.Type<Type.String>
-    description: PrivateData.Values.ValueString
-    // transformations: PrivateData.Values.Namespace<{
-    transformationsTrim: PrivateData.Values.Atomic<
-      boolean,
-      true,
-      { args: [boolean] } | { args: []; return: true }
-    >
-    transformationsToCase: PrivateData.Values.Atomic<'upper' | 'lower'>
-    // }>
-    // refinements: PrivateData.Values.Namespace<{
-    //   min: PrivateData.Values.ValueNumber
-    //   max: PrivateData.Values.ValueNumber
-    //   length: PrivateData.Values.ValueNumber
-    //   startsWith: PrivateData.Values.ValueString
-    //   endsWith: PrivateData.Values.ValueString
-    //   includes: PrivateData.Values.ValueString
-    //   regex: PrivateData.Values.Atomic<RegExp>
-    //   pattern: PrivateData.Values.Atomic<
-    //     Pattern,
-    //     PrivateData.Values.UnsetSymbol,
-    //     { args: ['email'] } | { args: ['ip', { version: 4 | 6 | null }] }
-    //   >
-    // }>
+    resolve: Type.String
+    data: {
+      description: BuilderKit.State.Values.ValueString
+      // transformations: PrivateData.Values.Namespace<{
+      transformationsTrim: BuilderKit.State.Values.Atom<
+        boolean,
+        true,
+        { args: [boolean] } | { args: []; return: true }
+      >
+      transformationsToCase: BuilderKit.State.Values.Atom<'upper' | 'lower'>
+      // }>
+      // refinements: PrivateData.Values.Namespace<{
+      //   min: PrivateData.Values.ValueNumber
+      //   max: PrivateData.Values.ValueNumber
+      //   length: PrivateData.Values.ValueNumber
+      //   startsWith: PrivateData.Values.ValueString
+      //   endsWith: PrivateData.Values.ValueString
+      //   includes: PrivateData.Values.ValueString
+      //   regex: PrivateData.Values.Atomic<RegExp>
+      //   pattern: PrivateData.Values.Atomic<
+      //     Pattern,
+      //     PrivateData.Values.UnsetSymbol,
+      //     { args: ['email'] } | { args: ['ip', { version: 4 | 6 | null }] }
+      //   >
+      // }>
+    }
   }
   chain: ChainFn
-  resolve: Type.String
   constructor: null
 }
 

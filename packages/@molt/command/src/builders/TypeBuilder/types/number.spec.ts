@@ -2,25 +2,28 @@ import { describe, expect, expectTypeOf, test } from 'vitest'
 import { number } from './number.js'
 import { BuilderKit } from '../../../lib/BuilderKit/BuilderKit.js'
 
-const t = number()
-const state = BuilderKit.State.get(t)
+const n = number()
+const state = BuilderKit.State.get(n)
 
 describe(`description`, () => {
   test(`method returning self`, () => {
-    expectTypeOf(t).toMatchTypeOf<{ description: (value: string) => typeof t }>() // prettier-ignore
+    expectTypeOf(n).toMatchTypeOf<{ description: (value: string) => typeof n }>() // prettier-ignore
   })
   test(`initially unset`, () => {
-    expect(state).toMatchObject({ description: BuilderKit.State.Values.unset }) // prettier-ignore
+    expect(state.data).toEqual({ description: BuilderKit.State.Values.unset }) // prettier-ignore
   })
   test(`set after method call`, () => {
-    expect(BuilderKit.State.get(t.description(`foo`))).toMatchObject({ description: `foo` }) // prettier-ignore
+    expect(BuilderKit.State.get(n.description(`foo`)).data.description).toEqual(`foo`) // prettier-ignore
   })
   test(`immutably reset after second method call`, () => {
-    const t2 = t.description(`foo`)
-    expect(BuilderKit.State.get(t2)).toMatchObject({ description: `foo` }) // prettier-ignore
-    expectTypeOf<BuilderKit.State.Get<typeof t2>>().toMatchTypeOf<{ description: { value: `foo` }}>() // prettier-ignore
+    const t2 = n.description(`foo`)
+    type t2 = typeof t2
+    expect(BuilderKit.State.get(t2).data.description).toEqual(`foo`) // prettier-ignore
+    expectTypeOf<BuilderKit.State.Get<t2>['data']['description']['value']>().toMatchTypeOf<'foo'>() // prettier-ignore
     const t3 = t2.description(`bar`)
-    expect(BuilderKit.State.get(t3)).toMatchObject({ description: `bar` }) // prettier-ignore
-    expectTypeOf<BuilderKit.State.Get<typeof t3>>().toMatchTypeOf<{ description: { value: `bar` }}>() // prettier-ignore
+    type t3 = typeof t3
+    expect(BuilderKit.State.get(t3).data.description).toEqual(`bar`) // prettier-ignore
+    expectTypeOf(BuilderKit.State.get(t3).data.description).toEqualTypeOf<'bar'>() // prettier-ignore
+    expectTypeOf<BuilderKit.State.Get<t3>['data']['description']['value']>().toMatchTypeOf<'bar'>() // prettier-ignore
   })
 })

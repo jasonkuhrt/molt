@@ -1,6 +1,6 @@
 import type { ParameterExclusiveInput } from '../../Parameter/exclusive.js'
 import type { Optionality } from '../../Type/helpers.js'
-import type { PrivateData } from '../../lib/PrivateData/PrivateData.js'
+import type { PrivateData } from '../../lib/PrivateData/delete me.js'
 import type { CommandBuilder } from '../CommandBuilder/chain.js'
 import type { BuilderCommandState } from '../CommandBuilder/stateOld.js'
 

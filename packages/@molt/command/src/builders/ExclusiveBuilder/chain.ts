@@ -2,7 +2,7 @@ import type { Pam } from '../../lib/Pam/index.js'
 import type { BuilderParameterExclusiveState, State } from './state.js'
 import { createState } from './state.js'
 import type { HKT } from '../../helpers.js'
-import { PrivateData } from '../../lib/PrivateData/PrivateData.js'
+import { PrivateData } from '../../lib/PrivateData/delete me.js'
 import type { BuilderCommandState } from '../CommandBuilder/stateOld.js'
 
 // export interface ExclusiveParameterConfiguration<

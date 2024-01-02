@@ -9,6 +9,7 @@ import { runtimeIgnore, type Type, TypeSymbol } from '../../helpers.js'
 
 export namespace Union {
   export type Member = Type<any>
+  export type Members = readonly [Member, ...Member[]]
 }
 
 export interface Union<
@@ -18,7 +19,7 @@ export interface Union<
   members: $Members
 }
 
-export const union = <$Members extends readonly Union.Member[]>({
+export const union = <$Members extends Union.Members>({
   members_,
   description,
   optionality,
@@ -35,7 +36,7 @@ export const union = <$Members extends readonly Union.Member[]>({
    */
   const members = [...members_].sort((a, b) =>
     a.priority > b.priority ? -1 : 1,
-  )
+  ) as any as $Members
   return {
     _tag: `TypeUnion`,
     members,

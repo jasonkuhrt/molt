@@ -48,7 +48,7 @@ interface BuilderFn extends HKT.Fn {
 type Builder<$State extends State.Base = State.Base> = BuilderKit.State.Setup<
   $State,
   {
-    description: BuilderKit.UpdaterAtomic<$State, 'description', BuilderFn>
+    description: BuilderKit.UpdaterAtom<$State, 'description', BuilderFn>
     parameters<
       $ParameterBuilders extends State.Base['parameterBuilders']['type'],
     >(

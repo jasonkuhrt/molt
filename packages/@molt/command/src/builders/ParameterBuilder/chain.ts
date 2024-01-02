@@ -16,11 +16,11 @@ interface BuilderFn extends HKT.Fn {
 type Builder<$State extends State.Base = State.Base> = BuilderKit.State.Setup<
   $State,
   {
-    name: BuilderKit.UpdaterAtomic<$State, 'name', BuilderFn>
-    description: BuilderKit.UpdaterAtomic<$State, 'description', BuilderFn>
-    type: BuilderKit.UpdaterAtomic<$State, 'typeBuilder', BuilderFn>
-    prompt: BuilderKit.UpdaterAtomic<$State, 'prompt', BuilderFn>
-    optional: BuilderKit.UpdaterAtomic<
+    name: BuilderKit.UpdaterAtom<$State, 'name', BuilderFn>
+    description: BuilderKit.UpdaterAtom<$State, 'description', BuilderFn>
+    type: BuilderKit.UpdaterAtom<$State, 'typeBuilder', BuilderFn>
+    prompt: BuilderKit.UpdaterAtom<$State, 'prompt', BuilderFn>
+    optional: BuilderKit.UpdaterAtom<
       $State,
       'optionality',
       BuilderFn,
@@ -32,7 +32,7 @@ type Builder<$State extends State.Base = State.Base> = BuilderKit.State.Setup<
   > extends true
     ? {}
     : {
-        default: BuilderKit.UpdaterAtomic<
+        default: BuilderKit.UpdaterAtom<
           $State,
           'optionality',
           BuilderFn,

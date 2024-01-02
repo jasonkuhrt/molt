@@ -1,14 +1,14 @@
 import { Type } from '../../../Type/index.js'
 import { BuilderKit } from '../../../lib/BuilderKit/BuilderKit.js'
-import type { PrivateData } from '../../../lib/PrivateData/PrivateData.js'
-import type { HKT } from '../../../helpers.js'
 
 interface Builder {
   state: {
-    description: PrivateData.Values.ValueString
+    resolve: Type.Boolean
+    data: {
+      description: BuilderKit.State.Values.ValueString
+    }
   }
   chain: ChainFn
-  resolve: Type.Boolean
   constructor: null
 }
 
@@ -16,11 +16,11 @@ type Chain<$State extends Builder['state'] = Builder['state']> =
   BuilderKit.State.Setup<
     $State,
     {
-      description: BuilderKit.UpdaterAtomic<$State, 'description', ChainFn>
+      description: BuilderKit.UpdaterAtom<$State, 'description', ChainFn>
     }
   >
 
-interface ChainFn extends HKT.Fn {
+interface ChainFn extends BuilderKit.Fn<Builder['state'], Chain> {
   return: Chain<this['params']>
 }
 

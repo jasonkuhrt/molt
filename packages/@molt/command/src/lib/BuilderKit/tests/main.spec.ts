@@ -30,8 +30,8 @@ test(`state is immutable`, () => {
   const state = BuilderKit.State.get(builder)
   const builder2 = builder.setA(`foo`)
   const state2 = BuilderKit.State.get(builder2)
-  expect.soft(state).toMatchObject({})
-  expect.soft(state2).toMatchObject({ a: `foo` })
+  expect.soft(state.data).toMatchObject({})
+  expect.soft(state2.data).toMatchObject({ a: `foo` })
 })
 
 describe(`state updaters`, () => {

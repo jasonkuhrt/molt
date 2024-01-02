@@ -109,7 +109,7 @@ export namespace HKT {
   /**
    * Model a Higher Kinded Type (HKT).
    */
-  export interface Fn<Params = any, Return = any> {
+  export interface Fn<Params = unknown, Return = unknown> {
     params: Params
     return: Return
   }

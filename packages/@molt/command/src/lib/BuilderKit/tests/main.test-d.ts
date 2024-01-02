@@ -36,7 +36,7 @@ describe(`Empty builder`, () => {
     const builder = create2()
     expectTypeOf<BuilderKit.StateRemove<typeof builder>>().toEqualTypeOf({})
     const state = BuilderKit.State.get(builder)
-    expectTypeOf(state).toEqualTypeOf<Fixtures.A.State>()
+    expectTypeOf(state).toEqualTypeOf<{ data: {}; resolve: () => null }>()
   })
 })
 
@@ -67,6 +67,6 @@ describe(`Simple builder`, async () => {
   })
 })
 
-describe(`builder with constructor params`, () => {
-  // todo test with non-empty constructor params
-})
+// todo test with non-empty constructor params
+// describe(`builder with constructor params`, () => {
+// })

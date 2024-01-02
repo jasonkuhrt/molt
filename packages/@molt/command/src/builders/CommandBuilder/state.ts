@@ -1,6 +1,6 @@
 import type { RemoveIndex } from '../../helpers.js'
 import { BuilderKit } from '../../lib/BuilderKit/BuilderKit.js'
-import type { PrivateData } from '../../lib/PrivateData/PrivateData.js'
+import type { PrivateData } from '../../lib/PrivateData/delete me.js'
 import type { Name as MoltName } from '@molt/name'
 import type {
   ParameterBuilderFn,

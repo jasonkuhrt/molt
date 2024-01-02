@@ -1,6 +1,6 @@
 import type { TypeBuilder } from '../TypeBuilder/types.js'
 import type { Optionality, OptionalityOptional } from '../../Type/helpers.js'
-import type { PrivateData } from '../../lib/PrivateData/PrivateData.js'
+import type { PrivateData } from '../../lib/PrivateData/delete me.js'
 import type { HKT } from '../../helpers.js'
 import { BuilderKit } from '../../lib/BuilderKit/BuilderKit.js'
 
