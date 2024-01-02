@@ -10,7 +10,7 @@ export namespace PrivateData {
   export type HostTarget = object
   export type Data = Record<string, Values.Value>
   export type Host<$Data extends Data = Data> = {
-    [PrivateDataSymbol]: $Data
+    [PrivateSymbol]: $Data
   }
 
   export namespace Values {
@@ -144,7 +144,7 @@ export namespace PrivateData {
     object: $Obj,
   ): SetupHost<$PrivateData, $Obj> => {
     return {
-      [PrivateDataSymbol]: privateData,
+      [PrivateSymbol]: privateData,
       ...object,
     }
   }
@@ -152,7 +152,7 @@ export namespace PrivateData {
   export type Get<$Host extends Host> = $Host[PrivateDataSymbol]
 
   export const get = <$Host extends Host>(obj: $Host): Simplify<Get<$Host>> =>
-    obj[PrivateDataSymbol] as any
+    obj[PrivateSymbol] as any
 
   export type MarkPropertyAsSet<
     $Data extends Data,
@@ -189,7 +189,7 @@ export namespace PrivateData {
     $ObjNew extends Partial<PrivateData.Get<$Obj>>,
   > = ReplaceObjectProperties<PrivateData.Get<$Obj>, $ObjNew>
 
-  const PrivateDataSymbol = Symbol(`PrivateData`)
+  const PrivateSymbol = Symbol(`PrivateData`)
 
-  type PrivateDataSymbol = typeof PrivateDataSymbol
+  type PrivateDataSymbol = typeof PrivateSymbol
 }

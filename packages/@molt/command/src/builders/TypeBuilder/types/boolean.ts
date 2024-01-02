@@ -1,9 +1,9 @@
 import { Type } from '../../../Type/index.js'
 import { BuilderKit } from '../../../lib/BuilderKit/BuilderKit.js'
 import type { PrivateData } from '../../../lib/PrivateData/PrivateData.js'
-import type { Assume, HKT } from '../../../helpers.js'
+import type { HKT } from '../../../helpers.js'
 
-interface Builder2 {
+interface Builder {
   state: {
     description: PrivateData.Values.ValueString
   }
@@ -12,7 +12,7 @@ interface Builder2 {
   constructor: null
 }
 
-type Chain<$State extends Builder2['state'] = Builder2['state']> =
+type Chain<$State extends Builder['state'] = Builder['state']> =
   BuilderKit.State.Setup<
     $State,
     {
@@ -21,10 +21,10 @@ type Chain<$State extends Builder2['state'] = Builder2['state']> =
   >
 
 interface ChainFn extends HKT.Fn {
-  return: Chain<Assume<this['params'], Builder2['state']>>
+  return: Chain<this['params']>
 }
 
-export const create = BuilderKit.createBuilder<Builder2>()({
+export const create = BuilderKit.createBuilder<Builder>()({
   initialState: {
     description: BuilderKit.State.Values.unset,
   },

@@ -109,10 +109,14 @@ export namespace HKT {
   /**
    * Model a Higher Kinded Type (HKT).
    */
-  export interface Fn<Params = unknown, Return = unknown> {
+  export interface Fn<Params = any, Return = any> {
     params: Params
     return: Return
   }
+
+  // prettier-ignore
+  export type CallOrReturn<$Fn, $Params> =
+    $Fn extends Fn ? Call<$Fn, $Params> : $Fn
 
   /**
    * Apply a Higher Kinded Type (HKT).

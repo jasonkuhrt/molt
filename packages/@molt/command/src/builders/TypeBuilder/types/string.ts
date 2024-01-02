@@ -1,4 +1,4 @@
-import type { Type } from '../../../Type/index.js'
+import { Type } from '../../../Type/index.js'
 import type { PrivateData } from '../../../lib/PrivateData/PrivateData.js'
 import type { HKT } from '../../../helpers.js'
 import { BuilderKit } from '../../../lib/BuilderKit/BuilderKit.js'
@@ -19,8 +19,42 @@ type Pattern =
 //     options: { offset: boolean; precision: null | number },
 //   ]
 
-namespace State {
-  export type Base = {
+type Chain<$State extends Builder['state'] = Builder['state']> =
+  BuilderKit.State.Setup<
+    $State,
+    {
+      description: BuilderKit.UpdaterAtomic<$State, 'description', ChainFn>
+      toCase: BuilderKit.UpdaterAtomic<$State, 'transformationsToCase', ChainFn>
+      trim: BuilderKit.UpdaterAtomic<$State, 'transformationsTrim', ChainFn>
+      min: BuilderKit.UpdaterAtomic<$State, 'refinements.min', ChainFn>
+      max: BuilderKit.UpdaterAtomic<$State, 'refinements.max', ChainFn>
+      length: BuilderKit.UpdaterAtomic<$State, 'refinements.length', ChainFn>
+      startsWith: BuilderKit.UpdaterAtomic<
+        $State,
+        'refinements.startsWith',
+        ChainFn
+      >
+      endsWith: BuilderKit.UpdaterAtomic<
+        $State,
+        'refinements.endsWith',
+        ChainFn
+      >
+      includes: BuilderKit.UpdaterAtomic<
+        $State,
+        'refinements.includes',
+        ChainFn
+      >
+      regex: BuilderKit.UpdaterAtomic<$State, 'refinements.regex', ChainFn>
+      pattern: BuilderKit.UpdaterAtomic<$State, 'refinements.pattern', ChainFn>
+    }
+  >
+
+interface ChainFn extends HKT.Fn {
+  return: Chain<this['params']>
+}
+
+interface Builder {
+  state: {
     type: PrivateData.Values.Type<Type.String>
     description: PrivateData.Values.ValueString
     // transformations: PrivateData.Values.Namespace<{
@@ -46,46 +80,36 @@ namespace State {
     //   >
     // }>
   }
+  chain: ChainFn
+  resolve: Type.String
+  constructor: null
 }
 
-type Builder<$State extends State.Base = State.Base> = BuilderKit.State.Setup<
-  $State,
-  {
-    description: BuilderKit.UpdaterAtomic<$State, 'description', BuilderFn>
-    toCase: BuilderKit.UpdaterAtomic<$State, 'transformationsToCase', BuilderFn>
-    trim: BuilderKit.UpdaterAtomic<$State, 'transformationsTrim', BuilderFn>
-    min: BuilderKit.UpdaterAtomic<$State, 'refinements.min', BuilderFn>
-    max: BuilderKit.UpdaterAtomic<$State, 'refinements.max', BuilderFn>
-    length: BuilderKit.UpdaterAtomic<$State, 'refinements.length', BuilderFn>
-    startsWith: BuilderKit.UpdaterAtomic<
-      $State,
-      'refinements.startsWith',
-      BuilderFn
-    >
-    endsWith: BuilderKit.UpdaterAtomic<
-      $State,
-      'refinements.endsWith',
-      BuilderFn
-    >
-    includes: BuilderKit.UpdaterAtomic<
-      $State,
-      'refinements.includes',
-      BuilderFn
-    >
-    regex: BuilderKit.UpdaterAtomic<$State, 'refinements.regex', BuilderFn>
-    pattern: BuilderKit.UpdaterAtomic<$State, 'refinements.pattern', BuilderFn>
-  }
->
-
-interface BuilderFn extends HKT.Fn<State.Base> {
-  return: Builder<this['params']>
-}
-
-const create = BuilderKit.createBuilder<State.Base, BuilderFn, []>()({
+const create = BuilderKit.createBuilder<Builder>()({
   initialState: {
     transformationsTrim: true,
     transformationsToCase: BuilderKit.State.Values.unset,
     description: BuilderKit.State.Values.unset,
+  },
+  resolve: (state) => {
+    return Type.string({
+      optionality: { _tag: `required` },
+      description: BuilderKit.valueOrUndefined(state.description),
+      refinements: {
+        // min: BuilderKit.valueOrUndefined(state.refinements.min),
+        // max: BuilderKit.valueOrUndefined(state.refinements.max),
+        // length: BuilderKit.valueOrUndefined(state.refinements.length),
+        // startsWith: BuilderKit.valueOrUndefined(state.refinements.startsWith),
+        // endsWith: BuilderKit.valueOrUndefined(state.refinements.endsWith),
+        // includes: BuilderKit.valueOrUndefined(state.refinements.includes),
+        // regex: BuilderKit.valueOrUndefined(state.refinements.regex),
+        // pattern: BuilderKit.valueOrUndefined(state.refinements.pattern),
+      },
+      transformations: {
+        trim: state.transformationsTrim,
+        // toCase: state.transformationsToCase,
+      },
+    })
   },
   implementation: ({ updater }) => {
     return {
@@ -106,4 +130,4 @@ const create = BuilderKit.createBuilder<State.Base, BuilderFn, []>()({
   },
 })
 
-export { create as string, Builder as TypeBuilderString }
+export { create as string, Chain as TypeBuilderString }

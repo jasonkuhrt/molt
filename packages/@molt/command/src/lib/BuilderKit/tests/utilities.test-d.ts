@@ -1,3 +1,4 @@
+/* eslint-disable */
 import type { BuilderKit } from '../BuilderKit.js'
 import type { PrivateData } from '../../PrivateData/PrivateData.js'
 import type { HKT } from '../../../helpers.js'
@@ -70,10 +71,10 @@ test('State.Property.Value.*', () => {
 
 // prettier-ignore
 test('State.Initial', () => {
-  expectTypeOf<BuilderKit.State.RuntimeData<{ a: V3 }>>().toEqualTypeOf<{ a: 2 }>()
+  expectTypeOf<BuilderKit.State.RuntimeData<{ a: V3 }>>().toEqualTypeOf<{ readonly a: 2 }>()
   expectTypeOf<BuilderKit.State.RuntimeData<S1>>().toMatchTypeOf<{ a: number | BuilderKit.State.Values.Unset }>()
   expectTypeOf<BuilderKit.State.RuntimeData<S1>>().toMatchTypeOf<{ a: number | typeof BuilderKit.State.Values.unset }>()
-  expectTypeOf<BuilderKit.State.RuntimeData<{ a: V1Set }>>().toEqualTypeOf<{ a: 2 }>()
+  expectTypeOf<BuilderKit.State.RuntimeData<{ a: V1Set }>>().toEqualTypeOf<{ readonly a: 2 }>()
   // @ts-expect-error test
   expectTypeOf<BuilderKit.State.RuntimeData<{ a: V1Set }>>().toEqualTypeOf<{ a: 2 | BuilderKit.State.Values.Unset }>()
   // @ts-expect-error test

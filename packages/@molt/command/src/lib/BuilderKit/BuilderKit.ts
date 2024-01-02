@@ -1,34 +1,44 @@
 /* eslint-disable */
 import { produce } from 'immer'
 import type { HKT, SetObjectProperty } from '../../helpers.js'
-import { PrivateData } from '../PrivateData/PrivateData.js'
 import type { Simplify } from 'type-fest'
 
 export namespace BuilderKit {
-  // TODO use EmptyObject
   export type Fn<
-    Params extends State = {},
+    Params extends Data = {},
     Return extends object = object,
   > = HKT.Fn<Params, Return>
 
-  export type State = PrivateData.Data
+  const PrivateSymbol = Symbol(`Private`)
 
-  export type Builder = PrivateData.Host
+  type PrivateSymbol = typeof PrivateSymbol
 
-  export type BuilderFn = HKT.Fn<unknown, unknown>
+  export type StateController = {
+    resolve: ResolveController
+    data: Data
+  }
 
-  export type StateRemove<$Builder extends Builder> =
-    PrivateData.PublicType<$Builder>
+  export type Data = Record<string, State.Values.Value>
+
+  export type Builder = {
+    [PrivateSymbol]: StateController
+  }
+
+  export type BuilderFn = HKT.Fn
+
+  export type PublicType<$Host extends Builder> = Omit<$Host, PrivateSymbol>
+
+  export type StateRemove<$Builder extends Builder> = PublicType<$Builder>
 
   export type UpdaterAtomic<
-    $State extends State,
+    $State extends Data,
     $Path extends State.Property.Paths<$State>,
     $BuilderFn extends BuilderFn,
-    $Signature extends PrivateData.Values.UpdateSignature<
+    $Signature extends State.Values.UpdateSignature<
       $State[$Path]['type']
     > | null = null,
-  > = $State[$Path] extends PrivateData.Values.Atomic
-    ? $Signature extends PrivateData.Values.UpdateSignature
+  > = $State[$Path] extends State.Values.Atom
+    ? $Signature extends State.Values.UpdateSignature
       ? UpdaterFromSignature<
           $State,
           $Path,
@@ -36,7 +46,7 @@ export namespace BuilderKit {
           $State[$Path],
           $Signature
         >
-      : $State[$Path]['updateSignature'] extends PrivateData.Values.UpdateSignature
+      : $State[$Path]['updateSignature'] extends State.Values.UpdateSignature
       ? UpdaterFromSignature<
           $State,
           $Path,
@@ -53,11 +63,11 @@ export namespace BuilderKit {
     : never
 
   export type UpdaterFromSignature<
-    $State extends State,
+    $State extends Data,
     $Path extends State.Property.Paths<$State>,
     $BuilderFn extends BuilderFn,
-    $Value extends PrivateData.Values.Atomic,
-    $Signature extends PrivateData.Values.UpdateSignature,
+    $Value extends State.Values.Atom,
+    $Signature extends State.Values.UpdateSignature,
   > = $Signature['args'] extends []
     ? () => HKT.Call<
         $BuilderFn,
@@ -88,46 +98,148 @@ export namespace BuilderKit {
 
   export type SetPropertyValue<
     $BuilderFn extends BuilderFn,
-    $State extends State,
+    $State extends Data,
     $Path extends State.Property.Paths<$State>,
     $Value,
   > = HKT.Call<$BuilderFn, State.Property.Value.Set<$State, $Path, $Value>>
 
   export type SetPropertyValues<
     $BuilderFn extends BuilderFn,
-    $State extends State,
+    $State extends Data,
     $PropertyValues extends object,
   > = HKT.Call<$BuilderFn, State.Property.Value.SetAll<$State, $PropertyValues>>
 
   export type WithMinState<
     $BuilderFn extends BuilderFn,
-    $StateBase extends State,
+    $StateBase extends Data,
     $PropertyValues extends object,
   > = HKT.Call<
     $BuilderFn,
     State.Property.Value.SetAll<$StateBase, $PropertyValues>
   >
 
+  type ResolveController = () => unknown
+
+  export type HostTarget = object
+  export type SetupHost<$Data, $Obj extends HostTarget> = SetObjectProperty<
+    $Obj,
+    PrivateSymbol,
+    $Data
+  >
+
   export namespace State {
     export type Setup<
-      $State extends State,
+      $State extends Data,
       BuilderWithoutState extends object,
-    > = PrivateData.SetupHost<$State, BuilderWithoutState>
+    > = SetupHost<$State, BuilderWithoutState>
 
-    export type Get<$Builder extends PrivateData.Host> =
-      PrivateData.Get<$Builder>
+    export type Get<$Builder extends Builder> = $Builder[PrivateSymbol]
 
     export namespace Values {
-      export type Atom = PrivateData.Values.Atomic
-      export type Unset = PrivateData.Values.UnsetSymbol
-      export const unset: Unset = PrivateData.Values.unsetSymbol
-      export type ExcludeUnset<$Value> =
-        PrivateData.Values.ExcludeUnsetSymbol<$Value>
+      type Args = [...unknown[]]
+      export type ExcludeUnsetSymbol<$Value extends unknown> = Exclude<
+        $Value,
+        Unset
+      >
+      export const unsetSymbol = Symbol(`Unset`)
+      export type Unset = typeof unsetSymbol
+      export type UpdateSignature<$Return extends unknown = unknown> =
+        | { args: Args; return: $Return }
+        | { args: Args }
+
+      const typeSymbol = Symbol(`Type`)
+      export type Type<$Type = unknown> = {
+        [typeSymbol]: 1
+        type: $Type
+        value: $Type
+      }
+
+      const valueSymbol = Symbol(`Value`)
+
+      export type Atom<
+        $Type extends unknown = unknown,
+        $ValueDefault extends $Type | Unset = Unset | $Type,
+        $UpdateSignature extends Unset | UpdateSignature<$Type> =
+          | Unset
+          | UpdateSignature<$Type>,
+        $Value extends $Type | Unset = Unset | $Type,
+      > = {
+        [valueSymbol]: 1
+        type: $Type
+        updateSignature: $UpdateSignature
+        valueDefault: $ValueDefault
+        // value: UnsetSymbol extends $ValueDefault ? $Value : $ValueDefault
+        value: $Value
+      }
+
+      export type ValueString = Atom<string>
+      export type ValueBoolean = Atom<boolean>
+      export type ValueNumber = Atom<number>
+
+      // -- index
+      // export type IndexUpdateSignature =
+      //   | { key: string; args: Args }
+      //   | { key: string; args: Args; return: unknown }
+
+      // const indexSymbol = Symbol(`Index`)
+
+      // export type Index<
+      //   $Type extends unknown = unknown,
+      //   // $ValueDefault extends $Type | UnsetSymbol = UnsetSymbol | $Type,
+      //   // $UpdateSignature extends UnsetSymbol | UpdateSignature =
+      //   //   | UnsetSymbol
+      //   //   | UpdateSignature,
+      // > = {
+      //   [indexSymbol]: 1
+      //   type: Record<string, $Type>
+      //   // updateSignature: $UpdateSignature
+      //   // valueDefault: $ValueDefault
+      //   value: $Type | UnsetSymbol
+      // }
+
+      export type Value = Atom | Type
+
+      // -- utilities
+
+      export type IsSet<$Value extends Value> = $Value extends Atom
+        ? Unset extends $Value['value']
+          ? false
+          : true
+        : true
+
+      export type Set<
+        $Value extends Atom,
+        $ValueValue extends $Value['type'],
+      > = SetObjectProperty<$Value, 'value', $ValueValue>
+
+      // -- namespace
+
+      // const namespaceSymbol = Symbol(`Namespace`)
+
+      // export type Namespace<
+      //   $Values extends Record<string, Atomic> = Record<string, Atomic>,
+      // > = {
+      //   [namespaceSymbol]: 1
+      // } & $Values
+
+      // --- terms
+
+      export const valueUnset: Atom<any> = {
+        [valueSymbol]: 1,
+        type: 0, // ignoreme, just for type level
+        updateSignature: unsetSymbol,
+        valueDefault: unsetSymbol,
+        value: unsetSymbol,
+      }
+
+      export const unset: Unset = Values.unsetSymbol
+      export type ExcludeUnset<$Value> = Values.ExcludeUnsetSymbol<$Value>
     }
+
     // prettier-ignore
-    export type RuntimeData<$State extends State> = Simplify<{
-      readonly [K in keyof $State & string as $State[K] extends PrivateData.Values.Type ? never : K]:
-        $State[K] extends PrivateData.Values.Atomic
+    export type RuntimeData<$State extends Data> = Simplify<{
+      readonly [K in keyof $State & string as $State[K] extends Values.Type ? never : K]:
+        $State[K] extends Values.Atom
         ? Values.Unset extends $State[K]['valueDefault']
           ? $State[K]['value']
           : $State[K]['valueDefault']
@@ -175,32 +287,32 @@ export namespace BuilderKit {
       //   : never //'Error: Non-atomic path on atomic'
 
       export type Get<
-        $State extends State,
+        $State extends Data,
         $Path extends Paths<$State>,
-      > = $State[$Path] extends PrivateData.Values.Value ? $State[$Path] : never
+      > = $State[$Path] extends Values.Value ? $State[$Path] : never
 
       export namespace Value {
         export type Get<
-          $State extends State,
+          $State extends Data,
           $Path extends Paths<$State>,
-        > = $State[$Path] extends PrivateData.Values.Atomic
+        > = $State[$Path] extends Values.Atom
           ? $State[$Path]['value']
-          : $State[$Path] extends PrivateData.Values.Type
+          : $State[$Path] extends Values.Type
           ? $State[$Path]['value']
           : never
 
         export type IsSet<
-          $State extends State,
+          $State extends Data,
           $Path extends Paths<$State>,
-        > = PrivateData.Values.IsSet<Property.Get<$State, $Path>>
+        > = Values.IsSet<Property.Get<$State, $Path>>
 
         export type IsUnset<
-          $State extends State,
+          $State extends Data,
           $Path extends Paths<$State>,
         > = IsSet<$State, $Path> extends true ? false : true
 
         export type Set<
-          $State extends State,
+          $State extends Data,
           $Path extends Paths<$State>,
           $Value,
         > = SetObjectProperty<
@@ -210,22 +322,22 @@ export namespace BuilderKit {
         >
         // prettier-ignore
         export type SetAll<
-          $State extends State,
+          $State extends Data,
           $PropertyValues extends object,
         > = 
         {
           [$Key in keyof $State & string]:
             $Key extends keyof $PropertyValues
-              ? $State[$Key] extends PrivateData.Values.Atomic | PrivateData.Values.Type
+              ? $State[$Key] extends Values.Atom | Values.Type
               ? SetObjectProperty<$State[$Key], 'value', $PropertyValues[$Key]>
               : 'Error: unknown kind of private data'
            : $State[$Key]
         }
 
         export type GetOrDefault<
-          $State extends State,
+          $State extends Data,
           $Path extends Paths<$State>,
-        > = $State[$Path] extends PrivateData.Values.Atomic
+        > = $State[$Path] extends Values.Atom
           ? Values.Unset extends $State[$Path]['value']
             ? Values.Unset extends $State[$Path]['valueDefault']
               ? $State[$Path]['value']
@@ -234,9 +346,9 @@ export namespace BuilderKit {
           : never
 
         export type GetSet<
-          $State extends State,
+          $State extends Data,
           $Path extends Paths<$State>,
-        > = PrivateData.Values.ExcludeUnsetSymbol<Get<$State, $Path>>
+        > = Values.ExcludeUnsetSymbol<Get<$State, $Path>>
       }
 
       // export type GetProperty<
@@ -251,7 +363,7 @@ export namespace BuilderKit {
       //     ? $State[$Key]
       //     : never
       //   : never //'Error: Non-atomic path on atomic'
-      export type Paths<$State extends State> = string
+      export type Paths<$State extends Data> = string
       // export type PropertyPaths<$State extends State> = PropertyPaths_<'', $State>
       // type PropertyPaths_<$Path extends string, $State extends State> = Values<{
       //   [K in keyof $State & string]: $State[K] extends PrivateData.Values.Atomic
@@ -262,7 +374,19 @@ export namespace BuilderKit {
       // }>
     }
 
-    export const get = PrivateData.get
+    // prettier-ignore
+    export const get = <$Host extends Builder>(obj: $Host): Simplify<Get<$Host>> =>
+      obj[PrivateSymbol] as any
+
+    export const set = <$PrivateData, $Obj extends object>(
+      privateData: $PrivateData,
+      object: $Obj,
+    ): SetupHost<$PrivateData, $Obj> => {
+      return {
+        [PrivateSymbol]: privateData,
+        ...object,
+      }
+    }
   }
 
   export namespace Builder {
@@ -298,10 +422,9 @@ export namespace BuilderKit {
   // TODO how to make 'any' here be 'unknown'?
   // prettier-ignore
   // type CreateBuilder =  <$StateBase extends State, $BuilderFn extends BuilderFn, $ConstructorFn extends OptionalTypeFunction>() =>
-  type CreateBuilder =  <$Builder extends { state: State; resolve: unknown; chain: BuilderFn; constructor: OptionalTypeFunction }>() =>
+  type CreateBuilder =  <$Builder extends { state: Data; resolve: unknown; chain: BuilderFn; constructor: OptionalTypeFunction }>() =>
                             <_$BuilderInternal extends Builder.ToStaticInterface<HKT.Call<$Builder['chain'], $Builder['state']>>, const _$Params extends {
                                 initialState: State.RuntimeData<$Builder['state']>
-                                resolve: (state: State.RuntimeData<$Builder['state']>) => $Builder['resolve'] extends HKT.Fn ? HKT.Call<$Builder['resolve'], $Builder['state']> : $Builder['resolve']
                                 implementation: (params: {
                                   state: BuilderKit.State.RuntimeData<$Builder['state']>
                                   updater: Updater<$Builder['state'], _$BuilderInternal>
@@ -311,18 +434,24 @@ export namespace BuilderKit {
                                 $Builder['constructor'] extends TypeFunction
                                   ? { constructor: ( ...args: GetTypeFunctionParameters<$Builder['constructor']>) => HKT.Call<$Builder['constructor'], GetTypeFunctionParameters<$Builder['constructor']>> }
                                   : { }
+                              ) & (
+                                $Builder['resolve'] extends null
+                                  ? {}
+                                  : { resolve: (state: State.RuntimeData<$Builder['state']>) => HKT.CallOrReturn<$Builder['resolve'], $Builder['state']> }
+
                               )
                             >(params: _$Params) =>
                               $Builder['constructor'] extends TypeFunction
                               ? <const $ConstructorArgs extends $Builder['constructor']['paramsConstraint']>(...args: $ConstructorArgs) => HKT.Call<$Builder['constructor'], BuilderKit.State.Property.Value.SetAll<$Builder['state'], HKT.Call<$Builder['constructor'], $ConstructorArgs>>>
                               : () => HKT.Call<$Builder['chain'], $Builder['state']>
 
-  // TODO how to collapse into a single function?
   export const createBuilder: CreateBuilder = () => {
     return (params: any) => {
       const create = (...args: any[]) => {
         const initialState = params.constructor
           ? {
+              // todo params.resolve needs to be exposed statically too
+              $resolve: params.resolve,
               ...params.initialState,
               ...params.constructor?.(...args),
             }
@@ -332,7 +461,7 @@ export namespace BuilderKit {
 
       const create_: any = (state: any) => {
         const updater: any = createUpdater({ state, createBuilder: create_ })
-        const builder = PrivateData.set(
+        const builder = State.set(
           state,
           params.implementation({ state, updater, recurse: create_ }),
         )
@@ -344,7 +473,7 @@ export namespace BuilderKit {
   }
 
   export type Updater<
-    $State extends State,
+    $State extends Data,
     $Builder extends StateRemove<Builder>,
   > = <
     $PathExpression extends State.Property.Paths<$State>,
@@ -356,14 +485,27 @@ export namespace BuilderKit {
     ) => State.Property.Get<$State, $PathExpression>['type'],
   ) => (...args: $Args) => $Builder
 
-  export const valueOrUndefined = <$Value>(
-    value: $Value,
-  ): BuilderKit.State.Values.ExcludeUnset<$Value> | undefined => {
+  // prettier-ignore
+  export const valueIsUnset = (value: unknown): value is BuilderKit.State.Values.Unset => {
+    return value === BuilderKit.State.Values.unset
+  }
+
+  // prettier-ignore
+  export const valueOrUndefined = <$Value>(value: $Value): BuilderKit.State.Values.ExcludeUnset<$Value> | undefined => {
     return value === BuilderKit.State.Values.unset ? undefined : value
   }
+
+  export const assertValueSet = <$Value>(
+    value: $Value,
+  ): asserts value is BuilderKit.State.Values.ExcludeUnset<$Value> => {
+    if (value === BuilderKit.State.Values.unset) {
+      throw new Error(`Value is unset. Expected it to be set.`)
+    }
+  }
+
   export const createUpdater =
     <
-      $State extends State,
+      $State extends Data,
       $Builder extends (state: State.RuntimeData<$State>) => unknown,
     >(params: {
       state: $State

@@ -18,7 +18,7 @@ export interface Union<
   members: $Members
 }
 
-export const union = <$Members extends Union.Member[]>({
+export const union = <$Members extends readonly Union.Member[]>({
   members_,
   description,
   optionality,
@@ -33,7 +33,9 @@ export const union = <$Members extends Union.Member[]>({
    * For example a number is a subset of string type. If there is a string and number variant
    * we should first check if the value could be a number, than a string.
    */
-  const members = members_.sort((a, b) => (a.priority > b.priority ? -1 : 1))
+  const members = [...members_].sort((a, b) =>
+    a.priority > b.priority ? -1 : 1,
+  )
   return {
     _tag: `TypeUnion`,
     members,

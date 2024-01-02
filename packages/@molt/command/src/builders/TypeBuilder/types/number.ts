@@ -1,31 +1,39 @@
-import type { Type } from '../../../Type/index.js'
 import { BuilderKit } from '../../../lib/BuilderKit/BuilderKit.js'
 import type { HKT } from '../../../helpers.js'
 import { PrivateData } from '../../../lib/PrivateData/PrivateData.js'
+import { Type } from '../../../Type/index.js'
 
-namespace State {
-  export type Base = {
-    type: PrivateData.Values.Type<Type.Number>
+interface Builder {
+  state: {
     description: PrivateData.Values.ValueString
   }
-  export const initial: BuilderKit.State.RuntimeData<Base> = {
+  chain: ChainFn
+  resolve: Type.Number
+  constructor: null
+}
+
+type Chain<$State extends Builder['state'] = Builder['state']> =
+  BuilderKit.State.Setup<
+    $State,
+    {
+      description: BuilderKit.UpdaterAtomic<$State, 'description', ChainFn>
+    }
+  >
+
+interface ChainFn extends HKT.Fn {
+  return: Chain<this['params']>
+}
+
+const create = BuilderKit.createBuilder<Builder>()({
+  initialState: {
     description: PrivateData.Values.unsetSymbol,
-  }
-}
-
-type Builder<$State extends State.Base = State.Base> = BuilderKit.State.Setup<
-  $State,
-  {
-    description: BuilderKit.UpdaterAtomic<$State, 'description', BuilderFn>
-  }
->
-
-interface BuilderFn extends HKT.Fn<State.Base> {
-  return: Builder<this['params']>
-}
-
-const create = BuilderKit.createBuilder<State.Base, BuilderFn, null>()({
-  initialState: State.initial,
+  },
+  resolve: (state) => {
+    return Type.number({
+      optionality: { _tag: `required` },
+      description: BuilderKit.valueOrUndefined(state.description),
+    })
+  },
   implementation: ({ updater }) => {
     return {
       description: updater(`description`),
@@ -33,4 +41,4 @@ const create = BuilderKit.createBuilder<State.Base, BuilderFn, null>()({
   },
 })
 
-export { create as number, Builder as TypeBuilderNumber }
+export { create as number, Chain as TypeBuilderNumber }
