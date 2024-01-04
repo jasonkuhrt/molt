@@ -3,7 +3,7 @@ import { BuilderKit } from '../../lib/BuilderKit/BuilderKit.js'
 import type { PrivateData } from '../../lib/PrivateData/delete me.js'
 import type { Name as MoltName } from '@molt/name'
 import type {
-  ParameterBuilderFn,
+  ChainFn,
   ParameterBuilderInfer,
   ParameterBuilderState,
 } from '../ParameterBuilder/chain.js'
@@ -32,7 +32,7 @@ export namespace State {
 
   export type ParameterBuildersRecordBuilderMinimumState =
     BuilderKit.WithMinState<
-      ParameterBuilderFn,
+      ChainFn,
       ParameterBuilderState.Base,
       {
         typeBuilder: TypeBuilder

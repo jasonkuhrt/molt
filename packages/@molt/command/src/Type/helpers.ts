@@ -18,9 +18,9 @@ export type OptionalityRequired = { _tag: 'required' }
 
 export type OptionalityOptional = { _tag: 'optional' }
 
-export type OptionalityDefault<T = unknown> = {
+export type OptionalityDefault<$Value = unknown> = {
   _tag: 'default'
-  getValue: () => T
+  getValue: () => $Value
 }
 
 export interface Type<T = any> {

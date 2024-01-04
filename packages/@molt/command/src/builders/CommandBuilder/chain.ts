@@ -4,7 +4,7 @@ import type { OpeningArgs } from '../../OpeningArgs/index.js'
 import { State } from './state.js'
 import { BuilderKit } from '../../lib/BuilderKit/BuilderKit.js'
 import type {
-  ParameterBuilderFn,
+  ChainFn,
   ParameterBuilderState,
 } from '../ParameterBuilder/chain.js'
 import type { TypeBuilder } from '../TypeBuilder/types.js'
@@ -61,7 +61,7 @@ type Builder<$State extends State.Base = State.Base> = BuilderKit.State.Setup<
     >
     parameter<
       $ParameterBuilder extends BuilderKit.WithMinState<
-        ParameterBuilderFn,
+        ChainFn,
         ParameterBuilderState.Base,
         {
           name: string

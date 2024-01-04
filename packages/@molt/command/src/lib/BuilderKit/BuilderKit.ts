@@ -2,8 +2,6 @@
 import { produce } from 'immer'
 import type { HKT, SetObjectProperty } from '../../helpers.js'
 import type { Simplify } from 'type-fest'
-import { State } from '../../builders/ParameterBuilder/state.js'
-import { Builder } from '../Tex/index_.js'
 
 export namespace BuilderKit {
   export type Fn<
@@ -35,44 +33,48 @@ export namespace BuilderKit {
   export type UpdaterAtom<
     $State extends StateController,
     $Path extends State.Property.Paths<$State['data']>,
-    $BuilderFn extends HKT.Fn,
+    $ChainFn extends HKT.Fn,
     $Signature extends State.Values.UpdateSignature<
       $State['data'][$Path]['type']
     > | null = null,
-  > = $State['data'][$Path] extends State.Values.Atom
+  > =
+  $State['data'][$Path] extends State.Values.Atom
     ? $Signature extends State.Values.UpdateSignature
-      ? UpdaterFromSignature<
+      ? UpdaterAtomFromSignature<
           $State,
           $Path,
-          $BuilderFn,
+          $ChainFn,
           $State['data'][$Path],
           $Signature
         >
       : $State['data'][$Path]['updateSignature'] extends State.Values.UpdateSignature
-      ? UpdaterFromSignature<
+      ? UpdaterAtomFromSignature<
           $State,
           $Path,
-          $BuilderFn,
+          $ChainFn,
           $State['data'][$Path],
           $State['data'][$Path]['updateSignature']
         >
       : <$$Value extends $State['data'][$Path]['type']>(
           value: $$Value,
         ) => HKT.Call<
-          $BuilderFn,
+          $ChainFn,
           State.Property.Value.Set<$State, $Path, $$Value>
         >
     : never
 
-  export type UpdaterFromSignature<
+  // prettier-ignore
+  export type UpdaterAtomFromSignature<
     $State extends StateController,
     $Path extends State.Property.Paths<$State['data']>,
-    $BuilderFn extends HKT.Fn,
+    $ChainFn extends HKT.Fn,
     $Value extends State.Values.Atom,
     $Signature extends State.Values.UpdateSignature,
-  > = $Signature['args'] extends []
-    ? () => HKT.Call<
-        $BuilderFn,
+  > =
+  $Signature['args'] extends []
+    ? () =>
+      HKT.Call<
+        $ChainFn,
         State.Property.Value.Set<
           $State,
           $Path,
@@ -81,10 +83,16 @@ export namespace BuilderKit {
             : $Value['type']
         >
       >
-    : <$Args extends $Signature['args']>(
-        ...args: $Args
-      ) => HKT.Call<
-        $BuilderFn,
+    : <$Args extends $Signature['args']>(...args: $Args) =>
+      // State.Property.Value.Set<
+      //   $State,
+      //   $Path,
+      //   'return' extends keyof $Signature
+      //     ? HKT.CallOrReturn<$Signature['return'], $Args>
+      //     : $Value['type']
+      // >
+      HKT.Call<
+        $ChainFn,
         State.Property.Value.Set<
           $State,
           $Path,
@@ -239,21 +247,44 @@ export namespace BuilderKit {
       data: RuntimeData_<$State['data']>
     }
 
+    /**
+     * Get the input type for a data field.
+     *
+     * This does not consider the data field's type property because
+     * that could be generic. For example a field that represents any
+     * kind of animal.
+     *
+     * Instead the value property is considered, which _may_ have a more specific
+     * type specified. For example not just any animal now, but some dog.
+     */
+    export type GetInput<$State extends StateController> = {
+      [K in keyof $State['data'] & string]: Values.ExcludeUnset<
+        $State['data'][K]['value']
+      >
+    }
+
     // prettier-ignore
     export type RuntimeData<$State extends StateController> =
       RuntimeData_<$State['data']>
 
-    export type RuntimeData_<$Data extends Data> = Simplify<{
-      readonly [K in keyof $Data & string as $Data[K] extends Values.Type
-        ? never
-        : K]: $Data[K] extends Values.Atom
-        ? Values.Unset extends $Data[K]['valueDefault']
-          ? $Data[K]['value']
-          : $Data[K]['valueDefault']
-        : // : $State[K] extends PrivateData.Values.Namespace
-          // ? Initial<$State[K]>
-          never
-    }>
+    // prettier-ignore
+    export type RuntimeData_<$Data extends Data> =
+      Simplify<{
+        readonly [K in keyof $Data & string as $Data[K] extends Values.Type ? never : K]:
+          $Data[K] extends Values.Atom
+            ? Values.Unset extends $Data[K]['value']
+              ? Values.Unset extends $Data[K]['valueDefault']
+                ? $Data[K]['value']
+                : $Data[K]['valueDefault']
+              : $Data[K]['value']
+            : never
+            // ? Values.Unset extends $Data[K]['valueDefault']
+            //   ? $Data[K]['value']
+            //   : $Data[K]['valueDefault']
+            // : // : $State[K] extends PrivateData.Values.Namespace
+            //   // ? Initial<$State[K]>
+            //   never
+      }>
 
     // export type SetProperties<
     //   $State extends State,
@@ -302,12 +333,12 @@ export namespace BuilderKit {
 
       export namespace Value {
         export type Get<
-          $State extends Data,
-          $Path extends Paths<$State>,
-        > = $State[$Path] extends Values.Atom
-          ? $State[$Path]['value']
-          : $State[$Path] extends Values.Type
-          ? $State[$Path]['value']
+          $State extends StateController,
+          $Path extends Paths<$State['data']>,
+        > = $State['data'][$Path] extends Values.Atom
+          ? $State['data'][$Path]['value']
+          : $State['data'][$Path] extends Values.Type
+          ? $State['data'][$Path]['value']
           : never
 
         export type IsSet<
@@ -367,10 +398,10 @@ export namespace BuilderKit {
             : $State[$Path]['value']
           : never
 
-        export type GetSet<
+        export type GetAsSet<
           $State extends StateController,
           $Path extends Paths<$State['data']>,
-        > = Values.ExcludeUnsetSymbol<Get<$State['data'], $Path>>
+        > = Values.ExcludeUnsetSymbol<Get<$State, $Path>>
       }
 
       // export type GetProperty<
@@ -412,6 +443,13 @@ export namespace BuilderKit {
   }
 
   export namespace Builder {
+    // prettier-ignore
+    export type Resolve<$Builder extends Builder> =
+      HKT.CallOrReturn<
+        State.Get<$Builder>['resolve'],
+        State.Get<$Builder>['data']
+      >
+
     export type ToStaticInterface<$Builder extends Builder> = ToStaticReturn<
       StateRemove<$Builder>
     >
