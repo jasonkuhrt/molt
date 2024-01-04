@@ -2,6 +2,8 @@
 import { produce } from 'immer'
 import type { HKT, SetObjectProperty } from '../../helpers.js'
 import type { Simplify } from 'type-fest'
+import { State } from '../../builders/ParameterBuilder/state.js'
+import { Builder } from '../Tex/index_.js'
 
 export namespace BuilderKit {
   export type Fn<
@@ -438,7 +440,7 @@ export namespace BuilderKit {
   // TODO how to make 'any' here be 'unknown'?
   // prettier-ignore
   // type CreateBuilder =  <$StateBase extends State, $BuilderFn extends BuilderFn, $ConstructorFn extends OptionalTypeFunction>() =>
-  type CreateBuilder =  <$Def extends { state: {data:Data; resolve: unknown }; chain: HKT.Fn; constructor: OptionalTypeFunction }>() =>
+  type CreateBuilder =  <$Def extends { state: { data: Data; resolve: unknown }; chain: HKT.Fn; constructor: OptionalTypeFunction }>() =>
                             <_$BuilderInternal extends Builder.ToStaticInterface<HKT.Call<$Def['chain'], $Def['state']>>, const _$Params extends {
                                 initialState: State.ToRuntime<$Def['state']>['data']
                                 implementation: (params: {
@@ -461,31 +463,41 @@ export namespace BuilderKit {
                               ? <const $ConstructorArgs extends $Def['constructor']['paramsConstraint']>(...args: $ConstructorArgs) => HKT.Call<$Def['chain'], BuilderKit.State.Property.Value.SetAll<$Def['state'], HKT.Call<$Def['constructor'], $ConstructorArgs>>>
                               : () => HKT.Call<$Def['chain'], $Def['state']>
 
+  export const defaults = {
+    resolve: () => null,
+  }
   export const createBuilder: CreateBuilder = () => {
     return (params: any) => {
-      const create = (...args: any[]) => {
+      const construct = (...constructorArgs: any[]) => {
+        const resolve = params.resolve ?? defaults.resolve
         const initialState = params.constructor
           ? {
-              resolve: params.resolve,
+              resolve,
               data: {
                 ...params.initialState,
-                ...params.constructor?.(...args),
+                ...params.constructor?.(...constructorArgs),
               },
             }
-          : params.initialState
-        return create_(initialState)
+          : {
+              resolve,
+              data: params.initialState,
+            }
+        return reconstruct(initialState)
       }
 
-      const create_: any = (state: any) => {
-        const updater: any = createUpdater({ state, createBuilder: create_ })
+      const reconstruct: any = (state: any) => {
+        const updater: any = createUpdater({
+          state,
+          createBuilder: reconstruct,
+        })
         const builder = State.set(
           state,
-          params.implementation({ state, updater, recurse: create_ }),
+          params.implementation({ state, updater, recurse: reconstruct }),
         )
         return builder
       }
 
-      return create
+      return construct
     }
   }
 
@@ -534,7 +546,7 @@ export namespace BuilderKit {
     ) =>
     (...args: $Args) => {
       return params.createBuilder({
-        resolve: params.state.resolve,
+        resolve: params.state.resolve ?? defaults.resolve,
         data: produce(params.state.data, (draft) => {
           const path = pathExpression.split(`.`)
           const objectPath = path.slice(0, -1)

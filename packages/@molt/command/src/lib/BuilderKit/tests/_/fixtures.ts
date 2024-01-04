@@ -9,7 +9,7 @@ export namespace Fixtures {
     }
 
     export type Chain<$State extends State = State> = BuilderKit.State.Setup<$State, {}> // prettier-ignore
-    export interface ChainFn extends BuilderKit.Fn<State> {
+    export interface ChainFn extends BuilderKit.Fn<State, Chain> {
       return: Chain<this['params']>
     }
     export type BuilderStatic = BuilderKit.Builder.ToStaticInterface<Chain>
@@ -23,16 +23,16 @@ export namespace Fixtures {
     }
 
     // prettier-ignore
-    export type Builder<$State extends State = State> =
+    export type Chain<$State extends State = State> =
       BuilderKit.State.Setup<$State, {
         setA: BuilderKit.UpdaterAtom<$State, 'a', ChainFn>
       }>
 
     // prettier-ignore
-    export interface ChainFn extends BuilderKit.Fn<State> {
-      return: Builder<this['params']>
+    export interface ChainFn extends BuilderKit.Fn<State,Chain> {
+      return: Chain<this['params']>
     }
 
-    export type BuilderStatic = BuilderKit.Builder.ToStaticInterface<Builder>
+    export type BuilderStatic = BuilderKit.Builder.ToStaticInterface<Chain>
   }
 }
