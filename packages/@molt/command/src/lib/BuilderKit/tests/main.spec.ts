@@ -33,7 +33,7 @@ describe(`Empty builder`, () => {
     expectTypeOf<BuilderKit.StateRemove<typeof builder>>().toEqualTypeOf({})
     expect.soft(Object.keys(builder)).toEqual([])
     const state = BuilderKit.State.get(builder)
-    expectTypeOf(state).toEqualTypeOf<{ data: {}; resolve: typeof BuilderKit.defaults.resolve }>() // prettier-ignore
+    expectTypeOf(state).toEqualTypeOf<{ name:string; data: {}; resolve: typeof BuilderKit.defaults.resolve }>() // prettier-ignore
     expect(state).toEqual({ name:`anonymous`, data: {}, resolve: BuilderKit.defaults.resolve }) // prettier-ignore
   })
   test(`can be given name`, () => {
