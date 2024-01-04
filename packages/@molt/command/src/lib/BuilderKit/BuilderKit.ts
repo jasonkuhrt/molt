@@ -16,6 +16,7 @@ export namespace BuilderKit {
   type PrivateSymbol = typeof PrivateSymbol
 
   export type StateController = {
+    name: string
     resolve: unknown
     data: Data
   }
@@ -233,6 +234,7 @@ export namespace BuilderKit {
     }
 
     export type ToRuntime<$State extends StateController> = {
+      name: $State['name']
       resolve: () => $State['resolve']
       data: RuntimeData_<$State['data']>
     }
@@ -323,6 +325,7 @@ export namespace BuilderKit {
           $Path extends Paths<$State['data']>,
           $Value,
         > = {
+          name: $State['name']
           resolve: $State['resolve']
           data: SetObjectProperty<
             $State['data'],
@@ -336,6 +339,7 @@ export namespace BuilderKit {
           $State extends StateController,
           $PropertyValues extends object,
         > = {
+          name: $State['name']
           resolve: $State['resolve']
           data: {
             [$Key in keyof $State['data'] & string]:
@@ -442,7 +446,8 @@ export namespace BuilderKit {
   // type CreateBuilder =  <$StateBase extends State, $BuilderFn extends BuilderFn, $ConstructorFn extends OptionalTypeFunction>() =>
   type CreateBuilder =  <$Def extends { state: { data: Data; resolve: unknown }; chain: HKT.Fn; constructor: OptionalTypeFunction }>() =>
                             <_$BuilderInternal extends Builder.ToStaticInterface<HKT.Call<$Def['chain'], $Def['state']>>, const _$Params extends {
-                                initialState: State.ToRuntime<$Def['state']>['data']
+                                name?: string
+                                initialData: State.ToRuntime<$Def['state']>['data']
                                 implementation: (params: {
                                   state: BuilderKit.State.ToRuntime<$Def['state']>['data']
                                   updater: Updater<$Def['state'], _$BuilderInternal>
@@ -470,19 +475,22 @@ export namespace BuilderKit {
     return (params: any) => {
       const construct = (...constructorArgs: any[]) => {
         const resolve = params.resolve ?? defaults.resolve
-        const initialState = params.constructor
+        const name = params.name ?? 'anonymous'
+        const initialData = params.constructor
           ? {
+              name,
               resolve,
               data: {
-                ...params.initialState,
+                ...params.initialData,
                 ...params.constructor?.(...constructorArgs),
               },
             }
           : {
+              name,
               resolve,
-              data: params.initialState,
+              data: params.initialData,
             }
-        return reconstruct(initialState)
+        return reconstruct(initialData)
       }
 
       const reconstruct: any = (state: any) => {

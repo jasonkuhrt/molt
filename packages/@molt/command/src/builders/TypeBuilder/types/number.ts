@@ -4,6 +4,7 @@ import { Type } from '../../../Type/index.js'
 
 interface Builder {
   state: {
+    name: string
     resolve: Type.Number
     data: {
       description: BuilderKit.State.Values.ValueString
@@ -26,7 +27,8 @@ interface ChainFn extends HKT.Fn {
 }
 
 const create = BuilderKit.createBuilder<Builder>()({
-  initialState: {
+  name: `number`,
+  initialData: {
     description: BuilderKit.State.Values.unsetSymbol,
   },
   resolve: (state) => {

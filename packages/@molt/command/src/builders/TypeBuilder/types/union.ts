@@ -7,6 +7,7 @@ import type { TypeBuilderString } from './string.js'
 
 interface Builder {
   state: {
+    name: string
     resolve: ResolveFn
     data: {
       members: BuilderKit.State.Values.Atom<State.Members>
@@ -63,7 +64,8 @@ type ConstructorFnReturn<$Params extends [members: State.Members]> =
   }
 
 const create = BuilderKit.createBuilder<Builder>()({
-  initialState: {
+  name: `union`,
+  initialData: {
     members: BuilderKit.State.Values.unsetSymbol,
     description: BuilderKit.State.Values.unsetSymbol,
   },

@@ -164,7 +164,7 @@ export type RawArgInputs = {
 export type SomeArgsNormalized = Record<string, unknown>
 
 export const create = BuilderKit.createBuilder<State.Initial, BuilderFn, []>()({
-  initialState: State.initial,
+  initialData: State.initial,
   implementation: ({ updater }) => {
     return {
       description: updater(`description`),

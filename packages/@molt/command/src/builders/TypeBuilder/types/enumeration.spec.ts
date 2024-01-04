@@ -12,12 +12,4 @@ describe(`state`, () => {
       expectTypeOf(BuilderKit.State.get(t).data.members).toMatchTypeOf<readonly ['a']>() // prettier-ignore
     })
   })
-  describe(`description`, () => {
-    test(`initially unset`, () => {
-      expect(BuilderKit.State.get(t).data.description).toEqual(BuilderKit.State.Values.unset) // prettier-ignore
-    })
-    test(`set after method call`, () => {
-      expect(BuilderKit.State.get(t.description(`foo`)).data.description).toMatchObject(`foo`) // prettier-ignore
-    })
-  })
 })

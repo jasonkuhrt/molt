@@ -46,6 +46,7 @@ interface ChainFn extends HKT.Fn {
 
 interface Builder {
   state: {
+    name: string
     resolve: Type.String
     data: {
       description: BuilderKit.State.Values.ValueString
@@ -78,7 +79,8 @@ interface Builder {
 }
 
 const create = BuilderKit.createBuilder<Builder>()({
-  initialState: {
+  name: `string`,
+  initialData: {
     transformationsTrim: true,
     transformationsToCase: BuilderKit.State.Values.unset,
     description: BuilderKit.State.Values.unset,

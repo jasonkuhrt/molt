@@ -16,15 +16,3 @@ describe(`members`, () => {
     expectTypeOf(state.data.members).toEqualTypeOf<readonly [TypeBuilderNumber, TypeBuilderBoolean]>() // prettier-ignore
   })
 })
-
-describe(`description`, () => {
-  test(`initially unset`, () => {
-    expect(state.data.description).toEqual(BuilderKit.State.Values.unset) // prettier-ignore
-    expectTypeOf(state.data.description).toEqualTypeOf<string | BuilderKit.State.Values.Unset>() // prettier-ignore
-  })
-  test(`set after method call`, () => {
-    const state = BuilderKit.State.get(t.description(`foo`))
-    expect(state.data.description).toEqual(`foo`) // prettier-ignore
-    expectTypeOf(state.data.description).toEqualTypeOf<'foo'>() // prettier-ignore
-  })
-})

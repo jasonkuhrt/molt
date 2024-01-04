@@ -3,6 +3,7 @@ import type { BuilderKit } from '../../BuilderKit.js'
 export namespace Fixtures {
   export namespace A {
     export type State = {
+      name: string
       resolve: null
       data: {}
       // a: PrivateData.Values.Atomic<string>
@@ -16,6 +17,7 @@ export namespace Fixtures {
   }
   export namespace B {
     export type State = {
+      name: string
       resolve: null
       data: {
         a: BuilderKit.State.Values.Atom<string>

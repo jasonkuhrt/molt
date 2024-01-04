@@ -10,14 +10,10 @@ describe(`Empty builder`, () => {
     constructor: null
   }
   const create1 = BuilderKit.createBuilder<Builder>() // prettier-ignore
-  const create2 = create1({ initialState:{}, implementation: () => ({}) }) // prettier-ignore
+  const create2 = create1({ initialData:{}, implementation: () => ({}) }) // prettier-ignore
 
   test(`constructor params`, () => {
-    expectTypeOf(create1)
-      .parameter(0)
-      .toHaveProperty(`initialState`)
-      .toEqualTypeOf<{}>()
-
+    expectTypeOf(create1).parameter(0).toHaveProperty(`initialData`).toEqualTypeOf<{}>() // prettier-ignore
     expectTypeOf(create1)
       .parameter(0)
       // todo we could make this be gone, there are no methods...
@@ -37,8 +33,13 @@ describe(`Empty builder`, () => {
     expectTypeOf<BuilderKit.StateRemove<typeof builder>>().toEqualTypeOf({})
     expect.soft(Object.keys(builder)).toEqual([])
     const state = BuilderKit.State.get(builder)
-    expectTypeOf(state).toEqualTypeOf<{ data: {}; resolve: () => null }>()
-    expect.soft(state).toEqual({ data: {}, resolve: BuilderKit.defaults.resolve }) // prettier-ignore
+    expectTypeOf(state).toEqualTypeOf<{ data: {}; resolve: typeof BuilderKit.defaults.resolve }>() // prettier-ignore
+    expect(state).toEqual({ name:`anonymous`, data: {}, resolve: BuilderKit.defaults.resolve }) // prettier-ignore
+  })
+  test(`can be given name`, () => {
+    const builder = create1({ name:`foo`, initialData:{}, implementation: () => ({})})() // prettier-ignore
+    const state = BuilderKit.State.get(builder)
+    expect(state.name).toEqual(`foo`)
   })
 })
 
@@ -49,12 +50,12 @@ describe(`Simple builder`, async () => {
     resolve: null
     constructor: null
   }
-  const initialState: BuilderKit.State.RuntimeData<Fixtures.B.State> = { a: `value` } // prettier-ignore
+  const initialData: BuilderKit.State.RuntimeData<Fixtures.B.State> = { a: `value` } // prettier-ignore
   const create1 = BuilderKit.createBuilder<Builder>() // prettier-ignore
 
   test(`param implementation updater`, () => {
     create1({
-      initialState,
+      initialData,
       implementation: ({ updater }) => {
         expectTypeOf(updater).parameter(0).toBeString()
         expectTypeOf(updater(`a`)).toMatchTypeOf<(value: string) => Fixtures.B.BuilderStatic>() // prettier-ignore
@@ -76,8 +77,8 @@ test(`state is immutable`, () => {
     resolve: null
     constructor: null
   }
-  const initialState: BuilderKit.State.RuntimeData<Fixtures.B.State> = { a: `value` } // prettier-ignore
-  const create = BuilderKit.createBuilder<Builder>()({ initialState, implementation: ({updater}) => ({ setA: updater(`a`) }) }) // prettier-ignore
+  const initialData: BuilderKit.State.RuntimeData<Fixtures.B.State> = { a: `value` } // prettier-ignore
+  const create = BuilderKit.createBuilder<Builder>()({ initialData, implementation: ({updater}) => ({ setA: updater(`a`) }) }) // prettier-ignore
   const builder = create()
   const state = BuilderKit.State.get(builder)
   const builder2 = builder.setA(`foo`)
@@ -93,12 +94,12 @@ describe(`state updaters`, () => {
     resolve: null
     constructor: null
   }
-  const initialState: BuilderKit.State.RuntimeData<Fixtures.B.State> = { a: `value` } // prettier-ignore
+  const initialData: BuilderKit.State.RuntimeData<Fixtures.B.State> = { a: `value` } // prettier-ignore
   const create1 = BuilderKit.createBuilder<Builder>()
 
   test(`can be a custom function`, () => {
     const create = create1({
-      initialState,
+      initialData,
       implementation: ({ state, recurse }) => ({
         setA: (value) => recurse({ ...state, a: value + `bar` }),
       }),
@@ -108,7 +109,7 @@ describe(`state updaters`, () => {
   })
   test(`can use the updater factory`, () => {
     const create = create1({
-      initialState,
+      initialData,
       implementation: ({ updater }) => ({
         setA: updater(`a`),
       }),
@@ -118,7 +119,7 @@ describe(`state updaters`, () => {
   })
   test(`can use the updater factory with a custom transformer`, () => {
     const create = create1({
-      initialState,
+      initialData,
       implementation: ({ updater }) => ({
         setA: updater(`a`, (value) => value + `bar`),
       }),

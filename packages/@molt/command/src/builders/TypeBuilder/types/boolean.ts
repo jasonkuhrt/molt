@@ -3,6 +3,7 @@ import { BuilderKit } from '../../../lib/BuilderKit/BuilderKit.js'
 
 interface Builder {
   state: {
+    name: string
     resolve: Type.Boolean
     data: {
       description: BuilderKit.State.Values.ValueString
@@ -25,7 +26,8 @@ interface ChainFn extends BuilderKit.Fn<Builder['state'], Chain> {
 }
 
 export const create = BuilderKit.createBuilder<Builder>()({
-  initialState: {
+  name: `boolean`,
+  initialData: {
     description: BuilderKit.State.Values.unset,
   },
   resolve: (state) => {

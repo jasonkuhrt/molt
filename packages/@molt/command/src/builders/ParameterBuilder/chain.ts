@@ -60,7 +60,7 @@ type BuilderWithStateTypeBuilder = BuilderKit.WithMinState<
 >
 
 export const create = BuilderKit.createBuilder<State.Base, BuilderFn, null>()({
-  initialState: State.initial,
+  initialData: State.initial,
   implementation: ({ updater }) => {
     return {
       name: updater(`name`) as any, // eslint-disable-line

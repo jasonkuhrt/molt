@@ -1,8 +1,8 @@
 import { describe, expect, expectTypeOf, test } from 'vitest'
-import { number } from './number.js'
+import { string } from './string.js'
 import { BuilderKit } from '../../../lib/BuilderKit/BuilderKit.js'
 
-const n = number()
-const state = BuilderKit.State.get(n)
+const s = string()
+const state = BuilderKit.State.get(s)
 
 test.todo(`todo`)
