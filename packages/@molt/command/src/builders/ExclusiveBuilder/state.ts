@@ -1,7 +1,7 @@
 import type { ParameterExclusiveInput } from '../../Parameter/exclusive.js'
 import type { Optionality } from '../../Type/helpers.js'
 import type { PrivateData } from '../../lib/PrivateData/delete me.js'
-import type { CommandBuilder } from '../CommandBuilder/chain.js'
+import type { Chain } from '../CommandBuilder/chain.js'
 import type { BuilderCommandState } from '../CommandBuilder/stateOld.js'
 
 export type BuilderParameterExclusiveState<
@@ -10,7 +10,7 @@ export type BuilderParameterExclusiveState<
 
 export namespace State {
   export interface Base {
-    commandBuilder: CommandBuilder
+    commandBuilder: Chain
     label: PrivateData.Values.ValueString
     optionality: PrivateData.Values.Atomic<Optionality>
     parameters: []

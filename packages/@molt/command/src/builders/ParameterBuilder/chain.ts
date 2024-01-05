@@ -157,6 +157,7 @@ type InferType_<
 
 export {
   Chain as ParameterBuilder,
+  Builder as ParameterBuilderDef,
   ChainFn as ParameterBuilderFn,
   InferType as ParameterBuilderInfer,
   BuilderWithStateTypeBuilder as ParameterBuilderWithStateTypeBuilder,

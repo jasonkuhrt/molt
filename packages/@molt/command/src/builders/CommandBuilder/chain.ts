@@ -1,13 +1,81 @@
 import type { HKT, SetObjectProperty } from '../../helpers.js'
 import type { Prompter } from '../../lib/Prompter/Prompter.js'
 import type { OpeningArgs } from '../../OpeningArgs/index.js'
-import { State } from './state.js'
 import { BuilderKit } from '../../lib/BuilderKit/BuilderKit.js'
-import type {
-  ChainFn,
-  ParameterBuilderState,
-} from '../ParameterBuilder/chain.js'
 import type { TypeBuilder } from '../TypeBuilder/types.js'
+import type { RemoveIndex } from '../../helpers.js'
+import type { Name as MoltName } from '@molt/name'
+import type {
+  ParameterBuilderDef,
+  ParameterBuilderFn,
+  ParameterBuilderInfer,
+} from '../ParameterBuilder/chain.js'
+import type { Simplify } from 'type-fest'
+
+export namespace State {
+  export type ParameterBuildersRecordBuilderMinimumState =
+    BuilderKit.WithMinState<
+      ParameterBuilderFn,
+      ParameterBuilderDef['state'],
+      {
+        typeBuilder: TypeBuilder
+      }
+    >
+
+  // TODO handle inferring exclusive parameters
+  export type ToArgs<$State extends Builder['state']> =
+    $State['data']['isPromptEnabled']['value'] extends true
+      ? Promise<ToArgs_<$State>>
+      : ToArgs_<$State>
+
+  type ToArgs_<$State extends Builder['state']> = Simplify<{
+    [$Name in keyof RemoveIndex<$State['data']['parameterBuilders']['value']> &
+      string as MoltName.Data.GetCanonicalNameOrErrorFromParseResult<
+      MoltName.Parse<$Name>
+      // todo (leads to unknown right now)
+    >]: ParameterBuilderInfer<
+      $State['data']['parameterBuilders']['value'][$Name]
+    >
+    // >]: $State['parameterBuilders']['value'][$Name]
+  }>
+
+  // }>
+  // & {
+  //   [Label in keyof $State['ParametersExclusive'] & string]:
+  //     | Simplify<
+  //         Values<{
+  //           [Name in keyof $State['ParametersExclusive'][Label]['Parameters']]: {
+  //             _tag: $State['ParametersExclusive'][Label]['Parameters'][Name]['NameParsed']['canonical']
+  //             value: Type.Infer<
+  //               $State['ParametersExclusive'][Label]['Parameters'][Name]['Type']
+  //             >
+  //           }
+  //         }>
+  //       >
+  //     | ($State['ParametersExclusive'][Label]['Optional'] extends true
+  //         ? undefined
+  //         : never)
+  // }
+}
+
+interface Builder {
+  chain: ChainFn
+  constructor: null
+  state: {
+    name: 'command'
+    resolve: null
+    data: {
+      description: BuilderKit.State.Values.ValueString
+      parameterBuilders: BuilderKit.State.Values.Atom<
+        Record<string, State.ParameterBuildersRecordBuilderMinimumState>,
+        BuilderKit.State.Values.Unset,
+        BuilderKit.State.Values.Unset,
+        Record<string, State.ParameterBuildersRecordBuilderMinimumState>
+      >
+      isPromptEnabled: BuilderKit.State.Values.Atom<boolean, false>
+    }
+  }
+}
 
 // export interface ParameterConfiguration<
 //   $State extends BuilderCommandState.Base = BuilderCommandState.Initial,
@@ -40,120 +108,121 @@ export type IsHasKey<Obj extends object, Key> = Key extends keyof Obj
 //     ? false
 //     : true
 
-interface BuilderFn extends HKT.Fn {
+interface ChainFn extends HKT.Fn {
   // @ts-expect-error ignoreme
-  return: Builder<this['params']>
+  return: Chain<this['params']>
 }
 
-type Builder<$State extends State.Base = State.Base> = BuilderKit.State.Setup<
-  $State,
-  {
-    description: BuilderKit.UpdaterAtom<$State, 'description', BuilderFn>
-    parameters<
-      $ParameterBuilders extends State.Base['parameterBuilders']['type'],
-    >(
-      parameters: $ParameterBuilders,
-    ): BuilderKit.SetPropertyValue<
-      BuilderFn,
-      $State,
-      'parameterBuilders',
-      $State['parameterBuilders']['value'] & $ParameterBuilders
-    >
-    parameter<
-      $ParameterBuilder extends BuilderKit.WithMinState<
+type Chain<$State extends Builder['state'] = Builder['state']> =
+  BuilderKit.State.Setup<
+    $State,
+    {
+      description: BuilderKit.UpdaterAtom<$State, 'description', ChainFn>
+      parameters<
+        $ParameterBuilders extends Builder['state']['data']['parameterBuilders']['type'],
+      >(
+        parameters: $ParameterBuilders,
+      ): BuilderKit.SetPropertyValue<
         ChainFn,
-        ParameterBuilderState.Base,
-        {
-          name: string
-          typeBuilder: TypeBuilder
-        }
-      >,
-    >(
-      builder: $ParameterBuilder,
-    ): BuilderKit.SetPropertyValue<
-      BuilderFn,
-      $State,
-      'parameterBuilders',
-      SetObjectProperty<
-        $State['parameterBuilders']['value'],
-        BuilderKit.State.Get<$ParameterBuilder>['name']['value'],
-        $ParameterBuilder
+        $State,
+        'parameterBuilders',
+        $State['data']['parameterBuilders']['value'] & $ParameterBuilders
       >
-    >
+      parameter<
+        $ParameterBuilder extends BuilderKit.WithMinState<
+          ChainFn,
+          ParameterBuilderDef['state'],
+          {
+            name: string
+            typeBuilder: TypeBuilder
+          }
+        >,
+      >(
+        builder: $ParameterBuilder,
+      ): BuilderKit.SetPropertyValue<
+        ChainFn,
+        $State,
+        'parameterBuilders',
+        SetObjectProperty<
+          $State['data']['parameterBuilders']['value'],
+          BuilderKit.State.Get<$ParameterBuilder>['data']['name']['value'],
+          $ParameterBuilder
+        >
+      >
 
-    // use<$Extension extends SomeExtension>(
-    //   extension: $Extension,
-    // ): Builder<{
-    //   IsPromptEnabled: $State['IsPromptEnabled']
-    //   Parameters: $State['Parameters']
-    //   ParametersExclusive: $State['ParametersExclusive']
-    //   Type: $Extension['types']['type']
-    //   TypeMapper: $Extension['types']['typeMapper']
-    // }>
+      // use<$Extension extends SomeExtension>(
+      //   extension: $Extension,
+      // ): Builder<{
+      //   IsPromptEnabled: $State['IsPromptEnabled']
+      //   Parameters: $State['Parameters']
+      //   ParametersExclusive: $State['ParametersExclusive']
+      //   Type: $Extension['types']['type']
+      //   TypeMapper: $Extension['types']['typeMapper']
+      // }>
 
-    // parameter<
-    //   $Builder extends BuilderCommandState.ParameterBuilderWithAtLeastNameAndType,
-    // >(
-    //   this: void,
-    //   builder: $Builder,
-    // ): Builder<BuilderCommandState.AddParameterBuilder<$State, $Builder>>
-    // parameter<
-    //   $Builder extends BuilderCommandState.ParameterBuilderWithAtLeastType,
-    //   $NameExpression extends string,
-    // >(
-    //   this: void,
-    //   name: BuilderCommandState.ValidateNameExpression<$State, $NameExpression>,
-    //   builder: $Builder,
-    // ): Builder<
-    //   BuilderCommandState.AddParameterBuilder<
-    //     $State,
-    //     // @ts-expect-error TODO Why does the constraint of "BuilderCommandState.ParameterBuilderWithAtLeastType" not satisfy the type?
-    //     ParameterBuilderUpdateStateProperty<$Builder, 'name', $NameExpression>
-    //   >
-    // >
-    // // TODO TypeBuilder
-    // parameter<$NameExpression extends string, $TypeBuilder extends TypeBuilder>(
-    //   this: void,
-    //   name: BuilderCommandState.ValidateNameExpression<$State, $NameExpression>,
-    //   type: $TypeBuilder,
-    // ): Builder<
-    //   BuilderCommandState.AddParameterBuilder<
-    //     $State,
-    //     // @ts-expect-error TODO Why does this not work?
-    //     ParameterBuilderUpdateState<
-    //       ParameterBuilder,
-    //       { name: $NameExpression; typeBuilder: $TypeBuilder }
-    //     >
-    //   >
-    // >
-    // parametersExclusive<Label extends string, $Builder extends Builder<$State>>(
-    //   this: void,
-    //   label: Label,
-    //   ExclusiveBuilderBlock: (
-    //     builder: BuilderExclusiveInitial<$State, Label>,
-    //   ) => $Builder,
-    // ): Builder<PrivateData.Get<$Builder>['commandBuilderState']>
-    // settings<S extends Settings.Input<$State>>(
-    //   this: void,
-    //   newSettings: S,
-    // ): Builder<
-    //   Pipe<
-    //     $State,
-    //     [
-    //       Objects.Update<
-    //         'IsPromptEnabled',
-    //         Objects.Assign<
-    //           $State['IsPromptEnabled'] extends true
-    //             ? true
-    //             : IsPromptEnabledInCommandSettings<S>
-    //         >
-    //       >,
-    //     ]
-    //   >
-    // >
-    parse(this: void, inputs?: RawArgInputs): State.ToArgs<$State>
-  }
->
+      // parameter<
+      //   $Builder extends BuilderCommandState.ParameterBuilderWithAtLeastNameAndType,
+      // >(
+      //   this: void,
+      //   builder: $Builder,
+      // ): Builder<BuilderCommandState.AddParameterBuilder<$State, $Builder>>
+      // parameter<
+      //   $Builder extends BuilderCommandState.ParameterBuilderWithAtLeastType,
+      //   $NameExpression extends string,
+      // >(
+      //   this: void,
+      //   name: BuilderCommandState.ValidateNameExpression<$State, $NameExpression>,
+      //   builder: $Builder,
+      // ): Builder<
+      //   BuilderCommandState.AddParameterBuilder<
+      //     $State,
+      //     // @ts-expect-error TODO Why does the constraint of "BuilderCommandState.ParameterBuilderWithAtLeastType" not satisfy the type?
+      //     ParameterBuilderUpdateStateProperty<$Builder, 'name', $NameExpression>
+      //   >
+      // >
+      // // TODO TypeBuilder
+      // parameter<$NameExpression extends string, $TypeBuilder extends TypeBuilder>(
+      //   this: void,
+      //   name: BuilderCommandState.ValidateNameExpression<$State, $NameExpression>,
+      //   type: $TypeBuilder,
+      // ): Builder<
+      //   BuilderCommandState.AddParameterBuilder<
+      //     $State,
+      //     // @ts-expect-error TODO Why does this not work?
+      //     ParameterBuilderUpdateState<
+      //       ParameterBuilder,
+      //       { name: $NameExpression; typeBuilder: $TypeBuilder }
+      //     >
+      //   >
+      // >
+      // parametersExclusive<Label extends string, $Builder extends Builder<$State>>(
+      //   this: void,
+      //   label: Label,
+      //   ExclusiveBuilderBlock: (
+      //     builder: BuilderExclusiveInitial<$State, Label>,
+      //   ) => $Builder,
+      // ): Builder<PrivateData.Get<$Builder>['commandBuilderState']>
+      // settings<S extends Settings.Input<$State>>(
+      //   this: void,
+      //   newSettings: S,
+      // ): Builder<
+      //   Pipe<
+      //     $State,
+      //     [
+      //       Objects.Update<
+      //         'IsPromptEnabled',
+      //         Objects.Assign<
+      //           $State['IsPromptEnabled'] extends true
+      //             ? true
+      //             : IsPromptEnabledInCommandSettings<S>
+      //         >
+      //       >,
+      //     ]
+      //   >
+      // >
+      parse(this: void, inputs?: RawArgInputs): State.ToArgs<$State>
+    }
+  >
 
 export type RawArgInputs = {
   line?: OpeningArgs.Line.RawInputs
@@ -163,8 +232,12 @@ export type RawArgInputs = {
 
 export type SomeArgsNormalized = Record<string, unknown>
 
-export const create = BuilderKit.createBuilder<State.Initial, BuilderFn, []>()({
-  initialData: State.initial,
+export const create = BuilderKit.createBuilder<Builder>()({
+  initialData: {
+    parameterBuilders: {},
+    description: BuilderKit.State.Values.unset,
+    isPromptEnabled: false,
+  },
   implementation: ({ updater }) => {
     return {
       description: updater(`description`),
@@ -234,4 +307,4 @@ export const create = BuilderKit.createBuilder<State.Initial, BuilderFn, []>()({
   },
 })
 
-export { Builder as CommandBuilder }
+export { Chain as CommandBuilder }

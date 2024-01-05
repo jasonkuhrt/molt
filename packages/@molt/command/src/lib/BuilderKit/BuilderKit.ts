@@ -116,11 +116,11 @@ export namespace BuilderKit {
   > = HKT.Call<$BuilderFn, State.Property.Value.SetAll<$State, $PropertyValues>>
 
   export type WithMinState<
-    $BuilderFn extends HKT.Fn,
+    $ChainFn extends HKT.Fn,
     $StateBase extends StateController,
     $PropertyValues extends object,
   > = HKT.Call<
-    $BuilderFn,
+    $ChainFn,
     State.Property.Value.SetAll<$StateBase, $PropertyValues>
   >
 
@@ -482,7 +482,7 @@ export namespace BuilderKit {
   // TODO how to make 'any' here be 'unknown'?
   // prettier-ignore
   // type CreateBuilder =  <$StateBase extends State, $BuilderFn extends BuilderFn, $ConstructorFn extends OptionalTypeFunction>() =>
-  type CreateBuilder =  <$Def extends { state: { data: Data; resolve: unknown }; chain: HKT.Fn; constructor: OptionalTypeFunction }>() =>
+  type CreateBuilder =  <$Def extends { state: { name:string; data:Data; resolve:unknown }; chain: HKT.Fn; constructor: OptionalTypeFunction }>() =>
                             <_$BuilderInternal extends Builder.ToStaticInterface<HKT.Call<$Def['chain'], $Def['state']>>, const _$Params extends {
                                 name?: string
                                 initialData: State.ToRuntime<$Def['state']>['data']
