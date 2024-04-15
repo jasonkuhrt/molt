@@ -103,8 +103,8 @@ importers:
         specifier: ^5.3.0
         version: 5.3.0
       effect:
-        specifier: 2.2.4
-        version: 2.2.4
+        specifier: 2.4.19
+        version: 2.4.19
       hotscript:
         specifier: ^1.0.13
         version: 1.0.13
@@ -1370,8 +1370,8 @@ packages:
       esutils: 2.0.3
     dev: true
 
-  /effect@2.2.4:
-    resolution: {integrity: sha512-anOrPpTZoS42kWDyspNZB5szHA+w0qCM316huX7RLIrkKwCcOHa4/clEe3e3dzZswbiO/JgenAyBIExywkWulA==}
+  /effect@2.4.19:
+    resolution: {integrity: sha512-z/rn878Po3n522g/AYUDHD1SsZaZdvRxlTCLQ8xl8H6xA82nBwwooD1mdn/73Uywmp7d84oay3w3528r0Uyd0w==}
     dev: false
 
   /emoji-regex@8.0.0:
